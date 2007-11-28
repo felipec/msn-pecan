@@ -2139,21 +2139,19 @@ static PurplePluginInfo info =
 	PURPLE_PLUGIN_MAGIC,
 	PURPLE_MAJOR_VERSION,
 	PURPLE_MINOR_VERSION,
-	PURPLE_PLUGIN_PROTOCOL,                             /**< type           */
+	PURPLE_PLUGIN_PROTOCOL,                           /**< type           */
 	NULL,                                             /**< ui_requirement */
 	0,                                                /**< flags          */
 	NULL,                                             /**< dependencies   */
-	PURPLE_PRIORITY_DEFAULT,                            /**< priority       */
+	PURPLE_PRIORITY_DEFAULT,                          /**< priority       */
 
-	"prpl-msn",                                       /**< id             */
-	"MSN",                                            /**< name           */
+	"prpl-msn-pecan",                                 /**< id             */
+	"WLM",                                            /**< name           */
 	VERSION,                                          /**< version        */
-	                                                  /**  summary        */
-	N_("MSN Protocol Plugin"),
-	                                                  /**  description    */
-	N_("MSN Protocol Plugin"),
-	"Christian Hammond <chipx86@gnupdate.org>",       /**< author         */
-	PURPLE_WEBSITE,                                     /**< homepage       */
+	N_("WLM Protocol Plugin"),                        /**< summary        */
+	N_("WLM Protocol Plugin"),                        /**< description    */
+	"Felipe Contreras <felipe.contreras@gmail.com>",  /**< author         */
+	PURPLE_WEBSITE,                                   /**< homepage       */
 
 	msn_load,                                         /**< load           */
 	msn_unload,                                       /**< unload         */
