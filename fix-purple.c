@@ -8,7 +8,6 @@ fix_purple_buddy_set_alias (PurpleConnection *gc,
     PurpleAccount *account = purple_connection_get_account (gc);
     GSList *buddies = purple_find_buddies (account, who);
     PurpleBuddy *b;
-    PurpleConversation *conv;
 
     while (buddies != NULL)
     {
@@ -33,7 +32,6 @@ fix_purple_buddy_set_friendly (PurpleConnection *gc,
     PurpleAccount *account = purple_connection_get_account (gc);
     GSList *buddies = purple_find_buddies (account, who);
     PurpleBuddy *b;
-    PurpleConversation *conv;
 
     while (buddies != NULL)
     {

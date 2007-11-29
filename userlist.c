@@ -329,7 +329,6 @@ msn_got_lst_user(MsnSession *session, MsnUser *user, const char *extra,
 	PurpleConnection *gc;
 	PurpleAccount *account;
 	const char *passport;
-	const char *store;
 
 	account = session->account;
 	gc = purple_account_get_connection(account);

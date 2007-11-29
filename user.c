@@ -25,6 +25,8 @@
 #include "user.h"
 #include "slp.h"
 
+#include "fix-purple.h"
+
 MsnUser *
 msn_user_new(MsnUserList *userlist, const char *passport)
 {
