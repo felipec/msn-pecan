@@ -78,12 +78,10 @@ struct _MsnUser
  *
  * @param session      The MSN session.
  * @param passport     The initial passport.
- * @param stored_name  The initial stored name.
  *
  * @return A new user structure.
  */
-MsnUser *msn_user_new(MsnUserList *userlist, const char *passport,
-					  const char *store_name);
+MsnUser *msn_user_new(MsnUserList *userlist, const char *passport);
 
 /**
  * Destroys a user structure.

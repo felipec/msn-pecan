@@ -34,7 +34,8 @@ objects = \
 	transaction.o \
 	user.o \
 	userlist.o \
-	msn-utils.o
+	msn-utils.o \
+	fix-purple.o
 
 all: libmsn-pecan.so
 
@@ -47,6 +48,6 @@ libmsn-pecan.so: $(objects)
 clean:
 	rm -f libmsn-pecan.so $(objects)
 
-install:
+install: libmsn-pecan.so
 	cp libmsn-pecan.so /usr/lib/purple-2
 	chcon -t textrel_shlib_t /usr/lib/purple-2/libmsn-pecan.so

@@ -70,7 +70,7 @@ void msn_got_add_user(MsnSession *session, MsnUser *user,
 					  MsnListId list_id, int group_id);
 void msn_got_rem_user(MsnSession *session, MsnUser *user,
 					  MsnListId list_id, int group_id);
-void msn_got_lst_user(MsnSession *session, MsnUser *user,
+void msn_got_lst_user(MsnSession *session, MsnUser *user, const char *extra,
 					  int list_op, GSList *group_ids);
 
 MsnUserList *msn_userlist_new(MsnSession *session);

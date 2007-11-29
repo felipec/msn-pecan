@@ -24,14 +24,14 @@
 #include "msn.h"
 #include "userlist.h"
 
+#include "fix-purple.h"
+
 const char *lists[] = { "FL", "AL", "BL", "RL" };
 
 typedef struct
 {
-	PurpleConnection *gc;
+	MsnSession *session;
 	char *who;
-	char *friendly;
-
 } MsnPermitAdd;
 
 /**************************************************************************
@@ -41,13 +41,10 @@ static void
 msn_accept_add_cb(gpointer data)
 {
 	MsnPermitAdd *pa = data;
-	MsnSession *session = pa->gc->proto_data;
-	MsnUserList *userlist = session->userlist;
 
-	msn_userlist_add_buddy(userlist, pa->who, MSN_LIST_AL, NULL);
+	msn_userlist_add_buddy(pa->session->userlist, pa->who, MSN_LIST_AL, NULL);
 
 	g_free(pa->who);
-	g_free(pa->friendly);
 	g_free(pa);
 }
 
@@ -55,13 +52,10 @@ static void
 msn_cancel_add_cb(gpointer data)
 {
 	MsnPermitAdd *pa = data;
-	MsnSession *session = pa->gc->proto_data;
-	MsnUserList *userlist = session->userlist;
 
-	msn_userlist_add_buddy(userlist, pa->who, MSN_LIST_BL, NULL);
+	msn_userlist_add_buddy(pa->session->userlist, pa->who, MSN_LIST_BL, NULL);
 
 	g_free(pa->who);
-	g_free(pa->friendly);
 	g_free(pa);
 }
 
@@ -72,10 +66,9 @@ got_new_entry(PurpleConnection *gc, const char *passport, const char *friendly)
 
 	pa = g_new0(MsnPermitAdd, 1);
 	pa->who = g_strdup(passport);
-	pa->friendly = g_strdup(friendly);
-	pa->gc = gc;
-	
-	purple_account_request_authorization(purple_connection_get_account(gc), passport, NULL, friendly, NULL,
+	pa->session = gc->proto_data;
+
+	purple_account_request_authorization(purple_connection_get_account(gc), passport, NULL, NULL, NULL,
 					   purple_find_buddy(purple_connection_get_account(gc), passport) != NULL,
 					   msn_accept_add_cb, msn_cancel_add_cb, pa);
 }
@@ -199,20 +192,16 @@ msn_got_add_user(MsnSession *session, MsnUser *user,
 {
 	PurpleAccount *account;
 	const char *passport;
-	const char *friendly;
 
 	account = session->account;
 
 	passport = msn_user_get_passport(user);
-	friendly = msn_user_get_friendly_name(user);
 
 	if (list_id == MSN_LIST_FL)
 	{
 		PurpleConnection *gc;
 
 		gc = purple_account_get_connection(account);
-
-		serv_got_alias(gc, passport, friendly);
 
 		if (group_id >= 0)
 		{
@@ -258,12 +247,8 @@ msn_got_add_user(MsnSession *session, MsnUser *user,
  
 		if (!(user->list_op & (MSN_LIST_AL_OP | MSN_LIST_BL_OP)))
 		{
-			/*
-			 * TODO: The friendly name was NULL for me when I
-			 *       looked at this.  Maybe we should use the store
-			 *       name instead? --KingAnt
-			 */
-			got_new_entry(gc, passport, friendly);
+			got_new_entry(gc, passport,
+				      msn_user_get_friendly_name(user));
 		}
 	}
 
@@ -338,7 +323,7 @@ msn_got_rem_user(MsnSession *session, MsnUser *user,
 }
 
 void
-msn_got_lst_user(MsnSession *session, MsnUser *user,
+msn_got_lst_user(MsnSession *session, MsnUser *user, const char *extra,
 				 int list_op, GSList *group_ids)
 {
 	PurpleConnection *gc;
@@ -350,7 +335,6 @@ msn_got_lst_user(MsnSession *session, MsnUser *user,
 	gc = purple_account_get_connection(account);
 
 	passport = msn_user_get_passport(user);
-	store = msn_user_get_store_name(user);
 
 	if (list_op & MSN_LIST_FL_OP)
 	{
@@ -362,9 +346,7 @@ msn_got_lst_user(MsnSession *session, MsnUser *user,
 			msn_user_add_group_id(user, group_id);
 		}
 
-		/* FIXME: It might be a real alias */
-		/* Umm, what? This might fix bug #1385130 */
-		serv_got_alias(gc, passport, store);
+		msn_user_set_store_name(user, extra);
 	}
 
 	if (list_op & MSN_LIST_AL_OP)
@@ -384,16 +366,11 @@ msn_got_lst_user(MsnSession *session, MsnUser *user,
 	if (list_op & MSN_LIST_RL_OP)
 	{
 		/* These are users who have us on their buddy list. */
-		/*
-		 * TODO: What is store name set to when this happens?
-		 *       For one of my accounts "something@hotmail.com"
-		 *       the store name was "something."  Maybe we
-		 *       should use the friendly name, instead? --KingAnt
-		 */
 
 		if (!(list_op & (MSN_LIST_AL_OP | MSN_LIST_BL_OP)))
 		{
-			got_new_entry(gc, passport, store);
+			got_new_entry(gc, passport, extra);
+			/* msn_user_set_friendly_name(user, extra); */
 		}
 	}
 

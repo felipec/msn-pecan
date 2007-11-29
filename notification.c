@@ -458,11 +458,11 @@ add_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
 	if (user == NULL)
 	{
-		user = msn_user_new(session->userlist, passport, friendly);
+		user = msn_user_new(session->userlist, passport);
 		msn_userlist_add_user(session->userlist, user);
 	}
-	else
-		msn_user_set_friendly_name(user, friendly);
+
+	msn_user_set_friendly_name(user, friendly);
 
 	list_id = msn_get_list_id(list);
 
@@ -654,8 +654,6 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
 	user = msn_userlist_find_user(session->userlist, passport);
 
-	serv_got_alias(gc, passport, friendly);
-
 	msn_user_set_friendly_name(user, friendly);
 
 	if (session->protocol_ver >= 9 && cmd->param_count == 6)
@@ -692,7 +690,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 	MsnUser *user;
 	MsnObject *msnobj;
 	int clientid;
-	const char *state, *passport, *friendly, *old_friendly;
+	const char *state, *passport, *friendly;
 
 	session = cmdproc->session;
 	account = session->account;
@@ -704,25 +702,22 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
 	user = msn_userlist_find_user(session->userlist, passport);
 
-	old_friendly = msn_user_get_friendly_name(user);
-	if (!old_friendly || (old_friendly && (!friendly || strcmp(old_friendly, friendly))))
+	if (!user)
 	{
-		serv_got_alias(gc, passport, friendly);
-		msn_user_set_friendly_name(user, friendly);
+	    purple_debug_error("msn", "unknown user: %s\n", passport);
+	    return;
 	}
 
-	if (session->protocol_ver >= 9)
+	msn_user_set_friendly_name(user, friendly);
+
+	if (cmd->param_count == 5)
 	{
-		if (cmd->param_count == 5)
-		{
-			msnobj =
-				msn_object_new_from_string(purple_url_decode(cmd->params[4]));
-			msn_user_set_object(user, msnobj);
-		}
-		else
-		{
-			msn_user_set_object(user, NULL);
-		}
+	    msnobj = msn_object_new_from_string(purple_url_decode(cmd->params[4]));
+	    msn_user_set_object(user, msnobj);
+	}
+	else
+	{
+	    msn_user_set_object(user, NULL);
 	}
 
 	clientid = atoi(cmd->params[3]);
@@ -780,17 +775,36 @@ not_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 static void
 rea_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
-	/* TODO: This might be for us too */
-
 	MsnSession *session;
-	PurpleConnection *gc;
-	const char *friendly;
+	const char *who;
+	const char *alias;
 
 	session = cmdproc->session;
-	gc = session->account->gc;
-	friendly = purple_url_decode(cmd->params[3]);
+	who = cmd->params[2];
+	alias = purple_url_decode(cmd->params[3]);
 
-	purple_connection_set_display_name(gc, friendly);
+	if (strcmp(who, purple_account_get_username (session->account)) == 0)
+	{
+	    /* This is for us. */
+	    PurpleConnection *gc;
+	    gc = session->account->gc;
+	    purple_connection_set_display_name(gc, alias);
+	}
+	else
+	{
+	    /* This is for a buddy. */
+	    MsnUser *user;
+	    user = msn_userlist_find_user(session->userlist, who);
+	    if (user)
+	    {
+		msn_user_set_store_name(user, alias);
+	    }
+	    else
+	    {
+		purple_debug_error("msn", "unknown user: %s\n", who);
+		return;
+	    }
+	}
 }
 
 static void

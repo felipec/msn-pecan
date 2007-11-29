@@ -26,8 +26,7 @@
 #include "slp.h"
 
 MsnUser *
-msn_user_new(MsnUserList *userlist, const char *passport,
-			 const char *store_name)
+msn_user_new(MsnUserList *userlist, const char *passport)
 {
 	MsnUser *user;
 
@@ -36,16 +35,6 @@ msn_user_new(MsnUserList *userlist, const char *passport,
 	user->userlist = userlist;
 
 	msn_user_set_passport(user, passport);
-	msn_user_set_store_name(user, store_name);
-
-	/*
-	 * XXX This seems to reset the friendly name from what it should be
-	 *     to the passport when moving users. So, screw it :)
-	 */
-#if 0
-	if (name != NULL)
-		msn_user_set_name(user, name);
-#endif
 
 	return user;
 }
@@ -139,6 +128,14 @@ msn_user_set_friendly_name(MsnUser *user, const char *name)
 
 	g_free(user->friendly_name);
 	user->friendly_name = g_strdup(name);
+
+	{
+		PurpleAccount *account;
+		PurpleConnection *gc;
+		account = user->userlist->session->account;
+		gc = purple_account_get_connection(account);
+		fix_purple_buddy_set_friendly(gc, user->passport, user->friendly_name);
+	}
 }
 
 void
@@ -148,6 +145,14 @@ msn_user_set_store_name(MsnUser *user, const char *name)
 
 	g_free(user->store_name);
 	user->store_name = g_strdup(name);
+
+	{
+		PurpleAccount *account;
+		PurpleConnection *gc;
+		account = user->userlist->session->account;
+		gc = purple_account_get_connection(account);
+		fix_purple_buddy_set_alias(gc, user->passport, user->store_name);
+	}
 }
 
 void

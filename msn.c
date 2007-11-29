@@ -934,56 +934,6 @@ msn_set_idle(PurpleConnection *gc, int idle)
 	msn_change_status(session);
 }
 
-#if 0
-static void
-fake_userlist_add_buddy(MsnUserList *userlist,
-					   const char *who, int list_id,
-					   const char *group_name)
-{
-	MsnUser *user;
-	static int group_id_c = 1;
-	int group_id;
-
-	group_id = -1;
-
-	if (group_name != NULL)
-	{
-		MsnGroup *group;
-		group = msn_group_new(userlist, group_id_c, group_name);
-		group_id = group_id_c++;
-	}
-
-	user = msn_userlist_find_user(userlist, who);
-
-	if (user == NULL)
-	{
-		user = msn_user_new(userlist, who, NULL);
-		msn_userlist_add_user(userlist, user);
-	}
-	else
-		if (user->list_op & (1 << list_id))
-		{
-			if (list_id == MSN_LIST_FL)
-			{
-				if (group_id >= 0)
-					if (g_list_find(user->group_ids,
-									GINT_TO_POINTER(group_id)))
-						return;
-			}
-			else
-				return;
-		}
-
-	if (group_id >= 0)
-	{
-		user->group_ids = g_list_append(user->group_ids,
-										GINT_TO_POINTER(group_id));
-	}
-
-	user->list_op |= (1 << list_id);
-}
-#endif
-
 static void
 msn_add_buddy(PurpleConnection *gc, PurpleBuddy *buddy, PurpleGroup *group)
 {
@@ -997,12 +947,7 @@ msn_add_buddy(PurpleConnection *gc, PurpleBuddy *buddy, PurpleGroup *group)
 
 	if (!session->logged_in)
 	{
-#if 0
-		fake_userlist_add_buddy(session->sync_userlist, who, MSN_LIST_FL,
-								group ? group->name : NULL);
-#else
 		purple_debug_error("msn", "msn_add_buddy called before connected\n");
-#endif
 
 		return;
 	}
@@ -1012,17 +957,6 @@ msn_add_buddy(PurpleConnection *gc, PurpleBuddy *buddy, PurpleGroup *group)
 		purple_debug_info("msn", "msn_add_buddy: %s, %s\n", who, group->name);
 	else
 		purple_debug_info("msn", "msn_add_buddy: %s\n", who);
-#endif
-
-#if 0
-	/* Which is the max? */
-	if (session->fl_users_count >= 150)
-	{
-		purple_debug_info("msn", "Too many buddies\n");
-		/* Buddy list full */
-		/* TODO: purple should be notified of this */
-		return;
-	}
 #endif
 
 	/* XXX - Would group ever be NULL here?  I don't think so...
@@ -1266,6 +1200,18 @@ msn_keepalive(PurpleConnection *gc)
 
 		msn_cmdproc_send_quick(cmdproc, "PNG", NULL, NULL);
 	}
+}
+
+static void
+msn_alias_buddy (PurpleConnection *gc, const char *name, const char *alias)
+{
+	MsnSession *session;
+	MsnCmdProc *cmdproc;
+
+	session = gc->proto_data;
+	cmdproc = session->notification->cmdproc;
+
+	msn_cmdproc_send(cmdproc, "REA", "%s %s", name, alias);
 }
 
 static void
@@ -2105,7 +2051,7 @@ static PurplePluginProtocolInfo prpl_info =
 	NULL,					/* register_user */
 	NULL,					/* get_cb_info */
 	NULL,					/* get_cb_away */
-	NULL,					/* alias_buddy */
+	msn_alias_buddy,		/* alias_buddy */
 	msn_group_buddy,		/* group_buddy */
 	msn_rename_group,		/* rename_group */
 	NULL,					/* buddy_free */

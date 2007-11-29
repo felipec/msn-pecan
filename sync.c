@@ -125,15 +125,15 @@ lst_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
 	MsnSession *session = cmdproc->session;
 	char *passport = NULL;
-	const char *friend = NULL;
 	int list_op;
 	MsnUser *user;
+	const char *extra;
 
 	passport = cmd->params[0];
-	friend   = purple_url_decode(cmd->params[1]);
-	list_op  = atoi(cmd->params[2]);
+	extra = purple_url_decode(cmd->params[1]);
+	list_op = atoi(cmd->params[2]);
 
-	user = msn_user_new(session->userlist, passport, friend);
+	user = msn_user_new(session->userlist, passport);
 
 	msn_userlist_add_user(session->userlist, user);
 
@@ -164,13 +164,13 @@ lst_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
 		g_strfreev(tokens);
 
-		msn_got_lst_user(session, user, list_op, group_ids);
+		msn_got_lst_user(session, user, extra, list_op, group_ids);
 
 		g_slist_free(group_ids);
 	}
 	else
 	{
-		msn_got_lst_user(session, user, list_op, NULL);
+		msn_got_lst_user(session, user, extra, list_op, NULL);
 	}
 
 	session->sync->num_users++;
