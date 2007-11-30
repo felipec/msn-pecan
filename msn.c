@@ -1207,11 +1207,17 @@ msn_alias_buddy (PurpleConnection *gc, const char *name, const char *alias)
 {
 	MsnSession *session;
 	MsnCmdProc *cmdproc;
+	const char *tmp;
 
 	session = gc->proto_data;
 	cmdproc = session->notification->cmdproc;
 
-	msn_cmdproc_send(cmdproc, "REA", "%s %s", name, alias);
+	if(alias && strlen(alias))
+		tmp = purple_url_encode(alias);
+	else
+		tmp = "";
+
+	msn_cmdproc_send(cmdproc, "REA", "%s %s", name, tmp);
 }
 
 static void
