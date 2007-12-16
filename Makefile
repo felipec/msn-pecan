@@ -8,7 +8,6 @@ CFLAGS=-Wall -ggdb
 objects = \
 	cmdproc.o \
 	command.o \
-	dialog.o \
 	directconn.o \
 	error.o \
 	group.o \
