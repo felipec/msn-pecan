@@ -80,6 +80,7 @@ typedef struct
 	time_t when;
 } MsnIMData;
 
+/** @todo remove this crap */
 static const char *
 msn_normalize(const PurpleAccount *account, const char *str)
 {
@@ -937,11 +938,9 @@ msn_add_buddy(PurpleConnection *gc, PurpleBuddy *buddy, PurpleGroup *group)
 {
 	MsnSession *session;
 	MsnUserList *userlist;
-	const char *who;
 
 	session = gc->proto_data;
 	userlist = session->userlist;
-	who = msn_normalize(gc->account, buddy->name);
 
 	if (!session->logged_in)
 	{
@@ -950,18 +949,7 @@ msn_add_buddy(PurpleConnection *gc, PurpleBuddy *buddy, PurpleGroup *group)
 		return;
 	}
 
-#if 0
-	if (group != NULL && group->name != NULL)
-		purple_debug_info("msn", "msn_add_buddy: %s, %s\n", who, group->name);
-	else
-		purple_debug_info("msn", "msn_add_buddy: %s\n", who);
-#endif
-
-	/* XXX - Would group ever be NULL here?  I don't think so...
-	 * shx: Yes it should; MSN handles non-grouped buddies, and this is only
-	 * internal. */
-	msn_userlist_add_buddy(userlist, who, MSN_LIST_FL,
-						   group ? group->name : NULL);
+	msn_userlist_add_buddy_helper(userlist, buddy, group);
 }
 
 static void

@@ -67,8 +67,8 @@ got_new_entry(PurpleConnection *gc, const char *passport, const char *friendly)
 	pa->session = gc->proto_data;
 
 	purple_account_request_authorization(purple_connection_get_account(gc), passport, NULL, NULL, NULL,
-					   purple_find_buddy(purple_connection_get_account(gc), passport) != NULL,
-					   msn_accept_add_cb, msn_cancel_add_cb, pa);
+										 purple_find_buddy(purple_connection_get_account(gc), passport) != NULL,
+										 msn_accept_add_cb, msn_cancel_add_cb, pa);
 }
 
 /**************************************************************************
@@ -246,7 +246,7 @@ msn_got_add_user(MsnSession *session, MsnUser *user,
 		if (!(user->list_op & (MSN_LIST_AL_OP | MSN_LIST_BL_OP)))
 		{
 			got_new_entry(gc, passport,
-				      msn_user_get_friendly_name(user));
+						  msn_user_get_friendly_name(user));
 		}
 	}
 
@@ -607,22 +607,6 @@ msn_userlist_add_buddy(MsnUserList *userlist,
 
 	group_id = -1;
 
-	if (!purple_email_is_valid(who))
-	{
-		/* only notify the user about problems adding to the friends list
-		 * maybe we should do something else for other lists, but it probably
-		 * won't cause too many problems if we just ignore it */
-		if (list_id == MSN_LIST_FL)
-		{
-			char *str = g_strdup_printf(_("Unable to add \"%s\"."), who);
-			purple_notify_error(NULL, NULL, str,
-							  _("The screen name specified is invalid."));
-			g_free(str);
-		}
-
-		return;
-	}
-
 	if (group_name != NULL)
 	{
 		group_id = msn_userlist_find_group_id(userlist, group_name);
@@ -636,14 +620,6 @@ msn_userlist_add_buddy(MsnUserList *userlist,
 	}
 
 	user = msn_userlist_find_user(userlist, who);
-
-	/* First we're going to check if it's already there. */
-	if (user_is_there(user, list_id, group_id))
-	{
-		list = lists[list_id];
-		purple_debug_error("msn", "User '%s' is already there: %s\n", who, list);
-		return;
-	}
 
 	store_name = (user != NULL) ? get_store_name(user) : who;
 
@@ -670,4 +646,74 @@ msn_userlist_move_buddy(MsnUserList *userlist, const char *who,
 
 	msn_userlist_add_buddy(userlist, who, MSN_LIST_FL, new_group_name);
 	msn_userlist_rem_buddy(userlist, who, MSN_LIST_FL, old_group_name);
+}
+
+/**************************************************************************
+ * Purple functions
+ **************************************************************************/
+void
+msn_userlist_add_buddy_helper (MsnUserList *userlist,
+							   PurpleBuddy *buddy,
+							   PurpleGroup *group)
+{
+	char *who;
+	const char *group_name;
+
+	who = purple_buddy_get_name (buddy);
+	group_name = purple_group_get_name (group);
+
+	{
+		MsnUser *user;
+		int list_id;
+		int group_id;
+
+		list_id = MSN_LIST_FL;
+		group_id = -1;
+		user = msn_userlist_find_user(userlist, who);
+
+		if (group_name != NULL)
+		{
+			group_id = msn_userlist_find_group_id(userlist, group_name);
+
+			if (group_id < 0)
+			{
+				/* Whoa, we must add that group first. */
+				msn_request_add_group(userlist, who, NULL, group_name);
+				return;
+			}
+
+			if (user && msn_user_get_group_ids(user) && group_id == 0)
+			{
+				purple_debug_error("msn", "Trying to add user '%s' to a virtual group\n",
+								   who);
+				purple_blist_remove_buddy (buddy);
+				return;
+			}
+		}
+
+		/* First we're going to check if it's already there. */
+		if (user_is_there(user, list_id, group_id))
+		{
+			const char *list;
+
+			list = lists[list_id];
+			if ((list_id == MSN_LIST_FL) &&
+				(group_id >= 0))
+			{
+				purple_debug_error("msn", "User '%s' is already there: %s (%s)\n",
+								   who, list, group_name);
+			}
+			else
+			{
+				purple_debug_error("msn", "User '%s' is already there: %s\n",
+								   who, list);
+			}
+
+			purple_blist_remove_buddy (buddy);
+
+			return;
+		}
+	}
+
+	msn_userlist_add_buddy(userlist, who, MSN_LIST_FL, group_name);
 }

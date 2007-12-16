@@ -1,7 +1,5 @@
 /**
- * @file error.h Error functions
- *
- * purple
+ * Copyright (C) 2007 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -34,7 +32,7 @@
  *
  * @return The string representation of the error type.
  */
-const char *msn_error_get_text(unsigned int type, gboolean *debug);
+const char *msn_error_get_text(unsigned int type);
 
 /**
  * Handles an error.

@@ -95,10 +95,15 @@ lsg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
 	msn_group_new(session->userlist, group_id, name);
 
-	/* HACK */
+	if ((purple_find_group(name)) == NULL)
+	{
+		PurpleGroup *g = purple_group_new(name);
+		purple_blist_add_group(g, NULL);
+	}
+
+	/* Group of ungroupped buddies */
 	if (group_id == 0)
 	{
-		/* Group of ungroupped buddies */
 		if (session->sync->total_users == 0)
 		{
 			cmdproc->cbs_table = session->sync->old_cbs_table;
@@ -109,12 +114,6 @@ lsg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 			session->sync = NULL;
 		}
 		return;
-	}
-
-	if ((purple_find_group(name)) == NULL)
-	{
-		PurpleGroup *g = purple_group_new(name);
-		purple_blist_add_group(g, NULL);
 	}
 }
 

@@ -163,19 +163,10 @@ group_error_helper(MsnSession *session, const char *msg, int group_id, int error
 
 	if (error == 224)
 	{
-		if (group_id == 0)
-		{
-			return;
-		}
-		else
-		{
-			const char *group_name;
-			group_name =
-				msn_userlist_find_group_name(session->userlist,
-											 group_id);
-			reason = g_strdup_printf(_("%s is not a valid group."),
-									 group_name);
-		}
+		const char *group_name;
+		group_name = msn_userlist_find_group_name(session->userlist, group_id);
+		reason = g_strdup_printf(_("%s is not a valid group."),
+								 group_name);
 	}
 	else
 	{
@@ -480,7 +471,7 @@ add_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
 	PurpleAccount *account;
 	PurpleConnection *gc;
 	const char *list, *passport;
-	char *reason = NULL;
+	const char *reason;
 	char *msg = NULL;
 	char **params;
 
@@ -505,31 +496,7 @@ add_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
 							  purple_account_get_username(account),
 							  purple_account_get_protocol_name(account));
 
-	if (!strcmp(list, "FL"))
-	{
-		if (error == 210)
-		{
-			reason = g_strdup_printf(_("%s could not be added because "
-									   "your buddy list is full."), passport);
-		}
-	}
-
-	if (reason == NULL)
-	{
-		if (error == 208)
-		{
-			reason = g_strdup_printf(_("%s is not a valid passport account."),
-									 passport);
-		}
-		else if (error == 500)
-		{
-			reason = g_strdup(_("Service Temporarily Unavailable."));
-		}
-		else
-		{
-			reason = g_strdup(_("Unknown error."));
-		}
-	}
+	reason = msn_error_get_text(error);
 
 	if (msg != NULL)
 	{
@@ -546,8 +513,6 @@ add_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
 		if (buddy != NULL)
 			purple_blist_remove_buddy(buddy);
 	}
-
-	g_free(reason);
 
 	g_strfreev(params);
 }
@@ -1376,7 +1341,8 @@ msn_notification_add_buddy(MsnNotification *notification, const char *list,
 	}
 	else
 	{
-		msn_cmdproc_send(cmdproc, "ADD", "%s %s %s", list, who, store_name);
+		msn_cmdproc_send(cmdproc, "ADD", "%s %s %s",
+						 list, who, store_name);
 	}
 }
 

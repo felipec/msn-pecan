@@ -98,4 +98,8 @@ void msn_userlist_move_buddy(MsnUserList *userlist, const char *who,
 							 const char *old_group_name,
 							 const char *new_group_name);
 
+void msn_userlist_add_buddy_helper (MsnUserList *userlist,
+									PurpleBuddy *buddy,
+									PurpleGroup *group);
+
 #endif /* _MSN_USERLIST_H_ */

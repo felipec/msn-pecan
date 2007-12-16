@@ -34,9 +34,6 @@ typedef struct _MsnUser  MsnUser;
  */
 struct _MsnUser
 {
-#if 0
-	MsnSession *session;    /**< The MSN session.               */
-#endif
 	MsnUserList *userlist;
 
 	char *passport;         /**< The passport account.          */
@@ -274,6 +271,15 @@ MsnObject *msn_user_get_object(const MsnUser *user);
  * @return The client information.
  */
 GHashTable *msn_user_get_client_caps(const MsnUser *user);
+
+/**
+ * Gets the group ID list for a user.
+ *
+ * @param user The user.
+ *
+ * @return The group ID list.
+ */
+GList *msn_user_get_group_ids(const MsnUser *user);
 
 /*@}*/
 

@@ -246,6 +246,7 @@ msn_user_add_group_id(MsnUser *user, int id)
 
 	g = purple_find_group(group_name);
 
+	/* If the group is not there, add it */
 	if ((id == 0) && (g == NULL))
 	{
 		g = purple_group_new(group_name);
@@ -257,11 +258,23 @@ msn_user_add_group_id(MsnUser *user, int id)
 	if (b == NULL)
 	{
 		b = purple_buddy_new(account, passport, NULL);
-
 		purple_blist_add_buddy(b, NULL, g, NULL);
 	}
 
 	b->proto_data = user;
+
+	/* If we have users on the 'Individuals' group, remove them. */
+	if (id != 0)
+	{
+		group_name = msn_userlist_find_group_name(userlist, 0);
+		g = purple_find_group(group_name);
+		b = purple_find_buddy_in_group(account, passport, g);
+
+		if (b)
+		{
+			purple_blist_remove_buddy(b);
+		}
+	}
 }
 
 void
@@ -394,4 +407,12 @@ msn_user_get_client_caps(const MsnUser *user)
 	g_return_val_if_fail(user != NULL, NULL);
 
 	return user->clientcaps;
+}
+
+GList *
+msn_user_get_group_ids(const MsnUser *user)
+{
+	g_return_val_if_fail(user != NULL, NULL);
+
+	return user->group_ids;
 }

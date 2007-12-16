@@ -1,0 +1,3 @@
+* Improve errors messages
+* Improve group handling (Individuals, multiple contacts per group)
+* Add true server-side aliases

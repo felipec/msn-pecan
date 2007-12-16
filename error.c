@@ -1,7 +1,5 @@
 /**
- * @file error.c Error functions
- *
- * purple
+ * Copyright (C) 2007 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -25,21 +23,18 @@
 #include "error.h"
 
 const char *
-msn_error_get_text(unsigned int type, gboolean *debug)
+msn_error_get_text(unsigned int type)
 {
 	static char msg[MSN_BUF_LEN];
-	*debug = FALSE;
 
 	switch (type) {
 		case 0:
 			g_snprintf(msg, sizeof(msg),
 					   _("Unable to parse message"));
-			*debug = TRUE;
 			break;
 		case 200:
 			g_snprintf(msg, sizeof(msg),
 					   _("Syntax Error (probably a client bug)"));
-			*debug = TRUE;
 			break;
 		case 201:
 			g_snprintf(msg, sizeof(msg),
@@ -66,7 +61,6 @@ msn_error_get_text(unsigned int type, gboolean *debug)
 			break;
 		case 215:
 			g_snprintf(msg, sizeof(msg), _("Already there"));
-			*debug = TRUE;
 			break;
 		case 216:
 			g_snprintf(msg, sizeof(msg), _("Not on list"));
@@ -76,11 +70,9 @@ msn_error_get_text(unsigned int type, gboolean *debug)
 			break;
 		case 218:
 			g_snprintf(msg, sizeof(msg), _("Already in the mode"));
-			*debug = TRUE;
 			break;
 		case 219:
 			g_snprintf(msg, sizeof(msg), _("Already in opposite list"));
-			*debug = TRUE;
 			break;
 		case 223:
 			g_snprintf(msg, sizeof(msg), _("Too many groups"));
@@ -96,7 +88,6 @@ msn_error_get_text(unsigned int type, gboolean *debug)
 			break;
 		case 230:
 			g_snprintf(msg, sizeof(msg), _("Cannot remove group zero"));
-			*debug = TRUE;
 			break;
 		case 231:
 			g_snprintf(msg, sizeof(msg),
@@ -105,20 +96,16 @@ msn_error_get_text(unsigned int type, gboolean *debug)
 			break;
 		case 280:
 			g_snprintf(msg, sizeof(msg), _("Switchboard failed"));
-			*debug = TRUE;
 			break;
 		case 281:
 			g_snprintf(msg, sizeof(msg), _("Notify transfer failed"));
-			*debug = TRUE;
 			break;
 
 		case 300:
 			g_snprintf(msg, sizeof(msg), _("Required fields missing"));
-			*debug = TRUE;
 			break;
 		case 301:
 			g_snprintf(msg, sizeof(msg), _("Too many hits to a FND"));
-			*debug = TRUE;
 			break;
 		case 302:
 			g_snprintf(msg, sizeof(msg), _("Not logged in"));
@@ -129,23 +116,18 @@ msn_error_get_text(unsigned int type, gboolean *debug)
 			break;
 		case 501:
 			g_snprintf(msg, sizeof(msg), _("Database server error"));
-			*debug = TRUE;
 			break;
 		case 502:
 			g_snprintf(msg, sizeof(msg), _("Command disabled"));
-			*debug = TRUE;
 			break;
 		case 510:
 			g_snprintf(msg, sizeof(msg), _("File operation error"));
-			*debug = TRUE;
 			break;
 		case 520:
 			g_snprintf(msg, sizeof(msg), _("Memory allocation error"));
-			*debug = TRUE;
 			break;
 		case 540:
 			g_snprintf(msg, sizeof(msg), _("Wrong CHL value sent to server"));
-			*debug = TRUE;
 			break;
 
 		case 600:
@@ -156,11 +138,9 @@ msn_error_get_text(unsigned int type, gboolean *debug)
 			break;
 		case 602:
 			g_snprintf(msg, sizeof(msg), _("Peer notification server down"));
-			*debug = TRUE;
 			break;
 		case 603:
 			g_snprintf(msg, sizeof(msg), _("Database connect error"));
-			*debug = TRUE;
 			break;
 		case 604:
 			g_snprintf(msg, sizeof(msg),
@@ -172,19 +152,16 @@ msn_error_get_text(unsigned int type, gboolean *debug)
 
 		case 707:
 			g_snprintf(msg, sizeof(msg), _("Error creating connection"));
-			*debug = TRUE;
 			break;
 		case 710:
 			g_snprintf(msg, sizeof(msg),
 					   _("CVR parameters are either unknown or not allowed"));
-			*debug = TRUE;
 			break;
 		case 711:
 			g_snprintf(msg, sizeof(msg), _("Unable to write"));
 			break;
 		case 712:
 			g_snprintf(msg, sizeof(msg), _("Session overload"));
-			*debug = TRUE;
 			break;
 		case 713:
 			g_snprintf(msg, sizeof(msg), _("User is too active"));
@@ -197,11 +174,9 @@ msn_error_get_text(unsigned int type, gboolean *debug)
 			break;
 		case 717:
 			g_snprintf(msg, sizeof(msg), _("Bad friend file"));
-			*debug = TRUE;
 			break;
 		case 731:
 			g_snprintf(msg, sizeof(msg), _("Not expected"));
-			*debug = TRUE;
 			break;
 
 		case 800:
@@ -242,12 +217,10 @@ msn_error_get_text(unsigned int type, gboolean *debug)
 			break;
 		case 928:
 			g_snprintf(msg, sizeof(msg), _("Bad ticket"));
-			*debug = TRUE;
 			break;
 
 		default:
 			g_snprintf(msg, sizeof(msg), _("Unknown Error Code %d"), type);
-			*debug = TRUE;
 			break;
 	}
 
@@ -258,12 +231,14 @@ void
 msn_error_handle(MsnSession *session, unsigned int type)
 {
 	char buf[MSN_BUF_LEN];
-	gboolean debug;
-	
+
 	g_snprintf(buf, sizeof(buf), _("MSN Error: %s\n"),
-			   msn_error_get_text(type, &debug));
-	if (debug)
-		purple_debug_warning("msn", "error %d: %s\n", type, buf);
-	else
-		purple_notify_error(session->account->gc, NULL, buf, NULL);
+			   msn_error_get_text(type));
+
+	/* Notify all the errors for now */
+#if 0
+	purple_debug_warning("msn", "error %d: %s\n", type, buf);
+#endif
+
+	purple_notify_error(session->account->gc, NULL, buf, NULL);
 }
