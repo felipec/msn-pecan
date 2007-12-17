@@ -26,8 +26,6 @@
 #include "notification.h"
 #include "fix-purple.h"
 
-#include "dialog.h"
-
 MsnSession *
 msn_session_new(PurpleAccount *account)
 {

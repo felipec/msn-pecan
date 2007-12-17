@@ -656,7 +656,7 @@ msn_userlist_add_buddy_helper (MsnUserList *userlist,
 							   PurpleBuddy *buddy,
 							   PurpleGroup *group)
 {
-	char *who;
+	const char *who;
 	const char *group_name;
 
 	who = purple_buddy_get_name (buddy);
