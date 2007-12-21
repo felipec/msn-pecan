@@ -1,7 +1,5 @@
 /**
- * @file slplink.h MSNSLP Link support
- *
- * purple
+ * Copyright (C) 2007 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -49,6 +47,7 @@ struct _MsnSlpLink
 	char *remote_user;
 
 	int slp_seq_id;
+	int slp_session_id;
 
 	MsnDirectConn *directconn;
 

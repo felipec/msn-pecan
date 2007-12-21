@@ -1,7 +1,5 @@
 /**
- * @file slpmsg.h SLP Message functions
- *
- * purple
+ * Copyright (C) 2007 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -153,13 +151,10 @@ msn_slpmsg_show(MsnMessage *msg)
 {
 	const char *info;
 	gboolean text;
-	guint32 flags;
 
 	text = FALSE;
 
-	flags = GUINT32_TO_LE(msg->msnslp_header.flags);
-
-	switch (flags)
+	switch (msg->msnslp_header.flags)
 	{
 		case 0x0:
 			info = "SLP CONTROL";
@@ -170,6 +165,8 @@ msn_slpmsg_show(MsnMessage *msg)
 		case 0x20:
 		case 0x1000030:
 			info = "SLP DATA"; break;
+		case 0x100:
+			info = "SLP DC"; break;
 		default:
 			info = "SLP UNKNOWN"; break;
 	}

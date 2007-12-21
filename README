@@ -3,10 +3,11 @@ This is an alternative implementation of the MSN protocol plugin for libpurple.
 It's based on the code from 2.2.2 plues a few extras.
 
 * Server-side storage for aliases
+* Partial direct connection support
 
 Future plans:
 
-* Direct connection (Fast file-transfers)
+* Complete direct connection (Fast file-transfers)
 * Send custom simleys
 * MSNP10 support
 

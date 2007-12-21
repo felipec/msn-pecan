@@ -1,7 +1,5 @@
 /**
- * @file directconn.h MSN direct connection functions
- *
- * purple
+ * Copyright (C) 2007 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -37,14 +35,13 @@ struct _MsnDirectConn
 
 	PurpleProxyConnectData *connect_data;
 
-	gboolean acked;
+	gboolean ack_sent;
+	gboolean ack_recv;
 
 	char *nonce;
 
-	int fd;
-
+	GIOChannel *channel;
 	int port;
-	int inpa;
 
 	int c;
 };

@@ -1,7 +1,5 @@
 /**
- * @file msn-utils.c Utility functions
- *
- * purple
+ * Copyright (C) 2007 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -436,4 +434,18 @@ msn_parse_socket(const char *str, char **ret_host, int *ret_port)
 
 	*ret_host = host;
 	*ret_port = port;
+}
+
+char *
+msn_rand_guid()
+{
+	return g_strdup_printf("%4X%4X-%4X-%4X-%4X-%4X%4X%4X",
+			rand() % 0xAAFF + 0x1111,
+			rand() % 0xAAFF + 0x1111,
+			rand() % 0xAAFF + 0x1111,
+			rand() % 0xAAFF + 0x1111,
+			rand() % 0xAAFF + 0x1111,
+			rand() % 0xAAFF + 0x1111,
+			rand() % 0xAAFF + 0x1111,
+			rand() % 0xAAFF + 0x1111);
 }

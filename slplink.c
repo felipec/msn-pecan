@@ -1,7 +1,5 @@
 /**
- * @file slplink.c MSNSLP Link support
- *
- * purple
+ * Copyright (C) 2007 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -78,6 +76,7 @@ msn_slplink_new(MsnSession *session, const char *username)
 
 	slplink->session = session;
 	slplink->slp_seq_id = rand() % 0xFFFFFF00 + 4;
+	slplink->slp_session_id = rand() % 0xFFFFFF00 + 4;
 
 	slplink->local_user = g_strdup(msn_user_get_passport(session->user));
 	slplink->remote_user = g_strdup(username);
@@ -135,7 +134,7 @@ msn_session_find_slplink(MsnSession *session, const char *who)
 
 		slplink = l->data;
 
-		if (!strcmp(slplink->remote_user, who))
+		if (strcmp(slplink->remote_user, who) == 0)
 			return slplink;
 	}
 
@@ -244,26 +243,19 @@ msn_slplink_find_slp_call_with_session_id(MsnSlpLink *slplink, long id)
 void
 msn_slplink_send_msg(MsnSlpLink *slplink, MsnMessage *msg)
 {
-	if (slplink->directconn != NULL)
+	if (slplink->swboard == NULL)
 	{
-		msn_directconn_send_msg(slplink->directconn, msg);
-	}
-	else
-	{
+		slplink->swboard = msn_session_get_swboard(slplink->session,
+												   slplink->remote_user, MSN_SB_FLAG_FT);
+
 		if (slplink->swboard == NULL)
-		{
-			slplink->swboard = msn_session_get_swboard(slplink->session,
-													   slplink->remote_user, MSN_SB_FLAG_FT);
+			return;
 
-			if (slplink->swboard == NULL)
-				return;
-
-			/* If swboard is destroyed we will be too */
-			slplink->swboard->slplinks = g_list_prepend(slplink->swboard->slplinks, slplink);
-		}
-
-		msn_switchboard_send_msg(slplink->swboard, msg, TRUE);
+		/* If swboard is destroyed we will be too */
+		slplink->swboard->slplinks = g_list_prepend(slplink->swboard->slplinks, slplink);
 	}
+
+	msn_switchboard_send_msg(slplink->swboard, msg, TRUE);
 }
 
 /* We have received the message ack */
@@ -358,7 +350,17 @@ msn_slplink_send_msgpart(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
 
 	slpmsg->msgs =
 		g_list_append(slpmsg->msgs, msg);
-	msn_slplink_send_msg(slplink, msg);
+
+	/* The hand-shake message has 0x100 flags. */
+	if (slplink->directconn &&
+		(slpmsg->flags == 0x100 || slplink->directconn->ack_recv))
+	{
+		msn_directconn_send_msg(slplink->directconn, msg);
+	}
+	else
+	{
+		msn_slplink_send_msg(slplink, msg);
+	}
 
 	if ((slpmsg->flags == 0x20 || slpmsg->flags == 0x1000030) &&
 		(slpmsg->slpcall != NULL))
@@ -635,8 +637,13 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 
 			directconn = slplink->directconn;
 
-			if (!directconn->acked)
+			directconn->ack_recv = TRUE;
+
+			if (!directconn->ack_sent)
+			{
+				purple_debug_warning("msn", "Bad ACK\n");
 				msn_directconn_send_handshake(directconn);
+			}
 		}
 		else if (slpmsg->flags == 0x0 || slpmsg->flags == 0x20 ||
 				 slpmsg->flags == 0x1000030)

@@ -1,7 +1,5 @@
 /**
- * @file msn-utils.h Utility functions
- *
- * purple
+ * Copyright (C) 2007 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -47,5 +45,6 @@ void msn_parse_format(const char *mime, char **pre_ret, char **post_ret);
 void msn_import_html(const char *html, char **attributes, char **message);
 
 void msn_parse_socket(const char *str, char **ret_host, int *ret_port);
+char *msn_rand_guid();
 
 #endif /* _MSN_UTILS_H_ */

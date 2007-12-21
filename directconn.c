@@ -65,10 +65,11 @@ msn_directconn_send_handshake(MsnDirectConn *directconn)
 	}
 
 	g_free(directconn->nonce);
+	directconn->nonce = NULL;
 
 	msn_slplink_send_slpmsg(slplink, slpmsg);
 
-	directconn->acked =TRUE;
+	directconn->ack_sent = TRUE;
 }
 
 /**************************************************************************
@@ -163,63 +164,46 @@ create_listener(int port)
 }
 #endif
 
-static size_t
+static GIOError
 msn_directconn_write(MsnDirectConn *directconn,
 					 const char *data, size_t len)
 {
-	char *buffer, *tmp;
-	size_t buf_size;
-	size_t ret;
-	guint32 sent_len;
+	guint32 body_len;
+	GIOError error;
+	gsize tmp;
 
 	g_return_val_if_fail(directconn != NULL, 0);
 
-	buf_size = len + 4;
-	buffer = tmp = g_malloc(buf_size);
+	purple_debug_info("msn", "directconn: write: %d\n", len);
 
-	sent_len = GUINT32_TO_LE(len);
+	body_len = GUINT32_TO_LE(len);
 
-	memcpy(tmp, &sent_len, 4);
-	tmp += 4;
-	memcpy(tmp, data, len);
-	tmp += len;
+	/* Let's write the length of the data. */
+	error = g_io_channel_write (directconn->channel, (gchar *) &body_len, sizeof(body_len), &tmp);
 
-	ret = write(directconn->fd, buffer, buf_size);
+	if (!error)
+	{
+		/* Let's write the data. */
+		error = g_io_channel_write (directconn->channel, data, len, &tmp);
+	}
 
 #ifdef DEBUG_DC
-	char *str;
-	str = g_strdup_printf("%s/msntest/w%.4d.bin", g_get_home_dir(), directconn->c);
+	{
+		char *str;
+		str = g_strdup_printf("%s/msntest/w%.4d.bin", g_get_home_dir(), directconn->c);
 
-	FILE *tf = g_fopen(str, "w");
-	fwrite(buffer, 1, buf_size, tf);
-	fclose(tf);
+		FILE *tf = g_fopen(str, "w");
+		fwrite(&body_len, 1, sizeof(body_len), tf);
+		fwrite(data, 1, len, tf);
+		fclose(tf);
 
-	g_free(str);
-#endif
-
-	g_free(buffer);
-
-#if 0
-	/* Let's write the length of the data. */
-	ret = write(directconn->fd, &len, sizeof(len));
-
-	/* Let's write the data. */
-	ret = write(directconn->fd, data, len);
-
-	char *str;
-	str = g_strdup_printf("/home/revo/msntest/w%.4d.bin", directconn->c);
-
-	FILE *tf = g_fopen(str, "w");
-	fwrite(&len, 1, sizeof(len), tf);
-	fwrite(data, 1, len, tf);
-	fclose(tf);
-
-	g_free(str);
+		g_free(str);
+	}
 #endif
 
 	directconn->c++;
 
-	return ret;
+	return error;
 }
 
 #if 0
@@ -270,57 +254,74 @@ msn_directconn_process_msg(MsnDirectConn *directconn, MsnMessage *msg)
 	msn_slplink_process_msg(directconn->slplink, msg);
 }
 
-static void
-read_cb(gpointer data, gint source, PurpleInputCondition cond)
+static gboolean
+read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
 {
 	MsnDirectConn* directconn;
-	char *body;
-	size_t len, body_len;
+	gchar *body;
+	guint32 body_len;
+	gsize len;
+	GIOError error = G_IO_ERROR_NONE;
 
-	purple_debug_info("msn", "read_cb: %d, %d\n", source, cond);
+	purple_debug_info("msn", "read_cb: %d, %d\n", source, condition);
 
 	directconn = data;
 
-	/* Let's read the length of the data. */
-	len = read(directconn->fd, &body_len, sizeof(body_len));
-
-	if (len <= 0)
+	while (TRUE)
 	{
-		/* ERROR */
-		purple_debug_error("msn", "error reading\n");
+		/* Let's read the length of the data. */
+		/* len = read(directconn->fd, &body_len, sizeof(body_len)); */
+		error = g_io_channel_read (directconn->channel, (gchar *) &body_len, sizeof(body_len), &len);
 
-		msn_directconn_destroy(directconn);
+		if (error == G_IO_ERROR_AGAIN)
+			continue;
 
-		return;
+		if (error)
+		{
+			purple_debug_error("msn", "error reading\n");
+
+			msn_directconn_destroy(directconn);
+
+			return FALSE;
+		}
+
+		break;
 	}
 
 	body_len = GUINT32_FROM_LE(body_len);
 
 	purple_debug_info("msn", "body_len=%d\n", body_len);
 
-	if (body_len <= 0)
-	{
-		/* ERROR */
-		purple_debug_error("msn", "error reading\n");
-
-		msn_directconn_destroy(directconn);
-
-		return;
-	}
-
 	body = g_try_malloc(body_len);
 
-	if (body != NULL)
-	{
-		/* Let's read the data. */
-		len = read(directconn->fd, body, body_len);
-
-		purple_debug_info("msn", "len=%d\n", len);
-	}
-	else
+	if (!body)
 	{
 		purple_debug_error("msn", "Failed to allocate memory for read\n");
-		len = 0;
+
+		return FALSE;
+	}
+
+	while (TRUE)
+	{
+		/* Let's read the data. */
+		/* len = read(directconn->fd, body, body_len); */
+		error = g_io_channel_read (directconn->channel, body, body_len, &len);
+
+		if (error == G_IO_ERROR_AGAIN)
+			continue;
+
+		purple_debug_info("msn", "len=%d\n", len);
+
+		if (error)
+		{
+			purple_debug_error("msn", "error reading\n");
+
+			msn_directconn_destroy(directconn);
+
+			return FALSE;
+		}
+
+		break;
 	}
 
 	if (len > 0)
@@ -344,13 +345,8 @@ read_cb(gpointer data, gint source, PurpleInputCondition cond)
 
 		msn_directconn_process_msg(directconn, msg);
 	}
-	else
-	{
-		/* ERROR */
-		purple_debug_error("msn", "error reading\n");
 
-		msn_directconn_destroy(directconn);
-	}
+	return TRUE;
 }
 
 static void
@@ -375,34 +371,20 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
 		fd = accept (source, (struct sockaddr *)&client_addr, &client);
 	}
 
-	directconn->fd = fd;
-
 	if (fd > 0)
 	{
-		directconn->inpa = purple_input_add(fd, PURPLE_INPUT_READ, read_cb,
-										  directconn);
+		directconn->channel = g_io_channel_unix_new (fd);
+		g_io_add_watch (directconn->channel, G_IO_IN, read_cb, directconn);
 
-		if (TRUE)
-		{
-			/* Send foo. */
-			msn_directconn_write(directconn, "foo", strlen("foo") + 1);
+		/* Send foo. */
+		msn_directconn_write(directconn, "foo\0", 4);
 
-			/* Send Handshake */
-			msn_directconn_send_handshake(directconn);
-		}
-		else
-		{
-		}
+		/* Send Handshake */
+		msn_directconn_send_handshake(directconn);
 	}
 	else
 	{
-		/* ERROR */
-		purple_debug_error("msn", "could not add input\n");
-
-		if (directconn->inpa)
-			purple_input_remove(directconn->inpa);
-
-		close(directconn->fd);
+		purple_debug_error("msn", "bad input\n");
 	}
 }
 
@@ -484,11 +466,8 @@ msn_directconn_destroy(MsnDirectConn *directconn)
 	if (directconn->connect_data != NULL)
 		purple_proxy_connect_cancel(directconn->connect_data);
 
-	if (directconn->inpa != 0)
-		purple_input_remove(directconn->inpa);
-
-	if (directconn->fd >= 0)
-		close(directconn->fd);
+	if (directconn->channel)
+		g_io_channel_unref (directconn->channel);
 
 	if (directconn->nonce != NULL)
 		g_free(directconn->nonce);

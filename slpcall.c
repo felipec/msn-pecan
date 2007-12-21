@@ -1,7 +1,5 @@
 /**
- * @file slpcall.c SLP Call Functions
- *
- * purple
+ * Copyright (C) 2007 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -26,26 +24,9 @@
 #include "slpsession.h"
 
 #include "slp.h"
+#include "msn-utils.h"
 
 /* #define MSN_DEBUG_SLPCALL */
-
-/**************************************************************************
- * Util
- **************************************************************************/
-
-static char *
-rand_guid()
-{
-	return g_strdup_printf("%4X%4X-%4X-%4X-%4X-%4X%4X%4X",
-			rand() % 0xAAFF + 0x1111,
-			rand() % 0xAAFF + 0x1111,
-			rand() % 0xAAFF + 0x1111,
-			rand() % 0xAAFF + 0x1111,
-			rand() % 0xAAFF + 0x1111,
-			rand() % 0xAAFF + 0x1111,
-			rand() % 0xAAFF + 0x1111,
-			rand() % 0xAAFF + 0x1111);
-}
 
 /**************************************************************************
  * Main
@@ -69,6 +50,7 @@ msn_slp_call_new(MsnSlpLink *slplink)
 	msn_slplink_add_slpcall(slplink, slpcall);
 
 	slpcall->timer = purple_timeout_add(MSN_SLPCALL_TIMEOUT, msn_slp_call_timeout, slpcall);
+	slpcall->session_id = slplink->slp_session_id++;
 
 	return slpcall;
 }
@@ -129,8 +111,7 @@ msn_slp_call_destroy(MsnSlpCall *slpcall)
 void
 msn_slp_call_init(MsnSlpCall *slpcall, MsnSlpCallType type)
 {
-	slpcall->session_id = rand() % 0xFFFFFF00 + 4;
-	slpcall->id = rand_guid();
+	slpcall->id = msn_rand_guid();
 	slpcall->type = type;
 }
 
@@ -161,7 +142,7 @@ msn_slp_call_invite(MsnSlpCall *slpcall, const char *euf_guid,
 
 	slplink = slpcall->slplink;
 
-	slpcall->branch = rand_guid();
+	slpcall->branch = msn_rand_guid();
 
 	content = g_strdup_printf(
 		"EUF-GUID: {%s}\r\n"
@@ -256,7 +237,6 @@ msn_slp_process_msg(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
 			slpcall->wasted = TRUE;
 		}
 	}
-#if 0
 	else if (slpmsg->flags == 0x100)
 	{
 		slpcall = slplink->directconn->initial_call;
@@ -264,7 +244,6 @@ msn_slp_process_msg(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
 		if (slpcall != NULL)
 			msn_slp_call_session_init(slpcall);
 	}
-#endif
 
 	return slpcall;
 }

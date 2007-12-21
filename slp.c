@@ -1,7 +1,5 @@
 /**
- * @file msnslp.c MSNSLP support
- *
- * purple
+ * Copyright (C) 2007 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -30,6 +28,7 @@
 #include "object.h"
 #include "user.h"
 #include "switchboard.h"
+#include "msn-utils.h"
 
 /* ms to delay between sending buddy icon requests to the server. */
 #define BUDDY_ICON_DELAY 20000
@@ -167,7 +166,6 @@ msn_xfer_completed_cb(MsnSlpCall *slpcall, const guchar *body,
  * SLP Control
  **************************************************************************/
 
-#if 0
 static void
 got_transresp(MsnSlpCall *slpcall, const char *nonce,
 			  const char *ips_str, int port)
@@ -193,7 +191,6 @@ got_transresp(MsnSlpCall *slpcall, const char *nonce,
 
 	g_strfreev(ip_addrs);
 }
-#endif
 
 static void
 send_ok(MsnSlpCall *slpcall, const char *branch,
@@ -451,7 +448,7 @@ got_invite(MsnSlpCall *slpcall,
 			/* ip_addr = purple_prefs_get_string("/purple/ft/public_ip"); */
 			ip_port = "5190";
 			listening = "true";
-			nonce = rand_guid();
+			nonce = msn_rand_guid();
 
 			directconn = msn_directconn_new(slplink);
 
@@ -496,7 +493,6 @@ got_invite(MsnSlpCall *slpcall,
 	}
 	else if (!strcmp(type, "application/x-msnmsgr-transrespbody"))
 	{
-#if 0
 		char *ip_addrs;
 		char *temp;
 		char *nonce;
@@ -520,7 +516,6 @@ got_invite(MsnSlpCall *slpcall,
 
 		g_free(nonce);
 		g_free(ip_addrs);
-#endif
 	}
 }
 
@@ -533,7 +528,6 @@ got_ok(MsnSlpCall *slpcall,
 
 	if (!strcmp(type, "application/x-msnmsgr-sessionreqbody"))
 	{
-#if 0
 		if (slpcall->type == MSN_SLPCALL_DC)
 		{
 			/* First let's try a DirectConnection. */
@@ -546,7 +540,7 @@ got_ok(MsnSlpCall *slpcall,
 
 			slplink = slpcall->slplink;
 
-			branch = rand_guid();
+			branch = msn_rand_guid();
 
 			content = g_strdup_printf(
 				"Bridges: TRUDPv1 TCPv1\r\n"
@@ -559,7 +553,7 @@ got_ok(MsnSlpCall *slpcall,
 			header = g_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
 									 slplink->remote_user);
 
-			slpmsg = msn_slp_sipmsg_new(slpcall, 0, header, branch,
+			slpmsg = msn_slpmsg_sip_new(slpcall, 0, header, branch,
 										"application/x-msnmsgr-transreqbody",
 										content);
 
@@ -578,9 +572,6 @@ got_ok(MsnSlpCall *slpcall,
 		{
 			msn_slp_call_session_init(slpcall);
 		}
-#else
-		msn_slp_call_session_init(slpcall);
-#endif
 	}
 	else if (!strcmp(type, "application/x-msnmsgr-transreqbody"))
 	{
@@ -589,7 +580,6 @@ got_ok(MsnSlpCall *slpcall,
 	}
 	else if (!strcmp(type, "application/x-msnmsgr-transrespbody"))
 	{
-#if 0
 		char *ip_addrs;
 		char *temp;
 		char *nonce;
@@ -613,7 +603,6 @@ got_ok(MsnSlpCall *slpcall,
 
 		g_free(nonce);
 		g_free(ip_addrs);
-#endif
 	}
 }
 
