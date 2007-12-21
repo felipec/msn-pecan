@@ -49,4 +49,4 @@ clean:
 
 install: libmsn-pecan.so
 	cp libmsn-pecan.so /usr/lib/purple-2
-	chcon -t textrel_shlib_t /usr/lib/purple-2/libmsn-pecan.so
+	# chcon -t textrel_shlib_t /usr/lib/purple-2/libmsn-pecan.so
