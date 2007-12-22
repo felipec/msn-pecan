@@ -585,6 +585,19 @@ got_ok(MsnSlpCall *slpcall,
 		char *nonce;
 		int port;
 
+		{
+			char *listening;
+			listening = get_token(content, "Listening: ", "\r\n");
+			if (strcmp (listening, "false") == 0)
+			{
+				/** @todo I'm not sure if this is OK. */
+				msn_slp_call_session_init(slpcall);
+				g_free (listening);
+				return;
+			}
+			g_free (listening);
+		}
+
 		nonce = get_token(content, "Nonce: {", "}\r\n");
 		ip_addrs = get_token(content, "IPv4Internal-Addrs: ", "\r\n");
 

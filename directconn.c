@@ -270,7 +270,6 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
 	while (TRUE)
 	{
 		/* Let's read the length of the data. */
-		/* len = read(directconn->fd, &body_len, sizeof(body_len)); */
 		error = g_io_channel_read (directconn->channel, (gchar *) &body_len, sizeof(body_len), &len);
 
 		if (error == G_IO_ERROR_AGAIN)
@@ -304,7 +303,6 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
 	while (TRUE)
 	{
 		/* Let's read the data. */
-		/* len = read(directconn->fd, body, body_len); */
 		error = g_io_channel_read (directconn->channel, body, body_len, &len);
 
 		if (error == G_IO_ERROR_AGAIN)
