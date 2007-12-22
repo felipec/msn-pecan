@@ -100,7 +100,7 @@ create_listener(int port)
 	if (getaddrinfo(NULL, port_str, &hints, &res) != 0)
 	{
 		purple_debug_error("msn", "Could not get address info: %s.\n",
-						 port_str);
+						   port_str);
 		return -1;
 	}
 
@@ -414,7 +414,7 @@ msn_directconn_connect(MsnDirectConn *directconn, const char *host, int port)
 #endif
 
 	directconn->connect_data = purple_proxy_connect(NULL, session->account,
-			host, port, directconn_connect_cb, directconn);
+													host, port, directconn_connect_cb, directconn);
 
 	return (directconn->connect_data != NULL);
 }
@@ -434,7 +434,7 @@ msn_directconn_listen(MsnDirectConn *directconn)
 	directconn->fd = fd;
 
 	directconn->inpa = purple_input_add(fd, PURPLE_INPUT_READ, connect_cb,
-		directconn);
+										directconn);
 
 	directconn->port = port;
 	directconn->c = 0;

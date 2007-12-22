@@ -116,10 +116,10 @@ msn_xfer_cancel(PurpleXfer *xfer)
 		else
 		{
 			content = g_strdup_printf("SessionID: %lu\r\n\r\n",
-									slpcall->session_id);
+									  slpcall->session_id);
 
 			send_decline(slpcall, slpcall->branch, "application/x-msnmsgr-sessionreqbody",
-						content);
+						 content);
 
 			g_free(content);
 			msn_slplink_unleash(slpcall->slplink);
@@ -336,7 +336,7 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 		slpcall->pending = TRUE;
 
 		xfer = purple_xfer_new(account, PURPLE_XFER_RECEIVE,
-							 slpcall->slplink->remote_user);
+							   slpcall->slplink->remote_user);
 		if (xfer)
 		{
 			bin = (char *)purple_base64_decode(context, &bin_len);
@@ -460,15 +460,15 @@ got_invite(MsnSlpCall *slpcall,
 			port = directconn->port;
 
 			content = g_strdup_printf(
-				"Bridge: TCPv1\r\n"
-				"Listening: %s\r\n"
-				"Nonce: {%s}\r\n"
-				"Ipv4Internal-Addrs: 192.168.0.82\r\n"
-				"Ipv4Internal-Port: %d\r\n"
-				"\r\n",
-				listening,
-				nonce,
-				port);
+									  "Bridge: TCPv1\r\n"
+									  "Listening: %s\r\n"
+									  "Nonce: {%s}\r\n"
+									  "Ipv4Internal-Addrs: 192.168.0.82\r\n"
+									  "Ipv4Internal-Port: %d\r\n"
+									  "\r\n",
+									  listening,
+									  nonce,
+									  port);
 #endif
 		}
 		else
@@ -477,12 +477,12 @@ got_invite(MsnSlpCall *slpcall,
 			nonce = g_strdup("00000000-0000-0000-0000-000000000000");
 
 			content = g_strdup_printf(
-				"Bridge: TCPv1\r\n"
-				"Listening: %s\r\n"
-				"Nonce: {%s}\r\n"
-				"\r\n",
-				listening,
-				nonce);
+									  "Bridge: TCPv1\r\n"
+									  "Listening: %s\r\n"
+									  "Nonce: {%s}\r\n"
+									  "\r\n",
+									  listening,
+									  nonce);
 		}
 
 		send_ok(slpcall, branch,
@@ -543,12 +543,12 @@ got_ok(MsnSlpCall *slpcall,
 			branch = msn_rand_guid();
 
 			content = g_strdup_printf(
-				"Bridges: TRUDPv1 TCPv1\r\n"
-				"NetID: 0\r\n"
-				"Conn-Type: Direct-Connect\r\n"
-				"UPnPNat: false\r\n"
-				"ICF: false\r\n"
-			);
+									  "Bridges: TRUDPv1 TCPv1\r\n"
+									  "NetID: 0\r\n"
+									  "Conn-Type: Direct-Connect\r\n"
+									  "UPnPNat: false\r\n"
+									  "ICF: false\r\n"
+									 );
 
 			header = g_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
 									 slplink->remote_user);
@@ -779,9 +779,9 @@ got_emoticon(MsnSlpCall *slpcall,
 	if ((conv = purple_find_conversation_with_account(PURPLE_CONV_TYPE_ANY, who, gc->account))) {
 
 		/* FIXME: it would be better if we wrote the data as we received it
-		          instead of all at once, calling write multiple times and
-		          close once at the very end
-		*/
+		   instead of all at once, calling write multiple times and
+		   close once at the very end
+		   */
 		purple_conv_custom_smiley_write(conv, slpcall->data_info, data, size);
 		purple_conv_custom_smiley_close(conv, slpcall->data_info);
 	}
@@ -835,7 +835,7 @@ msn_emoticon_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 		slplink = msn_session_get_slplink(session, who);
 
 		conv = purple_find_conversation_with_account(PURPLE_CONV_TYPE_ANY, who,
-												   session->account);
+													 session->account);
 
 		/* If the conversation doesn't exist then this is a custom smiley
 		 * used in the first message in a MSN conversation: we need to create
@@ -921,7 +921,7 @@ msn_release_buddy_icon_request(MsnUserList *userlist)
 
 #ifdef MSN_DEBUG_UD
 		purple_debug_info("msn", "msn_release_buddy_icon_request(): buddy_icon_window-- yields =%d\n",
-						userlist->buddy_icon_window);
+						  userlist->buddy_icon_window);
 #endif
 	}
 }
@@ -934,15 +934,15 @@ static gboolean
 msn_release_buddy_icon_request_timeout(gpointer data)
 {
 	MsnUserList *userlist = (MsnUserList *)data;
-	
+
 	/* Free one window slot */
-	userlist->buddy_icon_window++;	
-	
+	userlist->buddy_icon_window++;
+
 	/* Clear the tag for our former request timer */
 	userlist->buddy_icon_request_timer = 0;
-	
+
 	msn_release_buddy_icon_request(userlist);
-	
+
 	return FALSE;
 }
 
@@ -974,7 +974,7 @@ msn_queue_buddy_icon_request(MsnUser *user)
 
 #ifdef MSN_DEBUG_UD
 		purple_debug_info("msn", "Queueing buddy icon request for %s (buddy_icon_window = %i)\n",
-						user->passport, userlist->buddy_icon_window);
+						  user->passport, userlist->buddy_icon_window);
 #endif
 
 		g_queue_push_tail(queue, user);
@@ -1003,14 +1003,14 @@ got_user_display(MsnSlpCall *slpcall,
 	account = slpcall->slplink->session->account;
 
 	purple_buddy_icons_set_for_user(account, slpcall->slplink->remote_user,
-								  g_memdup(data, size), size, info);
+									g_memdup(data, size), size, info);
 
 #if 0
 	/* Free one window slot */
 	userlist->buddy_icon_window++;
 
 	purple_debug_info("msn", "got_user_display(): buddy_icon_window++ yields =%d\n",
-					userlist->buddy_icon_window);
+					  userlist->buddy_icon_window);
 
 	msn_release_buddy_icon_request(userlist);
 #endif
@@ -1049,8 +1049,8 @@ end_user_display(MsnSlpCall *slpcall, MsnSession *session)
 	}
 
 	/* Wait BUDDY_ICON_DELAY ms before freeing our window slot and requesting the next icon. */
-	userlist->buddy_icon_request_timer = purple_timeout_add(BUDDY_ICON_DELAY, 
-														  msn_release_buddy_icon_request_timeout, userlist);
+	userlist->buddy_icon_request_timer = purple_timeout_add(BUDDY_ICON_DELAY,
+															msn_release_buddy_icon_request_timeout, userlist);
 }
 
 void
@@ -1103,7 +1103,7 @@ msn_request_user_display(MsnUser *user)
 
 #ifdef MSN_DEBUG_UD
 		purple_debug_info("msn", "msn_request_user_display(): buddy_icon_window++ yields =%d\n",
-						session->userlist->buddy_icon_window);
+						  session->userlist->buddy_icon_window);
 #endif
 
 		msn_release_buddy_icon_request(session->userlist);
