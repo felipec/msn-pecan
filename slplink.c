@@ -627,7 +627,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 		>= msg->msnslp_header.total_size)
 	{
 		/* All the pieces of the slpmsg have been received */
-		MsnSlpCall *slpcall;
+		MsnSlpCall *slpcall = NULL;
 
 		slpcall = msn_slp_process_msg(slplink, slpmsg);
 
