@@ -1,7 +1,5 @@
 /**
- * @file state.c State functions and definitions
- *
- * purple
+ * Copyright (C) 2007 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -92,7 +90,7 @@ msn_away_get_text(MsnAwayType type)
 const char *
 msn_state_get_text(MsnAwayType state)
 {
-	static char *status_text[] =
+	static const gchar *status_text[] =
 	{ "NLN", "NLN", "BSY", "IDL", "BRB", "AWY", "PHN", "LUN", "HDN", "HDN" };
 
 	return status_text[state];

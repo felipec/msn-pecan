@@ -1,7 +1,5 @@
 /**
- * @file servconn.h Server connection functions
- *
- * purple
+ * Copyright (C) 2007 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -80,11 +78,11 @@ struct _MsnServConn
 	int inpa; /**< The connection's input handler. */
 
 	char *rx_buf; /**< The receive buffer. */
-	int rx_len; /**< The receive buffer lenght. */
+	gsize rx_len; /**< The receive buffer lenght. */
 
-	size_t payload_len; /**< The length of the payload.
-						  It's only set when we've received a command that
-						  has a payload. */
+	gsize payload_len; /**< The length of the payload.
+						 It's only set when we've received a command that
+						 has a payload. */
 
 	PurpleCircBuffer *tx_buf;
 	guint tx_handler;

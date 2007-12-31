@@ -1,7 +1,5 @@
 /**
- * @file nexus.h MSN Nexus functions
- *
- * purple
+ * Copyright (C) 2007 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -38,7 +36,7 @@ struct _MsnNexus
 	guint input_handler;
 
 	char *write_buf;
-	gsize written_len;
+	gssize written_len;
 	PurpleInputFunction written_cb;
 
 	char *read_buf;

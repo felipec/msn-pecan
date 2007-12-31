@@ -288,7 +288,7 @@ ver_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 	PurpleAccount *account;
 	gboolean protocol_supported = FALSE;
 	char proto_str[8];
-	size_t i;
+	guint i;
 
 	session = cmdproc->session;
 	account = session->account;

@@ -1,7 +1,5 @@
 /**
- * @file servconn.c Server connection functions
- *
- * purple
+ * Copyright (C) 2007 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -321,10 +319,10 @@ servconn_write_cb(gpointer data, gint source, PurpleInputCondition cond)
 	purple_circ_buffer_mark_read(servconn->tx_buf, ret);
 }
 
-ssize_t
-msn_servconn_write(MsnServConn *servconn, const char *buf, size_t len)
+gssize
+msn_servconn_write(MsnServConn *servconn, const char *buf, gsize len)
 {
-	ssize_t ret = 0;
+	gssize ret = 0;
 
 	g_return_val_if_fail(servconn != NULL, 0);
 
@@ -354,7 +352,7 @@ msn_servconn_write(MsnServConn *servconn, const char *buf, size_t len)
 
 		if (ret < 0 && errno == EAGAIN)
 			ret = 0;
-		if (ret >= 0 && ret < len) {
+		if (ret >= 0 && (gsize) ret < len) {
 			if (servconn->tx_handler == 0)
 				servconn->tx_handler = purple_input_add(
 					servconn->fd, PURPLE_INPUT_WRITE,

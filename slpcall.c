@@ -208,7 +208,7 @@ MsnSlpCall *
 msn_slp_process_msg(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
 {
 	MsnSlpCall *slpcall;
-	const guchar *body;
+	gpointer body;
 	gsize body_len;
 
 	slpcall = NULL;
@@ -219,7 +219,7 @@ msn_slp_process_msg(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
 	{
 		char *body_str;
 
-		body_str = g_strndup((const char *)body, body_len);
+		body_str = g_strndup(body, body_len);
 		slpcall = msn_slp_sip_recv(slplink, body_str);
 		g_free(body_str);
 	}

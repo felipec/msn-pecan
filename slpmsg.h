@@ -60,7 +60,7 @@ struct _MsnSlpMessage
 
 	FILE *fp;
 	PurpleStoredImage *img;
-	guchar *buffer;
+	gchar *buffer;
 	long long offset;
 	long long size;
 
@@ -71,7 +71,7 @@ struct _MsnSlpMessage
 #endif
 
 #ifdef MSN_DEBUG_SLP
-	char *info;
+	const gchar *info;
 	gboolean text_body;
 #endif
 };
@@ -91,7 +91,8 @@ MsnSlpMessage *msn_slpmsg_new(MsnSlpLink *slplink);
  */
 void msn_slpmsg_destroy(MsnSlpMessage *slpmsg);
 
-void msn_slpmsg_set_body(MsnSlpMessage *slpmsg, const char *body,
+void msn_slpmsg_set_body(MsnSlpMessage *slpmsg,
+						 gconstpointer *body,
 						 long long size);
 void msn_slpmsg_set_image(MsnSlpMessage *slpmsg, PurpleStoredImage *img);
 void msn_slpmsg_open_file(MsnSlpMessage *slpmsg,

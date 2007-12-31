@@ -1,7 +1,5 @@
 /**
- * @file httpmethod.c HTTP connection method
- *
- * purple
+ * Copyright (C) 2007 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -29,7 +27,7 @@ typedef struct
 {
 	MsnHttpConn *httpconn;
 	char *body;
-	size_t body_len;
+	gsize body_len;
 } MsnHttpQueueData;
 
 static void
@@ -63,7 +61,7 @@ msn_httpconn_parse_data(MsnHttpConn *httpconn, const char *buf,
 	char *header, *body;
 	const char *body_start;
 	char *tmp;
-	size_t body_len = 0;
+	gsize body_len = 0;
 	gboolean wasted = FALSE;
 
 	g_return_val_if_fail(httpconn != NULL, FALSE);
@@ -127,7 +125,7 @@ msn_httpconn_parse_data(MsnHttpConn *httpconn, const char *buf,
 
 	if ((s = purple_strcasestr(header, "Content-Length: ")) != NULL)
 	{
-		int tmp_len;
+		gsize tmp_len;
 
 		s += strlen("Content-Length: ");
 
@@ -433,9 +431,9 @@ httpconn_write_cb(gpointer data, gint source, PurpleInputCondition cond)
 }
 
 static gboolean
-write_raw(MsnHttpConn *httpconn, const char *data, size_t data_len)
+write_raw(MsnHttpConn *httpconn, const char *data, gsize data_len)
 {
-	ssize_t res; /* result of the write operation */
+	gssize res; /* result of the write operation */
 
 	if (httpconn->tx_handler == 0)
 		res = write(httpconn->fd, data, data_len);
@@ -451,7 +449,7 @@ write_raw(MsnHttpConn *httpconn, const char *data, size_t data_len)
 		return FALSE;
 	}
 
-	if (res < 0 || res < data_len)
+	if (res < 0 || (gsize) res < data_len)
 	{
 		if (res < 0)
 			res = 0;
@@ -548,16 +546,16 @@ msn_httpconn_poll(gpointer data)
 	return TRUE;
 }
 
-ssize_t
-msn_httpconn_write(MsnHttpConn *httpconn, const char *body, size_t body_len)
+gssize
+msn_httpconn_write(MsnHttpConn *httpconn, const char *body, gsize body_len)
 {
 	char *params;
 	char *data;
-	int header_len;
+	gsize header_len;
 	char *auth;
 	const char *server_types[] = { "NS", "SB" };
 	const char *server_type;
-	char *host;
+	const gchar *host;
 	MsnServConn *servconn;
 
 	/* TODO: remove http data from servconn */

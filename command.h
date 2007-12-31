@@ -41,7 +41,7 @@ struct _MsnCommand
 
 	char *command;
 	char **params;
-	int param_count;
+	guint param_count;
 
 	int ref_count;
 

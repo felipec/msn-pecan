@@ -1,7 +1,5 @@
 /**
- * @file transaction.c MSN transaction functions
- *
- * purple
+ * Copyright (C) 2007 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -148,7 +146,8 @@ msn_transaction_unqueue(MsnTransaction *trans, MsnCmdProc *cmdproc)
 
 void
 msn_transaction_set_payload(MsnTransaction *trans,
-							const char *payload, int payload_len)
+							const gchar *payload,
+							gsize payload_len)
 {
 	g_return_if_fail(trans   != NULL);
 	g_return_if_fail(payload != NULL);
@@ -166,7 +165,8 @@ msn_transaction_set_data(MsnTransaction *trans, void *data)
 }
 
 void
-msn_transaction_add_cb(MsnTransaction *trans, char *answer,
+msn_transaction_add_cb(MsnTransaction *trans,
+					   const gchar *answer,
 					   MsnTransCb cb)
 {
 	g_return_if_fail(trans  != NULL);
@@ -179,7 +179,9 @@ msn_transaction_add_cb(MsnTransaction *trans, char *answer,
 												 NULL);
 	}
 	else if (trans->has_custom_callbacks != TRUE)
+	{
 		g_return_if_reached ();
+	}
 
 	g_hash_table_insert(trans->callbacks, answer, cb);
 }

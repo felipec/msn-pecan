@@ -434,8 +434,8 @@ got_invite(MsnSlpCall *slpcall,
 	{
 		/* A direct connection? */
 
-		char *listening, *nonce;
-		char *content;
+		const gchar *listening;
+		gchar *new_content, *nonce;
 
 		if (FALSE)
 		{
@@ -459,7 +459,7 @@ got_invite(MsnSlpCall *slpcall,
 
 			port = directconn->port;
 
-			content = g_strdup_printf(
+			new_content = g_strdup_printf(
 									  "Bridge: TCPv1\r\n"
 									  "Listening: %s\r\n"
 									  "Nonce: {%s}\r\n"
@@ -476,19 +476,19 @@ got_invite(MsnSlpCall *slpcall,
 			listening = "false";
 			nonce = g_strdup("00000000-0000-0000-0000-000000000000");
 
-			content = g_strdup_printf(
-									  "Bridge: TCPv1\r\n"
-									  "Listening: %s\r\n"
-									  "Nonce: {%s}\r\n"
-									  "\r\n",
-									  listening,
-									  nonce);
+			new_content = g_strdup_printf(
+										  "Bridge: TCPv1\r\n"
+										  "Listening: %s\r\n"
+										  "Nonce: {%s}\r\n"
+										  "\r\n",
+										  listening,
+										  nonce);
 		}
 
 		send_ok(slpcall, branch,
-				"application/x-msnmsgr-transrespbody", content);
+				"application/x-msnmsgr-transrespbody", new_content);
 
-		g_free(content);
+		g_free(new_content);
 		g_free(nonce);
 	}
 	else if (!strcmp(type, "application/x-msnmsgr-transrespbody"))
@@ -535,14 +535,14 @@ got_ok(MsnSlpCall *slpcall,
 			MsnSlpLink *slplink;
 			MsnSlpMessage *slpmsg;
 			char *header;
-			char *content;
+			gchar *new_content;
 			char *branch;
 
 			slplink = slpcall->slplink;
 
 			branch = msn_rand_guid();
 
-			content = g_strdup_printf(
+			new_content = g_strdup_printf(
 									  "Bridges: TRUDPv1 TCPv1\r\n"
 									  "NetID: 0\r\n"
 									  "Conn-Type: Direct-Connect\r\n"
@@ -555,7 +555,7 @@ got_ok(MsnSlpCall *slpcall,
 
 			slpmsg = msn_slpmsg_sip_new(slpcall, 0, header, branch,
 										"application/x-msnmsgr-transreqbody",
-										content);
+										new_content);
 
 #ifdef MSN_DEBUG_SLP
 			slpmsg->info = "SLP INVITE";
@@ -564,7 +564,7 @@ got_ok(MsnSlpCall *slpcall,
 			msn_slplink_send_slpmsg(slplink, slpmsg);
 
 			g_free(header);
-			g_free(content);
+			g_free(new_content);
 
 			g_free(branch);
 		}

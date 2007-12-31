@@ -1,7 +1,5 @@
 /**
- * @file nexus.c MSN Nexus functions
- *
- * purple
+ * Copyright (C) 2007 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -90,7 +88,7 @@ static void
 nexus_write_cb(gpointer data, gint source, PurpleInputCondition cond)
 {
 	MsnNexus *nexus = data;
-	int len, total_len;
+	gssize len, total_len;
 
 	total_len = strlen(nexus->write_buf);
 
@@ -306,13 +304,12 @@ nexus_login_written_cb(gpointer data, gint source, PurpleInputCondition cond)
 }
 
 /* this guards against missing hash entries */
-static char *
+static const gchar *
 nexus_challenge_data_lookup(GHashTable *challenge_data, const char *key)
 {
-	char *entry;
+	const gchar *entry;
 
-	return (entry = (char *)g_hash_table_lookup(challenge_data, key)) ?
-		entry : "(null)";
+	return (entry = g_hash_table_lookup(challenge_data, key)) ?	entry : "(null)";
 }
 
 void

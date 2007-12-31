@@ -1,7 +1,5 @@
 /**
- * @file table.c MSN helper structure
- *
- * purple
+ * Copyright (C) 2007 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -68,7 +66,7 @@ msn_table_destroy(MsnTable *table)
 
 void
 msn_table_add_cmd(MsnTable *table,
-				  char *command, char *answer, MsnTransCb cb)
+				  const gchar *command, const gchar *answer, MsnTransCb cb)
 {
 	GHashTable *cbs;
 
@@ -104,7 +102,7 @@ msn_table_add_cmd(MsnTable *table,
 
 void
 msn_table_add_error(MsnTable *table,
-					char *answer, MsnErrorCb cb)
+					const gchar *answer, MsnErrorCb cb)
 {
 	g_return_if_fail(table  != NULL);
 	g_return_if_fail(answer != NULL);
@@ -117,7 +115,7 @@ msn_table_add_error(MsnTable *table,
 
 void
 msn_table_add_msg_type(MsnTable *table,
-					   char *type, MsnMsgTypeCb cb)
+					   const gchar *type, MsnMsgTypeCb cb)
 {
 	g_return_if_fail(table != NULL);
 	g_return_if_fail(type  != NULL);
