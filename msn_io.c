@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#include "msn-io.h"
+#include "msn_io.h"
 
 GIOStatus
 msn_io_read (GIOChannel *channel,
@@ -34,7 +34,7 @@ msn_io_read (GIOChannel *channel,
 
     if (status != G_IO_STATUS_NORMAL)
     {
-        purple_debug_error("msn", "error reading: %s\n", error->message);
+        purple_debug_error ("msn", "error reading: %s\n", error->message);
         return status;
     }
 
@@ -57,7 +57,7 @@ msn_io_write (GIOChannel *channel,
 
     if (status != G_IO_STATUS_NORMAL)
     {
-        purple_debug_error("msn", "error writing: %s\n", error->message);
+        purple_debug_error ("msn", "error writing: %s\n", error->message);
         return status;
     }
 
@@ -83,7 +83,7 @@ msn_io_read_full (GIOChannel *channel,
 
         if (status != G_IO_STATUS_NORMAL)
         {
-            purple_debug_error("msn", "error reading: %s\n", error->message);
+            purple_debug_error ("msn", "error reading: %s\n", error->message);
             return status;
         }
 
@@ -105,7 +105,7 @@ msn_io_write_full (GIOChannel *channel,
     {
         GError *error = NULL;
 
-        purple_debug_error("msn", "write_chars\n");
+        purple_debug_error ("msn", "write_chars\n");
         status = g_io_channel_write_chars (channel, buf, count, bytes_written, &error);
 
         if (status == G_IO_STATUS_AGAIN)
@@ -113,7 +113,7 @@ msn_io_write_full (GIOChannel *channel,
 
         if (status != G_IO_STATUS_NORMAL)
         {
-            purple_debug_error("msn", "error writing: %s\n", error->message);
+            purple_debug_error ("msn", "error writing: %s\n", error->message);
             return status;
         }
 
@@ -133,11 +133,11 @@ msn_io_flush (GIOChannel *channel)
 
     if (status == G_IO_STATUS_ERROR)
     {
-        purple_debug_error("msn", "error flushing: %s\n", error->message);
+        purple_debug_error ("msn", "error flushing: %s\n", error->message);
         return status;
     }
 
-    purple_debug_info("msn", "flushed\n");
+    purple_debug_info ("msn", "flushed\n");
 
     return status;
 }

@@ -28,7 +28,8 @@
 #include "object.h"
 #include "user.h"
 #include "switchboard.h"
-#include "msn-utils.h"
+
+#include "msn_util.h"
 
 /* ms to delay between sending buddy icon requests to the server. */
 #define BUDDY_ICON_DELAY 20000

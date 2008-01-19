@@ -23,7 +23,7 @@
 #include "notification.h"
 #include "state.h"
 #include "error.h"
-#include "msn-utils.h"
+#include "msn_util.h"
 #include "page.h"
 
 #include "userlist.h"

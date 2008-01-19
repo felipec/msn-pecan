@@ -33,8 +33,8 @@ objects = \
 	transaction.o \
 	user.o \
 	userlist.o \
-	msn-io.o \
-	msn-utils.o \
+	msn_io.o \
+	msn_util.o \
 	fix-purple.o
 
 all: libmsn-pecan.so

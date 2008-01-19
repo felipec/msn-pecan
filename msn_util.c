@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 #include "msn.h"
-#include "msn-utils.h"
+#include "msn_util.h"
 
 void
 msn_parse_format(const char *mime, char **pre_ret, char **post_ret)

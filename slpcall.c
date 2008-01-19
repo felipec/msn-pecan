@@ -24,7 +24,7 @@
 #include "slpsession.h"
 
 #include "slp.h"
-#include "msn-utils.h"
+#include "msn_util.h"
 
 /* #define MSN_DEBUG_SLPCALL */
 

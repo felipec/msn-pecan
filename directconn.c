@@ -26,7 +26,7 @@
 #include "slp.h"
 #include "slpmsg.h"
 
-#include "msn-utils.h"
+#include "msn_io.h"
 
 /**************************************************************************
  * Directconn Specific

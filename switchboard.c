@@ -25,7 +25,8 @@
 #include "prefs.h"
 #include "switchboard.h"
 #include "notification.h"
-#include "msn-utils.h"
+
+#include "msn_util.h"
 
 #include "error.h"
 

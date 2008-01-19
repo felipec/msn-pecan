@@ -23,7 +23,7 @@
 #include "servconn.h"
 #include "error.h"
 
-#include "msn-utils.h"
+#include "msn_io.h"
 
 static gboolean read_cb (GIOChannel *source, GIOCondition condition, gpointer data);
 
