@@ -30,25 +30,25 @@ typedef struct _MsnDirectConn MsnDirectConn;
 
 struct _MsnDirectConn
 {
-	MsnSlpLink *slplink;
-	MsnSlpCall *initial_call;
+    MsnSlpLink *slplink;
+    MsnSlpCall *initial_call;
 
-	PurpleProxyConnectData *connect_data;
+    PurpleProxyConnectData *connect_data;
 
-	gboolean ack_sent;
-	gboolean ack_recv;
+    gboolean ack_sent;
+    gboolean ack_recv;
 
-	char *nonce;
+    char *nonce;
 
-	GIOChannel *channel;
-	int port;
+    GIOChannel *channel;
+    int port;
 
-	int c;
+    int c;
 };
 
 MsnDirectConn *msn_directconn_new(MsnSlpLink *slplink);
 gboolean msn_directconn_connect(MsnDirectConn *directconn,
-								const char *host, int port);
+                                const char *host, int port);
 #if 0
 void msn_directconn_listen(MsnDirectConn *directconn);
 #endif

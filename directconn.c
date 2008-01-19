@@ -33,43 +33,43 @@
 void
 msn_directconn_send_handshake(MsnDirectConn *directconn)
 {
-	MsnSlpLink *slplink;
-	MsnSlpMessage *slpmsg;
+    MsnSlpLink *slplink;
+    MsnSlpMessage *slpmsg;
 
-	g_return_if_fail(directconn != NULL);
+    g_return_if_fail(directconn != NULL);
 
-	slplink = directconn->slplink;
+    slplink = directconn->slplink;
 
-	slpmsg = msn_slpmsg_new(slplink);
-	slpmsg->flags = 0x100;
+    slpmsg = msn_slpmsg_new(slplink);
+    slpmsg->flags = 0x100;
 
-	if (directconn->nonce != NULL)
-	{
-		guint32 t1;
-		guint16 t2;
-		guint16 t3;
-		guint16 t4;
-		guint64 t5;
+    if (directconn->nonce != NULL)
+    {
+        guint32 t1;
+        guint16 t2;
+        guint16 t3;
+        guint16 t4;
+        guint64 t5;
 
-		sscanf (directconn->nonce, "%08X-%04hX-%04hX-%04hX-%012" G_GINT64_MODIFIER "X", &t1, &t2, &t3, &t4, &t5);
+        sscanf (directconn->nonce, "%08X-%04hX-%04hX-%04hX-%012" G_GINT64_MODIFIER "X", &t1, &t2, &t3, &t4, &t5);
 
-		t1 = GUINT32_TO_LE(t1);
-		t2 = GUINT16_TO_LE(t2);
-		t3 = GUINT16_TO_LE(t3);
-		t4 = GUINT16_TO_BE(t4);
-		t5 = GUINT64_TO_BE(t5);
+        t1 = GUINT32_TO_LE(t1);
+        t2 = GUINT16_TO_LE(t2);
+        t3 = GUINT16_TO_LE(t3);
+        t4 = GUINT16_TO_BE(t4);
+        t5 = GUINT64_TO_BE(t5);
 
-		slpmsg->ack_id     = t1;
-		slpmsg->ack_sub_id = t2 | (t3 << 16);
-		slpmsg->ack_size   = t4 | t5;
-	}
+        slpmsg->ack_id     = t1;
+        slpmsg->ack_sub_id = t2 | (t3 << 16);
+        slpmsg->ack_size   = t4 | t5;
+    }
 
-	g_free(directconn->nonce);
-	directconn->nonce = NULL;
+    g_free(directconn->nonce);
+    directconn->nonce = NULL;
 
-	msn_slplink_send_slpmsg(slplink, slpmsg);
+    msn_slplink_send_slpmsg(slplink, slpmsg);
 
-	directconn->ack_sent = TRUE;
+    directconn->ack_sent = TRUE;
 }
 
 /**************************************************************************
@@ -80,397 +80,397 @@ msn_directconn_send_handshake(MsnDirectConn *directconn)
 static int
 create_listener(int port)
 {
-	int fd;
-	int flags;
-	const int on = 1;
+    int fd;
+    int flags;
+    const int on = 1;
 
 #if 0
-	struct addrinfo hints;
-	struct addrinfo *c, *res;
-	char port_str[5];
+    struct addrinfo hints;
+    struct addrinfo *c, *res;
+    char port_str[5];
 
-	snprintf(port_str, sizeof(port_str), "%d", port);
+    snprintf(port_str, sizeof(port_str), "%d", port);
 
-	memset(&hints, 0, sizeof(hints));
+    memset(&hints, 0, sizeof(hints));
 
-	hints.ai_flags = AI_PASSIVE;
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE;
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
 
-	if (getaddrinfo(NULL, port_str, &hints, &res) != 0)
-	{
-		purple_debug_error("msn", "Could not get address info: %s.\n",
-						   port_str);
-		return -1;
-	}
+    if (getaddrinfo(NULL, port_str, &hints, &res) != 0)
+    {
+        purple_debug_error("msn", "Could not get address info: %s.\n",
+                           port_str);
+        return -1;
+    }
 
-	for (c = res; c != NULL; c = c->ai_next)
-	{
-		fd = socket(c->ai_family, c->ai_socktype, c->ai_protocol);
+    for (c = res; c != NULL; c = c->ai_next)
+    {
+        fd = socket(c->ai_family, c->ai_socktype, c->ai_protocol);
 
-		if (fd < 0)
-			continue;
+        if (fd < 0)
+            continue;
 
-		setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
+        setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
 
-		if (bind(fd, c->ai_addr, c->ai_addrlen) == 0)
-			break;
+        if (bind(fd, c->ai_addr, c->ai_addrlen) == 0)
+            break;
 
-		close(fd);
-	}
+        close(fd);
+    }
 
-	if (c == NULL)
-	{
-		purple_debug_error("msn", "Could not find socket: %s.\n", port_str);
-		return -1;
-	}
+    if (c == NULL)
+    {
+        purple_debug_error("msn", "Could not find socket: %s.\n", port_str);
+        return -1;
+    }
 
-	freeaddrinfo(res);
+    freeaddrinfo(res);
 #else
-	struct sockaddr_in sockin;
+    struct sockaddr_in sockin;
 
-	fd = socket(AF_INET, SOCK_STREAM, 0);
+    fd = socket(AF_INET, SOCK_STREAM, 0);
 
-	if (fd < 0)
-		return -1;
+    if (fd < 0)
+        return -1;
 
-	if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on)) != 0)
-	{
-		close(fd);
-		return -1;
-	}
+    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on)) != 0)
+    {
+        close(fd);
+        return -1;
+    }
 
-	memset(&sockin, 0, sizeof(struct sockaddr_in));
-	sockin.sin_family = AF_INET;
-	sockin.sin_port = htons(port);
+    memset(&sockin, 0, sizeof(struct sockaddr_in));
+    sockin.sin_family = AF_INET;
+    sockin.sin_port = htons(port);
 
-	if (bind(fd, (struct sockaddr *)&sockin, sizeof(struct sockaddr_in)) != 0)
-	{
-		close(fd);
-		return -1;
-	}
+    if (bind(fd, (struct sockaddr *)&sockin, sizeof(struct sockaddr_in)) != 0)
+    {
+        close(fd);
+        return -1;
+    }
 #endif
 
-	if (listen (fd, 4) != 0)
-	{
-		close (fd);
-		return -1;
-	}
+    if (listen (fd, 4) != 0)
+    {
+        close (fd);
+        return -1;
+    }
 
-	flags = fcntl(fd, F_GETFL);
-	fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+    flags = fcntl(fd, F_GETFL);
+    fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 
-	return fd;
+    return fd;
 }
 #endif
 
 static GIOError
 msn_directconn_write(MsnDirectConn *directconn,
-					 const char *data, size_t len)
+                     const char *data, size_t len)
 {
-	guint32 body_len;
-	GIOError error;
-	gsize tmp;
+    guint32 body_len;
+    GIOError error;
+    gsize tmp;
 
-	g_return_val_if_fail(directconn != NULL, 0);
+    g_return_val_if_fail(directconn != NULL, 0);
 
-	purple_debug_info("msn", "directconn: write: %d\n", len);
+    purple_debug_info("msn", "directconn: write: %d\n", len);
 
-	body_len = GUINT32_TO_LE(len);
+    body_len = GUINT32_TO_LE(len);
 
-	/* Let's write the length of the data. */
-	error = g_io_channel_write (directconn->channel, (gchar *) &body_len, sizeof(body_len), &tmp);
+    /* Let's write the length of the data. */
+    error = g_io_channel_write (directconn->channel, (gchar *) &body_len, sizeof(body_len), &tmp);
 
-	if (!error)
-	{
-		/* Let's write the data. */
-		error = g_io_channel_write (directconn->channel, data, len, &tmp);
-	}
+    if (!error)
+    {
+        /* Let's write the data. */
+        error = g_io_channel_write (directconn->channel, data, len, &tmp);
+    }
 
 #ifdef DEBUG_DC
-	{
-		char *str;
-		str = g_strdup_printf("%s/msntest/w%.4d.bin", g_get_home_dir(), directconn->c);
+    {
+        char *str;
+        str = g_strdup_printf("%s/msntest/w%.4d.bin", g_get_home_dir(), directconn->c);
 
-		FILE *tf = g_fopen(str, "w");
-		fwrite(&body_len, 1, sizeof(body_len), tf);
-		fwrite(data, 1, len, tf);
-		fclose(tf);
+        FILE *tf = g_fopen(str, "w");
+        fwrite(&body_len, 1, sizeof(body_len), tf);
+        fwrite(data, 1, len, tf);
+        fclose(tf);
 
-		g_free(str);
-	}
+        g_free(str);
+    }
 #endif
 
-	directconn->c++;
+    directconn->c++;
 
-	return error;
+    return error;
 }
 
 #if 0
 void
 msn_directconn_parse_nonce(MsnDirectConn *directconn, const char *nonce)
 {
-	guint32 t1;
-	guint16 t2;
-	guint16 t3;
-	guint16 t4;
-	guint64 t5;
+    guint32 t1;
+    guint16 t2;
+    guint16 t3;
+    guint16 t4;
+    guint64 t5;
 
-	g_return_if_fail(directconn != NULL);
-	g_return_if_fail(nonce      != NULL);
+    g_return_if_fail(directconn != NULL);
+    g_return_if_fail(nonce      != NULL);
 
-	sscanf (nonce, "%08X-%04hX-%04hX-%04hX-%012llX", &t1, &t2, &t3, &t4, &t5);
+    sscanf (nonce, "%08X-%04hX-%04hX-%04hX-%012llX", &t1, &t2, &t3, &t4, &t5);
 
-	t1 = GUINT32_TO_LE(t1);
-	t2 = GUINT16_TO_LE(t2);
-	t3 = GUINT16_TO_LE(t3);
-	t4 = GUINT16_TO_BE(t4);
-	t5 = GUINT64_TO_BE(t5);
+    t1 = GUINT32_TO_LE(t1);
+    t2 = GUINT16_TO_LE(t2);
+    t3 = GUINT16_TO_LE(t3);
+    t4 = GUINT16_TO_BE(t4);
+    t5 = GUINT64_TO_BE(t5);
 
-	directconn->slpheader = g_new0(MsnSlpHeader, 1);
+    directconn->slpheader = g_new0(MsnSlpHeader, 1);
 
-	directconn->slpheader->ack_id     = t1;
-	directconn->slpheader->ack_sub_id = t2 | (t3 << 16);
-	directconn->slpheader->ack_size   = t4 | t5;
+    directconn->slpheader->ack_id     = t1;
+    directconn->slpheader->ack_sub_id = t2 | (t3 << 16);
+    directconn->slpheader->ack_size   = t4 | t5;
 }
 #endif
 
 void
 msn_directconn_send_msg(MsnDirectConn *directconn, MsnMessage *msg)
 {
-	char *body;
-	size_t body_len;
+    char *body;
+    size_t body_len;
 
-	body = msn_message_gen_slp_body(msg, &body_len);
+    body = msn_message_gen_slp_body(msg, &body_len);
 
-	msn_directconn_write(directconn, body, body_len);
+    msn_directconn_write(directconn, body, body_len);
 }
 
 static void
 msn_directconn_process_msg(MsnDirectConn *directconn, MsnMessage *msg)
 {
-	purple_debug_info("msn", "directconn: process_msg\n");
+    purple_debug_info("msn", "directconn: process_msg\n");
 
-	msn_slplink_process_msg(directconn->slplink, msg);
+    msn_slplink_process_msg(directconn->slplink, msg);
 }
 
 static gboolean
 read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
 {
-	MsnDirectConn* directconn;
-	gchar *body;
-	guint32 body_len;
-	gsize len;
-	GIOError error = G_IO_ERROR_NONE;
+    MsnDirectConn* directconn;
+    gchar *body;
+    guint32 body_len;
+    gsize len;
+    GIOError error = G_IO_ERROR_NONE;
 
-	purple_debug_info("msn", "read_cb: %d, %d\n", source, condition);
+    purple_debug_info("msn", "read_cb: %d, %d\n", source, condition);
 
-	directconn = data;
+    directconn = data;
 
-	while (TRUE)
-	{
-		/* Let's read the length of the data. */
-		error = g_io_channel_read (directconn->channel, (gchar *) &body_len, sizeof(body_len), &len);
+    while (TRUE)
+    {
+        /* Let's read the length of the data. */
+        error = g_io_channel_read (directconn->channel, (gchar *) &body_len, sizeof(body_len), &len);
 
-		if (error == G_IO_ERROR_AGAIN)
-			continue;
+        if (error == G_IO_ERROR_AGAIN)
+            continue;
 
-		if (error)
-		{
-			purple_debug_error("msn", "error reading\n");
+        if (error)
+        {
+            purple_debug_error("msn", "error reading\n");
 
-			msn_directconn_destroy(directconn);
+            msn_directconn_destroy(directconn);
 
-			return FALSE;
-		}
+            return FALSE;
+        }
 
-		break;
-	}
+        break;
+    }
 
-	body_len = GUINT32_FROM_LE(body_len);
+    body_len = GUINT32_FROM_LE(body_len);
 
-	purple_debug_info("msn", "body_len=%d\n", body_len);
+    purple_debug_info("msn", "body_len=%d\n", body_len);
 
-	body = g_try_malloc(body_len);
+    body = g_try_malloc(body_len);
 
-	if (!body)
-	{
-		purple_debug_error("msn", "Failed to allocate memory for read\n");
+    if (!body)
+    {
+        purple_debug_error("msn", "Failed to allocate memory for read\n");
 
-		return FALSE;
-	}
+        return FALSE;
+    }
 
-	while (TRUE)
-	{
-		/* Let's read the data. */
-		error = g_io_channel_read (directconn->channel, body, body_len, &len);
+    while (TRUE)
+    {
+        /* Let's read the data. */
+        error = g_io_channel_read (directconn->channel, body, body_len, &len);
 
-		if (error == G_IO_ERROR_AGAIN)
-			continue;
+        if (error == G_IO_ERROR_AGAIN)
+            continue;
 
-		purple_debug_info("msn", "len=%d\n", len);
+        purple_debug_info("msn", "len=%d\n", len);
 
-		if (error)
-		{
-			purple_debug_error("msn", "error reading\n");
+        if (error)
+        {
+            purple_debug_error("msn", "error reading\n");
 
-			msn_directconn_destroy(directconn);
+            msn_directconn_destroy(directconn);
 
-			return FALSE;
-		}
+            return FALSE;
+        }
 
-		break;
-	}
+        break;
+    }
 
-	if (len > 0)
-	{
-		MsnMessage *msg;
+    if (len > 0)
+    {
+        MsnMessage *msg;
 
 #ifdef DEBUG_DC
-		str = g_strdup_printf("/home/revo/msntest/r%.4d.bin", directconn->c);
+        str = g_strdup_printf("/home/revo/msntest/r%.4d.bin", directconn->c);
 
-		FILE *tf = g_fopen(str, "w");
-		fwrite(body, 1, len, tf);
-		fclose(tf);
+        FILE *tf = g_fopen(str, "w");
+        fwrite(body, 1, len, tf);
+        fclose(tf);
 
-		g_free(str);
+        g_free(str);
 #endif
 
-		directconn->c++;
+        directconn->c++;
 
-		msg = msn_message_new_msnslp();
-		msn_message_parse_slp_body(msg, body, body_len);
+        msg = msn_message_new_msnslp();
+        msn_message_parse_slp_body(msg, body, body_len);
 
-		msn_directconn_process_msg(directconn, msg);
-	}
+        msn_directconn_process_msg(directconn, msg);
+    }
 
-	return TRUE;
+    return TRUE;
 }
 
 static void
 connect_cb(gpointer data, gint source, const gchar *error_message)
 {
-	MsnDirectConn* directconn;
-	int fd;
+    MsnDirectConn* directconn;
+    int fd;
 
-	purple_debug_misc("msn", "directconn: connect_cb: %d\n", source);
+    purple_debug_misc("msn", "directconn: connect_cb: %d\n", source);
 
-	directconn = data;
-	directconn->connect_data = NULL;
+    directconn = data;
+    directconn->connect_data = NULL;
 
-	if (TRUE)
-	{
-		fd = source;
-	}
-	else
-	{
-		struct sockaddr_in client_addr;
-		socklen_t client;
-		fd = accept (source, (struct sockaddr *)&client_addr, &client);
-	}
+    if (TRUE)
+    {
+        fd = source;
+    }
+    else
+    {
+        struct sockaddr_in client_addr;
+        socklen_t client;
+        fd = accept (source, (struct sockaddr *)&client_addr, &client);
+    }
 
-	if (fd > 0)
-	{
-		directconn->channel = g_io_channel_unix_new (fd);
-		g_io_add_watch (directconn->channel, G_IO_IN, read_cb, directconn);
+    if (fd > 0)
+    {
+        directconn->channel = g_io_channel_unix_new (fd);
+        g_io_add_watch (directconn->channel, G_IO_IN, read_cb, directconn);
 
-		/* Send foo. */
-		msn_directconn_write(directconn, "foo\0", 4);
+        /* Send foo. */
+        msn_directconn_write(directconn, "foo\0", 4);
 
-		/* Send Handshake */
-		msn_directconn_send_handshake(directconn);
-	}
-	else
-	{
-		purple_debug_error("msn", "bad input\n");
-	}
+        /* Send Handshake */
+        msn_directconn_send_handshake(directconn);
+    }
+    else
+    {
+        purple_debug_error("msn", "bad input\n");
+    }
 }
 
 static void
 directconn_connect_cb(gpointer data, gint source, const gchar *error_message)
 {
-	if (error_message)
-		purple_debug_error("msn", "Error making direct connection: %s\n", error_message);
+    if (error_message)
+        purple_debug_error("msn", "Error making direct connection: %s\n", error_message);
 
-	connect_cb(data, source, error_message);
+    connect_cb(data, source, error_message);
 }
 
 gboolean
 msn_directconn_connect(MsnDirectConn *directconn, const char *host, int port)
 {
-	MsnSession *session;
+    MsnSession *session;
 
-	g_return_val_if_fail(directconn != NULL, FALSE);
-	g_return_val_if_fail(host       != NULL, TRUE);
-	g_return_val_if_fail(port        > 0,    FALSE);
+    g_return_val_if_fail(directconn != NULL, FALSE);
+    g_return_val_if_fail(host       != NULL, TRUE);
+    g_return_val_if_fail(port        > 0,    FALSE);
 
-	session = directconn->slplink->session;
+    session = directconn->slplink->session;
 
 #if 0
-	if (session->http_method)
-	{
-		servconn->http_data->gateway_host = g_strdup(host);
-	}
+    if (session->http_method)
+    {
+        servconn->http_data->gateway_host = g_strdup(host);
+    }
 #endif
 
-	directconn->connect_data = purple_proxy_connect(NULL, session->account,
-													host, port, directconn_connect_cb, directconn);
+    directconn->connect_data = purple_proxy_connect(NULL, session->account,
+                                                    host, port, directconn_connect_cb, directconn);
 
-	return (directconn->connect_data != NULL);
+    return (directconn->connect_data != NULL);
 }
 
 #if 0
 void
 msn_directconn_listen(MsnDirectConn *directconn)
 {
-	int port;
-	int fd;
+    int port;
+    int fd;
 
-	port = 7000;
+    port = 7000;
 
-	for (fd = -1; fd < 0;)
-		fd = create_listener(++port);
+    for (fd = -1; fd < 0;)
+        fd = create_listener(++port);
 
-	directconn->fd = fd;
+    directconn->fd = fd;
 
-	directconn->inpa = purple_input_add(fd, PURPLE_INPUT_READ, connect_cb,
-										directconn);
+    directconn->inpa = purple_input_add(fd, PURPLE_INPUT_READ, connect_cb,
+                                        directconn);
 
-	directconn->port = port;
-	directconn->c = 0;
+    directconn->port = port;
+    directconn->c = 0;
 }
 #endif
 
 MsnDirectConn*
 msn_directconn_new(MsnSlpLink *slplink)
 {
-	MsnDirectConn *directconn;
+    MsnDirectConn *directconn;
 
-	directconn = g_new0(MsnDirectConn, 1);
+    directconn = g_new0(MsnDirectConn, 1);
 
-	directconn->slplink = slplink;
+    directconn->slplink = slplink;
 
-	if (slplink->directconn != NULL)
-		purple_debug_info("msn", "got_transresp: LEAK\n");
+    if (slplink->directconn != NULL)
+        purple_debug_info("msn", "got_transresp: LEAK\n");
 
-	slplink->directconn = directconn;
+    slplink->directconn = directconn;
 
-	return directconn;
+    return directconn;
 }
 
 void
 msn_directconn_destroy(MsnDirectConn *directconn)
 {
-	if (directconn->connect_data != NULL)
-		purple_proxy_connect_cancel(directconn->connect_data);
+    if (directconn->connect_data != NULL)
+        purple_proxy_connect_cancel(directconn->connect_data);
 
-	if (directconn->channel)
-		g_io_channel_unref (directconn->channel);
+    if (directconn->channel)
+        g_io_channel_unref (directconn->channel);
 
-	if (directconn->nonce != NULL)
-		g_free(directconn->nonce);
+    if (directconn->nonce != NULL)
+        g_free(directconn->nonce);
 
-	directconn->slplink->directconn = NULL;
+    directconn->slplink->directconn = NULL;
 
-	g_free(directconn);
+    g_free(directconn);
 }
