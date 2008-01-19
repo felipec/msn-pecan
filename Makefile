@@ -33,6 +33,7 @@ objects = \
 	transaction.o \
 	user.o \
 	userlist.o \
+	msn-io.o \
 	msn-utils.o \
 	fix-purple.o
 

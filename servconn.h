@@ -60,6 +60,7 @@ struct _MsnServConn
     MsnServConnType type; /**< The type of this connection. */
     MsnSession *session;  /**< The MSN session of this connection. */
     MsnCmdProc *cmdproc;  /**< The command processor of this connection. */
+    GIOChannel *channel; /**< The IO channel .*/
 
     PurpleProxyConnectData *connect_data;
 
@@ -73,9 +74,6 @@ struct _MsnServConn
     int num; /**< A number id of this connection. */
 
     MsnHttpConn *httpconn; /**< The HTTP connection this connection should use. */
-
-    int fd; /**< The connection's file descriptor. */
-    int inpa; /**< The connection's input handler. */
 
     char *rx_buf; /**< The receive buffer. */
     gsize rx_len; /**< The receive buffer lenght. */
