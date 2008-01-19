@@ -671,8 +671,6 @@ msn_httpconn_destroy(MsnHttpConn *httpconn)
 {
     g_return_if_fail(httpconn != NULL);
 
-    purple_debug_info("msn", "destroy httpconn (%p)\n", httpconn);
-
     if (httpconn->connected)
         msn_httpconn_disconnect(httpconn);
 

@@ -22,20 +22,20 @@ GIOStatus
 msn_io_read (GIOChannel *channel,
              gchar *buf,
              gsize count,
-             gsize *bytes_read)
+             gsize *bytes_read,
+             GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
-    GError *error = NULL;
+    GError *tmp_error = NULL;
 
-    status = g_io_channel_read_chars (channel, buf, count, bytes_read, &error);
+    status = g_io_channel_read_chars (channel, buf, count, bytes_read, &tmp_error);
 
-    if (status == G_IO_STATUS_AGAIN)
-        return status;
-
-    if (status != G_IO_STATUS_NORMAL)
+    if (tmp_error)
     {
-        purple_debug_error ("msn", "error reading: %s\n", error->message);
-        return status;
+        purple_debug_error ("msn", "error reading: %s\n", tmp_error->message);
+
+        if (error)
+            *error = tmp_error;
     }
 
     return status;
@@ -45,20 +45,20 @@ GIOStatus
 msn_io_write (GIOChannel *channel,
               const gchar *buf,
               gsize count,
-              gsize *bytes_written)
+              gsize *bytes_written,
+              GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
-    GError *error = NULL;
+    GError *tmp_error = NULL;
 
-    status = g_io_channel_write_chars (channel, buf, count, bytes_written, &error);
+    status = g_io_channel_write_chars (channel, buf, count, bytes_written, &tmp_error);
 
-    if (status == G_IO_STATUS_AGAIN)
-        return status;
-
-    if (status != G_IO_STATUS_NORMAL)
+    if (tmp_error)
     {
-        purple_debug_error ("msn", "error writing: %s\n", error->message);
-        return status;
+        purple_debug_error ("msn", "error writing: %s\n", tmp_error->message);
+
+        if (error)
+            *error = tmp_error;
     }
 
     return status;
@@ -68,23 +68,26 @@ GIOStatus
 msn_io_read_full (GIOChannel *channel,
                   gchar *buf,
                   gsize count,
-                  gsize *bytes_read)
+                  gsize *bytes_read,
+                  GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
 
     while (TRUE)
     {
-        GError *error = NULL;
+        GError *tmp_error = NULL;
 
-        status = g_io_channel_read_chars (channel, buf, count, bytes_read, &error);
+        status = g_io_channel_read_chars (channel, buf, count, bytes_read, &tmp_error);
 
         if (status == G_IO_STATUS_AGAIN)
             continue;
 
-        if (status != G_IO_STATUS_NORMAL)
+        if (tmp_error)
         {
-            purple_debug_error ("msn", "error reading: %s\n", error->message);
-            return status;
+            purple_debug_error ("msn", "error reading: %s\n", tmp_error->message);
+
+            if (error)
+                *error = tmp_error;
         }
 
         break;
@@ -97,24 +100,27 @@ GIOStatus
 msn_io_write_full (GIOChannel *channel,
                    const gchar *buf,
                    gsize count,
-                   gsize *bytes_written)
+                   gsize *bytes_written,
+                   GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
 
     while (TRUE)
     {
-        GError *error = NULL;
+        GError *tmp_error = NULL;
 
         purple_debug_error ("msn", "write_chars\n");
-        status = g_io_channel_write_chars (channel, buf, count, bytes_written, &error);
+        status = g_io_channel_write_chars (channel, buf, count, bytes_written, &tmp_error);
 
         if (status == G_IO_STATUS_AGAIN)
             continue;
 
-        if (status != G_IO_STATUS_NORMAL)
+        if (tmp_error)
         {
-            purple_debug_error ("msn", "error writing: %s\n", error->message);
-            return status;
+            purple_debug_error ("msn", "error writing: %s\n", tmp_error->message);
+
+            if (error)
+                *error = tmp_error;
         }
 
         break;
@@ -124,20 +130,21 @@ msn_io_write_full (GIOChannel *channel,
 }
 
 GIOStatus
-msn_io_flush (GIOChannel *channel)
+msn_io_flush (GIOChannel *channel,
+              GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
-    GError *error = NULL;
+    GError *tmp_error = NULL;
 
-    status = g_io_channel_flush (channel, &error);
+    status = g_io_channel_flush (channel, &tmp_error);
 
-    if (status == G_IO_STATUS_ERROR)
+    if (tmp_error)
     {
-        purple_debug_error ("msn", "error flushing: %s\n", error->message);
-        return status;
-    }
+        purple_debug_error ("msn", "error flushing: %s\n", tmp_error->message);
 
-    purple_debug_info ("msn", "flushed\n");
+        if (error)
+            *error = tmp_error;
+    }
 
     return status;
 }

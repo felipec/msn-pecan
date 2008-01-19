@@ -181,12 +181,12 @@ msn_directconn_write(MsnDirectConn *directconn,
     body_len = GUINT32_TO_LE(len);
 
     /* Let's write the length of the data. */
-    status = msn_io_write_full (directconn->channel, (gchar *) &body_len, sizeof(body_len), &tmp);
+    status = msn_io_write_full (directconn->channel, (gchar *) &body_len, sizeof(body_len), &tmp, NULL);
 
     if (status == G_IO_STATUS_NORMAL)
     {
         /* Let's write the data. */
-        status = msn_io_write_full (directconn->channel, data, len, &tmp);
+        status = msn_io_write_full (directconn->channel, data, len, &tmp, NULL);
     }
 
     if (status == G_IO_STATUS_NORMAL)
@@ -274,7 +274,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     directconn = data;
 
     /* Let's read the length of the data. */
-    if (msn_io_read_full (directconn->channel, (gchar *) &body_len, sizeof(body_len), &len) != G_IO_STATUS_NORMAL)
+    if (msn_io_read_full (directconn->channel, (gchar *) &body_len, sizeof(body_len), &len, NULL) != G_IO_STATUS_NORMAL)
     {
         msn_directconn_destroy(directconn);
         return FALSE;
@@ -294,7 +294,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     }
 
     /* Let's read the data. */
-    if (msn_io_read_full (directconn->channel, body, body_len, &len) != G_IO_STATUS_NORMAL)
+    if (msn_io_read_full (directconn->channel, body, body_len, &len, NULL) != G_IO_STATUS_NORMAL)
     {
         msn_directconn_destroy(directconn);
         return FALSE;

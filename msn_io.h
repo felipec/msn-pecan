@@ -21,10 +21,10 @@
 
 #include "msn.h"
 
-GIOStatus msn_io_read (GIOChannel *channel, gchar *buf, gsize count, gsize *bytes_read);
-GIOStatus msn_io_write (GIOChannel *channel, const gchar *buf, gsize count, gsize *bytes_written);
-GIOStatus msn_io_read_full (GIOChannel *channel, gchar *buf, gsize count, gsize *bytes_read);
-GIOStatus msn_io_write_full (GIOChannel *channel, const gchar *buf, gsize count, gsize *bytes_written);
-GIOStatus msn_io_flush (GIOChannel *channel);
+GIOStatus msn_io_read (GIOChannel *channel, gchar *buf, gsize count, gsize *bytes_read, GError **error);
+GIOStatus msn_io_write (GIOChannel *channel, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
+GIOStatus msn_io_read_full (GIOChannel *channel, gchar *buf, gsize count, gsize *bytes_read, GError **error);
+GIOStatus msn_io_write_full (GIOChannel *channel, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
+GIOStatus msn_io_flush (GIOChannel *channel, GError **error);
 
 #endif /* MSN_IO */

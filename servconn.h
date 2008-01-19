@@ -60,7 +60,8 @@ struct _MsnServConn
     MsnServConnType type; /**< The type of this connection. */
     MsnSession *session;  /**< The MSN session of this connection. */
     MsnCmdProc *cmdproc;  /**< The command processor of this connection. */
-    GIOChannel *channel; /**< The IO channel .*/
+    GIOChannel *channel; /**< The current IO channel .*/
+    GError *error; /**< The current IO error .*/
 
     PurpleProxyConnectData *connect_data;
 

@@ -117,7 +117,7 @@ void
 msn_servconn_got_error(MsnServConn *servconn, MsnServConnError error)
 {
     char *tmp;
-    const char *reason;
+    const char *when;
 
     const char *names[] = { "Notification", "Switchboard" };
     const char *name;
@@ -127,19 +127,23 @@ msn_servconn_got_error(MsnServConn *servconn, MsnServConnError error)
     switch (error)
     {
         case MSN_SERVCONN_ERROR_CONNECT:
-            reason = _("Unable to connect"); break;
+            when = _("connecting to"); break;
         case MSN_SERVCONN_ERROR_WRITE:
-            reason = _("Writing error"); break;
+            when = _("writting to"); break;
         case MSN_SERVCONN_ERROR_READ:
-            reason = _("Reading error"); break;
+            when = _("reading from"); break;
         default:
-            reason = _("Unknown error"); break;
+            when = _("doing something on"); break;
     }
 
-    purple_debug_error("msn", "Connection error from %s server (%s): %s\n",
-                       name, servconn->host, reason);
-    tmp = g_strdup_printf(_("Connection error from %s server:\n%s"),
-                          name, reason);
+    {
+        const char *reason;
+
+        reason = servconn->error ? servconn->error->message : _("Unknown");
+
+        purple_debug_error("msn", "connection error: %s (%s): %s\n", name, servconn->host, reason);
+        tmp = g_strdup_printf(_("Error %s %s server:\n%s"), when, name, reason);
+    }
 
     if (servconn->type == MSN_SERVCONN_NS)
     {
@@ -234,8 +238,7 @@ msn_servconn_connect(MsnServConn *servconn, const char *host, int port)
         return TRUE;
     }
 
-    servconn->connect_data = purple_proxy_connect(NULL, session->account,
-                                                  host, port, connect_cb, servconn);
+    servconn->connect_data = purple_proxy_connect(NULL, session->account, host, port, connect_cb, servconn);
 
     if (servconn->connect_data != NULL)
     {
@@ -343,14 +346,14 @@ msn_servconn_write(MsnServConn *servconn, const char *buf, gsize len)
                 break;
         }
 #else
-        status = msn_io_write_full (servconn->channel, buf, len, &written);
+        status = msn_io_write_full (servconn->channel, buf, len, &written, &servconn->error);
 #endif
 
         if (status == G_IO_STATUS_NORMAL)
         {
             if (written < len)
             {
-                purple_debug_error("msn", "servconn write test\n");
+                purple_debug_error("msn", "servconn write test: %d, %d\n", written, len);
                 purple_circ_buffer_append(servconn->tx_buf, buf + written, len - written);
             }
         }
@@ -358,8 +361,6 @@ msn_servconn_write(MsnServConn *servconn, const char *buf, gsize len)
         {
             msn_servconn_got_error(servconn, MSN_SERVCONN_ERROR_WRITE);
         }
-
-        purple_debug_error("msn", "servconn write done\n");
     }
     else
     {
@@ -395,7 +396,7 @@ read_cb (GIOChannel *source,
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
-        status = msn_io_read (servconn->channel, buf, sizeof(buf), &bytes_read);
+        status = msn_io_read (servconn->channel, buf, sizeof(buf), &bytes_read, &servconn->error);
 
         if (status == G_IO_STATUS_AGAIN)
             return TRUE;
