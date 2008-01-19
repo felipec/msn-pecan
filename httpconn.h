@@ -34,34 +34,34 @@ typedef struct _MsnHttpConn MsnHttpConn;
  */
 struct _MsnHttpConn
 {
-	MsnSession *session; /**< The MSN Session. */
-	MsnServConn *servconn; /**< The connection object. */
+    MsnSession *session; /**< The MSN Session. */
+    MsnServConn *servconn; /**< The connection object. */
 
-	PurpleProxyConnectData *connect_data;
+    PurpleProxyConnectData *connect_data;
 
-	char *full_session_id; /**< The full session id. */
-	char *session_id; /**< The trimmed session id. */
+    char *full_session_id; /**< The full session id. */
+    char *session_id; /**< The trimmed session id. */
 
-	int timer; /**< The timer for polling. */
+    int timer; /**< The timer for polling. */
 
-	gboolean waiting_response; /**< The flag that states if we are waiting
-								 a response from the server. */
-	gboolean connected;        /**< The flag that states if the connection is on. */
-	gboolean virgin;           /**< The flag that states if this connection
-								 should specify the host (not gateway) to
-								 connect to. */
+    gboolean waiting_response; /**< The flag that states if we are waiting
+                                 a response from the server. */
+    gboolean connected;        /**< The flag that states if the connection is on. */
+    gboolean virgin;           /**< The flag that states if this connection
+                                 should specify the host (not gateway) to
+                                 connect to. */
 
-	char *host; /**< The HTTP gateway host. */
-	GList *queue; /**< The queue of data chunks to write. */
+    char *host; /**< The HTTP gateway host. */
+    GList *queue; /**< The queue of data chunks to write. */
 
-	int fd; /**< The connection's file descriptor. */
-	guint inpa; /**< The connection's input handler. */
+    int fd; /**< The connection's file descriptor. */
+    guint inpa; /**< The connection's input handler. */
 
-	char *rx_buf; /**< The receive buffer. */
-	int rx_len; /**< The receive buffer length. */
+    char *rx_buf; /**< The receive buffer. */
+    int rx_len; /**< The receive buffer length. */
 
-	PurpleCircBuffer *tx_buf;
-	guint tx_handler;
+    PurpleCircBuffer *tx_buf;
+    guint tx_handler;
 };
 
 /**
@@ -99,7 +99,7 @@ ssize_t msn_httpconn_write(MsnHttpConn *httpconn, const char *data, size_t data_
  * @param port The port to connect to.
  */
 gboolean msn_httpconn_connect(MsnHttpConn *httpconn,
-							  const char *host, int port);
+                              const char *host, int port);
 
 /**
  * Disconnects the HTTP connection object.
