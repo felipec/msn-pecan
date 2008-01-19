@@ -35,10 +35,10 @@ typedef struct _MsnServConn MsnServConn;
  */
 typedef enum
 {
-	MSN_SERVCONN_ERROR_NONE,
-	MSN_SERVCONN_ERROR_CONNECT,
-	MSN_SERVCONN_ERROR_WRITE,
-	MSN_SERVCONN_ERROR_READ,
+    MSN_SERVCONN_ERROR_NONE,
+    MSN_SERVCONN_ERROR_CONNECT,
+    MSN_SERVCONN_ERROR_WRITE,
+    MSN_SERVCONN_ERROR_READ,
 
 } MsnServConnError;
 
@@ -47,8 +47,8 @@ typedef enum
  */
 typedef enum
 {
-	MSN_SERVCONN_NS,
-	MSN_SERVCONN_SB
+    MSN_SERVCONN_NS,
+    MSN_SERVCONN_SB
 
 } MsnServConnType;
 
@@ -57,39 +57,39 @@ typedef enum
  */
 struct _MsnServConn
 {
-	MsnServConnType type; /**< The type of this connection. */
-	MsnSession *session;  /**< The MSN session of this connection. */
-	MsnCmdProc *cmdproc;  /**< The command processor of this connection. */
+    MsnServConnType type; /**< The type of this connection. */
+    MsnSession *session;  /**< The MSN session of this connection. */
+    MsnCmdProc *cmdproc;  /**< The command processor of this connection. */
 
-	PurpleProxyConnectData *connect_data;
+    PurpleProxyConnectData *connect_data;
 
-	gboolean connected;   /**< A flag that states if it's connected. */
-	gboolean processing;  /**< A flag that states if something is working
-							with this connection. */
-	gboolean wasted;      /**< A flag that states if it should be destroyed. */
+    gboolean connected;   /**< A flag that states if it's connected. */
+    gboolean processing;  /**< A flag that states if something is working
+                            with this connection. */
+    gboolean wasted;      /**< A flag that states if it should be destroyed. */
 
-	char *host; /**< The host this connection is connected or should be
-				  connected to. */
-	int num; /**< A number id of this connection. */
+    char *host; /**< The host this connection is connected or should be
+                  connected to. */
+    int num; /**< A number id of this connection. */
 
-	MsnHttpConn *httpconn; /**< The HTTP connection this connection should use. */
+    MsnHttpConn *httpconn; /**< The HTTP connection this connection should use. */
 
-	int fd; /**< The connection's file descriptor. */
-	int inpa; /**< The connection's input handler. */
+    int fd; /**< The connection's file descriptor. */
+    int inpa; /**< The connection's input handler. */
 
-	char *rx_buf; /**< The receive buffer. */
-	gsize rx_len; /**< The receive buffer lenght. */
+    char *rx_buf; /**< The receive buffer. */
+    gsize rx_len; /**< The receive buffer lenght. */
 
-	gsize payload_len; /**< The length of the payload.
-						 It's only set when we've received a command that
-						 has a payload. */
+    gsize payload_len; /**< The length of the payload.
+                         It's only set when we've received a command that
+                         has a payload. */
 
-	PurpleCircBuffer *tx_buf;
-	guint tx_handler;
+    PurpleCircBuffer *tx_buf;
+    guint tx_handler;
 
-	void (*connect_cb)(MsnServConn *); /**< The callback to call when connecting. */
-	void (*disconnect_cb)(MsnServConn *); /**< The callback to call when disconnecting. */
-	void (*destroy_cb)(MsnServConn *); /**< The callback to call when destroying. */
+    void (*connect_cb)(MsnServConn *); /**< The callback to call when connecting. */
+    void (*disconnect_cb)(MsnServConn *); /**< The callback to call when disconnecting. */
+    void (*destroy_cb)(MsnServConn *); /**< The callback to call when destroying. */
 };
 
 /**
@@ -130,7 +130,7 @@ void msn_servconn_disconnect(MsnServConn *servconn);
  * @param connect_cb The connect callback.
  */
 void msn_servconn_set_connect_cb(MsnServConn *servconn,
-								 void (*connect_cb)(MsnServConn *));
+                                 void (*connect_cb)(MsnServConn *));
 /**
  * Sets the disconnect callback.
  *
@@ -138,7 +138,7 @@ void msn_servconn_set_connect_cb(MsnServConn *servconn,
  * @param disconnect_cb The disconnect callback.
  */
 void msn_servconn_set_disconnect_cb(MsnServConn *servconn,
-									void (*disconnect_cb)(MsnServConn *));
+                                    void (*disconnect_cb)(MsnServConn *));
 /**
  * Sets the destroy callback.
  *
@@ -146,7 +146,7 @@ void msn_servconn_set_disconnect_cb(MsnServConn *servconn,
  * @param destroy_cb The destroy callback.
  */
 void msn_servconn_set_destroy_cb(MsnServConn *servconn,
-								 void (*destroy_cb)(MsnServConn *));
+                                 void (*destroy_cb)(MsnServConn *));
 
 /**
  * Writes a chunck of data to the servconn.
@@ -156,7 +156,7 @@ void msn_servconn_set_destroy_cb(MsnServConn *servconn,
  * @param size The size of the data.
  */
 ssize_t msn_servconn_write(MsnServConn *servconn, const char *buf,
-						  size_t size);
+                           size_t size);
 
 /**
  * Function to call whenever an error related to a switchboard occurs.
