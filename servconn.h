@@ -89,8 +89,10 @@ struct _MsnServConn
     PurpleCircBuffer *tx_buf;
     guint tx_handler;
 
+#if 0
     void (*connect_cb)(MsnServConn *); /**< The callback to call when connecting. */
     void (*disconnect_cb)(MsnServConn *); /**< The callback to call when disconnecting. */
+#endif
     void (*destroy_cb)(MsnServConn *); /**< The callback to call when destroying. */
 };
 
@@ -109,6 +111,7 @@ MsnServConn *msn_servconn_new(MsnSession *session, MsnServConnType type);
  */
 void msn_servconn_destroy(MsnServConn *servconn);
 
+#if 0
 /**
  * Connects to a host.
  *
@@ -117,6 +120,7 @@ void msn_servconn_destroy(MsnServConn *servconn);
  * @param port The port.
  */
 gboolean msn_servconn_connect(MsnServConn *servconn, const char *host, int port);
+#endif
 
 /**
  * Disconnects.
@@ -125,6 +129,7 @@ gboolean msn_servconn_connect(MsnServConn *servconn, const char *host, int port)
  */
 void msn_servconn_disconnect(MsnServConn *servconn);
 
+#if 0
 /**
  * Sets the connect callback.
  *
@@ -141,6 +146,8 @@ void msn_servconn_set_connect_cb(MsnServConn *servconn,
  */
 void msn_servconn_set_disconnect_cb(MsnServConn *servconn,
                                     void (*disconnect_cb)(MsnServConn *));
+#endif
+
 /**
  * Sets the destroy callback.
  *

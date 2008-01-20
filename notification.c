@@ -100,7 +100,7 @@ msn_notification_destroy(MsnNotification *notification)
  **************************************************************************/
 
 static void
-connect_cb_2 (ConnObject *conn)
+connect_cb (ConnObject *conn)
 {
     MsnSession *session;
     CmdConnObject *cmd_conn;
@@ -132,7 +132,7 @@ msn_notification_connect(MsnNotification *notification, const char *host, int po
     servconn = notification->servconn;
 
     conn_object_connect (notification->conn, host, port);
-    CONN_OBJECT (notification->conn)->connect_cb = connect_cb_2;
+    CONN_OBJECT (notification->conn)->connect_cb = connect_cb;
 
     return TRUE;
 }

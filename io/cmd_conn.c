@@ -46,10 +46,28 @@ void
 cmd_conn_object_free (CmdConnObject *conn)
 {
     msn_log ("begin");
-
     g_object_unref (G_OBJECT (conn));
-
     msn_log ("end");
+}
+
+void
+cmd_conn_object_send (CmdConnObject *conn,
+                      const char *command,
+                      const char *format,
+                      ...)
+{
+    va_list args;
+
+    if (format != NULL)
+    {
+        va_start (args, format);
+        msn_cmdproc_send_valist (conn->cmdproc, command, format, args);
+        va_end (args);
+    }
+    else
+    {
+        msn_cmdproc_send_valist (conn->cmdproc, command, format, args);
+    }
 }
 
 static void

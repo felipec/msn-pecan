@@ -1,7 +1,5 @@
 /**
- * @file switchboard.c MSN switchboard functions
- *
- * purple
+ * Copyright (C) 2008 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -21,6 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
+
 #include "msn.h"
 #include "prefs.h"
 #include "switchboard.h"
@@ -60,6 +59,21 @@ msn_switchboard_new(MsnSession *session)
     swboard->cmdproc->cbs_table = cbs_table;
 
     session->switches = g_list_append(session->switches, swboard);
+
+    {
+        ConnObject *conn;
+        conn = swboard->conn = cmd_conn_object_new ("switchboard server", MSN_CONN_NS);
+        conn->foo_data = session;
+        swboard->conn->cmdproc = servconn->cmdproc;
+        servconn->cmdproc->cbs_table = cbs_table;
+        servconn->cmdproc->conn = conn;
+    }
+
+#if 1
+    swboard->cmdproc = servconn->cmdproc;
+    swboard->cmdproc->data = swboard;
+    swboard->cmdproc->cbs_table = cbs_table;
+#endif
 
     return swboard;
 }
@@ -121,9 +135,10 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
         msn_servconn_destroy(swboard->servconn);
 #endif
 
-    swboard->cmdproc->data = NULL;
+    if (swboard->cmdproc)
+        swboard->cmdproc->data = NULL;
 
-    msn_servconn_set_disconnect_cb(swboard->servconn, NULL);
+    conn_object_free (swboard->conn);
 
     msn_servconn_destroy(swboard->servconn);
 
@@ -745,7 +760,7 @@ msg_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload, size_t len)
 static void
 msg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
-    cmdproc->servconn->payload_len = atoi(cmd->params[2]);
+    cmd->payload_len = atoi(cmd->params[2]);
     cmdproc->last_cmd->payload_cb = msg_cmd_post;
 }
 
@@ -965,38 +980,51 @@ static void
 ans_usr_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error);
 
 static void
-connect_cb(MsnServConn *servconn)
+connect_cb (ConnObject *conn)
 {
+    MsnSession *session;
+    CmdConnObject *cmd_conn;
     MsnSwitchBoard *swboard;
-    MsnTransaction *trans;
     MsnCmdProc *cmdproc;
-    PurpleAccount *account;
 
-    cmdproc = servconn->cmdproc;
-    g_return_if_fail(cmdproc != NULL);
+    g_return_if_fail (conn != NULL);
 
-    account = cmdproc->session->account;
+    session = conn->foo_data;
+    cmd_conn = conn;
+    cmdproc = cmd_conn->cmdproc;
+
+    msn_info ("foo");
+
+    cmdproc->servconn->connected = TRUE;
+
     swboard = cmdproc->data;
-    g_return_if_fail(swboard != NULL);
+    g_return_if_fail (swboard != NULL);
 
-    if (msn_switchboard_is_invited(swboard))
     {
-        swboard->empty = FALSE;
+        MsnTransaction *trans;
+        PurpleAccount *account;
 
-        trans = msn_transaction_new(cmdproc, "ANS", "%s %s %s",
-                                    purple_account_get_username(account),
-                                    swboard->auth_key, swboard->session_id);
-    }
-    else
-    {
-        trans = msn_transaction_new(cmdproc, "USR", "%s %s",
-                                    purple_account_get_username(account),
-                                    swboard->auth_key);
-    }
+        account = session->account;
 
-    msn_transaction_set_error_cb(trans, ans_usr_error);
-    msn_transaction_set_data(trans, swboard);
-    msn_cmdproc_send_trans(cmdproc, trans);
+        if (msn_switchboard_is_invited (swboard))
+        {
+            swboard->empty = FALSE;
+
+            trans = msn_transaction_new (cmdproc, "ANS", "%s %s %s",
+                                         purple_account_get_username (account),
+                                         swboard->auth_key, swboard->session_id);
+        }
+        else
+        {
+            trans = msn_transaction_new (cmdproc, "USR", "%s %s",
+                                         purple_account_get_username (account),
+                                         swboard->auth_key);
+        }
+
+        msn_transaction_set_error_cb (trans, ans_usr_error);
+        msn_transaction_set_data (trans, swboard);
+        msn_cmdproc_send_trans (cmdproc, trans);
+    }
 }
 
 static void
@@ -1023,6 +1051,7 @@ ans_usr_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
     g_strfreev(params);
 }
 
+#if 0
 static void
 disconnect_cb(MsnServConn *servconn)
 {
@@ -1035,16 +1064,17 @@ disconnect_cb(MsnServConn *servconn)
 
     msn_switchboard_destroy(swboard);
 }
+#endif
 
 gboolean
 msn_switchboard_connect(MsnSwitchBoard *swboard, const char *host, int port)
 {
-    g_return_val_if_fail(swboard != NULL, FALSE);
+    g_return_val_if_fail (swboard != NULL, FALSE);
 
-    msn_servconn_set_connect_cb(swboard->servconn, connect_cb);
-    msn_servconn_set_disconnect_cb(swboard->servconn, disconnect_cb);
+    conn_object_connect (swboard->conn, host, port);
+    CONN_OBJECT (swboard->conn)->connect_cb = connect_cb;
 
-    return msn_servconn_connect(swboard->servconn, host, port);
+    return TRUE;
 }
 
 void

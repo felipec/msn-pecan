@@ -19,6 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
+
 #include "msn.h"
 #include "servconn.h"
 #include "error.h"
@@ -93,23 +94,6 @@ msn_servconn_destroy(MsnServConn *servconn)
 }
 
 void
-msn_servconn_set_connect_cb(MsnServConn *servconn,
-                            void (*connect_cb)(MsnServConn *))
-{
-    g_return_if_fail(servconn != NULL);
-    servconn->connect_cb = connect_cb;
-}
-
-void
-msn_servconn_set_disconnect_cb(MsnServConn *servconn,
-                               void (*disconnect_cb)(MsnServConn *))
-{
-    g_return_if_fail(servconn != NULL);
-
-    servconn->disconnect_cb = disconnect_cb;
-}
-
-void
 msn_servconn_set_destroy_cb(MsnServConn *servconn,
                             void (*destroy_cb)(MsnServConn *))
 {
@@ -175,119 +159,12 @@ msn_servconn_got_error(MsnServConn *servconn, MsnServConnError error)
  * Connect
  **************************************************************************/
 
-static void
-connect_cb(gpointer data, gint source, const gchar *error_message)
-{
-    MsnServConn *servconn;
-
-    servconn = data;
-    servconn->connect_data = NULL;
-    servconn->processing = FALSE;
-
-    if (servconn->wasted)
-    {
-        if (source >= 0)
-            close(source);
-        msn_servconn_destroy(servconn);
-        return;
-    }
-
-    if (source >= 0)
-    {
-        GIOChannel *channel = g_io_channel_unix_new (source);
-
-        servconn->conn_end = conn_end_object_new (channel);
-        servconn->connected = TRUE;
-
-        msn_info ("connected: %p", channel);
-        servconn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, servconn);
-
-        /* Someone wants to know we connected. */
-        servconn->connect_cb(servconn);
-    }
-    else
-    {
-        msn_error ("connection error: %p: %s", error_message);
-        msn_servconn_got_error(servconn, MSN_SERVCONN_ERROR_CONNECT);
-    }
-}
-
-gboolean
-msn_servconn_connect(MsnServConn *servconn, const char *host, int port)
-{
-    MsnSession *session;
-    gboolean ret;
-
-    g_return_val_if_fail(servconn != NULL, FALSE);
-    g_return_val_if_fail(host     != NULL, FALSE);
-    g_return_val_if_fail(port      > 0,    FALSE);
-
-    msn_log ("begin");
-
-    session = servconn->session;
-
-    if (servconn->connected)
-        msn_servconn_disconnect(servconn);
-
-    g_free(servconn->host);
-    servconn->host = g_strdup(host);
-
-    if (session->http_method)
-    {
-        /* HTTP Connection. */
-
-        if (!servconn->httpconn->connected)
-            if (!msn_httpconn_connect(servconn->httpconn, host, port))
-                return FALSE;
-
-        servconn->connected = TRUE;
-        servconn->httpconn->virgin = TRUE;
-
-        /* Someone wants to know we connected. */
-        servconn->connect_cb(servconn);
-
-        return TRUE;
-    }
-
-    servconn->connect_data = purple_proxy_connect(NULL, session->account, host, port, connect_cb, servconn);
-
-    if (servconn->connect_data != NULL)
-    {
-        servconn->processing = TRUE;
-        ret = TRUE;
-    }
-    else
-        ret = FALSE;
-
-    msn_log ("end");
-
-    return ret;
-}
-
 void
 msn_servconn_disconnect(MsnServConn *servconn)
 {
     g_return_if_fail(servconn != NULL);
 
     msn_log ("begin");
-
-    if (!servconn->connected)
-    {
-        /* We could not connect. */
-        if (servconn->disconnect_cb != NULL)
-            servconn->disconnect_cb(servconn);
-
-        return;
-    }
-
-    if (servconn->session->http_method)
-    {
-        /* Fake disconnection. */
-        if (servconn->disconnect_cb != NULL)
-            servconn->disconnect_cb(servconn);
-
-        return;
-    }
 
     if (servconn->connect_data != NULL)
     {
@@ -308,9 +185,6 @@ msn_servconn_disconnect(MsnServConn *servconn)
     servconn->payload_len = 0;
 
     servconn->connected = FALSE;
-
-    if (servconn->disconnect_cb != NULL)
-        servconn->disconnect_cb(servconn);
 
     msn_log ("end");
 }

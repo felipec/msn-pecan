@@ -1,7 +1,5 @@
 /**
- * @file cmdproc.c MSN command processor functions
- *
- * purple
+ * Copyright (C) 2008 Felipe Contreras.
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -21,6 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
+
 #include "msn.h"
 #include "cmdproc.h"
 
@@ -147,7 +146,6 @@ msn_cmdproc_send_quick(MsnCmdProc *cmdproc, const char *command,
     MsnServConn *servconn;
     char *data;
     char *params = NULL;
-    va_list arg;
     size_t len;
 
     g_return_if_fail(cmdproc != NULL);
@@ -161,9 +159,10 @@ msn_cmdproc_send_quick(MsnCmdProc *cmdproc, const char *command,
 
     if (format != NULL)
     {
-        va_start(arg, format);
-        params = g_strdup_vprintf(format, arg);
-        va_end(arg);
+        va_list args;
+        va_start (args, format);
+        params = g_strdup_vprintf (format, args);
+        va_end (args);
     }
 
     if (params != NULL)
@@ -186,28 +185,45 @@ msn_cmdproc_send_quick(MsnCmdProc *cmdproc, const char *command,
 }
 
 void
-msn_cmdproc_send(MsnCmdProc *cmdproc, const char *command,
-                 const char *format, ...)
+msn_cmdproc_send_valist (MsnCmdProc *cmdproc,
+                         const char *command,
+                         const char *format,
+                         va_list args)
 {
     MsnTransaction *trans;
-    va_list arg;
 
-    g_return_if_fail(cmdproc != NULL);
-    g_return_if_fail(command != NULL);
-    g_return_if_fail(cmdproc->servconn->connected);
+    g_return_if_fail (cmdproc != NULL);
+    g_return_if_fail (command != NULL);
+    g_return_if_fail (cmdproc->servconn->connected);
 
-    trans = g_new0(MsnTransaction, 1);
+    trans = g_new0 (MsnTransaction, 1);
 
-    trans->command = g_strdup(command);
+    trans->command = g_strdup (command);
 
     if (format != NULL)
     {
-        va_start(arg, format);
-        trans->params = g_strdup_vprintf(format, arg);
-        va_end(arg);
+        trans->params = g_strdup_vprintf (format, args);
     }
 
-    msn_cmdproc_send_trans(cmdproc, trans);
+    msn_cmdproc_send_trans (cmdproc, trans);
+}
+
+void
+msn_cmdproc_send (MsnCmdProc *cmdproc,
+                  const char *command,
+                  const char *format,
+                  ...)
+{
+    g_return_if_fail (cmdproc != NULL);
+    g_return_if_fail (command != NULL);
+    g_return_if_fail (cmdproc->servconn->connected);
+
+    {
+        va_list args;
+        va_start (args, format);
+        msn_cmdproc_send_valist (cmdproc, command, format, args);
+        va_end (args);
+    }
 }
 
 void

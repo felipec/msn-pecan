@@ -1,7 +1,5 @@
 /**
- * @file switchboard.h MSN switchboard functions
- *
- * purple
+ * Copyright (C) 2008 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -21,10 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_SWITCHBOARD_H_
-#define _MSN_SWITCHBOARD_H_
 
-typedef struct _MsnSwitchBoard MsnSwitchBoard;
+#ifndef MSN_SWITCHBOARD_H
+#define MSN_SWITCHBOARD_H
+
+typedef struct MsnSwitchBoard MsnSwitchBoard;
 
 #include "conversation.h"
 
@@ -34,6 +33,8 @@ typedef struct _MsnSwitchBoard MsnSwitchBoard;
 #include "servconn.h"
 
 #include "slplink.h"
+
+#include "io/cmd_conn.h"
 
 /**
  * A switchboard error.
@@ -66,12 +67,14 @@ typedef enum
  *
  * A place where a bunch of users send messages to the rest of the users.
  */
-struct _MsnSwitchBoard
+struct MsnSwitchBoard
 {
     MsnSession *session;
     MsnServConn *servconn;
     MsnCmdProc *cmdproc;
     char *im_user;
+
+    CmdConnObject *conn;
 
     MsnSBFlag flag;
     char *auth_key;
@@ -274,4 +277,4 @@ void msn_emoticon_msg(MsnCmdProc *cmdproc, MsnMessage *msg);
  */
 void msn_invite_msg(MsnCmdProc *cmdproc, MsnMessage *msg);
 
-#endif /* _MSN_SWITCHBOARD_H_ */
+#endif /* MSN_SWITCHBOARD_H */
