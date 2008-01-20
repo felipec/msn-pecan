@@ -43,6 +43,8 @@ objects = \
 	io/cmd_conn.o \
 	fix-purple.o
 
+sources = $(patsubst %.o,%.c,$(objects))
+
 all: libmsn-pecan.so
 
 libmsn-pecan.so: $(objects)
@@ -55,7 +57,7 @@ clean:
 	rm -f libmsn-pecan.so $(objects)
 
 depend:
-	makedepend -Y -- $(CFLAGS) -- *.c
+	makedepend -Y -- $(CFLAGS) -- $(sources)
 
 install: libmsn-pecan.so
 	cp libmsn-pecan.so /usr/lib/purple-2
