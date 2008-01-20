@@ -19,9 +19,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
+
 #include "msn.h"
 #include "debug.h"
 #include "httpconn.h"
+
+#include "msn_io.h"
 
 typedef struct
 {
@@ -71,8 +74,8 @@ msn_httpconn_parse_data(MsnHttpConn *httpconn, const char *buf,
     g_return_val_if_fail(ret_size != NULL, FALSE);
     g_return_val_if_fail(error    != NULL, FALSE);
 
-#if 0
-    purple_debug_info("msn", "HTTP: parsing data {%s}\n", buf);
+#ifdef MSN_DEBUG_HTTP
+    msn_log ("parsing data {%s}", buf);
 #endif
 
     /* Healthy defaults. */
@@ -146,10 +149,9 @@ msn_httpconn_parse_data(MsnHttpConn *httpconn, const char *buf,
 
             g_free(header);
 
-#if 0
-            purple_debug_warning("msn",
-                                 "body length (%d) != content length (%d)\n",
-                                 body_len, tmp_len);
+#if 1
+            msn_warning ("body length (%d) != content length (%d)",
+                         body_len, tmp_len);
 #endif
 
             return FALSE;
@@ -160,8 +162,8 @@ msn_httpconn_parse_data(MsnHttpConn *httpconn, const char *buf,
     memcpy(body, body_start, body_len);
 
 #ifdef MSN_DEBUG_HTTP
-    purple_debug_misc("msn", "Incoming HTTP buffer (header): {%s\r\n}\n",
-                      header);
+    msn_log ("Incoming HTTP buffer (header): {%s\r\n}\n",
+             header);
 #endif
 
     /* Now we should be able to process the data. */
@@ -179,8 +181,8 @@ msn_httpconn_parse_data(MsnHttpConn *httpconn, const char *buf,
         {
             msn_session_set_error(httpconn->session,
                                   MSN_ERROR_HTTP_MALFORMED, NULL);
-            purple_debug_error("msn", "Malformed X-MSN-Messenger field.\n{%s}\n",
-                               buf);
+
+            msn_error ("Malformed X-MSN-Messenger field.\n{%s}", buf);
 
             g_free(body);
             return FALSE;
@@ -261,40 +263,48 @@ msn_httpconn_parse_data(MsnHttpConn *httpconn, const char *buf,
     return TRUE;
 }
 
-static void
-read_cb(gpointer data, gint source, PurpleInputCondition cond)
+static gboolean
+read_cb (GIOChannel *source,
+         GIOCondition condition,
+         gpointer data)
 {
     MsnHttpConn *httpconn;
     MsnServConn *servconn;
     MsnSession *session;
     char buf[MSN_BUF_LEN];
     char *cur, *end, *old_rx_buf;
-    int len, cur_len;
+    int cur_len;
     char *result_msg = NULL;
     size_t result_len = 0;
     gboolean error = FALSE;
+    gsize bytes_read;
 
     httpconn = data;
-    servconn = NULL;
+    servconn = httpconn->servconn;
     session = httpconn->session;
 
-    len = read(httpconn->fd, buf, sizeof(buf) - 1);
+    msn_debug ("read: %p", source);
 
-    if (len < 0 && errno == EAGAIN)
-        return;
-    else if (len <= 0)
     {
-        purple_debug_error("msn", "HTTP: Read error\n");
-        msn_servconn_got_error(httpconn->servconn, MSN_SERVCONN_ERROR_READ);
+        GIOStatus status = G_IO_STATUS_NORMAL;
 
-        return;
+        status = msn_io_read (source, buf, sizeof(buf) - 1, &bytes_read, &servconn->error);
+
+        if (status == G_IO_STATUS_AGAIN)
+            return TRUE;
+
+        if (status != G_IO_STATUS_NORMAL)
+        {
+            msn_servconn_got_error (servconn, MSN_SERVCONN_ERROR_READ);
+            return FALSE;
+        }
     }
 
-    buf[len] = '\0';
+    buf[bytes_read] = '\0';
 
-    httpconn->rx_buf = g_realloc(httpconn->rx_buf, len + httpconn->rx_len + 1);
-    memcpy(httpconn->rx_buf + httpconn->rx_len, buf, len + 1);
-    httpconn->rx_len += len;
+    httpconn->rx_buf = g_realloc(httpconn->rx_buf, bytes_read + httpconn->rx_len + 1);
+    memcpy(httpconn->rx_buf + httpconn->rx_len, buf, bytes_read + 1);
+    httpconn->rx_len += bytes_read;
 
     if (!msn_httpconn_parse_data(httpconn, httpconn->rx_buf, httpconn->rx_len,
                                  &result_msg, &result_len, &error))
@@ -303,19 +313,17 @@ read_cb(gpointer data, gint source, PurpleInputCondition cond)
         if (error)
             msn_servconn_got_error(httpconn->servconn, MSN_SERVCONN_ERROR_READ);
 
-        return;
+        return FALSE;
     }
 
     httpconn->servconn->processing = FALSE;
 
-    servconn = httpconn->servconn;
-
     if (error)
     {
-        purple_debug_error("msn", "HTTP: Special error\n");
+        msn_error ("special error");
         msn_servconn_got_error(httpconn->servconn, MSN_SERVCONN_ERROR_READ);
 
-        return;
+        return FALSE;
     }
 
     g_free(httpconn->rx_buf);
@@ -325,11 +333,9 @@ read_cb(gpointer data, gint source, PurpleInputCondition cond)
     if (result_len == 0)
     {
         /* Nothing to do here */
-#if 0
-        purple_debug_info("msn", "HTTP: nothing to do here\n");
-#endif
+        msn_log ("nothing to do yet");
         g_free(result_msg);
-        return;
+        return TRUE;
     }
 
     g_free(servconn->rx_buf);
@@ -393,8 +399,11 @@ read_cb(gpointer data, gint source, PurpleInputCondition cond)
         msn_servconn_destroy(servconn);
 
     g_free(old_rx_buf);
+
+    return TRUE;
 }
 
+#if 0
 static void
 httpconn_write_cb(gpointer data, gint source, PurpleInputCondition cond)
 {
@@ -429,26 +438,38 @@ httpconn_write_cb(gpointer data, gint source, PurpleInputCondition cond)
     if (ret == writelen)
         httpconn_write_cb(data, source, cond);
 }
+#endif
 
 static gboolean
 write_raw(MsnHttpConn *httpconn, const char *data, gsize data_len)
 {
-    gssize res; /* result of the write operation */
+    MsnServConn *servconn;
+    gsize bytes_written = 0;
 
-    if (httpconn->tx_handler == 0)
-        res = write(httpconn->fd, data, data_len);
-    else
+    servconn = httpconn->servconn;
+    msn_debug ("write: %p", httpconn->channel);
+
     {
-        res = -1;
-        errno = EAGAIN;
+        GIOStatus status = G_IO_STATUS_NORMAL;
+
+        status = msn_io_write_full (httpconn->channel, data, data_len, &bytes_written, &servconn->error);
+
+        if (status == G_IO_STATUS_NORMAL)
+        {
+            if (bytes_written < data_len)
+            {
+                /* This shouldn't happen, right? */
+                msn_error ("write check: %d, %d", bytes_written, data_len);
+                purple_circ_buffer_append(httpconn->tx_buf, data + bytes_written, data_len - bytes_written);
+            }
+        }
+        else
+        {
+            msn_servconn_got_error(servconn, MSN_SERVCONN_ERROR_WRITE);
+        }
     }
 
-    if ((res <= 0) && ((errno != EAGAIN) && (errno != EWOULDBLOCK)))
-    {
-        msn_servconn_got_error(httpconn->servconn, MSN_SERVCONN_ERROR_WRITE);
-        return FALSE;
-    }
-
+#if 0
     if (res < 0 || (gsize) res < data_len)
     {
         if (res < 0)
@@ -459,6 +480,7 @@ write_raw(MsnHttpConn *httpconn, const char *data, gsize data_len)
         purple_circ_buffer_append(httpconn->tx_buf, data + res,
                                   data_len - res);
     }
+#endif
 
     return TRUE;
 }
@@ -598,7 +620,7 @@ msn_httpconn_write(MsnHttpConn *httpconn, const char *body, gsize body_len)
 
         if (host == NULL || httpconn->full_session_id == NULL)
         {
-            purple_debug_warning("msn", "Attempted HTTP write before session is established\n");
+            msn_warning ("attempted write before session is established");
             return -1;
         }
 
@@ -651,7 +673,7 @@ msn_httpconn_new(MsnServConn *servconn)
 
     httpconn = g_new0(MsnHttpConn, 1);
 
-    purple_debug_info("msn", "new httpconn (%p)\n", httpconn);
+    msn_log ("new httpconn (%p)", httpconn);
 
     /* TODO: Remove this */
     httpconn->session = servconn->session;
@@ -660,8 +682,6 @@ msn_httpconn_new(MsnServConn *servconn)
 
     httpconn->tx_buf = purple_circ_buffer_new(MSN_BUF_LEN);
     httpconn->tx_handler = 0;
-
-    httpconn->fd = -1;
 
     return httpconn;
 }
@@ -694,20 +714,33 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
 
     httpconn = data;
     httpconn->connect_data = NULL;
-    httpconn->fd = source;
 
     if (source >= 0)
     {
+#if 0
         httpconn->inpa = purple_input_add(httpconn->fd, PURPLE_INPUT_READ,
                                           read_cb, data);
 
         httpconn->timer = purple_timeout_add(2000, msn_httpconn_poll, httpconn);
+#endif
+
+        httpconn->channel = g_io_channel_unix_new (source);
+        httpconn->connected = TRUE;
+
+        g_io_channel_set_encoding (httpconn->channel, NULL, NULL);
+        g_io_channel_set_buffered (httpconn->channel, FALSE);
+
+        msn_info ("connected: %p", httpconn->channel);
+        httpconn->read_watch = g_io_add_watch (httpconn->channel, G_IO_IN, read_cb, httpconn);
+        /* g_io_add_watch (httpconn->channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, error_cb, httpconn); */
+
+        httpconn->timer = g_timeout_add (2000, msn_httpconn_poll, httpconn);
 
         msn_httpconn_process_queue(httpconn);
     }
     else
     {
-        purple_debug_error("msn", "HTTP: Connection error\n");
+        msn_error ("connection error");
         msn_servconn_got_error(httpconn->servconn, MSN_SERVCONN_ERROR_CONNECT);
     }
 }
@@ -750,18 +783,20 @@ msn_httpconn_disconnect(MsnHttpConn *httpconn)
 
     if (httpconn->timer)
     {
-        purple_timeout_remove(httpconn->timer);
+        g_source_remove (httpconn->timer);
         httpconn->timer = 0;
     }
 
-    if (httpconn->inpa > 0)
+    if (httpconn->channel)
     {
-        purple_input_remove(httpconn->inpa);
-        httpconn->inpa = 0;
-    }
+        g_source_remove (httpconn->read_watch);
+        httpconn->read_watch = 0;
 
-    close(httpconn->fd);
-    httpconn->fd = -1;
+        msn_info ("channel shutdown: %p", httpconn->channel);
+        g_io_channel_shutdown (httpconn->channel, FALSE, NULL);
+        g_io_channel_unref (httpconn->channel);
+        httpconn->channel = NULL;
+    }
 
     g_free(httpconn->rx_buf);
     httpconn->rx_buf = NULL;

@@ -1,8 +1,6 @@
 /**
- * @file httpconn.h HTTP connection
- *
- * purple
- *
+ * Copyright (C) 2007 Felipe Contreras
+
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
  * source distribution.
@@ -21,13 +19,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_HTTPCONN_H_
-#define _MSN_HTTPCONN_H_
+
+#ifndef MSN_HTTPCONN_H
+#define MSN_HTTPCONN_H
 
 typedef struct _MsnHttpConn MsnHttpConn;
 
 #include "circbuffer.h"
 #include "servconn.h"
+
+#include "msn_log.h"
 
 /**
  * An HTTP Connection.
@@ -42,8 +43,6 @@ struct _MsnHttpConn
     char *full_session_id; /**< The full session id. */
     char *session_id; /**< The trimmed session id. */
 
-    int timer; /**< The timer for polling. */
-
     gboolean waiting_response; /**< The flag that states if we are waiting
                                  a response from the server. */
     gboolean connected;        /**< The flag that states if the connection is on. */
@@ -54,8 +53,10 @@ struct _MsnHttpConn
     char *host; /**< The HTTP gateway host. */
     GList *queue; /**< The queue of data chunks to write. */
 
-    int fd; /**< The connection's file descriptor. */
-    guint inpa; /**< The connection's input handler. */
+    GIOChannel *channel; /**< The current IO channel .*/
+    GError *error; /**< The current IO error .*/
+    guint read_watch; /** < The source id of the read watch. */
+    guint timer; /**< The timer for polling. */
 
     char *rx_buf; /**< The receive buffer. */
     int rx_len; /**< The receive buffer length. */
@@ -108,4 +109,4 @@ gboolean msn_httpconn_connect(MsnHttpConn *httpconn,
  */
 void msn_httpconn_disconnect(MsnHttpConn *httpconn);
 
-#endif /* _MSN_HTTPCONN_H_ */
+#endif /* MSN_HTTPCONN_H */

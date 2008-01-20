@@ -350,7 +350,7 @@ servconn_write_cb(gpointer data, gint source, PurpleInputCondition cond)
 gssize
 msn_servconn_write(MsnServConn *servconn, const char *buf, gsize len)
 {
-    gsize written = 0;
+    gsize bytes_written = 0;
 
     g_return_val_if_fail(servconn != NULL, 0);
 
@@ -365,23 +365,23 @@ msn_servconn_write(MsnServConn *servconn, const char *buf, gsize len)
         {
             case MSN_SERVCONN_DC:
                 status = msn_io_write (servconn->channel, &len, sizeof(len), NULL);
-                status = msn_io_write (servconn->channel, buf, len, &written);
+                status = msn_io_write (servconn->channel, buf, len, &bytes_written);
                 break;
             default:
-                status = msn_io_write_full (servconn->channel, buf, len, &written);
+                status = msn_io_write_full (servconn->channel, buf, len, &bytes_written);
                 break;
         }
 #else
-        status = msn_io_write_full (servconn->channel, buf, len, &written, &servconn->error);
+        status = msn_io_write_full (servconn->channel, buf, len, &bytes_written, &servconn->error);
 #endif
 
         if (status == G_IO_STATUS_NORMAL)
         {
-            if (written < len)
+            if (bytes_written < len)
             {
                 /* This shouldn't happen, right? */
-                msn_error ("servconn write test: %d, %d", written, len);
-                purple_circ_buffer_append(servconn->tx_buf, buf + written, len - written);
+                msn_error ("write check: %d, %d", bytes_written, len);
+                purple_circ_buffer_append(servconn->tx_buf, buf + bytes_written, len - bytes_written);
             }
         }
         else
@@ -400,7 +400,7 @@ msn_servconn_write(MsnServConn *servconn, const char *buf, gsize len)
         }
     }
 
-    return written;
+    return bytes_written;
 }
 
 static gboolean
