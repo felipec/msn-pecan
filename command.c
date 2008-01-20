@@ -49,13 +49,15 @@ msn_command_from_string(const char *string)
 	cmd = g_new0(MsnCommand, 1);
 	cmd->command = tmp;
 
-	if (param_start)
+        /** @todo check string "preferredEmail: " */
+
+        if (param_start)
 	{
 		*param_start++ = '\0';
 		cmd->params = g_strsplit(param_start, " ", 0);
 	}
 
-	if (cmd->params != NULL)
+	if (cmd->params != NULL && cmd->params[0] != NULL)
 	{
 		char *param;
 		int c;

@@ -156,16 +156,6 @@ connect_cb (gpointer data,
     conn->connect_data = NULL;
     conn->processing = FALSE;
 
-#if 0
-    if (servconn->wasted)
-    {
-        if (source >= 0)
-            close(source);
-        msn_servconn_destroy(servconn);
-        return;
-    }
-#endif
-
     if (source >= 0)
     {
         GIOChannel *channel = g_io_channel_unix_new (source);

@@ -75,14 +75,6 @@ struct ConnObject
     gboolean parsed;
     guint parse_pos;
     guint last_parse_pos;
-
-#if 0
-    MsnCmdProc *cmdproc;
-    gsize payload_len;
-    gboolean wasted;
-    gchar *rx_buf;
-    gsize rx_len;
-#endif
 };
 
 struct ConnObjectClass

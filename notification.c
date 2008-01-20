@@ -71,13 +71,10 @@ msn_notification_new(MsnSession *session)
         servconn->cmdproc->conn = conn;
     }
 
-#if 0
+#if 1
     notification->cmdproc = servconn->cmdproc;
     notification->cmdproc->data = notification;
     notification->cmdproc->cbs_table = cbs_table;
-#else
-    /* msn_cmdproc_destroy (servconn->cmdproc); */
-    servconn->cmdproc = NULL;
 #endif
 
     return notification;
