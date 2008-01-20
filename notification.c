@@ -62,7 +62,7 @@ msn_notification_new(MsnSession *session)
     notification->servconn = servconn = msn_servconn_new(session, MSN_SERVCONN_NS);
     msn_servconn_set_destroy_cb(servconn, destroy_cb);
 
-    notification->conn = conn_object_new ("notification server", MSN_CONN_NS);
+    notification->conn = cmd_conn_object_new ("notification server", MSN_CONN_NS);
     notification->conn->session = session;
     notification->conn->cmdproc = servconn->cmdproc;
     servconn->cmdproc->cbs_table = cbs_table;
@@ -86,7 +86,7 @@ msn_notification_destroy(MsnNotification *notification)
     if (notification->cmdproc)
         notification->cmdproc->data = NULL;
 
-    conn_object_free (notification->conn);
+    cmd_conn_object_free (notification->conn);
 
     msn_servconn_set_destroy_cb(notification->servconn, NULL);
 
@@ -164,8 +164,6 @@ msn_notification_connect(MsnNotification *notification, const char *host, int po
     g_return_val_if_fail(notification != NULL, FALSE);
 
     servconn = notification->servconn;
-
-    free (NULL);
 
 #if 0
     msn_servconn_set_connect_cb(servconn, connect_cb);

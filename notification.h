@@ -29,14 +29,14 @@ typedef struct MsnNotification MsnNotification;
 #include "servconn.h"
 #include "cmdproc.h"
 
-#include "io/conn.h"
+#include "io/cmd_conn.h"
 
 struct MsnNotification
 {
     MsnSession *session;
     MsnCmdProc *cmdproc;
     MsnServConn *servconn;
-    ConnObject *conn;
+    CmdConnObject *conn;
 
     gboolean in_use;
 };

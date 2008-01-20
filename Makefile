@@ -40,6 +40,7 @@ objects = \
 	io/conn_end.o \
 	io/cmd.o \
 	io/buffer.o \
+	io/cmd_conn.o \
 	fix-purple.o
 
 all: libmsn-pecan.so

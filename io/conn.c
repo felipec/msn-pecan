@@ -83,7 +83,6 @@ conn_object_to_string (ConnObject *conn)
 void
 conn_object_error (ConnObject *conn)
 {
-    msn_info ("foo");
     CONN_OBJECT_GET_CLASS (conn)->error (conn);
 }
 
@@ -206,7 +205,7 @@ read_cb (GIOChannel *source,
 
         if (status != G_IO_STATUS_NORMAL)
         {
-            /* msn_servconn_got_error (servconn, MSN_SERVCONN_ERROR_READ); */
+            conn_object_error (conn);
             return FALSE;
         }
     }
@@ -259,7 +258,7 @@ connect_cb (gpointer data,
     else
     {
         msn_error ("connection error: %p: %s", error_message);
-        /* msn_servconn_got_error (conn, MSN_SERVCONN_ERROR_CONNECT); */
+        conn_object_error (conn);
     }
 
     msn_log ("begin");
@@ -281,25 +280,6 @@ conn_object_connect (ConnObject *conn,
     g_free (conn->hostname);
     conn->hostname = g_strdup (hostname);
     conn->port = port;
-
-#if 0
-    if (session->http_method)
-    {
-        /* HTTP Connection. */
-
-        if (!servconn->httpconn->connected)
-            if (!msn_httpconn_connect(servconn->httpconn, host, port))
-                return FALSE;
-
-        servconn->connected = TRUE;
-        servconn->httpconn->virgin = TRUE;
-
-        /* Someone wants to know we connected. */
-        servconn->connect_cb(servconn);
-
-        return TRUE;
-    }
-#endif
 
     conn->connect_data = purple_proxy_connect (NULL, conn->session->account, hostname, port, connect_cb, conn);
 
@@ -413,11 +393,13 @@ read_impl (ConnObject *conn)
 static void
 connect_impl (ConnObject *conn)
 {
+    msn_info ("foo");
 }
 
 static void
 error_impl (ConnObject *conn)
 {
+    msn_info ("foo");
 }
 
 /* GObject stuff. */
@@ -430,6 +412,14 @@ conn_object_dispose (GObject *obj)
     if (!conn->dispose_has_run)
     {
         conn->dispose_has_run = TRUE;
+
+        conn_end_object_free (conn->end);
+
+        msn_buffer_free (conn->read_buffer);
+        msn_buffer_free (conn->buffer);
+
+        g_free (conn->name);
+        g_free (conn->hostname);
     }
 
     G_OBJECT_CLASS (parent_class)->dispose (obj);
@@ -440,20 +430,12 @@ conn_object_finalize (GObject *obj)
 {
     ConnObject *conn = (ConnObject *) obj;
 
-    conn_end_object_free (conn->end);
-
-    msn_buffer_free (conn->read_buffer);
-    msn_buffer_free (conn->buffer);
-
-    g_free (conn->name);
-    g_free (conn->hostname);
-
-    /* Chain up to the parent class */
     G_OBJECT_CLASS (parent_class)->finalize (obj);
 }
 
 void
-conn_object_class_init (gpointer g_class, gpointer class_data)
+conn_object_class_init (gpointer g_class,
+                        gpointer class_data)
 {
     ConnObjectClass *conn_class = CONN_OBJECT_CLASS (g_class);
     GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
