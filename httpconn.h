@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007 Felipe Contreras
+ * Copyright (C) 2007-2008 Felipe Contreras
 
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
