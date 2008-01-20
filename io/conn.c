@@ -24,6 +24,7 @@
 #include <sys/poll.h>
 
 #include "msn_log.h"
+#include "session.h"
 
 /* For open. */
 #include <fcntl.h>
@@ -109,79 +110,6 @@ conn_object_write (ConnObject *conn,
     }
 }
 
-static void
-parse_cmd (ConnObject *conn,
-           gchar *buf,
-           gsize bytes_read)
-{
-    gchar *cur, *end, *old_rx_buf;
-    gint cur_len;
-
-    buf[bytes_read] = '\0';
-
-    conn->rx_buf = g_realloc (conn->rx_buf, bytes_read + conn->rx_len + 1);
-    memcpy (conn->rx_buf + conn->rx_len, buf, bytes_read + 1);
-    conn->rx_len += bytes_read;
-
-    end = old_rx_buf = conn->rx_buf;
-
-    conn->processing = TRUE;
-
-    do
-    {
-        cur = end;
-
-        if (conn->payload_len)
-        {
-            if (conn->payload_len > conn->rx_len)
-                /* The payload is still not complete. */
-                break;
-
-            cur_len = conn->payload_len;
-            end += cur_len;
-        }
-        else
-        {
-            end = strstr(cur, "\r\n");
-
-            if (end == NULL)
-                /* The command is still not complete. */
-                break;
-
-            *end = '\0';
-            end += 2;
-            cur_len = end - cur;
-        }
-
-        conn->rx_len -= cur_len;
-
-        if (conn->payload_len)
-        {
-            msn_cmdproc_process_payload (conn->cmdproc, cur, cur_len);
-            conn->payload_len = 0;
-        }
-        else
-        {
-            msn_cmdproc_process_cmd_text (conn->cmdproc, cur);
-        }
-    } while (conn->connected && !conn->wasted && conn->rx_len > 0);
-
-    if (conn->connected && !conn->wasted)
-    {
-        if (conn->rx_len > 0)
-            conn->rx_buf = g_memdup(cur, conn->rx_len);
-        else
-            conn->rx_buf = NULL;
-    }
-
-    conn->processing = FALSE;
-
-    if (conn->wasted)
-        conn_object_free (conn);
-
-    g_free (old_rx_buf);
-}
-
 static gboolean
 read_cb (GIOChannel *source,
          GIOCondition condition,
@@ -210,7 +138,7 @@ read_cb (GIOChannel *source,
         }
     }
 
-    parse_cmd (conn, buf, bytes_read);
+    CONN_OBJECT_GET_CLASS (conn)->parse (conn, buf, bytes_read);
 
     return TRUE;
 }
@@ -281,7 +209,7 @@ conn_object_connect (ConnObject *conn,
     conn->hostname = g_strdup (hostname);
     conn->port = port;
 
-    conn->connect_data = purple_proxy_connect (NULL, conn->session->account, hostname, port, connect_cb, conn);
+    conn->connect_data = purple_proxy_connect (NULL, ((MsnSession *) (conn->foo_data))->account, hostname, port, connect_cb, conn);
 
     if (conn->connect_data != NULL)
         conn->processing = TRUE;
@@ -371,7 +299,7 @@ read_impl (ConnObject *conn)
         }
         else
         {
-            CONN_OBJECT_GET_CLASS (conn)->parse (conn);
+            /* CONN_OBJECT_GET_CLASS (conn)->parse (conn); */
         }
 
         /** @todo only if parsed? yes indeed! */
@@ -398,6 +326,12 @@ connect_impl (ConnObject *conn)
 
 static void
 error_impl (ConnObject *conn)
+{
+    msn_info ("foo");
+}
+
+static void
+parse_impl (ConnObject *conn)
 {
     msn_info ("foo");
 }
@@ -443,6 +377,7 @@ conn_object_class_init (gpointer g_class,
     conn_class->connect = &connect_impl;
     conn_class->error = &error_impl;
     conn_class->read = &read_impl;
+    conn_class->parse = &parse_impl;
 
     gobject_class->dispose = conn_object_dispose;
     gobject_class->finalize = conn_object_finalize;

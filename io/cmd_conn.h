@@ -19,11 +19,11 @@
 #ifndef MSN_CMD_CONN_H
 #define MSN_CMD_CONN_H
 
-#include "conn.h"
-#include "cmdproc.h"
-
 typedef struct CmdConnObject CmdConnObject;
 typedef struct CmdConnObjectClass CmdConnObjectClass;
+
+#include "conn.h"
+#include "cmdproc.h"
 
 struct CmdConnObject
 {

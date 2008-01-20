@@ -62,11 +62,14 @@ msn_notification_new(MsnSession *session)
     notification->servconn = servconn = msn_servconn_new(session, MSN_SERVCONN_NS);
     msn_servconn_set_destroy_cb(servconn, destroy_cb);
 
-    notification->conn = cmd_conn_object_new ("notification server", MSN_CONN_NS);
-    notification->conn->session = session;
-    notification->conn->cmdproc = servconn->cmdproc;
-    servconn->cmdproc->cbs_table = cbs_table;
-    servconn->cmdproc->conn = notification->conn;
+    {
+        ConnObject *conn;
+        conn = notification->conn = cmd_conn_object_new ("notification server", MSN_CONN_NS);
+        conn->foo_data = session;
+        notification->conn->cmdproc = servconn->cmdproc;
+        servconn->cmdproc->cbs_table = cbs_table;
+        servconn->cmdproc->conn = conn;
+    }
 
 #if 0
     notification->cmdproc = servconn->cmdproc;
@@ -139,21 +142,23 @@ static void
 connect_cb_2 (ConnObject *conn)
 {
     MsnSession *session;
+    CmdConnObject *cmd_conn;
 
-    g_return_if_fail(conn != NULL);
+    g_return_if_fail (conn != NULL);
 
-    session = conn->session;
+    session = conn->foo_data;
+    cmd_conn = conn;
 
     msn_info ("foo");
 
-    conn->cmdproc->servconn->connected = TRUE;
+    cmd_conn->cmdproc->servconn->connected = TRUE;
 
     if (session->login_step == MSN_LOGIN_STEP_START)
         msn_session_set_login_step (session, MSN_LOGIN_STEP_HANDSHAKE);
     else
         msn_session_set_login_step (session, MSN_LOGIN_STEP_HANDSHAKE2);
 
-    msn_cmdproc_send (conn->cmdproc, "VER", "MSNP9 CVR0");
+    msn_cmdproc_send (cmd_conn->cmdproc, "VER", "MSNP9 CVR0");
 }
 
 gboolean
@@ -170,7 +175,7 @@ msn_notification_connect(MsnNotification *notification, const char *host, int po
     notification->in_use = msn_servconn_connect(servconn, host, port);
 #endif
     conn_object_connect (notification->conn, host, port);
-    notification->conn->connect_cb = connect_cb_2;
+    CONN_OBJECT (notification->conn)->connect_cb = connect_cb_2;
 
     return TRUE;
 }

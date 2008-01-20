@@ -32,7 +32,8 @@ typedef struct ConnObjectClass ConnObjectClass;
 #include "cmd.h"
 #include "buffer.h"
 #include "conn_end.h"
-#include "session.h"
+
+#include "proxy.h"
 
 #define SOCKET_ERROR -1
 
@@ -48,7 +49,8 @@ struct ConnObject
     GObject parent;
     gboolean dispose_has_run;
 
-    MsnSession *session;  /**< The MSN session of this connection. */
+    gpointer foo_data;
+
     ConnEndObject *end;
     PurpleProxyConnectData *connect_data;
     gboolean processing;
@@ -74,11 +76,13 @@ struct ConnObject
     guint parse_pos;
     guint last_parse_pos;
 
+#if 0
     MsnCmdProc *cmdproc;
     gsize payload_len;
     gboolean wasted;
     gchar *rx_buf;
     gsize rx_len;
+#endif
 };
 
 struct ConnObjectClass
@@ -86,10 +90,12 @@ struct ConnObjectClass
     GObjectClass parent_class;
 
     void (*read) (ConnObject *conn);
-    void (*parse) (ConnObject *conn);
+    /* void (*parse) (ConnObject *conn); */
     void (*write) (ConnObject *conn);
     void (*error) (ConnObject *conn);
     void (*connect) (ConnObject *conn);
+    void (*parse) (ConnObject *conn, gchar *buf, gsize bytes_read);
+
 };
 
 #define CONN_OBJECT_TYPE (conn_object_get_type ())

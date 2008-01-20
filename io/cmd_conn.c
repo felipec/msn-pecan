@@ -52,6 +52,82 @@ cmd_conn_object_free (CmdConnObject *conn)
     msn_log ("end");
 }
 
+static void
+parse_impl (CmdConnObject *conn,
+            gchar *buf,
+            gsize bytes_read)
+{
+    ConnObject *base_conn;
+    gchar *cur, *end, *old_rx_buf;
+    gint cur_len;
+
+    base_conn = CONN_OBJECT (conn);
+
+    buf[bytes_read] = '\0';
+
+    conn->rx_buf = g_realloc (conn->rx_buf, bytes_read + conn->rx_len + 1);
+    memcpy (conn->rx_buf + conn->rx_len, buf, bytes_read + 1);
+    conn->rx_len += bytes_read;
+
+    end = old_rx_buf = conn->rx_buf;
+
+    base_conn->processing = TRUE;
+
+    do
+    {
+        cur = end;
+
+        if (conn->payload_len)
+        {
+            if (conn->payload_len > conn->rx_len)
+                /* The payload is still not complete. */
+                break;
+
+            cur_len = conn->payload_len;
+            end += cur_len;
+        }
+        else
+        {
+            end = strstr(cur, "\r\n");
+
+            if (end == NULL)
+                /* The command is still not complete. */
+                break;
+
+            *end = '\0';
+            end += 2;
+            cur_len = end - cur;
+        }
+
+        conn->rx_len -= cur_len;
+
+        if (conn->payload_len)
+        {
+            msn_cmdproc_process_payload (conn->cmdproc, cur, cur_len);
+            conn->payload_len = 0;
+        }
+        else
+        {
+            msn_cmdproc_process_cmd_text (conn->cmdproc, cur);
+        }
+    } while (base_conn->connected && !conn->wasted && conn->rx_len > 0);
+
+    if (base_conn->connected && !conn->wasted)
+    {
+        if (conn->rx_len > 0)
+            conn->rx_buf = g_memdup (cur, conn->rx_len);
+        else
+            conn->rx_buf = NULL;
+    }
+
+    base_conn->processing = FALSE;
+
+    if (conn->wasted)
+        conn_object_free (base_conn);
+
+    g_free (old_rx_buf);
+}
+
 /* GObject stuff. */
 
 static void
@@ -87,6 +163,7 @@ class_init (gpointer g_class,
     conn_class->error = &error_impl;
     conn_class->read = &read_impl;
 #endif
+    conn_class->parse = &parse_impl;
 
     gobject_class->dispose = dispose;
     gobject_class->finalize = finalize;
