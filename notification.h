@@ -1,7 +1,5 @@
 /**
- * @file notification.h Notification server functions
- *
- * purple
+ * Copyright (C) 2007-2008 Felipe Contreras.
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -21,50 +19,45 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_NOTIFICATION_H_
-#define _MSN_NOTIFICATION_H_
 
-typedef struct _MsnNotification MsnNotification;
+#ifndef MSN_NOTIFICATION_H
+#define MSN_NOTIFICATION_H
+
+typedef struct MsnNotification MsnNotification;
 
 #include "session.h"
 #include "servconn.h"
 #include "cmdproc.h"
 
-struct _MsnNotification
+struct MsnNotification
 {
-	MsnSession *session;
-	MsnCmdProc *cmdproc;
-	MsnServConn *servconn;
+    MsnSession *session;
+    MsnCmdProc *cmdproc;
+    MsnServConn *servconn;
+    ConnObject *conn;
 
-	gboolean in_use;
+    gboolean in_use;
 };
 
 #include "state.h"
 
-void msn_notification_end(void);
-void msn_notification_init(void);
+void msn_notification_end (void);
+void msn_notification_init (void);
 
-void msn_notification_add_buddy(MsnNotification *notification,
-								const char *list, const char *who,
-								const char *store_name, int group_id);
-void msn_notification_rem_buddy(MsnNotification *notification,
-								const char *list, const char *who,
-								int group_id);
-MsnNotification *msn_notification_new(MsnSession *session);
-void msn_notification_destroy(MsnNotification *notification);
-gboolean msn_notification_connect(MsnNotification *notification,
-							  const char *host, int port);
-void msn_notification_disconnect(MsnNotification *notification);
+void msn_notification_add_buddy (MsnNotification *notification, const char *list, const char *who, const char *store_name, int group_id);
+void msn_notification_rem_buddy (MsnNotification *notification, const char *list, const char *who, int group_id);
+MsnNotification *msn_notification_new (MsnSession *session);
+void msn_notification_destroy (MsnNotification *notification);
+gboolean msn_notification_connect (MsnNotification *notification, const char *host, int port);
+void msn_notification_disconnect (MsnNotification *notification);
 
 /**
- * Closes a notification.
+ * Closes a notification server.
  *
- * It's first closed, and then disconnected.
- * 
  * @param notification The notification object to close.
  */
-void msn_notification_close(MsnNotification *notification);
+void msn_notification_close (MsnNotification *notification);
 
-void msn_got_login_params(MsnSession *session, const char *login_params);
+void msn_got_login_params (MsnSession *session, const char *login_params);
 
-#endif /* _MSN_NOTIFICATION_H_ */
+#endif /* MSN_NOTIFICATION_H */
