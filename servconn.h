@@ -63,6 +63,8 @@ struct _MsnServConn
     GIOChannel *channel; /**< The current IO channel .*/
     GError *error; /**< The current IO error .*/
 
+    guint read_watch; /** < The source id of the read watch. */
+
     PurpleProxyConnectData *connect_data;
 
     gboolean connected;   /**< A flag that states if it's connected. */

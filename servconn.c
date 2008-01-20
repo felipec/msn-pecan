@@ -26,6 +26,7 @@
 #include "msn_io.h"
 
 static gboolean read_cb (GIOChannel *source, GIOCondition condition, gpointer data);
+static gboolean error_cb (GIOChannel *source, GIOCondition condition, gpointer data);
 
 /**************************************************************************
  * Main
@@ -192,7 +193,8 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
         g_io_channel_set_buffered (servconn->channel, FALSE);
 
         purple_debug_info("msn", "servconn: connected: %p\n", servconn->channel);
-        g_io_add_watch (servconn->channel, G_IO_IN, read_cb, servconn);
+        servconn->read_watch = g_io_add_watch (servconn->channel, G_IO_IN, read_cb, servconn);
+        g_io_add_watch (servconn->channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, error_cb, servconn);
 
         /* Someone wants to know we connected. */
         servconn->connect_cb(servconn);
@@ -280,6 +282,10 @@ msn_servconn_disconnect(MsnServConn *servconn)
 
     if (servconn->channel)
     {
+        g_source_remove (servconn->read_watch);
+        servconn->read_watch = 0;
+
+        purple_debug_info ("msn", "servconn: channel shutdown: %p\n", servconn->channel);
         g_io_channel_shutdown (servconn->channel, FALSE, NULL);
         g_io_channel_unref (servconn->channel);
         servconn->channel = NULL;
@@ -377,6 +383,27 @@ msn_servconn_write(MsnServConn *servconn, const char *buf, gsize len)
 }
 
 static gboolean
+error_cb (GIOChannel *source,
+          GIOCondition condition,
+          gpointer data)
+{
+    const char *cond_id;
+
+    switch (condition)
+    {
+        case G_IO_PRI: cond_id = "PRI"; break;
+        case G_IO_ERR: cond_id = "ERR"; break;
+        case G_IO_HUP: cond_id = "HUP"; break;
+        case G_IO_NVAL: cond_id = "NVAL"; break;
+        default: cond_id = NULL; break;
+    }
+
+    purple_debug_warning ("msn", "servconn: error: %p: %s\n", source, cond_id);
+
+    return FALSE;
+}
+
+static gboolean
 read_cb (GIOChannel *source,
          GIOCondition condition,
          gpointer data)
@@ -391,12 +418,12 @@ read_cb (GIOChannel *source,
     servconn = data;
     session = servconn->session;
 
-    purple_debug_info("msn", "servconn: read: %p\n", servconn->channel);
+    purple_debug_info ("msn", "servconn: read: %p\n", source);
 
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
-        status = msn_io_read (servconn->channel, buf, sizeof(buf), &bytes_read, &servconn->error);
+        status = msn_io_read (source, buf, sizeof(buf), &bytes_read, &servconn->error);
 
         if (status == G_IO_STATUS_AGAIN)
             return TRUE;

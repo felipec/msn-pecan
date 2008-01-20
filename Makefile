@@ -43,10 +43,13 @@ libmsn-pecan.so: $(objects)
 	$(CC) $(PURPLE_LIBS) $+ -shared -o $@
 
 %.o: %.c
-	$(CC) $(CFLAGS) $(PURPLE_CFLAGS) $+ -c -o $@
+	$(CC) $(CFLAGS) $(PURPLE_CFLAGS) $< -c -o $@
 
 clean:
 	rm -f libmsn-pecan.so $(objects)
+
+depend:
+	makedepend -Y -- $(CFLAGS) -- *.c
 
 install: libmsn-pecan.so
 	cp libmsn-pecan.so /usr/lib/purple-2
