@@ -109,6 +109,7 @@ parse_impl (CmdConnObject *conn,
         else
         {
             msn_cmdproc_process_cmd_text (conn->cmdproc, cur);
+            conn->payload_len = conn->cmdproc->last_cmd->payload_len;
         }
     } while (base_conn->connected && !conn->wasted && conn->rx_len > 0);
 
@@ -127,6 +128,95 @@ parse_impl (CmdConnObject *conn,
 
     g_free (old_rx_buf);
 }
+
+#if 0
+static void
+read_impl (ConnObject *conn)
+{
+    MsnBuffer *read_buffer;
+    int r;
+
+    read_buffer = conn->read_buffer;
+
+    read_buffer->size = MSN_BUF_SIZE;
+
+    if (conn->payload)
+    {
+        msn_buffer_prepare (conn->buffer, conn->payload->size);
+    }
+    else
+    {
+        msn_buffer_prepare (conn->buffer, read_buffer->size);
+    }
+
+    read_buffer->data = conn->buffer->data + conn->buffer->filled;
+
+    r = conn_end_object_read (conn->end, read_buffer->data, read_buffer->size, NULL, NULL);
+
+    if (r == 0)
+    {
+        /* connection closed */
+        conn_object_close (conn);
+        return;
+    }
+
+    if (r < 0)
+    {
+        /* connection error */
+        conn_object_close (conn);
+        return;
+    }
+
+    read_buffer->filled = r;
+    /* msn_print ("read [%b]\n", read_buffer); */
+
+    conn->buffer->filled += read_buffer->filled;
+
+    while (conn->parse_pos < conn->buffer->filled)
+    {
+        if (conn->payload)
+        {
+            guint size;
+            size = MIN (conn->payload->size - conn->payload->filled,
+                        conn->buffer->filled - conn->parse_pos);
+
+            conn->payload->filled += size;
+            conn->parse_pos += size;
+
+            if (conn->payload->filled == conn->payload->size)
+            {
+                if (conn->payload_cb)
+                {
+                    conn->payload->data = conn->buffer->data + conn->last_parse_pos;
+                    conn->payload_cb (conn, conn->payload);
+                }
+                msn_buffer_free (conn->payload);
+                conn->payload = NULL;
+                conn->parsed = TRUE;
+                conn->last_parse_pos = conn->parse_pos;
+            }
+        }
+        else
+        {
+            /* CONN_OBJECT_GET_CLASS (conn)->parse (conn); */
+        }
+
+        /** @todo only if parsed? yes indeed! */
+        if (conn->parsed)
+        {
+            if (conn->parse_pos == conn->buffer->filled)
+            {
+                /* g_debug ("reset\n"); */
+                conn->buffer->filled = 0;
+                conn->parse_pos = 0;
+                conn->last_parse_pos = 0;
+            }
+
+            conn->parsed = FALSE;
+        }
+    }
+}
+#endif
 
 /* GObject stuff. */
 
@@ -159,8 +249,6 @@ class_init (gpointer g_class,
     GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
 
 #if 0
-    conn_class->connect = &connect_impl;
-    conn_class->error = &error_impl;
     conn_class->read = &read_impl;
 #endif
     conn_class->parse = &parse_impl;

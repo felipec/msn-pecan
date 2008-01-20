@@ -52,38 +52,16 @@ conn_object_new (gchar *name, ConnObjectType type)
 void
 conn_object_free (ConnObject *conn)
 {
+    g_return_if_fail (conn != NULL);
     msn_log ("begin");
-
-    conn_object_close (conn);
     g_object_unref (G_OBJECT (conn));
-
     msn_log ("end");
-}
-
-void
-conn_object_send_cmd (ConnObject *conn, MsnCmd *cmd)
-{
-    gchar *buf;
-    int r;
-
-    buf = g_strdup_printf ("%s %d %s\r\n", cmd->id, cmd->trid, cmd->args);
-
-    r = conn_end_object_write (conn->end, buf, strlen (buf), NULL, NULL);
-
-    /* msn_print (">> %v\n", MSN_TYPE_STRING, buf, r); */
-
-    g_free (buf);
-}
-
-gchar *
-conn_object_to_string (ConnObject *conn)
-{
-    return g_strdup_printf ("%s (%s:%d)", conn->name, conn->hostname, conn->port);
 }
 
 void
 conn_object_error (ConnObject *conn)
 {
+    g_return_if_fail (conn != NULL);
     CONN_OBJECT_GET_CLASS (conn)->error (conn);
 }
 
@@ -217,96 +195,17 @@ conn_object_close (ConnObject *conn)
         purple_proxy_connect_cancel (conn->connect_data);
         conn->connect_data = NULL;
     }
+
+    if (conn->read_watch)
+    {
+        g_source_remove (conn->read_watch);
+        conn->read_watch = 0;
+    }
+
+    conn_end_object_close (conn->end);
 }
 
 /* ConnObject stuff. */
-
-static void
-read_impl (ConnObject *conn)
-{
-    MsnBuffer *read_buffer;
-    int r;
-
-    read_buffer = conn->read_buffer;
-
-    read_buffer->size = MSN_BUF_SIZE;
-
-    if (conn->payload)
-    {
-        msn_buffer_prepare (conn->buffer, conn->payload->size);
-    }
-    else
-    {
-        msn_buffer_prepare (conn->buffer, read_buffer->size);
-    }
-
-    read_buffer->data = conn->buffer->data + conn->buffer->filled;
-
-    r = conn_end_object_read (conn->end, read_buffer->data, read_buffer->size, NULL, NULL);
-
-    if (r == 0)
-    {
-        /* connection closed */
-        conn_object_close (conn);
-        return;
-    }
-
-    if (r < 0)
-    {
-        /* connection error */
-        conn_object_close (conn);
-        return;
-    }
-
-    read_buffer->filled = r;
-    /* msn_print ("read [%b]\n", read_buffer); */
-
-    conn->buffer->filled += read_buffer->filled;
-
-    while (conn->parse_pos < conn->buffer->filled)
-    {
-        if (conn->payload)
-        {
-            guint size;
-            size = MIN (conn->payload->size - conn->payload->filled,
-                        conn->buffer->filled - conn->parse_pos);
-
-            conn->payload->filled += size;
-            conn->parse_pos += size;
-
-            if (conn->payload->filled == conn->payload->size)
-            {
-                if (conn->payload_cb)
-                {
-                    conn->payload->data = conn->buffer->data + conn->last_parse_pos;
-                    conn->payload_cb (conn, conn->payload);
-                }
-                msn_buffer_free (conn->payload);
-                conn->payload = NULL;
-                conn->parsed = TRUE;
-                conn->last_parse_pos = conn->parse_pos;
-            }
-        }
-        else
-        {
-            /* CONN_OBJECT_GET_CLASS (conn)->parse (conn); */
-        }
-
-        /** @todo only if parsed? yes indeed! */
-        if (conn->parsed)
-        {
-            if (conn->parse_pos == conn->buffer->filled)
-            {
-                /* g_debug ("reset\n"); */
-                conn->buffer->filled = 0;
-                conn->parse_pos = 0;
-                conn->last_parse_pos = 0;
-            }
-
-            conn->parsed = FALSE;
-        }
-    }
-}
 
 static void
 connect_impl (ConnObject *conn)
@@ -316,6 +215,12 @@ connect_impl (ConnObject *conn)
 
 static void
 error_impl (ConnObject *conn)
+{
+    msn_info ("foo");
+}
+
+static void
+read_impl (ConnObject *conn)
 {
     msn_info ("foo");
 }
@@ -337,6 +242,7 @@ conn_object_dispose (GObject *obj)
     {
         conn->dispose_has_run = TRUE;
 
+        conn_object_close (conn);
         conn_end_object_free (conn->end);
 
         msn_buffer_free (conn->read_buffer);

@@ -70,25 +70,25 @@ conn_end_object_new (GIOChannel *channel)
 }
 
 void
-conn_end_object_free (ConnEndObject *conn)
+conn_end_object_free (ConnEndObject *conn_end)
 {
-    if (!conn)
-        return;
-
+    g_return_if_fail (conn_end != NULL);
     msn_log ("begin");
-    g_object_unref (G_OBJECT (conn));
+    g_object_unref (G_OBJECT (conn_end));
     msn_log ("end");
 }
 
 void
 conn_end_object_connect (ConnEndObject *conn_end)
 {
+    g_return_if_fail (conn_end != NULL);
     CONN_END_OBJECT_GET_CLASS (conn_end)->connect (conn_end);
 }
 
 void
 conn_end_object_close (ConnEndObject *conn_end)
 {
+    g_return_if_fail (conn_end != NULL);
     CONN_END_OBJECT_GET_CLASS (conn_end)->close (conn_end);
 }
 
@@ -122,10 +122,13 @@ connect_impl (ConnEndObject *conn_end)
 static void
 close_impl (ConnEndObject *conn_end)
 {
-    msn_info ("channel shutdown: %p", conn_end->channel);
-    g_io_channel_shutdown (conn_end->channel, FALSE, NULL);
-    g_io_channel_unref (conn_end->channel);
-    conn_end->channel = NULL;
+    if (conn_end->channel)
+    {
+        msn_info ("channel shutdown: %p", conn_end->channel);
+        g_io_channel_shutdown (conn_end->channel, FALSE, NULL);
+        g_io_channel_unref (conn_end->channel);
+        conn_end->channel = NULL;
+    }
 }
 
 static GIOStatus

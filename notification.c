@@ -416,7 +416,7 @@ msg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     if (cmd->payload == NULL)
     {
         cmdproc->last_cmd->payload_cb  = msg_cmd_post;
-        cmdproc->servconn->payload_len = atoi(cmd->params[2]);
+        cmd->payload_len = atoi(cmd->params[2]);
     }
     else
     {
