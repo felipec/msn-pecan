@@ -23,11 +23,9 @@
 #include "servconn.h"
 #include "error.h"
 
-#include "msn_io.h"
 #include "msn_log.h"
 
 static gboolean read_cb (GIOChannel *source, GIOCondition condition, gpointer data);
-static gboolean error_cb (GIOChannel *source, GIOCondition condition, gpointer data);
 
 /**************************************************************************
  * Main
@@ -74,8 +72,7 @@ msn_servconn_destroy(MsnServConn *servconn)
         return;
     }
 
-    if (servconn->connected)
-        msn_servconn_disconnect(servconn);
+    conn_end_object_free (servconn->conn_end);
 
     if (servconn->destroy_cb)
         servconn->destroy_cb(servconn);
@@ -195,15 +192,13 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
 
     if (source >= 0)
     {
-        servconn->channel = g_io_channel_unix_new (source);
+        GIOChannel *channel = g_io_channel_unix_new (source);
+
+        servconn->conn_end = conn_end_object_new (channel);
         servconn->connected = TRUE;
 
-        g_io_channel_set_encoding (servconn->channel, NULL, NULL);
-        g_io_channel_set_buffered (servconn->channel, FALSE);
-
-        msn_info ("connected: %p", servconn->channel);
-        servconn->read_watch = g_io_add_watch (servconn->channel, G_IO_IN, read_cb, servconn);
-        g_io_add_watch (servconn->channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, error_cb, servconn);
+        msn_info ("connected: %p", channel);
+        servconn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, servconn);
 
         /* Someone wants to know we connected. */
         servconn->connect_cb(servconn);
@@ -298,16 +293,13 @@ msn_servconn_disconnect(MsnServConn *servconn)
         servconn->connect_data = NULL;
     }
 
-    if (servconn->channel)
+    if (servconn->read_watch)
     {
         g_source_remove (servconn->read_watch);
         servconn->read_watch = 0;
-
-        msn_info ("channel shutdown: %p", servconn->channel);
-        g_io_channel_shutdown (servconn->channel, FALSE, NULL);
-        g_io_channel_unref (servconn->channel);
-        servconn->channel = NULL;
     }
+
+    conn_end_object_close (servconn->conn_end);
 
     servconn->rx_buf = NULL;
     servconn->rx_len = 0;
@@ -321,32 +313,6 @@ msn_servconn_disconnect(MsnServConn *servconn)
     msn_log ("end");
 }
 
-#if 0
-static void
-servconn_write_cb(gpointer data, gint source, PurpleInputCondition cond)
-{
-    MsnServConn *servconn = data;
-    int writelen;
-    gsize written;
-    GIOStatus status;
-
-    writelen = purple_circ_buffer_get_max_read(servconn->tx_buf);
-
-    status = msn_io_write (servconn->channel, servconn->tx_buf->outptr, writelen, &written);
-
-    if (status == G_IO_STATUS_AGAIN)
-        return;
-
-    if (status != G_IO_STATUS_NORMAL)
-    {
-        msn_servconn_got_error(servconn, MSN_SERVCONN_ERROR_WRITE);
-        return;
-    }
-
-    purple_circ_buffer_mark_read(servconn->tx_buf, written);
-}
-#endif
-
 gssize
 msn_servconn_write(MsnServConn *servconn, const char *buf, gsize len)
 {
@@ -354,7 +320,7 @@ msn_servconn_write(MsnServConn *servconn, const char *buf, gsize len)
 
     g_return_val_if_fail(servconn != NULL, 0);
 
-    msn_debug ("write: %p", servconn->channel);
+    msn_debug ("servconn=%p", servconn);
 
     if (!servconn->session->http_method)
     {
@@ -364,27 +330,18 @@ msn_servconn_write(MsnServConn *servconn, const char *buf, gsize len)
         switch (servconn->type)
         {
             case MSN_SERVCONN_DC:
-                status = msn_io_write (servconn->channel, &len, sizeof(len), NULL);
-                status = msn_io_write (servconn->channel, buf, len, &bytes_written);
+                status = conn_end_object_write (servconn->conn_end, &len, sizeof(len), &bytes_written, &servconn->error);
+                status = conn_end_object_write (servconn->conn_end, buf, len, &bytes_written, &servconn->error);
                 break;
             default:
-                status = msn_io_write_full (servconn->channel, buf, len, &bytes_written);
+                status = conn_end_object_write (servconn->conn_end, buf, len, &bytes_written, &servconn->error);
                 break;
         }
 #else
-        status = msn_io_write_full (servconn->channel, buf, len, &bytes_written, &servconn->error);
+        status = conn_end_object_write (servconn->conn_end, buf, len, &bytes_written, &servconn->error);
 #endif
 
-        if (status == G_IO_STATUS_NORMAL)
-        {
-            if (bytes_written < len)
-            {
-                /* This shouldn't happen, right? */
-                msn_error ("write check: %d, %d", bytes_written, len);
-                purple_circ_buffer_append(servconn->tx_buf, buf + bytes_written, len - bytes_written);
-            }
-        }
-        else
+        if (status != G_IO_STATUS_NORMAL)
         {
             msn_servconn_got_error(servconn, MSN_SERVCONN_ERROR_WRITE);
         }
@@ -404,27 +361,6 @@ msn_servconn_write(MsnServConn *servconn, const char *buf, gsize len)
 }
 
 static gboolean
-error_cb (GIOChannel *source,
-          GIOCondition condition,
-          gpointer data)
-{
-    const char *cond_id;
-
-    switch (condition)
-    {
-        case G_IO_PRI: cond_id = "PRI"; break;
-        case G_IO_ERR: cond_id = "ERR"; break;
-        case G_IO_HUP: cond_id = "HUP"; break;
-        case G_IO_NVAL: cond_id = "NVAL"; break;
-        default: cond_id = NULL; break;
-    }
-
-    msn_warning ("source=%p,condition=%s", source, cond_id);
-
-    return FALSE;
-}
-
-static gboolean
 read_cb (GIOChannel *source,
          GIOCondition condition,
          gpointer data)
@@ -439,19 +375,19 @@ read_cb (GIOChannel *source,
     servconn = data;
     session = servconn->session;
 
-    msn_debug ("read: %p", source);
+    msn_debug ("source=%p", source);
 
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
-        status = msn_io_read (source, buf, sizeof(buf), &bytes_read, &servconn->error);
+        status = conn_end_object_read (servconn->conn_end, buf, sizeof(buf), &bytes_read, &servconn->error);
 
         if (status == G_IO_STATUS_AGAIN)
             return TRUE;
 
         if (status != G_IO_STATUS_NORMAL)
         {
-            msn_servconn_got_error(servconn, MSN_SERVCONN_ERROR_READ);
+            msn_servconn_got_error (servconn, MSN_SERVCONN_ERROR_READ);
             return FALSE;
         }
     }

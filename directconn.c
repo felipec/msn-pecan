@@ -182,12 +182,12 @@ msn_directconn_write(MsnDirectConn *directconn,
     body_len = GUINT32_TO_LE(len);
 
     /* Let's write the length of the data. */
-    status = msn_io_write_full (directconn->channel, (gchar *) &body_len, sizeof(body_len), &tmp, NULL);
+    status = conn_end_object_write (directconn->conn_end, (gchar *) &body_len, sizeof(body_len), &tmp, NULL);
 
     if (status == G_IO_STATUS_NORMAL)
     {
         /* Let's write the data. */
-        status = msn_io_write_full (directconn->channel, data, len, &tmp, NULL);
+        status = conn_end_object_write (directconn->conn_end, data, len, &tmp, NULL);
     }
 
     if (status == G_IO_STATUS_NORMAL)
@@ -277,7 +277,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     directconn = data;
 
     /* Let's read the length of the data. */
-    if (msn_io_read_full (directconn->channel, (gchar *) &body_len, sizeof(body_len), &len, NULL) != G_IO_STATUS_NORMAL)
+    if (msn_io_read_full (source, (gchar *) &body_len, sizeof(body_len), &len, NULL) != G_IO_STATUS_NORMAL)
     {
         msn_directconn_destroy(directconn);
         return FALSE;
@@ -297,7 +297,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     }
 
     /* Let's read the data. */
-    if (msn_io_read_full (directconn->channel, body, body_len, &len, NULL) != G_IO_STATUS_NORMAL)
+    if (msn_io_read_full (source, body, body_len, &len, NULL) != G_IO_STATUS_NORMAL)
     {
         msn_directconn_destroy(directconn);
         return FALSE;
@@ -333,27 +333,6 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     return TRUE;
 }
 
-static gboolean
-error_cb (GIOChannel *source,
-          GIOCondition condition,
-          gpointer data)
-{
-    const char *cond_id;
-
-    switch (condition)
-    {
-        case G_IO_PRI: cond_id = "PRI"; break;
-        case G_IO_ERR: cond_id = "ERR"; break;
-        case G_IO_HUP: cond_id = "HUP"; break;
-        case G_IO_NVAL: cond_id = "NVAL"; break;
-        default: cond_id = NULL; break;
-    }
-
-    msn_warning ("source=%p,condition=%s", source, cond_id);
-
-    return FALSE;
-}
-
 static void
 connect_cb(gpointer data, gint source, const gchar *error_message)
 {
@@ -378,12 +357,13 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
 
     if (fd > 0)
     {
-        directconn->channel = g_io_channel_unix_new (fd);
-        g_io_channel_set_encoding (directconn->channel, NULL, NULL);
-        g_io_channel_set_buffered (directconn->channel, FALSE);
+        GIOChannel *channel = g_io_channel_unix_new (fd);
 
-        directconn->read_watch = g_io_add_watch (directconn->channel, G_IO_IN, read_cb, directconn);
-        g_io_add_watch (directconn->channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, error_cb, directconn);
+        directconn->conn_end = conn_end_object_new (channel);
+        directconn->connected = TRUE;
+
+        msn_info ("connected: %p", channel);
+        directconn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, directconn);
 
         /* Send foo. */
         msn_directconn_write(directconn, "foo\0", 4);
@@ -485,16 +465,13 @@ msn_directconn_destroy(MsnDirectConn *directconn)
     if (directconn->connect_data != NULL)
         purple_proxy_connect_cancel(directconn->connect_data);
 
-    if (directconn->channel)
+    if (directconn->read_watch)
     {
         g_source_remove (directconn->read_watch);
         directconn->read_watch = 0;
-
-        msn_info ("channel shutdown: %p", directconn->channel);
-        g_io_channel_shutdown (directconn->channel, FALSE, NULL);
-        g_io_channel_unref (directconn->channel);
-        directconn->channel = NULL;
     }
+
+    conn_end_object_free (directconn->conn_end);
 
     if (directconn->nonce != NULL)
         g_free(directconn->nonce);

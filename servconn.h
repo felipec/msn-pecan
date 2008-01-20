@@ -61,7 +61,8 @@ struct _MsnServConn
     MsnSession *session;  /**< The MSN session of this connection. */
     MsnCmdProc *cmdproc;  /**< The command processor of this connection. */
 
-    GIOChannel *channel; /**< The current IO channel .*/
+    ConnEndObject *conn_end;
+
     GError *error; /**< The current IO error .*/
     guint read_watch; /** < The source id of the read watch. */
 

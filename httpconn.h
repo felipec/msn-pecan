@@ -29,6 +29,7 @@ typedef struct _MsnHttpConn MsnHttpConn;
 #include "servconn.h"
 
 #include "msn_log.h"
+#include "io/conn_end.h"
 
 /**
  * An HTTP Connection.
@@ -53,7 +54,8 @@ struct _MsnHttpConn
     char *host; /**< The HTTP gateway host. */
     GList *queue; /**< The queue of data chunks to write. */
 
-    GIOChannel *channel; /**< The current IO channel .*/
+    ConnEndObject *conn_end;
+
     GError *error; /**< The current IO error .*/
     guint read_watch; /** < The source id of the read watch. */
     guint timer; /**< The timer for polling. */

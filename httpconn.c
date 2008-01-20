@@ -24,8 +24,6 @@
 #include "debug.h"
 #include "httpconn.h"
 
-#include "msn_io.h"
-
 typedef struct
 {
     MsnHttpConn *httpconn;
@@ -283,12 +281,12 @@ read_cb (GIOChannel *source,
     servconn = httpconn->servconn;
     session = httpconn->session;
 
-    msn_debug ("read: %p", source);
+    msn_info ("source=%p", source);
 
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
-        status = msn_io_read (source, buf, sizeof(buf) - 1, &bytes_read, &servconn->error);
+        status = conn_end_object_read (httpconn->conn_end, buf, sizeof(buf) - 1, &bytes_read, &servconn->error);
 
         if (status == G_IO_STATUS_AGAIN)
             return TRUE;
@@ -447,40 +445,17 @@ write_raw(MsnHttpConn *httpconn, const char *data, gsize data_len)
     gsize bytes_written = 0;
 
     servconn = httpconn->servconn;
-    msn_debug ("write: %p", httpconn->channel);
 
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
-        status = msn_io_write_full (httpconn->channel, data, data_len, &bytes_written, &servconn->error);
+        status = conn_end_object_write (httpconn->conn_end, data, data_len, &bytes_written, &servconn->error);
 
-        if (status == G_IO_STATUS_NORMAL)
+        if (status != G_IO_STATUS_NORMAL)
         {
-            if (bytes_written < data_len)
-            {
-                /* This shouldn't happen, right? */
-                msn_error ("write check: %d, %d", bytes_written, data_len);
-                purple_circ_buffer_append(httpconn->tx_buf, data + bytes_written, data_len - bytes_written);
-            }
-        }
-        else
-        {
-            msn_servconn_got_error(servconn, MSN_SERVCONN_ERROR_WRITE);
+            msn_servconn_got_error (servconn, MSN_SERVCONN_ERROR_WRITE);
         }
     }
-
-#if 0
-    if (res < 0 || (gsize) res < data_len)
-    {
-        if (res < 0)
-            res = 0;
-        if (httpconn->tx_handler == 0 && httpconn->fd)
-            httpconn->tx_handler = purple_input_add(httpconn->fd,
-                                                    PURPLE_INPUT_WRITE, httpconn_write_cb, httpconn);
-        purple_circ_buffer_append(httpconn->tx_buf, data + res,
-                                  data_len - res);
-    }
-#endif
 
     return TRUE;
 }
@@ -691,8 +666,7 @@ msn_httpconn_destroy(MsnHttpConn *httpconn)
 {
     g_return_if_fail(httpconn != NULL);
 
-    if (httpconn->connected)
-        msn_httpconn_disconnect(httpconn);
+    conn_end_object_free (httpconn->conn_end);
 
     g_free(httpconn->full_session_id);
 
@@ -717,31 +691,22 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
 
     if (source >= 0)
     {
-#if 0
-        httpconn->inpa = purple_input_add(httpconn->fd, PURPLE_INPUT_READ,
-                                          read_cb, data);
+        GIOChannel *channel = g_io_channel_unix_new (source);
 
-        httpconn->timer = purple_timeout_add(2000, msn_httpconn_poll, httpconn);
-#endif
-
-        httpconn->channel = g_io_channel_unix_new (source);
+        httpconn->conn_end = conn_end_object_new (channel);
         httpconn->connected = TRUE;
 
-        g_io_channel_set_encoding (httpconn->channel, NULL, NULL);
-        g_io_channel_set_buffered (httpconn->channel, FALSE);
-
-        msn_info ("connected: %p", httpconn->channel);
-        httpconn->read_watch = g_io_add_watch (httpconn->channel, G_IO_IN, read_cb, httpconn);
-        /* g_io_add_watch (httpconn->channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, error_cb, httpconn); */
+        msn_info ("connected: %p", channel);
+        httpconn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, httpconn);
 
         httpconn->timer = g_timeout_add (2000, msn_httpconn_poll, httpconn);
 
-        msn_httpconn_process_queue(httpconn);
+        msn_httpconn_process_queue (httpconn);
     }
     else
     {
-        msn_error ("connection error");
-        msn_servconn_got_error(httpconn->servconn, MSN_SERVCONN_ERROR_CONNECT);
+        msn_error ("connection error: %p", source);
+        msn_servconn_got_error (httpconn->servconn, MSN_SERVCONN_ERROR_CONNECT);
     }
 }
 
@@ -787,16 +752,13 @@ msn_httpconn_disconnect(MsnHttpConn *httpconn)
         httpconn->timer = 0;
     }
 
-    if (httpconn->channel)
+    if (httpconn->read_watch)
     {
         g_source_remove (httpconn->read_watch);
         httpconn->read_watch = 0;
-
-        msn_info ("channel shutdown: %p", httpconn->channel);
-        g_io_channel_shutdown (httpconn->channel, FALSE, NULL);
-        g_io_channel_unref (httpconn->channel);
-        httpconn->channel = NULL;
     }
+
+    conn_end_object_close (httpconn->conn_end);
 
     g_free(httpconn->rx_buf);
     httpconn->rx_buf = NULL;

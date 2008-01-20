@@ -28,6 +28,8 @@ typedef struct _MsnDirectConn MsnDirectConn;
 #include "slp.h"
 #include "msg.h"
 
+#include "io/conn_end.h"
+
 struct _MsnDirectConn
 {
     MsnSlpLink *slplink;
@@ -40,8 +42,10 @@ struct _MsnDirectConn
 
     char *nonce;
 
-    GIOChannel *channel;
+    ConnEndObject *conn_end;
     guint read_watch;
+    gboolean connected;
+
     int port;
 
     int c;

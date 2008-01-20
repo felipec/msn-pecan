@@ -3,7 +3,7 @@ CC=gcc
 PURPLE_CFLAGS=`pkg-config --cflags purple`
 PURPLE_LIBS=`pkg-config --libs purple`
 
-CFLAGS=-Wall -ggdb
+CFLAGS=-Wall -ggdb -I.
 
 objects = \
 	cmdproc.o \
@@ -36,6 +36,7 @@ objects = \
 	msn_io.o \
 	msn_log.o \
 	msn_util.o \
+	io/conn_end.o \
 	fix-purple.o
 
 all: libmsn-pecan.so
