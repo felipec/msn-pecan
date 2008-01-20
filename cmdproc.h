@@ -33,6 +33,8 @@ typedef struct _MsnCmdProc MsnCmdProc;
 #include "table.h"
 #include "history.h"
 
+#include "io/conn.h"
+
 struct _MsnCmdProc
 {
 	MsnSession *session;
@@ -47,6 +49,7 @@ struct _MsnCmdProc
 	MsnHistory *history;
 
 	void *data; /**< Extra data, like the switchboard. */
+        ConnObject *conn;
 };
 
 MsnCmdProc *msn_cmdproc_new(MsnSession *session);

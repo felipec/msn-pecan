@@ -29,6 +29,8 @@ typedef struct MsnNotification MsnNotification;
 #include "servconn.h"
 #include "cmdproc.h"
 
+#include "io/conn.h"
+
 struct MsnNotification
 {
     MsnSession *session;

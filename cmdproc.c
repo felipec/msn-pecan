@@ -132,7 +132,10 @@ msn_cmdproc_send_trans(MsnCmdProc *cmdproc, MsnTransaction *trans)
 		len += trans->payload_len;
 	}
 
-	msn_servconn_write(servconn, data, len);
+        if (cmdproc->conn)
+            conn_object_write (cmdproc->conn, data, len);
+        else
+            msn_servconn_write (servconn, data, len);
 
 	g_free(data);
 }
@@ -174,7 +177,10 @@ msn_cmdproc_send_quick(MsnCmdProc *cmdproc, const char *command,
 
 	show_debug_cmd(cmdproc, FALSE, data);
 
-	msn_servconn_write(servconn, data, len);
+        if (cmdproc->conn)
+            conn_object_write (cmdproc->conn, data, len);
+        else
+            msn_servconn_write (servconn, data, len);
 
 	g_free(data);
 }

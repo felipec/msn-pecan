@@ -39,7 +39,6 @@ msn_servconn_new(MsnSession *session, MsnServConnType type)
     g_return_val_if_fail(session != NULL, NULL);
 
     msn_log ("begin");
-
     servconn = g_new0(MsnServConn, 1);
 
     servconn->type = type;
@@ -84,9 +83,12 @@ msn_servconn_destroy(MsnServConn *servconn)
 
     purple_circ_buffer_destroy(servconn->tx_buf);
 
-    msn_cmdproc_destroy(servconn->cmdproc);
-    g_free(servconn);
+    if (servconn->cmdproc)
+    {
+        msn_cmdproc_destroy (servconn->cmdproc);
+    }
 
+    g_free(servconn);
     msn_log ("end");
 }
 

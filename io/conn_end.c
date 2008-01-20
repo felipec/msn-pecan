@@ -53,6 +53,8 @@ conn_end_object_new (GIOChannel *channel)
 {
     ConnEndObject *conn_end;
 
+    msn_log ("begin");
+
     conn_end = CONN_END_OBJECT (g_type_create_instance (CONN_END_OBJECT_TYPE));
 
     conn_end->channel = channel;
@@ -62,13 +64,20 @@ conn_end_object_new (GIOChannel *channel)
 
     g_io_add_watch (channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, error_cb, conn_end);
 
+    msn_log ("end");
+
     return conn_end;
 }
 
 void
 conn_end_object_free (ConnEndObject *conn)
 {
+    if (!conn)
+        return;
+
+    msn_log ("begin");
     g_object_unref (G_OBJECT (conn));
+    msn_log ("end");
 }
 
 void
@@ -139,6 +148,8 @@ read_impl (ConnEndObject *conn_end,
         msn_warning ("not normal");
     }
 
+    msn_log ("bytes_read=%d", bytes_read);
+
     if (ret_bytes_read)
         *ret_bytes_read = bytes_read;
 
@@ -162,6 +173,8 @@ write_impl (ConnEndObject *conn_end,
     msn_debug ("write: %p", conn_end->channel);
 
     status = msn_io_write_full (conn_end->channel, buf, count, &bytes_written, &error);
+
+    msn_log ("bytes_written=%d", bytes_written);
 
     if (status == G_IO_STATUS_NORMAL)
     {

@@ -36,7 +36,10 @@ objects = \
 	msn_io.o \
 	msn_log.o \
 	msn_util.o \
+	io/conn.o \
 	io/conn_end.o \
+	io/cmd.o \
+	io/buffer.o \
 	fix-purple.o
 
 all: libmsn-pecan.so

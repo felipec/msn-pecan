@@ -62,9 +62,20 @@ msn_notification_new(MsnSession *session)
     notification->servconn = servconn = msn_servconn_new(session, MSN_SERVCONN_NS);
     msn_servconn_set_destroy_cb(servconn, destroy_cb);
 
+    notification->conn = conn_object_new ("notification server", MSN_CONN_NS);
+    notification->conn->session = session;
+    notification->conn->cmdproc = servconn->cmdproc;
+    servconn->cmdproc->cbs_table = cbs_table;
+    servconn->cmdproc->conn = notification->conn;
+
+#if 0
     notification->cmdproc = servconn->cmdproc;
     notification->cmdproc->data = notification;
     notification->cmdproc->cbs_table = cbs_table;
+#else
+    /* msn_cmdproc_destroy (servconn->cmdproc); */
+    servconn->cmdproc = NULL;
+#endif
 
     return notification;
 }
@@ -72,7 +83,10 @@ msn_notification_new(MsnSession *session)
 void
 msn_notification_destroy(MsnNotification *notification)
 {
-    notification->cmdproc->data = NULL;
+    if (notification->cmdproc)
+        notification->cmdproc->data = NULL;
+
+    conn_object_free (notification->conn);
 
     msn_servconn_set_destroy_cb(notification->servconn, NULL);
 
@@ -121,6 +135,27 @@ connect_cb(MsnServConn *servconn)
     g_free(vers);
 }
 
+static void
+connect_cb_2 (ConnObject *conn)
+{
+    MsnSession *session;
+
+    g_return_if_fail(conn != NULL);
+
+    session = conn->session;
+
+    msn_info ("foo");
+
+    conn->cmdproc->servconn->connected = TRUE;
+
+    if (session->login_step == MSN_LOGIN_STEP_START)
+        msn_session_set_login_step (session, MSN_LOGIN_STEP_HANDSHAKE);
+    else
+        msn_session_set_login_step (session, MSN_LOGIN_STEP_HANDSHAKE2);
+
+    msn_cmdproc_send (conn->cmdproc, "VER", "MSNP9 CVR0");
+}
+
 gboolean
 msn_notification_connect(MsnNotification *notification, const char *host, int port)
 {
@@ -130,10 +165,16 @@ msn_notification_connect(MsnNotification *notification, const char *host, int po
 
     servconn = notification->servconn;
 
+    free (NULL);
+
+#if 0
     msn_servconn_set_connect_cb(servconn, connect_cb);
     notification->in_use = msn_servconn_connect(servconn, host, port);
+#endif
+    conn_object_connect (notification->conn, host, port);
+    notification->conn->connect_cb = connect_cb_2;
 
-    return notification->in_use;
+    return TRUE;
 }
 
 void
