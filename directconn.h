@@ -41,6 +41,7 @@ struct _MsnDirectConn
     char *nonce;
 
     GIOChannel *channel;
+    guint read_watch;
     int port;
 
     int c;

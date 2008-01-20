@@ -191,9 +191,9 @@ msn_directconn_write(MsnDirectConn *directconn,
 
     if (status == G_IO_STATUS_NORMAL)
     {
-#ifdef DEBUG_DC
+#ifdef MSN_DEBUG_DC_FILES
         char *str;
-        str = g_strdup_printf("%s/msntest/w%.4d.bin", g_get_home_dir(), directconn->c);
+        str = g_strdup_printf("%s/msntest/%s/w%.4d.bin", g_get_home_dir(), "dc", directconn->c);
 
         FILE *tf = g_fopen(str, "w");
         fwrite(&body_len, 1, sizeof(body_len), tf);
@@ -306,14 +306,17 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     {
         MsnMessage *msg;
 
-#ifdef DEBUG_DC
-        str = g_strdup_printf("/home/revo/msntest/r%.4d.bin", directconn->c);
+#ifdef MSN_DEBUG_DC_FILES
+        {
+            char *str;
+            str = g_strdup_printf("%s/msntest/%s/r%04d.bin", g_get_home_dir(), "dc", directconn->c);
 
-        FILE *tf = g_fopen(str, "w");
-        fwrite(body, 1, len, tf);
-        fclose(tf);
+            FILE *tf = g_fopen(str, "w");
+            fwrite(body, 1, len, tf);
+            fclose(tf);
 
-        g_free(str);
+            g_free(str);
+        }
 #endif
 
         directconn->c++;
@@ -325,6 +328,27 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     }
 
     return TRUE;
+}
+
+static gboolean
+error_cb (GIOChannel *source,
+          GIOCondition condition,
+          gpointer data)
+{
+    const char *cond_id;
+
+    switch (condition)
+    {
+        case G_IO_PRI: cond_id = "PRI"; break;
+        case G_IO_ERR: cond_id = "ERR"; break;
+        case G_IO_HUP: cond_id = "HUP"; break;
+        case G_IO_NVAL: cond_id = "NVAL"; break;
+        default: cond_id = NULL; break;
+    }
+
+    purple_debug_warning ("msn", "directconn: error: %p: %s\n", source, cond_id);
+
+    return FALSE;
 }
 
 static void
@@ -352,7 +376,11 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
     if (fd > 0)
     {
         directconn->channel = g_io_channel_unix_new (fd);
-        g_io_add_watch (directconn->channel, G_IO_IN, read_cb, directconn);
+        g_io_channel_set_encoding (directconn->channel, NULL, NULL);
+        g_io_channel_set_buffered (directconn->channel, FALSE);
+
+        directconn->read_watch = g_io_add_watch (directconn->channel, G_IO_IN, read_cb, directconn);
+        g_io_add_watch (directconn->channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, error_cb, directconn);
 
         /* Send foo. */
         msn_directconn_write(directconn, "foo\0", 4);
@@ -389,7 +417,7 @@ msn_directconn_connect(MsnDirectConn *directconn, const char *host, int port)
 #if 0
     if (session->http_method)
     {
-        servconn->http_data->gateway_host = g_strdup(host);
+        directconn->http_data->gateway_host = g_strdup(host);
     }
 #endif
 
@@ -445,7 +473,15 @@ msn_directconn_destroy(MsnDirectConn *directconn)
         purple_proxy_connect_cancel(directconn->connect_data);
 
     if (directconn->channel)
+    {
+        g_source_remove (directconn->read_watch);
+        directconn->read_watch = 0;
+
+        purple_debug_info ("msn", "directconn: channel shutdown: %p\n", directconn->channel);
+        g_io_channel_shutdown (directconn->channel, FALSE, NULL);
         g_io_channel_unref (directconn->channel);
+        directconn->channel = NULL;
+    }
 
     if (directconn->nonce != NULL)
         g_free(directconn->nonce);
