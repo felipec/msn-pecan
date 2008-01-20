@@ -37,19 +37,19 @@ typedef struct _MsnCmdProc MsnCmdProc;
 
 struct _MsnCmdProc
 {
-	MsnSession *session;
-	MsnServConn *servconn;
+    MsnSession *session;
+    MsnServConn *servconn;
 
-	GQueue *txqueue;
+    GQueue *txqueue;
 
-	MsnCommand *last_cmd;
+    MsnCommand *last_cmd;
 
-	MsnTable *cbs_table;
+    MsnTable *cbs_table;
 
-	MsnHistory *history;
+    MsnHistory *history;
 
-	void *data; /**< Extra data, like the switchboard. */
-        ConnObject *conn;
+    void *data; /**< Extra data, like the switchboard. */
+    ConnObject *conn;
 };
 
 MsnCmdProc *msn_cmdproc_new(MsnSession *session);
@@ -59,18 +59,18 @@ void msn_cmdproc_process_queue(MsnCmdProc *cmdproc);
 
 void msn_cmdproc_send_trans(MsnCmdProc *cmdproc, MsnTransaction *trans);
 void msn_cmdproc_queue_trans(MsnCmdProc *cmdproc,
-							 MsnTransaction *trans);
+                             MsnTransaction *trans);
 void msn_cmdproc_send(MsnCmdProc *cmdproc, const char *command,
-					  const char *format, ...);
+                      const char *format, ...);
 void msn_cmdproc_send_quick(MsnCmdProc *cmdproc, const char *command,
-							const char *format, ...);
+                            const char *format, ...);
 
 void msn_cmdproc_process_msg(MsnCmdProc *cmdproc,
-							 MsnMessage *msg);
+                             MsnMessage *msg);
 void msn_cmdproc_process_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd);
 void msn_cmdproc_process_cmd_text(MsnCmdProc *cmdproc, const char *command);
 void msn_cmdproc_process_payload(MsnCmdProc *cmdproc,
-								 char *payload, int payload_len);
+                                 char *payload, int payload_len);
 
 void msn_cmdproc_disconnect(MsnCmdProc *cmdproc);
 

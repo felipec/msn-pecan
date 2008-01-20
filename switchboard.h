@@ -40,14 +40,14 @@ typedef struct _MsnSwitchBoard MsnSwitchBoard;
  */
 typedef enum
 {
-	MSN_SB_ERROR_NONE, /**< No error. */
-	MSN_SB_ERROR_CAL, /**< The user could not join (answer the call). */
-	MSN_SB_ERROR_OFFLINE, /**< The account is offline. */
-	MSN_SB_ERROR_USER_OFFLINE, /**< The user to call is offline. */
-	MSN_SB_ERROR_CONNECTION, /**< There was a connection error. */
-	MSN_SB_ERROR_TOO_FAST, /**< We are sending too fast */
-	MSN_SB_ERROR_AUTHFAILED, /**< Authentication failed joining the switchboard session */
-	MSN_SB_ERROR_UNKNOWN /**< An unknown error occurred. */
+    MSN_SB_ERROR_NONE, /**< No error. */
+    MSN_SB_ERROR_CAL, /**< The user could not join (answer the call). */
+    MSN_SB_ERROR_OFFLINE, /**< The account is offline. */
+    MSN_SB_ERROR_USER_OFFLINE, /**< The user to call is offline. */
+    MSN_SB_ERROR_CONNECTION, /**< There was a connection error. */
+    MSN_SB_ERROR_TOO_FAST, /**< We are sending too fast */
+    MSN_SB_ERROR_AUTHFAILED, /**< Authentication failed joining the switchboard session */
+    MSN_SB_ERROR_UNKNOWN /**< An unknown error occurred. */
 
 } MsnSBErrorType;
 
@@ -56,8 +56,8 @@ typedef enum
  */
 typedef enum
 {
-	MSN_SB_FLAG_IM = 0x01, /**< This switchboard is being used for a conversation. */
-	MSN_SB_FLAG_FT = 0x02, /**< This switchboard is being used for file transfer. */
+    MSN_SB_FLAG_IM = 0x01, /**< This switchboard is being used for a conversation. */
+    MSN_SB_FLAG_FT = 0x02, /**< This switchboard is being used for file transfer. */
 
 } MsnSBFlag;
 
@@ -68,42 +68,42 @@ typedef enum
  */
 struct _MsnSwitchBoard
 {
-	MsnSession *session;
-	MsnServConn *servconn;
-	MsnCmdProc *cmdproc;
-	char *im_user;
+    MsnSession *session;
+    MsnServConn *servconn;
+    MsnCmdProc *cmdproc;
+    char *im_user;
 
-	MsnSBFlag flag;
-	char *auth_key;
-	char *session_id;
+    MsnSBFlag flag;
+    char *auth_key;
+    char *session_id;
 
-	PurpleConversation *conv; /**< The conversation that displays the
-							  messages of this switchboard, or @c NULL if
-							  this is a helper switchboard. */
+    PurpleConversation *conv; /**< The conversation that displays the
+                                messages of this switchboard, or @c NULL if
+                                this is a helper switchboard. */
 
-	gboolean empty;			/**< A flag that states if the swithcboard has no
-							  users in it. */
-	gboolean invited;		/**< A flag that states if we were invited to the
-							  switchboard. */
-	gboolean ready;			/**< A flag that states if this switchboard is
-							  ready to be used. */
-	gboolean closed;		/**< A flag that states if the switchboard has
-							  been closed by the user. */
-	gboolean destroying;	/**< A flag that states if the switchboard is
-							  alredy on the process of destruction. */
+    gboolean empty;			/**< A flag that states if the swithcboard has no
+                                          users in it. */
+    gboolean invited;		/**< A flag that states if we were invited to the
+                                  switchboard. */
+    gboolean ready;			/**< A flag that states if this switchboard is
+                                          ready to be used. */
+    gboolean closed;		/**< A flag that states if the switchboard has
+                                  been closed by the user. */
+    gboolean destroying;	/**< A flag that states if the switchboard is
+                                  alredy on the process of destruction. */
 
-	int current_users;
-	int total_users;
-	GList *users;
+    int current_users;
+    int total_users;
+    GList *users;
 
-	int chat_id;
+    int chat_id;
 
-	GQueue *msg_queue; /**< Queue of messages to send. */
-	GList *ack_list; /**< List of messages waiting for an ack. */
+    GQueue *msg_queue; /**< Queue of messages to send. */
+    GList *ack_list; /**< List of messages waiting for an ack. */
 
-	MsnSBErrorType error; /**< The error that occurred in this switchboard
-							(if applicable). */
-	GList *slplinks; /**< The list of slplinks that are using this switchboard. */
+    MsnSBErrorType error; /**< The error that occurred in this switchboard
+                            (if applicable). */
+    GList *slplinks; /**< The list of slplinks that are using this switchboard. */
 };
 
 /**
@@ -193,7 +193,7 @@ gboolean msn_switchboard_is_invited(MsnSwitchBoard *swboard);
  * @return @c TRUE if able to connect, or @c FALSE otherwise.
  */
 gboolean msn_switchboard_connect(MsnSwitchBoard *swboard,
-								 const char *host, int port);
+                                 const char *host, int port);
 
 /**
  * Disconnects from a switchboard.
@@ -242,7 +242,7 @@ gboolean msn_switchboard_can_send(MsnSwitchBoard *swboard);
  * @return @c TRUE if a message can be sent, @c FALSE otherwise.
  */
 void msn_switchboard_send_msg(MsnSwitchBoard *swboard, MsnMessage *msg,
-							  gboolean queue);
+                              gboolean queue);
 
 gboolean msn_switchboard_chat_leave(MsnSwitchBoard *swboard);
 gboolean msn_switchboard_chat_invite(MsnSwitchBoard *swboard, const char *who);
