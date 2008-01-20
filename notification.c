@@ -100,42 +100,6 @@ msn_notification_destroy(MsnNotification *notification)
  **************************************************************************/
 
 static void
-connect_cb(MsnServConn *servconn)
-{
-    MsnCmdProc *cmdproc;
-    MsnSession *session;
-    PurpleAccount *account;
-    char **a, **c, *vers;
-    int i;
-
-    g_return_if_fail(servconn != NULL);
-
-    cmdproc = servconn->cmdproc;
-    session = servconn->session;
-    account = session->account;
-
-    /* Allocate an array for CVR0, NULL, and all the versions */
-    a = c = g_new0(char *, session->protocol_ver - 8 + 3);
-
-    for (i = session->protocol_ver; i >= 8; i--)
-        *c++ = g_strdup_printf("MSNP%d", i);
-
-    *c++ = g_strdup("CVR0");
-
-    vers = g_strjoinv(" ", a);
-
-    if (session->login_step == MSN_LOGIN_STEP_START)
-        msn_session_set_login_step(session, MSN_LOGIN_STEP_HANDSHAKE);
-    else
-        msn_session_set_login_step(session, MSN_LOGIN_STEP_HANDSHAKE2);
-
-    msn_cmdproc_send(cmdproc, "VER", "%s", vers);
-
-    g_strfreev(a);
-    g_free(vers);
-}
-
-static void
 connect_cb_2 (ConnObject *conn)
 {
     MsnSession *session;
@@ -167,10 +131,6 @@ msn_notification_connect(MsnNotification *notification, const char *host, int po
 
     servconn = notification->servconn;
 
-#if 0
-    msn_servconn_set_connect_cb(servconn, connect_cb);
-    notification->in_use = msn_servconn_connect(servconn, host, port);
-#endif
     conn_object_connect (notification->conn, host, port);
     CONN_OBJECT (notification->conn)->connect_cb = connect_cb_2;
 
@@ -180,11 +140,10 @@ msn_notification_connect(MsnNotification *notification, const char *host, int po
 void
 msn_notification_disconnect(MsnNotification *notification)
 {
-    g_return_if_fail(notification != NULL);
-    g_return_if_fail(notification->in_use);
+    g_return_if_fail (notification != NULL);
+    g_return_if_fail (notification->in_use);
 
-    msn_servconn_disconnect(notification->servconn);
-
+    msn_servconn_disconnect (notification->servconn);
     notification->in_use = FALSE;
 }
 
@@ -682,7 +641,7 @@ ipg_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload, size_t len)
 static void
 ipg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
-    cmdproc->servconn->payload_len = atoi(cmd->params[0]);
+    cmd->payload_len = atoi(cmd->params[0]);
     cmdproc->last_cmd->payload_cb = ipg_cmd_post;
 }
 
@@ -773,7 +732,7 @@ not_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload, size_t len)
 static void
 not_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
-    cmdproc->servconn->payload_len = atoi(cmd->params[0]);
+    cmd->payload_len = atoi(cmd->params[0]);
     cmdproc->last_cmd->payload_cb = not_cmd_post;
 }
 
