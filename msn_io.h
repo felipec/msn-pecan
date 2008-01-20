@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#ifndef MSN_IO
-#define MSN_IO
+#ifndef MSN_IO_H
+#define MSN_IO_H
 
 #include "msn.h"
 
@@ -27,4 +27,4 @@ GIOStatus msn_io_read_full (GIOChannel *channel, gchar *buf, gsize count, gsize 
 GIOStatus msn_io_write_full (GIOChannel *channel, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
 GIOStatus msn_io_flush (GIOChannel *channel, GError **error);
 
-#endif /* MSN_IO */
+#endif /* MSN_IO_H */

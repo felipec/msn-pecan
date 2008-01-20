@@ -27,6 +27,7 @@
 #include "slpmsg.h"
 
 #include "msn_io.h"
+#include "msn_log.h"
 
 /**************************************************************************
  * Directconn Specific
@@ -176,7 +177,7 @@ msn_directconn_write(MsnDirectConn *directconn,
 
     g_return_val_if_fail(directconn != NULL, 0);
 
-    purple_debug_info("msn", "directconn: write: %d\n", len);
+    msn_debug ("bytes_to_write=%d", len);
 
     body_len = GUINT32_TO_LE(len);
 
@@ -191,6 +192,8 @@ msn_directconn_write(MsnDirectConn *directconn,
 
     if (status == G_IO_STATUS_NORMAL)
     {
+        msn_debug ("bytes_written=%d", tmp);
+
 #ifdef MSN_DEBUG_DC_FILES
         char *str;
         str = g_strdup_printf("%s/msntest/%s/w%.4d.bin", g_get_home_dir(), "dc", directconn->c);
@@ -256,7 +259,7 @@ msn_directconn_send_msg(MsnDirectConn *directconn, MsnMessage *msg)
 static void
 msn_directconn_process_msg(MsnDirectConn *directconn, MsnMessage *msg)
 {
-    purple_debug_info("msn", "directconn: process_msg\n");
+    msn_debug ("process_msg");
 
     msn_slplink_process_msg(directconn->slplink, msg);
 }
@@ -269,7 +272,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     guint32 body_len;
     gsize len;
 
-    purple_debug_info("msn", "read_cb: %d, %d\n", source, condition);
+    msn_debug ("source=%d", source);
 
     directconn = data;
 
@@ -282,13 +285,13 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
 
     body_len = GUINT32_FROM_LE(body_len);
 
-    purple_debug_info("msn", "body_len=%d\n", body_len);
+    msn_info ("body_len=%d", body_len);
 
     body = g_try_malloc(body_len);
 
     if (!body)
     {
-        purple_debug_error("msn", "Failed to allocate memory for read\n");
+        msn_error ("failed to allocate memory for read");
 
         return FALSE;
     }
@@ -300,7 +303,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
         return FALSE;
     }
 
-    purple_debug_info("msn", "len=%d\n", len);
+    msn_info ("bytes_read=%d", len);
 
     if (len > 0)
     {
@@ -346,7 +349,7 @@ error_cb (GIOChannel *source,
         default: cond_id = NULL; break;
     }
 
-    purple_debug_warning ("msn", "directconn: error: %p: %s\n", source, cond_id);
+    msn_warning ("source=%p,condition=%s", source, cond_id);
 
     return FALSE;
 }
@@ -357,7 +360,7 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
     MsnDirectConn* directconn;
     int fd;
 
-    purple_debug_misc("msn", "directconn: connect_cb: %d\n", source);
+    msn_debug ("source=%d", source);
 
     directconn = data;
     directconn->connect_data = NULL;
@@ -390,7 +393,7 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
     }
     else
     {
-        purple_debug_error("msn", "bad input\n");
+        msn_error ("bad input");
     }
 }
 
@@ -398,7 +401,7 @@ static void
 directconn_connect_cb(gpointer data, gint source, const gchar *error_message)
 {
     if (error_message)
-        purple_debug_error("msn", "Error making direct connection: %s\n", error_message);
+        msn_error ("error establishing direct connection: %s", error_message);
 
     connect_cb(data, source, error_message);
 }
@@ -412,6 +415,8 @@ msn_directconn_connect(MsnDirectConn *directconn, const char *host, int port)
     g_return_val_if_fail(host       != NULL, TRUE);
     g_return_val_if_fail(port        > 0,    FALSE);
 
+    msn_log ("begin");
+
     session = directconn->slplink->session;
 
 #if 0
@@ -423,6 +428,8 @@ msn_directconn_connect(MsnDirectConn *directconn, const char *host, int port)
 
     directconn->connect_data = purple_proxy_connect(NULL, session->account,
                                                     host, port, directconn_connect_cb, directconn);
+
+    msn_log ("end");
 
     return (directconn->connect_data != NULL);
 }
@@ -454,14 +461,18 @@ msn_directconn_new(MsnSlpLink *slplink)
 {
     MsnDirectConn *directconn;
 
+    msn_log ("begin");
+
     directconn = g_new0(MsnDirectConn, 1);
 
     directconn->slplink = slplink;
 
     if (slplink->directconn != NULL)
-        purple_debug_info("msn", "got_transresp: LEAK\n");
+        msn_warning ("got_transresp: LEAK");
 
     slplink->directconn = directconn;
+
+    msn_log ("end");
 
     return directconn;
 }
@@ -469,6 +480,8 @@ msn_directconn_new(MsnSlpLink *slplink)
 void
 msn_directconn_destroy(MsnDirectConn *directconn)
 {
+    msn_log ("begin");
+
     if (directconn->connect_data != NULL)
         purple_proxy_connect_cancel(directconn->connect_data);
 
@@ -477,7 +490,7 @@ msn_directconn_destroy(MsnDirectConn *directconn)
         g_source_remove (directconn->read_watch);
         directconn->read_watch = 0;
 
-        purple_debug_info ("msn", "directconn: channel shutdown: %p\n", directconn->channel);
+        msn_info ("channel shutdown: %p", directconn->channel);
         g_io_channel_shutdown (directconn->channel, FALSE, NULL);
         g_io_channel_unref (directconn->channel);
         directconn->channel = NULL;
@@ -489,4 +502,6 @@ msn_directconn_destroy(MsnDirectConn *directconn)
     directconn->slplink->directconn = NULL;
 
     g_free(directconn);
+
+    msn_log ("end");
 }

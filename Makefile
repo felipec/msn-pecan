@@ -34,6 +34,7 @@ objects = \
 	user.o \
 	userlist.o \
 	msn_io.o \
+	msn_log.o \
 	msn_util.o \
 	fix-purple.o
 

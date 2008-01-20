@@ -24,6 +24,7 @@
 #include "error.h"
 
 #include "msn_io.h"
+#include "msn_log.h"
 
 static gboolean read_cb (GIOChannel *source, GIOCondition condition, gpointer data);
 static gboolean error_cb (GIOChannel *source, GIOCondition condition, gpointer data);
@@ -39,6 +40,8 @@ msn_servconn_new(MsnSession *session, MsnServConnType type)
 
     g_return_val_if_fail(session != NULL, NULL);
 
+    msn_log ("begin");
+
     servconn = g_new0(MsnServConn, 1);
 
     servconn->type = type;
@@ -53,6 +56,8 @@ msn_servconn_new(MsnSession *session, MsnServConnType type)
 
     servconn->tx_buf = purple_circ_buffer_new(MSN_BUF_LEN);
 
+    msn_log ("end");
+
     return servconn;
 }
 
@@ -60,6 +65,8 @@ void
 msn_servconn_destroy(MsnServConn *servconn)
 {
     g_return_if_fail(servconn != NULL);
+
+    msn_log ("begin");
 
     if (servconn->processing)
     {
@@ -82,6 +89,8 @@ msn_servconn_destroy(MsnServConn *servconn)
 
     msn_cmdproc_destroy(servconn->cmdproc);
     g_free(servconn);
+
+    msn_log ("end");
 }
 
 void
@@ -142,7 +151,7 @@ msn_servconn_got_error(MsnServConn *servconn, MsnServConnError error)
 
         reason = servconn->error ? servconn->error->message : _("Unknown");
 
-        purple_debug_error("msn", "connection error: %s (%s): %s\n", name, servconn->host, reason);
+        msn_error ("connection error: %s (%s): %s", name, servconn->host, reason);
         tmp = g_strdup_printf(_("Error %s %s server:\n%s"), when, name, reason);
     }
 
@@ -192,7 +201,7 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
         g_io_channel_set_encoding (servconn->channel, NULL, NULL);
         g_io_channel_set_buffered (servconn->channel, FALSE);
 
-        purple_debug_info("msn", "servconn: connected: %p\n", servconn->channel);
+        msn_info ("connected: %p", servconn->channel);
         servconn->read_watch = g_io_add_watch (servconn->channel, G_IO_IN, read_cb, servconn);
         g_io_add_watch (servconn->channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, error_cb, servconn);
 
@@ -201,7 +210,7 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
     }
     else
     {
-        purple_debug_error("msn", "servconn: connection error: %s\n", error_message);
+        msn_error ("connection error: %p: %s", error_message);
         msn_servconn_got_error(servconn, MSN_SERVCONN_ERROR_CONNECT);
     }
 }
@@ -210,10 +219,13 @@ gboolean
 msn_servconn_connect(MsnServConn *servconn, const char *host, int port)
 {
     MsnSession *session;
+    gboolean ret;
 
     g_return_val_if_fail(servconn != NULL, FALSE);
     g_return_val_if_fail(host     != NULL, FALSE);
     g_return_val_if_fail(port      > 0,    FALSE);
+
+    msn_log ("begin");
 
     session = servconn->session;
 
@@ -245,16 +257,22 @@ msn_servconn_connect(MsnServConn *servconn, const char *host, int port)
     if (servconn->connect_data != NULL)
     {
         servconn->processing = TRUE;
-        return TRUE;
+        ret = TRUE;
     }
     else
-        return FALSE;
+        ret = FALSE;
+
+    msn_log ("end");
+
+    return ret;
 }
 
 void
 msn_servconn_disconnect(MsnServConn *servconn)
 {
     g_return_if_fail(servconn != NULL);
+
+    msn_log ("begin");
 
     if (!servconn->connected)
     {
@@ -285,7 +303,7 @@ msn_servconn_disconnect(MsnServConn *servconn)
         g_source_remove (servconn->read_watch);
         servconn->read_watch = 0;
 
-        purple_debug_info ("msn", "servconn: channel shutdown: %p\n", servconn->channel);
+        msn_info ("channel shutdown: %p", servconn->channel);
         g_io_channel_shutdown (servconn->channel, FALSE, NULL);
         g_io_channel_unref (servconn->channel);
         servconn->channel = NULL;
@@ -299,6 +317,8 @@ msn_servconn_disconnect(MsnServConn *servconn)
 
     if (servconn->disconnect_cb != NULL)
         servconn->disconnect_cb(servconn);
+
+    msn_log ("end");
 }
 
 #if 0
@@ -334,7 +354,7 @@ msn_servconn_write(MsnServConn *servconn, const char *buf, gsize len)
 
     g_return_val_if_fail(servconn != NULL, 0);
 
-    purple_debug_info("msn", "servconn: write: %p\n", servconn->channel);
+    msn_debug ("write: %p", servconn->channel);
 
     if (!servconn->session->http_method)
     {
@@ -359,7 +379,8 @@ msn_servconn_write(MsnServConn *servconn, const char *buf, gsize len)
         {
             if (written < len)
             {
-                purple_debug_error("msn", "servconn write test: %d, %d\n", written, len);
+                /* This shouldn't happen, right? */
+                msn_error ("servconn write test: %d, %d", written, len);
                 purple_circ_buffer_append(servconn->tx_buf, buf + written, len - written);
             }
         }
@@ -398,7 +419,7 @@ error_cb (GIOChannel *source,
         default: cond_id = NULL; break;
     }
 
-    purple_debug_warning ("msn", "servconn: error: %p: %s\n", source, cond_id);
+    msn_warning ("source=%p,condition=%s", source, cond_id);
 
     return FALSE;
 }
@@ -418,7 +439,7 @@ read_cb (GIOChannel *source,
     servconn = data;
     session = servconn->session;
 
-    purple_debug_info ("msn", "servconn: read: %p\n", source);
+    msn_debug ("read: %p", source);
 
     {
         GIOStatus status = G_IO_STATUS_NORMAL;

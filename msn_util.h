@@ -19,8 +19,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_UTILS_H_
-#define _MSN_UTILS_H_
+
+#ifndef MSN_UTILS_H
+#define MSN_UTILS_H
 
 /**
  * Parses the MSN message formatting into a format compatible with Purple.
@@ -47,4 +48,4 @@ void msn_import_html(const char *html, char **attributes, char **message);
 void msn_parse_socket(const char *str, char **ret_host, int *ret_port);
 char *msn_rand_guid(void);
 
-#endif /* _MSN_UTILS_H_ */
+#endif /* MSN_UTIL_H */
