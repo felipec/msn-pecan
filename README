@@ -5,6 +5,8 @@ It's based on the code from 2.2.2 plues a few extras.
 * Server-side storage for aliases
 * Partial direct connection support
 * Improved network IO
+* Network problems tested with netem
+* GObject usage
 
 Future plans:
 
@@ -12,6 +14,7 @@ Future plans:
 * Send custom simleys
 * MSNP10 support
 * Personal messages
+* Complete GObjectification
 
 Some things will be done as workarounds/dirty hacks that's why this code is not proposed for merging into the official code.
 
