@@ -15,7 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
+
 #include "msn_log.h"
+
+#ifdef MSN_DEBUG
 
 static const gchar *
 log_level_to_string (enum MsnLogLevel level)
@@ -54,3 +57,5 @@ msn_base_log_helper (guint level,
 
     va_end (args);
 }
+
+#endif /* MSN_DEBUG */
