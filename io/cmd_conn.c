@@ -71,23 +71,23 @@ cmd_conn_object_send (CmdConnObject *conn,
 }
 
 static void
-parse_impl (CmdConnObject *conn,
+parse_impl (ConnObject *base_conn,
             gchar *buf,
             gsize bytes_read)
 {
-    ConnObject *base_conn;
+    CmdConnObject *cmd_conn;
     gchar *cur, *end, *old_rx_buf;
     gint cur_len;
 
-    base_conn = CONN_OBJECT (conn);
+    cmd_conn = CMD_CONN_OBJECT (base_conn);
 
     buf[bytes_read] = '\0';
 
-    conn->rx_buf = g_realloc (conn->rx_buf, bytes_read + conn->rx_len + 1);
-    memcpy (conn->rx_buf + conn->rx_len, buf, bytes_read + 1);
-    conn->rx_len += bytes_read;
+    cmd_conn->rx_buf = g_realloc (cmd_conn->rx_buf, bytes_read + cmd_conn->rx_len + 1);
+    memcpy (cmd_conn->rx_buf + cmd_conn->rx_len, buf, bytes_read + 1);
+    cmd_conn->rx_len += bytes_read;
 
-    end = old_rx_buf = conn->rx_buf;
+    end = old_rx_buf = cmd_conn->rx_buf;
 
     base_conn->processing = TRUE;
 
@@ -95,13 +95,13 @@ parse_impl (CmdConnObject *conn,
     {
         cur = end;
 
-        if (conn->payload_len)
+        if (cmd_conn->payload_len)
         {
-            if (conn->payload_len > conn->rx_len)
+            if (cmd_conn->payload_len > cmd_conn->rx_len)
                 /* The payload is still not complete. */
                 break;
 
-            cur_len = conn->payload_len;
+            cur_len = cmd_conn->payload_len;
             end += cur_len;
         }
         else
@@ -117,31 +117,31 @@ parse_impl (CmdConnObject *conn,
             cur_len = end - cur;
         }
 
-        conn->rx_len -= cur_len;
+        cmd_conn->rx_len -= cur_len;
 
-        if (conn->payload_len)
+        if (cmd_conn->payload_len)
         {
-            msn_cmdproc_process_payload (conn->cmdproc, cur, cur_len);
-            conn->payload_len = 0;
+            msn_cmdproc_process_payload (cmd_conn->cmdproc, cur, cur_len);
+            cmd_conn->payload_len = 0;
         }
         else
         {
-            msn_cmdproc_process_cmd_text (conn->cmdproc, cur);
-            conn->payload_len = conn->cmdproc->last_cmd->payload_len;
+            msn_cmdproc_process_cmd_text (cmd_conn->cmdproc, cur);
+            cmd_conn->payload_len = cmd_conn->cmdproc->last_cmd->payload_len;
         }
-    } while (base_conn->connected && !conn->wasted && conn->rx_len > 0);
+    } while (base_conn->connected && !cmd_conn->wasted && cmd_conn->rx_len > 0);
 
-    if (base_conn->connected && !conn->wasted)
+    if (base_conn->connected && !cmd_conn->wasted)
     {
-        if (conn->rx_len > 0)
-            conn->rx_buf = g_memdup (cur, conn->rx_len);
+        if (cmd_conn->rx_len > 0)
+            cmd_conn->rx_buf = g_memdup (cur, cmd_conn->rx_len);
         else
-            conn->rx_buf = NULL;
+            cmd_conn->rx_buf = NULL;
     }
 
     base_conn->processing = FALSE;
 
-    if (conn->wasted)
+    if (cmd_conn->wasted)
         conn_object_free (base_conn);
 
     g_free (old_rx_buf);
@@ -254,8 +254,6 @@ dispose (GObject *obj)
 static void
 finalize (GObject *obj)
 {
-    CmdConnObject *conn = CMD_CONN_OBJECT (obj);
-
     G_OBJECT_CLASS (parent_class)->finalize (obj);
 }
 

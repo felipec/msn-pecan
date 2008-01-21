@@ -57,6 +57,7 @@ struct ConnObject
     gboolean connected;
     GError *error; /**< The current IO error .*/
     guint read_watch; /** < The source id of the read watch. */
+    guint close_watch; /** < The source id of the close watch. */
     void (*connect_cb) (ConnObject *conn);
 
     ConnObjectType type;
@@ -75,11 +76,15 @@ struct ConnObject
     gboolean parsed;
     guint parse_pos;
     guint last_parse_pos;
+
+    gpointer data; /**< Client data. */
 };
 
 struct ConnObjectClass
 {
     GObjectClass parent_class;
+
+    guint close_sig;
 
     void (*read) (ConnObject *conn);
     /* void (*parse) (ConnObject *conn); */

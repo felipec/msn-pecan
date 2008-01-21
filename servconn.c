@@ -26,8 +26,6 @@
 
 #include "msn_log.h"
 
-static gboolean read_cb (GIOChannel *source, GIOCondition condition, gpointer data);
-
 /**************************************************************************
  * Main
  **************************************************************************/
@@ -234,106 +232,6 @@ msn_servconn_write(MsnServConn *servconn, const char *buf, gsize len)
     }
 
     return bytes_written;
-}
-
-static gboolean
-read_cb (GIOChannel *source,
-         GIOCondition condition,
-         gpointer data)
-{
-    MsnServConn *servconn;
-    MsnSession *session;
-    char buf[MSN_BUF_LEN];
-    char *cur, *end, *old_rx_buf;
-    int cur_len;
-    gsize bytes_read;
-
-    servconn = data;
-    session = servconn->session;
-
-    msn_debug ("source=%p", source);
-
-    {
-        GIOStatus status = G_IO_STATUS_NORMAL;
-
-        status = conn_end_object_read (servconn->conn_end, buf, sizeof(buf), &bytes_read, &servconn->error);
-
-        if (status == G_IO_STATUS_AGAIN)
-            return TRUE;
-
-        if (status != G_IO_STATUS_NORMAL)
-        {
-            msn_servconn_got_error (servconn, MSN_SERVCONN_ERROR_READ);
-            return FALSE;
-        }
-    }
-
-    buf[bytes_read] = '\0';
-
-    servconn->rx_buf = g_realloc(servconn->rx_buf, bytes_read + servconn->rx_len + 1);
-    memcpy(servconn->rx_buf + servconn->rx_len, buf, bytes_read + 1);
-    servconn->rx_len += bytes_read;
-
-    end = old_rx_buf = servconn->rx_buf;
-
-    servconn->processing = TRUE;
-
-    do
-    {
-        cur = end;
-
-        if (servconn->payload_len)
-        {
-            if (servconn->payload_len > servconn->rx_len)
-                /* The payload is still not complete. */
-                break;
-
-            cur_len = servconn->payload_len;
-            end += cur_len;
-        }
-        else
-        {
-            end = strstr(cur, "\r\n");
-
-            if (end == NULL)
-                /* The command is still not complete. */
-                break;
-
-            *end = '\0';
-            end += 2;
-            cur_len = end - cur;
-        }
-
-        servconn->rx_len -= cur_len;
-
-        if (servconn->payload_len)
-        {
-            msn_cmdproc_process_payload(servconn->cmdproc, cur, cur_len);
-            servconn->payload_len = 0;
-        }
-        else
-        {
-            msn_cmdproc_process_cmd_text(servconn->cmdproc, cur);
-            servconn->payload_len = servconn->cmdproc->last_cmd->payload_len;
-        }
-    } while (servconn->connected && !servconn->wasted && servconn->rx_len > 0);
-
-    if (servconn->connected && !servconn->wasted)
-    {
-        if (servconn->rx_len > 0)
-            servconn->rx_buf = g_memdup(cur, servconn->rx_len);
-        else
-            servconn->rx_buf = NULL;
-    }
-
-    servconn->processing = FALSE;
-
-    if (servconn->wasted)
-        msn_servconn_destroy(servconn);
-
-    g_free(old_rx_buf);
-
-    return TRUE;
 }
 
 #if 0

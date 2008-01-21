@@ -26,7 +26,7 @@
 static GObjectClass *parent_class = NULL;
 
 static gboolean
-error_cb (GIOChannel *source,
+close_cb (GIOChannel *source,
           GIOCondition condition,
           gpointer data)
 {
@@ -62,7 +62,7 @@ conn_end_object_new (GIOChannel *channel)
     g_io_channel_set_encoding (channel, NULL, NULL);
     g_io_channel_set_buffered (channel, FALSE);
 
-    g_io_add_watch (channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, error_cb, conn_end);
+    g_io_add_watch (channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, close_cb, conn_end);
 
     msn_log ("end");
 

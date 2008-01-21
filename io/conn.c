@@ -121,6 +121,16 @@ read_cb (GIOChannel *source,
     return TRUE;
 }
 
+static gboolean
+close_cb (GIOChannel *source,
+          GIOCondition condition,
+          gpointer data)
+{
+    msn_warning ("source=%p", source);
+
+    return FALSE;
+}
+
 static void
 connect_cb (gpointer data,
             gint source,
@@ -143,6 +153,7 @@ connect_cb (gpointer data,
 
         msn_info ("connected: %p", channel);
         conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, conn);
+        conn->close_watch = g_io_add_watch (channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, close_cb, conn);
 
         conn_end_object_connect (conn->end);
 
@@ -170,6 +181,8 @@ conn_object_connect (ConnObject *conn,
     g_return_if_fail (port > 0);
 
     msn_log ("begin");
+
+    msn_debug ("conn=%p", conn);
 
     conn_object_close (conn);
 
@@ -202,7 +215,19 @@ conn_object_close (ConnObject *conn)
         conn->read_watch = 0;
     }
 
+    if (conn->close_watch)
+    {
+        g_source_remove (conn->close_watch);
+        conn->close_watch = 0;
+    }
+
     conn_end_object_close (conn->end);
+
+    {
+        ConnObjectClass *class;
+        class = g_type_class_peek (CONN_OBJECT_TYPE);
+        g_signal_emit (G_OBJECT (conn), class->close_sig, 0, conn);
+    }
 }
 
 /* ConnObject stuff. */
@@ -226,7 +251,9 @@ read_impl (ConnObject *conn)
 }
 
 static void
-parse_impl (ConnObject *conn)
+parse_impl (ConnObject *conn,
+            gchar *buf,
+            gsize bytes_read)
 {
     msn_info ("foo");
 }
@@ -258,14 +285,12 @@ conn_object_dispose (GObject *obj)
 static void
 conn_object_finalize (GObject *obj)
 {
-    ConnObject *conn = (ConnObject *) obj;
-
     G_OBJECT_CLASS (parent_class)->finalize (obj);
 }
 
-void
-conn_object_class_init (gpointer g_class,
-                        gpointer class_data)
+static void
+class_init (gpointer g_class,
+            gpointer class_data)
 {
     ConnObjectClass *conn_class = CONN_OBJECT_CLASS (g_class);
     GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
@@ -279,11 +304,16 @@ conn_object_class_init (gpointer g_class,
     gobject_class->finalize = conn_object_finalize;
 
     parent_class = g_type_class_peek_parent (g_class);
+
+    conn_class->close_sig = g_signal_new ("close", G_TYPE_FROM_CLASS (g_class),
+                                          G_SIGNAL_RUN_FIRST, 0, NULL, NULL,
+                                          g_cclosure_marshal_VOID__VOID,
+                                          G_TYPE_NONE, 0);
 }
 
-void
-conn_object_instance_init (GTypeInstance *instance,
-                           gpointer g_class)
+static void
+instance_init (GTypeInstance *instance,
+               gpointer g_class)
 {
     ConnObject *conn = CONN_OBJECT (instance);
 
@@ -304,12 +334,12 @@ conn_object_get_type (void)
             sizeof (ConnObjectClass),
             NULL, /* base_init */
             NULL, /* base_finalize */
-            conn_object_class_init, /* class_init */
+            class_init, /* class_init */
             NULL, /* class_finalize */
             NULL, /* class_data */
             sizeof (ConnObject),
             0, /* n_preallocs */
-            conn_object_instance_init /* instance_init */
+            instance_init, /* instance_init */
         };
 
         type = g_type_register_static (G_TYPE_OBJECT, "ConnObjectType", &type_info, 0);

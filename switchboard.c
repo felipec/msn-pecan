@@ -34,6 +34,20 @@ static MsnTable *cbs_table;
 static void msg_error_helper(MsnCmdProc *cmdproc, MsnMessage *msg,
                              MsnMsgErrorType error);
 
+static void
+close_cb (ConnObject *conn)
+{
+    MsnSwitchBoard *swboard;
+
+    swboard = conn->data;
+
+    g_return_if_fail (swboard != NULL);
+
+    msn_debug ("foo");
+
+    msn_switchboard_destroy (swboard);
+}
+
 /**************************************************************************
  * Main
  **************************************************************************/
@@ -62,11 +76,14 @@ msn_switchboard_new(MsnSession *session)
 
     {
         ConnObject *conn;
-        conn = swboard->conn = cmd_conn_object_new ("switchboard server", MSN_CONN_NS);
+        swboard->conn = cmd_conn_object_new ("switchboard server", MSN_CONN_NS);
+        conn = CONN_OBJECT (swboard->conn);
         conn->foo_data = session;
         swboard->conn->cmdproc = servconn->cmdproc;
         servconn->cmdproc->cbs_table = cbs_table;
         servconn->cmdproc->conn = conn;
+
+        g_signal_connect (conn, "close", G_CALLBACK (close_cb), servconn);
     }
 
 #if 1
@@ -138,7 +155,7 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
     if (swboard->cmdproc)
         swboard->cmdproc->data = NULL;
 
-    conn_object_free (swboard->conn);
+    conn_object_free (CONN_OBJECT (swboard->conn));
 
     msn_servconn_destroy(swboard->servconn);
 
@@ -990,7 +1007,7 @@ connect_cb (ConnObject *conn)
     g_return_if_fail (conn != NULL);
 
     session = conn->foo_data;
-    cmd_conn = conn;
+    cmd_conn = CMD_CONN_OBJECT (conn);
     cmdproc = cmd_conn->cmdproc;
 
     msn_info ("foo");
@@ -1051,27 +1068,12 @@ ans_usr_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
     g_strfreev(params);
 }
 
-#if 0
-static void
-disconnect_cb(MsnServConn *servconn)
-{
-    MsnSwitchBoard *swboard;
-
-    swboard = servconn->cmdproc->data;
-    g_return_if_fail(swboard != NULL);
-
-    msn_servconn_set_disconnect_cb(swboard->servconn, NULL);
-
-    msn_switchboard_destroy(swboard);
-}
-#endif
-
 gboolean
 msn_switchboard_connect(MsnSwitchBoard *swboard, const char *host, int port)
 {
     g_return_val_if_fail (swboard != NULL, FALSE);
 
-    conn_object_connect (swboard->conn, host, port);
+    conn_object_connect (CONN_OBJECT (swboard->conn), host, port);
     CONN_OBJECT (swboard->conn)->connect_cb = connect_cb;
 
     return TRUE;

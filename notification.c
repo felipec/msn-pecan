@@ -64,7 +64,8 @@ msn_notification_new(MsnSession *session)
 
     {
         ConnObject *conn;
-        conn = notification->conn = cmd_conn_object_new ("notification server", MSN_CONN_NS);
+        notification->conn = cmd_conn_object_new ("notification server", MSN_CONN_NS);
+        conn = CONN_OBJECT (notification->conn);
         conn->foo_data = session;
         notification->conn->cmdproc = servconn->cmdproc;
         servconn->cmdproc->cbs_table = cbs_table;
@@ -108,7 +109,7 @@ connect_cb (ConnObject *conn)
     g_return_if_fail (conn != NULL);
 
     session = conn->foo_data;
-    cmd_conn = conn;
+    cmd_conn = CMD_CONN_OBJECT (conn);
 
     msn_info ("foo");
 
@@ -131,7 +132,7 @@ msn_notification_connect(MsnNotification *notification, const char *host, int po
 
     servconn = notification->servconn;
 
-    conn_object_connect (notification->conn, host, port);
+    conn_object_connect (CONN_OBJECT (notification->conn), host, port);
     CONN_OBJECT (notification->conn)->connect_cb = connect_cb;
 
     return TRUE;

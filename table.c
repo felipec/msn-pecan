@@ -90,14 +90,14 @@ msn_table_add_cmd(MsnTable *table,
 		if (cbs == NULL)
 		{
 			cbs = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, NULL);
-			g_hash_table_insert(table->cmds, command, cbs);
+			g_hash_table_insert(table->cmds, (gchar *) command, cbs);
 		}
 	}
 
 	if (cb == NULL)
 		cb = null_cmd_cb;
 
-	g_hash_table_insert(cbs, answer, cb);
+	g_hash_table_insert(cbs, (gchar *) answer, cb);
 }
 
 void
@@ -110,7 +110,7 @@ msn_table_add_error(MsnTable *table,
 	if (cb == NULL)
 		cb = null_error_cb;
 
-	g_hash_table_insert(table->errors, answer, cb);
+	g_hash_table_insert(table->errors, (gchar *) answer, cb);
 }
 
 void
@@ -126,5 +126,5 @@ msn_table_add_msg_type(MsnTable *table,
 		cb = null_msg_cb;
 #endif
 
-	g_hash_table_insert(table->msgs, type, cb);
+	g_hash_table_insert(table->msgs, (gchar *) type, cb);
 }

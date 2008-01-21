@@ -183,7 +183,7 @@ msn_transaction_add_cb(MsnTransaction *trans,
 		g_return_if_reached ();
 	}
 
-	g_hash_table_insert(trans->callbacks, answer, cb);
+	g_hash_table_insert(trans->callbacks, (gchar *) answer, cb);
 }
 
 static gboolean
