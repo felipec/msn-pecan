@@ -91,6 +91,8 @@ parse_impl (ConnObject *base_conn,
 
     base_conn->processing = TRUE;
 
+    msn_log ("%d [%s]", bytes_read, buf);
+
     do
     {
         cur = end;

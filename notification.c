@@ -33,6 +33,35 @@
 
 static MsnTable *cbs_table;
 
+static void
+close_cb (ConnObject *conn)
+{
+    char *tmp;
+
+    {
+        const char *reason = NULL;
+
+        if (conn->error)
+        {
+            reason = conn->error->message;
+
+            msn_error ("connection error: (NS):host=[%s],reason=[%s]", conn->hostname, reason);
+            tmp = g_strdup_printf (_("Error on notification server:\n%s"), reason);
+
+            g_clear_error (&conn->error);
+        }
+        else
+        {
+            msn_error ("connection error: (NS):host=[%s]", conn->hostname);
+            tmp = g_strdup_printf (_("Error on notification server"));
+        }
+    }
+
+    msn_session_set_error ((MsnSession *) conn->foo_data, MSN_ERROR_SERVCONN, tmp);
+
+    g_free (tmp);
+}
+
 /**************************************************************************
  * Main
  **************************************************************************/
@@ -70,6 +99,9 @@ msn_notification_new(MsnSession *session)
         notification->conn->cmdproc = servconn->cmdproc;
         servconn->cmdproc->cbs_table = cbs_table;
         servconn->cmdproc->conn = conn;
+
+        g_signal_connect (conn, "close", G_CALLBACK (close_cb), servconn);
+        g_signal_connect (conn, "error", G_CALLBACK (close_cb), servconn);
     }
 
 #if 1

@@ -32,6 +32,12 @@
 
 static GObjectClass *parent_class = NULL;
 
+GQuark
+conn_object_error_quark (void)
+{
+    return g_quark_from_static_string ("conn-object-error-quark");
+}
+
 ConnObject *
 conn_object_new (gchar *name, ConnObjectType type)
 {
@@ -62,7 +68,20 @@ void
 conn_object_error (ConnObject *conn)
 {
     g_return_if_fail (conn != NULL);
-    CONN_OBJECT_GET_CLASS (conn)->error (conn);
+
+    msn_debug ("foo");
+
+    {
+        ConnObjectClass *class;
+        class = g_type_class_peek (CONN_OBJECT_TYPE);
+        g_signal_emit (G_OBJECT (conn), class->error_sig, 0, conn);
+    }
+
+    if (conn->error)
+    {
+        msn_warning ("unhandled error: %s", conn->error->message);
+        g_clear_error (&conn->error);
+    }
 }
 
 void
@@ -128,6 +147,14 @@ close_cb (GIOChannel *source,
 {
     msn_warning ("source=%p", source);
 
+    {
+        ConnObjectClass *class;
+        class = g_type_class_peek (CONN_OBJECT_TYPE);
+        g_signal_emit (G_OBJECT (data), class->close_sig, 0, data);
+    }
+
+    conn_object_close (data);
+
     return FALSE;
 }
 
@@ -151,7 +178,7 @@ connect_cb (gpointer data,
         conn->end = conn_end_object_new (channel);
         conn->connected = TRUE;
 
-        msn_info ("connected: %p", channel);
+        msn_info ("connected: conn=%p,channel=%p", conn, channel);
         conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, conn);
         conn->close_watch = g_io_add_watch (channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, close_cb, conn);
 
@@ -164,7 +191,9 @@ connect_cb (gpointer data,
     }
     else
     {
-        msn_error ("connection error: %p: %s", error_message);
+        msn_error ("connection error: conn=%p,msg=[%s]", conn, error_message);
+        conn->error = g_error_new_literal (CONN_OBJECT_ERROR, CONN_OBJECT_ERROR_OPEN,
+                                           error_message);
         conn_object_error (conn);
     }
 
@@ -203,6 +232,12 @@ conn_object_close (ConnObject *conn)
 {
     msn_info ("conn=%p", conn);
 
+    if (!conn->connected)
+    {
+        msn_warning ("not connected (conn=%p)", conn);
+        return;
+    }
+
     if (conn->connect_data)
     {
         purple_proxy_connect_cancel (conn->connect_data);
@@ -222,12 +257,6 @@ conn_object_close (ConnObject *conn)
     }
 
     conn_end_object_close (conn->end);
-
-    {
-        ConnObjectClass *class;
-        class = g_type_class_peek (CONN_OBJECT_TYPE);
-        g_signal_emit (G_OBJECT (conn), class->close_sig, 0, conn);
-    }
 }
 
 /* ConnObject stuff. */
@@ -309,6 +338,11 @@ class_init (gpointer g_class,
                                           G_SIGNAL_RUN_FIRST, 0, NULL, NULL,
                                           g_cclosure_marshal_VOID__VOID,
                                           G_TYPE_NONE, 0);
+
+    conn_class->error_sig = g_signal_new ("error", G_TYPE_FROM_CLASS (g_class),
+                                          G_SIGNAL_RUN_FIRST, 0, NULL, NULL,
+                                          g_cclosure_marshal_VOID__VOID,
+                                          G_TYPE_NONE, 0);
 }
 
 static void
@@ -345,5 +379,5 @@ conn_object_get_type (void)
         type = g_type_register_static (G_TYPE_OBJECT, "ConnObjectType", &type_info, 0);
     }
 
-    return	type;
+    return type;
 }

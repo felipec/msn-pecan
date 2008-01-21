@@ -5,6 +5,8 @@ PURPLE_LIBS=`pkg-config --libs purple`
 
 CFLAGS=-Wall -ggdb -I.
 
+purpledir=$(DESTDIR)/usr/lib/purple-2
+
 objects = \
 	cmdproc.o \
 	command.o \
@@ -60,5 +62,6 @@ depend:
 	makedepend -Y -- $(CFLAGS) -- $(sources)
 
 install: libmsn-pecan.so
-	cp libmsn-pecan.so /usr/lib/purple-2
+	mkdir -p $(purpledir)
+	install libmsn-pecan.so $(purpledir)
 	# chcon -t textrel_shlib_t /usr/lib/purple-2/libmsn-pecan.so

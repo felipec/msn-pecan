@@ -24,7 +24,7 @@
 
 #include "msn-config.h"
 
-/* #define MSN_DEBUG 1 */
+#define MSN_DEBUG 1
 
 /* #define MSN_DEBUG_MSG 1 */
 /* #define MSN_DEBUG_SLPMSG 1 */

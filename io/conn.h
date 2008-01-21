@@ -37,6 +37,17 @@ typedef struct ConnObjectClass ConnObjectClass;
 
 #define SOCKET_ERROR -1
 
+#define CONN_OBJECT_ERROR conn_object_error_quark ()
+
+enum
+{
+    CONN_OBJECT_ERROR_OPEN,
+    CONN_OBJECT_ERROR_READ,
+    CONN_OBJECT_ERROR_WRITE
+};
+
+GQuark conn_object_error_quark (void);
+
 enum ConnObjectType
 {
     MSN_CONN_NS,
@@ -85,6 +96,7 @@ struct ConnObjectClass
     GObjectClass parent_class;
 
     guint close_sig;
+    guint error_sig;
 
     void (*read) (ConnObject *conn);
     /* void (*parse) (ConnObject *conn); */

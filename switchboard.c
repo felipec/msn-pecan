@@ -84,6 +84,7 @@ msn_switchboard_new(MsnSession *session)
         servconn->cmdproc->conn = conn;
 
         g_signal_connect (conn, "close", G_CALLBACK (close_cb), servconn);
+        g_signal_connect (conn, "error", G_CALLBACK (close_cb), servconn);
     }
 
 #if 1

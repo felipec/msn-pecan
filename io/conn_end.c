@@ -25,23 +25,49 @@
 
 static GObjectClass *parent_class = NULL;
 
+static const gchar *
+condition_to_str (GIOCondition condition)
+{
+    const gchar *id;
+
+    switch (condition)
+    {
+        case G_IO_IN: id = "IN"; break;
+        case G_IO_OUT: id = "OUT"; break;
+        case G_IO_PRI: id = "PRI"; break;
+        case G_IO_ERR: id = "ERR"; break;
+        case G_IO_HUP: id = "HUP"; break;
+        case G_IO_NVAL: id = "NVAL"; break;
+        default: id = NULL; break;
+    }
+
+    return id;
+}
+
+static const gchar *
+status_to_str (GIOStatus status)
+{
+    const gchar *id;
+
+    switch (status)
+    {
+        case G_IO_STATUS_ERROR: id = "ERROR"; break;
+        case G_IO_STATUS_NORMAL: id = "NORMAL"; break;
+        case G_IO_STATUS_EOF: id = "EOF"; break;
+        case G_IO_STATUS_AGAIN: id = "AGAIN"; break;
+        default: id = NULL; break;
+    }
+
+    return id;
+}
+
 static gboolean
 close_cb (GIOChannel *source,
           GIOCondition condition,
           gpointer data)
 {
-    const char *cond_id;
-
-    switch (condition)
-    {
-        case G_IO_PRI: cond_id = "PRI"; break;
-        case G_IO_ERR: cond_id = "ERR"; break;
-        case G_IO_HUP: cond_id = "HUP"; break;
-        case G_IO_NVAL: cond_id = "NVAL"; break;
-        default: cond_id = NULL; break;
-    }
-
-    msn_warning ("source=%p,condition=%s", source, cond_id);
+    msn_warning ("source=%p,condition=%d,id=%s",
+                 source, condition, condition_to_str (condition));
 
     return FALSE;
 }
@@ -136,19 +162,20 @@ read_impl (ConnEndObject *conn_end,
            gchar *buf,
            gsize count,
            gsize *ret_bytes_read,
-           GError **ret_error)
+           GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
-    GError *error = NULL;
+    GError *tmp_error = NULL;
     gsize bytes_read = 0;
 
     msn_debug ("read: %p", conn_end->channel);
 
-    status = msn_io_read (conn_end->channel, buf, count, &bytes_read, &error);
+    status = msn_io_read (conn_end->channel, buf, count, &bytes_read, &tmp_error);
 
     if (status != G_IO_STATUS_NORMAL)
     {
-        msn_warning ("not normal");
+        msn_warning ("not normal: status=%d (%s)",
+                     status, status_to_str (status));
     }
 
     msn_log ("bytes_read=%d", bytes_read);
@@ -156,8 +183,8 @@ read_impl (ConnEndObject *conn_end,
     if (ret_bytes_read)
         *ret_bytes_read = bytes_read;
 
-    if (ret_error)
-        *ret_error = error;
+    if (tmp_error)
+        g_propagate_error (error, tmp_error);
 
     return status;
 }
@@ -167,15 +194,15 @@ write_impl (ConnEndObject *conn_end,
             const gchar *buf,
             gsize count,
             gsize *ret_bytes_written,
-            GError **ret_error)
+            GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
-    GError *error = NULL;
+    GError *tmp_error = NULL;
     gsize bytes_written = 0;
 
     msn_debug ("write: %p", conn_end->channel);
 
-    status = msn_io_write_full (conn_end->channel, buf, count, &bytes_written, &error);
+    status = msn_io_write_full (conn_end->channel, buf, count, &bytes_written, &tmp_error);
 
     msn_log ("bytes_written=%d", bytes_written);
 
@@ -189,14 +216,15 @@ write_impl (ConnEndObject *conn_end,
     }
     else
     {
-        msn_error ("not normal");
+        msn_warning ("not normal: status=%d (%s)",
+                     status, status_to_str (status));
     }
 
     if (ret_bytes_written)
         *ret_bytes_written = bytes_written;
 
-    if (ret_error)
-        *ret_error = error;
+    if (tmp_error)
+        g_propagate_error (error, tmp_error);
 
     return status;
 }

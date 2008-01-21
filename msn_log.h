@@ -36,6 +36,7 @@ enum MsnLogLevel
 void msn_base_log_helper (guint level, const gchar *file, const gchar *function, gint line, const char *fmt, ...);
 
 #define msn_print(...) g_print (__VA_ARGS__);
+/* #define msn_print(...) purple_debug_info ("msn", __VA_ARGS__); */
 
 #define msn_base_log(level, ...) msn_base_log_helper (level, __FILE__, __PRETTY_FUNCTION__, __LINE__, __VA_ARGS__);
 
