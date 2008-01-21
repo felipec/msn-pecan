@@ -94,7 +94,7 @@ show_debug_cmd(MsnCmdProc *cmdproc, gboolean incoming, const char *command)
     }
 
     purple_debug_misc("msn", "%c: %s %03d: %s\n", tmp,
-                      names[servconn->type], servconn->num, show);
+                      names[servconn->type], cmdproc->cmd_count, show);
 
     g_free(show);
 }
@@ -131,10 +131,7 @@ msn_cmdproc_send_trans(MsnCmdProc *cmdproc, MsnTransaction *trans)
         len += trans->payload_len;
     }
 
-    if (cmdproc->conn)
-        conn_object_write (cmdproc->conn, data, len);
-    else
-        msn_servconn_write (servconn, data, len);
+    conn_object_write (cmdproc->conn, data, len);
 
     g_free(data);
 }
@@ -176,10 +173,7 @@ msn_cmdproc_send_quick(MsnCmdProc *cmdproc, const char *command,
 
     show_debug_cmd(cmdproc, FALSE, data);
 
-    if (cmdproc->conn)
-        conn_object_write (cmdproc->conn, data, len);
-    else
-        msn_servconn_write (servconn, data, len);
+    conn_object_write (cmdproc->conn, data, len);
 
     g_free(data);
 }

@@ -49,6 +49,7 @@ struct MsnCmdProc
 
     gpointer data; /**< Extra data, like the switchboard. */
     ConnObject *conn;
+    guint cmd_count;
 };
 
 MsnCmdProc *msn_cmdproc_new (MsnSession *session);

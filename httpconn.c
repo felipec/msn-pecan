@@ -270,8 +270,6 @@ read_cb (GIOChannel *source,
     MsnServConn *servconn;
     MsnSession *session;
     char buf[MSN_BUF_LEN];
-    char *cur, *end, *old_rx_buf;
-    int cur_len;
     char *result_msg = NULL;
     size_t result_len = 0;
     gboolean error = FALSE;
@@ -293,7 +291,7 @@ read_cb (GIOChannel *source,
 
         if (status != G_IO_STATUS_NORMAL)
         {
-            msn_servconn_got_error (servconn, MSN_SERVCONN_ERROR_READ);
+            /* msn_servconn_got_error (servconn, MSN_SERVCONN_ERROR_READ); */
             return FALSE;
         }
     }
@@ -307,9 +305,11 @@ read_cb (GIOChannel *source,
     if (!msn_httpconn_parse_data(httpconn, httpconn->rx_buf, httpconn->rx_len,
                                  &result_msg, &result_len, &error))
     {
+#if 0
         /* Either we must wait for more input, or something went wrong */
         if (error)
             msn_servconn_got_error(httpconn->servconn, MSN_SERVCONN_ERROR_READ);
+#endif
 
         return FALSE;
     }
@@ -319,7 +319,7 @@ read_cb (GIOChannel *source,
     if (error)
     {
         msn_error ("special error");
-        msn_servconn_got_error(httpconn->servconn, MSN_SERVCONN_ERROR_READ);
+        /* msn_servconn_got_error(httpconn->servconn, MSN_SERVCONN_ERROR_READ); */
 
         return FALSE;
     }
@@ -335,6 +335,10 @@ read_cb (GIOChannel *source,
         g_free(result_msg);
         return TRUE;
     }
+
+#if 0
+    char *cur, *end, *old_rx_buf;
+    int cur_len;
 
     g_free(servconn->rx_buf);
     servconn->rx_buf = result_msg;
@@ -397,6 +401,7 @@ read_cb (GIOChannel *source,
         msn_servconn_destroy(servconn);
 
     g_free(old_rx_buf);
+#endif
 
     return TRUE;
 }
@@ -453,7 +458,7 @@ write_raw(MsnHttpConn *httpconn, const char *data, gsize data_len)
 
         if (status != G_IO_STATUS_NORMAL)
         {
-            msn_servconn_got_error (servconn, MSN_SERVCONN_ERROR_WRITE);
+            /* msn_servconn_got_error (servconn, MSN_SERVCONN_ERROR_WRITE); */
         }
     }
 
@@ -582,10 +587,13 @@ msn_httpconn_write(MsnHttpConn *httpconn, const char *body, gsize body_len)
     {
         host = "gateway.messenger.hotmail.com";
 
+#if 0
         /* The first time servconn->host is the host we should connect to. */
         params = g_strdup_printf("Action=open&Server=%s&IP=%s",
                                  server_type,
                                  servconn->host);
+#endif
+
         httpconn->virgin = FALSE;
     }
     else
@@ -706,7 +714,7 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
     else
     {
         msn_error ("connection error: %p", source);
-        msn_servconn_got_error (httpconn->servconn, MSN_SERVCONN_ERROR_CONNECT);
+        /* msn_servconn_got_error (httpconn->servconn, MSN_SERVCONN_ERROR_CONNECT); */
     }
 }
 

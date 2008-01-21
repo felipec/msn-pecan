@@ -46,11 +46,13 @@ msn_servconn_new(MsnSession *session, MsnServConnType type)
     servconn->cmdproc = msn_cmdproc_new(session);
     servconn->cmdproc->servconn = servconn;
 
+#if 0
     servconn->httpconn = msn_httpconn_new(servconn);
 
     servconn->num = session->servconns_count++;
 
     servconn->tx_buf = purple_circ_buffer_new(MSN_BUF_LEN);
+#endif
 
     msn_log ("end");
 
@@ -75,12 +77,14 @@ msn_servconn_destroy(MsnServConn *servconn)
     if (servconn->destroy_cb)
         servconn->destroy_cb(servconn);
 
+#if 0
     if (servconn->httpconn != NULL)
         msn_httpconn_destroy(servconn->httpconn);
 
     g_free(servconn->host);
 
     purple_circ_buffer_destroy(servconn->tx_buf);
+#endif
 
     if (servconn->cmdproc)
     {
@@ -98,59 +102,6 @@ msn_servconn_set_destroy_cb(MsnServConn *servconn,
     g_return_if_fail(servconn != NULL);
 
     servconn->destroy_cb = destroy_cb;
-}
-
-/**************************************************************************
- * Utility
- **************************************************************************/
-
-void
-msn_servconn_got_error(MsnServConn *servconn, MsnServConnError error)
-{
-    char *tmp;
-    const char *when;
-
-    const char *names[] = { "Notification", "Switchboard" };
-    const char *name;
-
-    name = names[servconn->type];
-
-    switch (error)
-    {
-        case MSN_SERVCONN_ERROR_CONNECT:
-            when = _("connecting to"); break;
-        case MSN_SERVCONN_ERROR_WRITE:
-            when = _("writting to"); break;
-        case MSN_SERVCONN_ERROR_READ:
-            when = _("reading from"); break;
-        default:
-            when = _("doing something on"); break;
-    }
-
-    {
-        const char *reason;
-
-        reason = servconn->error ? servconn->error->message : _("Unknown");
-
-        msn_error ("connection error: %s (%s): %s", name, servconn->host, reason);
-        tmp = g_strdup_printf(_("Error %s %s server:\n%s"), when, name, reason);
-    }
-
-    if (servconn->type == MSN_SERVCONN_NS)
-    {
-        msn_session_set_error(servconn->session, MSN_ERROR_SERVCONN, tmp);
-    }
-    else if (servconn->type == MSN_SERVCONN_SB)
-    {
-        MsnSwitchBoard *swboard;
-        swboard = servconn->cmdproc->data;
-        if (swboard != NULL)
-            swboard->error = MSN_SB_ERROR_CONNECTION;
-    }
-
-    msn_servconn_disconnect(servconn);
-
-    g_free(tmp);
 }
 
 /**************************************************************************
@@ -178,60 +129,15 @@ msn_servconn_disconnect(MsnServConn *servconn)
 
     conn_end_object_close (servconn->conn_end);
 
+#if 0
     servconn->rx_buf = NULL;
     servconn->rx_len = 0;
     servconn->payload_len = 0;
+#endif
 
     servconn->connected = FALSE;
 
     msn_log ("end");
-}
-
-gssize
-msn_servconn_write(MsnServConn *servconn, const char *buf, gsize len)
-{
-    gsize bytes_written = 0;
-
-    g_return_val_if_fail(servconn != NULL, 0);
-
-    msn_debug ("servconn=%p", servconn);
-
-    if (!servconn->session->http_method)
-    {
-        GIOStatus status = G_IO_STATUS_NORMAL;
-
-#if 0
-        switch (servconn->type)
-        {
-            case MSN_SERVCONN_DC:
-                status = conn_end_object_write (servconn->conn_end, &len, sizeof(len), &bytes_written, &servconn->error);
-                status = conn_end_object_write (servconn->conn_end, buf, len, &bytes_written, &servconn->error);
-                break;
-            default:
-                status = conn_end_object_write (servconn->conn_end, buf, len, &bytes_written, &servconn->error);
-                break;
-        }
-#else
-        status = conn_end_object_write (servconn->conn_end, buf, len, &bytes_written, &servconn->error);
-#endif
-
-        if (status != G_IO_STATUS_NORMAL)
-        {
-            msn_servconn_got_error(servconn, MSN_SERVCONN_ERROR_WRITE);
-        }
-    }
-    else
-    {
-        int ret;
-        ret = msn_httpconn_write(servconn->httpconn, buf, len);
-        if (ret < 0)
-        {
-            msn_servconn_got_error(servconn, MSN_SERVCONN_ERROR_WRITE);
-            return ret;
-        }
-    }
-
-    return bytes_written;
 }
 
 #if 0

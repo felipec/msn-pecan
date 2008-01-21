@@ -73,6 +73,7 @@ struct _MsnServConn
                             with this connection. */
     gboolean wasted;      /**< A flag that states if it should be destroyed. */
 
+#if 0
     char *host; /**< The host this connection is connected or should be
                   connected to. */
     int num; /**< A number id of this connection. */
@@ -88,11 +89,8 @@ struct _MsnServConn
 
     PurpleCircBuffer *tx_buf;
     guint tx_handler;
-
-#if 0
-    void (*connect_cb)(MsnServConn *); /**< The callback to call when connecting. */
-    void (*disconnect_cb)(MsnServConn *); /**< The callback to call when disconnecting. */
 #endif
+
     void (*destroy_cb)(MsnServConn *); /**< The callback to call when destroying. */
 };
 
@@ -111,42 +109,12 @@ MsnServConn *msn_servconn_new(MsnSession *session, MsnServConnType type);
  */
 void msn_servconn_destroy(MsnServConn *servconn);
 
-#if 0
-/**
- * Connects to a host.
- *
- * @param servconn The connection.
- * @param host The host.
- * @param port The port.
- */
-gboolean msn_servconn_connect(MsnServConn *servconn, const char *host, int port);
-#endif
-
 /**
  * Disconnects.
  *
  * @param servconn The connection.
  */
 void msn_servconn_disconnect(MsnServConn *servconn);
-
-#if 0
-/**
- * Sets the connect callback.
- *
- * @param servconn The servconn.
- * @param connect_cb The connect callback.
- */
-void msn_servconn_set_connect_cb(MsnServConn *servconn,
-                                 void (*connect_cb)(MsnServConn *));
-/**
- * Sets the disconnect callback.
- *
- * @param servconn The servconn.
- * @param disconnect_cb The disconnect callback.
- */
-void msn_servconn_set_disconnect_cb(MsnServConn *servconn,
-                                    void (*disconnect_cb)(MsnServConn *));
-#endif
 
 /**
  * Sets the destroy callback.
@@ -156,23 +124,5 @@ void msn_servconn_set_disconnect_cb(MsnServConn *servconn,
  */
 void msn_servconn_set_destroy_cb(MsnServConn *servconn,
                                  void (*destroy_cb)(MsnServConn *));
-
-/**
- * Writes a chunck of data to the servconn.
- *
- * @param servconn The servconn.
- * @param buf The data to write.
- * @param size The size of the data.
- */
-ssize_t msn_servconn_write(MsnServConn *servconn, const char *buf,
-                           size_t size);
-
-/**
- * Function to call whenever an error related to a switchboard occurs.
- *
- * @param servconn The servconn.
- * @param error The error that happened.
- */
-void msn_servconn_got_error(MsnServConn *servconn, MsnServConnError error);
 
 #endif /* _MSN_SERVCONN_H_ */
