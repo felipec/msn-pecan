@@ -178,7 +178,6 @@ conn_object_write (ConnObject *conn,
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
-        msn_log ("%d [%s]", len, buf);
         status = conn_end_object_write (conn->end, buf, len, &bytes_written, &conn->error);
 
         if (status != G_IO_STATUS_NORMAL)
