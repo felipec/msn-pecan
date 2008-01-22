@@ -89,8 +89,6 @@ parse_impl (ConnObject *base_conn,
 
     end = old_rx_buf = cmd_conn->rx_buf;
 
-    base_conn->processing = TRUE;
-
     msn_log ("%d [%s]", bytes_read, buf);
 
     do
@@ -140,8 +138,6 @@ parse_impl (ConnObject *base_conn,
         else
             cmd_conn->rx_buf = NULL;
     }
-
-    base_conn->processing = FALSE;
 
     if (cmd_conn->wasted)
         conn_object_free (base_conn);

@@ -59,16 +59,9 @@ struct ConnObject
     gboolean dispose_has_run;
 
     gpointer foo_data;
-#if 0
-    PurpleProxyConnectData *connect_data;
-    gchar *hostname;
-    gint port;
-#endif
 
     ConnEndObject *end;
-    gboolean processing;
     gboolean connected;
-    gboolean closing;
 
     GError *error; /**< The current IO error .*/
     guint read_watch; /** < The source id of the read watch. */
@@ -98,7 +91,6 @@ struct ConnObjectClass
     GObjectClass parent_class;
 
     void (*read) (ConnObject *conn);
-    /* void (*parse) (ConnObject *conn); */
     void (*write) (ConnObject *conn);
     void (*error) (ConnObject *conn);
     void (*connect) (ConnObject *conn);
