@@ -24,6 +24,7 @@
 #include <unistd.h>
 
 static GObjectClass *parent_class = NULL;
+static guint open_sig;
 
 static const gchar *
 condition_to_str (GIOCondition condition)
@@ -75,7 +76,7 @@ close_cb (GIOChannel *source,
 /* ConnEndObject. */
 
 ConnEndObject *
-conn_end_object_new (GIOChannel *channel)
+conn_end_object_new (void)
 {
     ConnEndObject *conn_end;
 
@@ -83,12 +84,7 @@ conn_end_object_new (GIOChannel *channel)
 
     conn_end = CONN_END_OBJECT (g_type_create_instance (CONN_END_OBJECT_TYPE));
 
-    conn_end->channel = channel;
-
-    g_io_channel_set_encoding (channel, NULL, NULL);
-    g_io_channel_set_buffered (channel, FALSE);
-
-    g_io_add_watch (channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, close_cb, conn_end);
+    msn_debug ("conn_end=%p", conn_end);
 
     msn_log ("end");
 
@@ -100,15 +96,32 @@ conn_end_object_free (ConnEndObject *conn_end)
 {
     g_return_if_fail (conn_end != NULL);
     msn_log ("begin");
+    msn_debug ("conn_end=%p", conn_end);
     g_object_unref (G_OBJECT (conn_end));
     msn_log ("end");
 }
 
 void
-conn_end_object_connect (ConnEndObject *conn_end)
+conn_end_object_connect (ConnEndObject *conn_end,
+                         const gchar *hostname,
+                         guint port)
 {
     g_return_if_fail (conn_end != NULL);
+    g_return_if_fail (hostname != NULL);
+    g_return_if_fail (port > 0);
+
+    msn_log ("begin");
+
+    msn_debug ("conn_end=%p", conn_end);
+
+    conn_end_object_close (conn_end);
+
+    conn_end->hostname = g_strdup (hostname);
+    conn_end->port = port;
+
     CONN_END_OBJECT_GET_CLASS (conn_end)->connect (conn_end);
+
+    msn_log ("end");
 }
 
 void
@@ -141,20 +154,65 @@ conn_end_object_write (ConnEndObject *conn_end,
 /* ConnEndObject implementation. */
 
 static void
+connect_cb (gpointer data,
+            gint source,
+            const gchar *error_message)
+{
+    ConnEndObject *conn_end;
+
+    msn_log ("begin");
+
+    conn_end = data;
+    conn_end->connect_data = NULL;
+
+    if (source >= 0)
+    {
+        GIOChannel *channel;
+
+        conn_end->channel = channel = g_io_channel_unix_new (source);
+
+        g_io_channel_set_encoding (channel, NULL, NULL);
+        g_io_channel_set_buffered (channel, FALSE);
+
+        g_io_add_watch (channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, close_cb, conn_end);
+    }
+
+    g_signal_emit (G_OBJECT (data), open_sig, 0, data);
+
+    msn_log ("end");
+}
+
+static void
 connect_impl (ConnEndObject *conn_end)
 {
+    g_return_if_fail (conn_end->foo_data != NULL);
+
+    conn_end->connect_data = purple_proxy_connect (NULL, ((MsnSession *) (conn_end->foo_data))->account,
+                                                   conn_end->hostname, conn_end->port, connect_cb, conn_end);
 }
 
 static void
 close_impl (ConnEndObject *conn_end)
 {
-    if (conn_end->channel)
+    if (!conn_end->channel)
     {
-        msn_info ("channel shutdown: %p", conn_end->channel);
-        g_io_channel_shutdown (conn_end->channel, FALSE, NULL);
-        g_io_channel_unref (conn_end->channel);
-        conn_end->channel = NULL;
+        msn_warning ("not connected: conn_end=%p", conn_end);
+        return;
     }
+
+    if (conn_end->connect_data)
+    {
+        purple_proxy_connect_cancel (conn_end->connect_data);
+        conn_end->connect_data = NULL;
+    }
+
+    g_free (conn_end->hostname);
+    conn_end->hostname = NULL;
+
+    msn_info ("channel shutdown: %p", conn_end->channel);
+    g_io_channel_shutdown (conn_end->channel, FALSE, NULL);
+    g_io_channel_unref (conn_end->channel);
+    conn_end->channel = NULL;
 }
 
 static GIOStatus
@@ -267,6 +325,11 @@ conn_end_object_class_init (gpointer g_class, gpointer class_data)
     gobject_class->finalize = conn_end_object_finalize;
 
     parent_class = g_type_class_peek_parent (g_class);
+
+    open_sig = g_signal_new ("open", G_TYPE_FROM_CLASS (g_class),
+                             G_SIGNAL_RUN_FIRST, 0, NULL, NULL,
+                             g_cclosure_marshal_VOID__VOID,
+                             G_TYPE_NONE, 0);
 }
 
 void

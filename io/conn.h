@@ -33,8 +33,6 @@ typedef struct ConnObjectClass ConnObjectClass;
 #include "buffer.h"
 #include "conn_end.h"
 
-#include "proxy.h"
-
 #define SOCKET_ERROR -1
 
 #define CONN_OBJECT_ERROR conn_object_error_quark ()
@@ -61,11 +59,17 @@ struct ConnObject
     gboolean dispose_has_run;
 
     gpointer foo_data;
+#if 0
+    PurpleProxyConnectData *connect_data;
+    gchar *hostname;
+    gint port;
+#endif
 
     ConnEndObject *end;
-    PurpleProxyConnectData *connect_data;
     gboolean processing;
     gboolean connected;
+    gboolean closing;
+
     GError *error; /**< The current IO error .*/
     guint read_watch; /** < The source id of the read watch. */
     guint close_watch; /** < The source id of the close watch. */
@@ -74,8 +78,6 @@ struct ConnObject
     ConnObjectType type;
 
     gchar *name;
-    gchar *hostname;
-    gint port;
     int fd;
 
     void (*error_cb) (ConnObject *conn);
@@ -94,9 +96,6 @@ struct ConnObject
 struct ConnObjectClass
 {
     GObjectClass parent_class;
-
-    guint close_sig;
-    guint error_sig;
 
     void (*read) (ConnObject *conn);
     /* void (*parse) (ConnObject *conn); */

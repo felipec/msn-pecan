@@ -34,7 +34,8 @@
 static MsnTable *cbs_table;
 
 static void
-close_cb (ConnObject *conn)
+close_cb (ConnObject *conn,
+          MsnNotification *notification)
 {
     char *tmp;
 
@@ -45,19 +46,19 @@ close_cb (ConnObject *conn)
         {
             reason = conn->error->message;
 
-            msn_error ("connection error: (NS):host=[%s],reason=[%s]", conn->hostname, reason);
+            msn_error ("connection error: (NS):reason=[%s]", reason);
             tmp = g_strdup_printf (_("Error on notification server:\n%s"), reason);
 
             g_clear_error (&conn->error);
         }
         else
         {
-            msn_error ("connection error: (NS):host=[%s]", conn->hostname);
-            tmp = g_strdup_printf (_("Error on notification server"));
+            msn_error ("connection error: (NS)");
+            tmp = g_strdup_printf (_("Error on notification server:\nUnknown"));
         }
     }
 
-    msn_session_set_error ((MsnSession *) conn->foo_data, MSN_ERROR_SERVCONN, tmp);
+    msn_session_set_error (notification->session, MSN_ERROR_SERVCONN, tmp);
 
     g_free (tmp);
 }
@@ -100,8 +101,8 @@ msn_notification_new(MsnSession *session)
         servconn->cmdproc->cbs_table = cbs_table;
         servconn->cmdproc->conn = conn;
 
-        g_signal_connect (conn, "close", G_CALLBACK (close_cb), servconn);
-        g_signal_connect (conn, "error", G_CALLBACK (close_cb), servconn);
+        g_signal_connect (conn, "close", G_CALLBACK (close_cb), notification);
+        g_signal_connect (conn, "error", G_CALLBACK (close_cb), notification);
     }
 
 #if 1

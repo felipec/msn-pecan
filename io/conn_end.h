@@ -23,6 +23,8 @@
 
 #include "glib-object.h"
 
+#include "proxy.h"
+
 typedef struct ConnEndObject ConnEndObject;
 typedef struct ConnEndObjectClass ConnEndObjectClass;
 
@@ -32,6 +34,11 @@ struct ConnEndObject
     gboolean dispose_has_run;
 
     GIOChannel *channel; /**< The current IO channel .*/
+
+    PurpleProxyConnectData *connect_data;
+    gpointer foo_data;
+    gchar *hostname;
+    guint port;
 };
 
 struct ConnEndObjectClass
@@ -53,9 +60,9 @@ struct ConnEndObjectClass
 #define CONN_END_OBJECT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), CONN_END_OBJECT_TYPE, ConnEndObjectClass))
 
 GType conn_end_object_get_type ();
-ConnEndObject *conn_end_object_new (GIOChannel *channel);
+ConnEndObject *conn_end_object_new ();
+void conn_end_object_connect (ConnEndObject *conn_end, const gchar *hostname, guint port);
 void conn_end_object_free (ConnEndObject *conn_end);
-void conn_end_object_connect (ConnEndObject *conn_end);
 void conn_end_object_close (ConnEndObject *conn_end);
 GIOStatus conn_end_object_read (ConnEndObject *conn_end, gchar *buf, gsize count, gsize *bytes_read, GError **error);
 GIOStatus conn_end_object_write (ConnEndObject *conn_end, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
