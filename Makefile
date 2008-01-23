@@ -40,6 +40,7 @@ objects = \
 	msn_util.o \
 	io/conn.o \
 	io/conn_end.o \
+	io/conn_end_http.o \
 	io/cmd.o \
 	io/buffer.o \
 	io/cmd_conn.o \

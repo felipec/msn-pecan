@@ -32,7 +32,7 @@ msn_io_read (GIOChannel *channel,
 
     if (tmp_error)
     {
-        purple_debug_error ("msn", "error reading: %s\n", tmp_error->message);
+        msn_error ("error reading: %s", tmp_error->message);
 
         if (error)
             *error = tmp_error;
@@ -55,7 +55,7 @@ msn_io_write (GIOChannel *channel,
 
     if (tmp_error)
     {
-        purple_debug_error ("msn", "error writing: %s\n", tmp_error->message);
+        msn_error ("error writing: %s", tmp_error->message);
 
         if (error)
             *error = tmp_error;
@@ -84,7 +84,7 @@ msn_io_read_full (GIOChannel *channel,
 
         if (tmp_error)
         {
-            purple_debug_error ("msn", "error reading: %s\n", tmp_error->message);
+            msn_error ("error reading: %s", tmp_error->message);
 
             if (error)
                 *error = tmp_error;
@@ -109,7 +109,6 @@ msn_io_write_full (GIOChannel *channel,
     {
         GError *tmp_error = NULL;
 
-        purple_debug_error ("msn", "write_chars\n");
         status = g_io_channel_write_chars (channel, buf, count, bytes_written, &tmp_error);
 
         if (status == G_IO_STATUS_AGAIN)
@@ -117,7 +116,7 @@ msn_io_write_full (GIOChannel *channel,
 
         if (tmp_error)
         {
-            purple_debug_error ("msn", "error writing: %s\n", tmp_error->message);
+            msn_error ("error writing: %s", tmp_error->message);
 
             if (error)
                 *error = tmp_error;
@@ -140,7 +139,7 @@ msn_io_flush (GIOChannel *channel,
 
     if (tmp_error)
     {
-        purple_debug_error ("msn", "error flushing: %s\n", tmp_error->message);
+        msn_error ("error flushing: %s", tmp_error->message);
 
         if (error)
             *error = tmp_error;

@@ -64,7 +64,7 @@ read_cb (GIOChannel *source,
         if (status == G_IO_STATUS_AGAIN)
             return TRUE;
 
-        if (status != G_IO_STATUS_NORMAL)
+        if (status != G_IO_STATUS_NORMAL || conn->error)
         {
             conn_object_error (conn);
             return FALSE;
@@ -180,7 +180,7 @@ conn_object_write (ConnObject *conn,
 
         status = conn_end_object_write (conn->end, buf, len, &bytes_written, &conn->error);
 
-        if (status != G_IO_STATUS_NORMAL)
+        if (status != G_IO_STATUS_NORMAL || conn->error)
         {
             conn_object_error (conn);
         }
@@ -202,7 +202,8 @@ conn_object_connect (ConnObject *conn,
 
     conn_object_close (conn);
 
-    conn->end = conn_end_object_new (NULL);
+    /* conn->end = conn_end_object_new (NULL); */
+    conn->end = conn_end_http_object_new (NULL);
     conn->end->foo_data = conn->foo_data;
 
     g_signal_connect (conn->end, "open", G_CALLBACK (open_cb), conn);

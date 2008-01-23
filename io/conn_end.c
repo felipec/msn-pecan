@@ -24,7 +24,6 @@
 #include <unistd.h>
 
 static GObjectClass *parent_class = NULL;
-static guint open_sig;
 
 static const gchar *
 condition_to_str (GIOCondition condition)
@@ -177,7 +176,11 @@ connect_cb (gpointer data,
         g_io_add_watch (channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, close_cb, conn_end);
     }
 
-    g_signal_emit (G_OBJECT (data), open_sig, 0, data);
+    {
+        ConnEndObjectClass *class;
+        class = g_type_class_peek (CONN_END_OBJECT_TYPE);
+        g_signal_emit (G_OBJECT (conn_end), class->open_sig, 0, conn_end);
+    }
 
     msn_log ("end");
 }
@@ -206,13 +209,13 @@ close_impl (ConnEndObject *conn_end)
         conn_end->connect_data = NULL;
     }
 
-    g_free (conn_end->hostname);
-    conn_end->hostname = NULL;
-
     msn_info ("channel shutdown: %p", conn_end->channel);
     g_io_channel_shutdown (conn_end->channel, FALSE, NULL);
     g_io_channel_unref (conn_end->channel);
     conn_end->channel = NULL;
+
+    g_free (conn_end->hostname);
+    conn_end->hostname = NULL;
 }
 
 static GIOStatus
@@ -326,10 +329,10 @@ conn_end_object_class_init (gpointer g_class, gpointer class_data)
 
     parent_class = g_type_class_peek_parent (g_class);
 
-    open_sig = g_signal_new ("open", G_TYPE_FROM_CLASS (g_class),
-                             G_SIGNAL_RUN_FIRST, 0, NULL, NULL,
-                             g_cclosure_marshal_VOID__VOID,
-                             G_TYPE_NONE, 0);
+    conn_end_class->open_sig = g_signal_new ("open", G_TYPE_FROM_CLASS (g_class),
+                                             G_SIGNAL_RUN_FIRST, 0, NULL, NULL,
+                                             g_cclosure_marshal_VOID__VOID,
+                                             G_TYPE_NONE, 0);
 }
 
 void

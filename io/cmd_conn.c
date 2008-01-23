@@ -89,8 +89,6 @@ parse_impl (ConnObject *base_conn,
 
     end = old_rx_buf = cmd_conn->rx_buf;
 
-    msn_log ("%d [%s]", bytes_read, buf);
-
     do
     {
         cur = end;

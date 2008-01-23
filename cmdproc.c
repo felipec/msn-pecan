@@ -93,8 +93,8 @@ show_debug_cmd(MsnCmdProc *cmdproc, gboolean incoming, const char *command)
         show[len - 2] = '\0';
     }
 
-    purple_debug_misc("msn", "%c: %s %03d: %s\n", tmp,
-                      names[servconn->type], cmdproc->cmd_count, show);
+    msn_debug ("%c: %s %03d: %s", tmp,
+               names[servconn->type], cmdproc->cmd_count, show);
 
     g_free(show);
 }

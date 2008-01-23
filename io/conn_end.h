@@ -45,6 +45,8 @@ struct ConnEndObjectClass
 {
     GObjectClass parent_class;
 
+    guint open_sig;
+
     void (*connect) (ConnEndObject *end);
     void (*close) (ConnEndObject *end);
     void (*free) (ConnEndObject *end);
