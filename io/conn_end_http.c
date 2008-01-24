@@ -20,10 +20,51 @@
 #include "msn_log.h"
 #include "msn_io.h"
 
+/*
+ * Documentation for the HTTP connection method is available at:
+ * http://www.hypothetic.org/docs/msn/general/http_connections.php
+ *
+ * Basically one http connection can be used to communicate with different
+ * servers (NS, SB). Only one request can be sent at a time.
+ */
+
 /* For read/write. */
 #include <unistd.h>
 
 static ConnEndObjectClass *parent_class = NULL;
+
+typedef struct
+{
+    ConnEndHttpObject *conn_end_http;
+    gchar *body;
+    gsize body_len;
+} HttpQueueData;
+
+static void
+process_queue (ConnEndHttpObject *conn_end_http,
+               GError **error)
+{
+    conn_end_http->waiting_response = FALSE;
+
+    {
+        HttpQueueData *queue_data;
+
+        queue_data = g_queue_pop_head (conn_end_http->write_queue);
+
+        if (queue_data)
+        {
+            conn_end_object_write (CONN_END_OBJECT (queue_data->conn_end_http),
+                                   queue_data->body,
+                                   queue_data->body_len,
+                                   NULL,
+                                   error);
+
+            g_free (queue_data->body);
+            g_free (queue_data);
+        }
+    }
+}
+
 /* ConnEndHttpObject. */
 
 ConnEndHttpObject *
@@ -43,17 +84,87 @@ conn_end_http_object_free (ConnEndHttpObject *conn_end_http)
 
 /* ConnEndHttpObject implementation. */
 
+static gboolean
+http_poll (gpointer data)
+{
+    ConnEndHttpObject *conn_end_http;
+    ConnEndObject *conn_end;
+    GIOStatus status = G_IO_STATUS_NORMAL;
+    GError *tmp_error = NULL;
+    gsize bytes_written = 0;
+
+    gchar *header;
+    gchar *params;
+    gchar *auth = NULL;
+
+    g_return_val_if_fail (data != NULL, FALSE);
+
+    conn_end = data;
+    conn_end_http = data;
+
+    msn_debug ("channel=%p", conn_end->channel);
+
+    g_return_val_if_fail (conn_end_http->session_id != NULL, FALSE);
+
+    if (conn_end_http->waiting_response)
+    {
+        /* There's no need to poll if we're already waiting for a response */
+        return TRUE;
+    }
+
+    params = g_strdup_printf ("Action=poll&SessionID=%s",
+                              conn_end_http->session_id);
+
+    header = g_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
+                              "Accept: */*\r\n"
+                              "Accept-Language: en-us\r\n"
+                              "User-Agent: MSMSGS\r\n"
+                              "Host: %s\r\n"
+                              "Proxy-Connection: Keep-Alive\r\n"
+                              "%s" /* Proxy auth */
+                              "Connection: Keep-Alive\r\n"
+                              "Pragma: no-cache\r\n"
+                              "Content-Type: application/x-msn-messenger\r\n"
+                              "Content-Length: 0\r\n\r\n",
+                              conn_end_http->hostname,
+                              params,
+                              conn_end_http->hostname,
+                              auth ? auth : "");
+
+#ifdef MSN_DEBUG_HTTP
+    msn_debug ("header=[%s]", header);
+#endif
+
+    g_free (params);
+
+    status = msn_io_write_full (conn_end->channel, header, strlen (header), &bytes_written, &tmp_error);
+
+    g_io_channel_flush (conn_end->channel, &tmp_error);
+
+    g_free (header);
+
+    if (status == G_IO_STATUS_NORMAL);
+    {
+        msn_log ("bytes_written=%d", bytes_written);
+        conn_end_http->waiting_response = TRUE;
+    }
+
+    return TRUE;
+}
+
 static void
 connect_cb (gpointer data,
             gint source,
             const gchar *error_message)
 {
     ConnEndObject *conn_end;
+    ConnEndHttpObject *conn_end_http;
 
     msn_log ("begin");
 
     conn_end = data;
     conn_end->connect_data = NULL;
+    conn_end_http = data;
 
     if (source >= 0)
     {
@@ -62,6 +173,8 @@ connect_cb (gpointer data,
         conn_end->channel = channel = g_io_channel_unix_new (source);
 
         g_io_channel_set_line_term (channel, "\r\n", 2);
+
+        conn_end_http->timeout_id = g_timeout_add (2 * 1000, http_poll, conn_end);
     }
 
     {
@@ -94,6 +207,10 @@ connect_impl (ConnEndObject *conn_end)
 static void
 close_impl (ConnEndObject *conn_end)
 {
+    ConnEndHttpObject *conn_end_http;
+
+    conn_end_http = CONN_END_HTTP_OBJECT (conn_end);
+
     if (!conn_end->channel)
     {
         msn_warning ("not connected: conn_end=%p", conn_end);
@@ -106,6 +223,12 @@ close_impl (ConnEndObject *conn_end)
         conn_end->connect_data = NULL;
     }
 
+    if (conn_end_http->timeout_id)
+    {
+        g_source_remove (conn_end_http->timeout_id);
+        conn_end_http->timeout_id = 0;
+    }
+
     msn_info ("channel shutdown: %p", conn_end->channel);
     g_io_channel_shutdown (conn_end->channel, FALSE, NULL);
     g_io_channel_unref (conn_end->channel);
@@ -114,15 +237,19 @@ close_impl (ConnEndObject *conn_end)
     g_free (conn_end->hostname);
     conn_end->hostname = NULL;
 
+    g_free (conn_end_http->session_id);
+    conn_end_http->session_id = NULL;
+
+    conn_end_http->parser_state = 0;
+    conn_end_http->waiting_response = FALSE;
+
     {
-        ConnEndHttpObject *conn_end_http;
-    
-        conn_end_http = CONN_END_HTTP_OBJECT (conn_end);
-
-        g_free (conn_end_http->session_id);
-        conn_end_http->session_id = NULL;
-
-        conn_end_http->parser_state = 0;
+        HttpQueueData *http_data;
+        while ((http_data = g_queue_pop_head (conn_end_http->write_queue)))
+        {
+            g_free (http_data->body);
+            g_free (http_data);
+        }
     }
 }
 
@@ -138,7 +265,7 @@ read_impl (ConnEndObject *conn_end,
     GError *tmp_error = NULL;
     gsize bytes_read = 0;
 
-    msn_debug ("read: %p", conn_end->channel);
+    msn_debug ("channel=%p", conn_end->channel);
 
     conn_end_http = CONN_END_HTTP_OBJECT (conn_end);
 
@@ -154,7 +281,8 @@ read_impl (ConnEndObject *conn_end,
                 gsize terminator_pos;
                 status = g_io_channel_read_line (conn_end->channel,
                                                  &str, NULL, &terminator_pos, &tmp_error);
-                str[terminator_pos] = '\0';
+                if (str)
+                    str[terminator_pos] = '\0';
             }
 
             if (tmp_error)
@@ -165,6 +293,10 @@ read_impl (ConnEndObject *conn_end,
 
             if (status == G_IO_STATUS_AGAIN)
                 return status;
+
+#ifdef MSN_DEBUG_HTTP
+            msn_debug ("str=[%s]", str);
+#endif
 
             tokens = g_strsplit (str, " ", 3);
 
@@ -210,7 +342,8 @@ read_impl (ConnEndObject *conn_end,
                     gsize terminator_pos;
                     status = g_io_channel_read_line (conn_end->channel,
                                                      &str, NULL, &terminator_pos, &tmp_error);
-                    str[terminator_pos] = '\0';
+                    if (str)
+                        str[terminator_pos] = '\0';
                 }
 
                 if (tmp_error)
@@ -225,6 +358,10 @@ read_impl (ConnEndObject *conn_end,
                 if (str[0] == '\0')
                     break;
 
+#ifdef MSN_DEBUG_HTTP
+                msn_debug ("str=[%s]", str);
+#endif
+
                 tokens = g_strsplit (str, ": ", 2);
 
                 if (!(tokens[0] && tokens[1]))
@@ -237,9 +374,7 @@ read_impl (ConnEndObject *conn_end,
 
                 if (strcmp (tokens[0], "Content-Length") == 0)
                 {
-                    gint c_length;
-                    c_length = atoi (tokens[1]);
-                    msn_debug ("cl=%d", c_length);
+                    conn_end_http->content_length = atoi (tokens[1]);
                 }
                 else if (strcmp (tokens[0], "X-MSN-Messenger") == 0)
                 {
@@ -288,20 +423,28 @@ read_impl (ConnEndObject *conn_end,
 
         if (conn_end_http->parser_state == 2)
         {
-            status = msn_io_read (conn_end->channel, buf, count, &bytes_read, &tmp_error);
+            status = msn_io_read (conn_end->channel, buf, MIN (conn_end_http->content_length, count), &bytes_read, &tmp_error);
 
+            msn_log ("status=%d", status);
             msn_log ("bytes_read=%d", bytes_read);
 
             if (ret_bytes_read)
                 *ret_bytes_read = bytes_read;
 
-            conn_end_http->parser_state = 0;
+            conn_end_http->content_length -= bytes_read;
+
+            msn_log ("con_len=%d,read=%d", conn_end_http->content_length, bytes_read);
+
+            if (conn_end_http->content_length == 0)
+                conn_end_http->parser_state = 0;
         }
 
 leave:
         g_strfreev (tokens);
         g_free (str);
     }
+
+    process_queue (conn_end_http, &tmp_error);
 
     if (tmp_error)
         g_propagate_error (error, tmp_error);
@@ -316,19 +459,34 @@ write_impl (ConnEndObject *conn_end,
             gsize *ret_bytes_written,
             GError **error)
 {
+    ConnEndHttpObject *conn_end_http;
     GIOStatus status = G_IO_STATUS_NORMAL;
     GError *tmp_error = NULL;
     gsize bytes_written = 0;
 
-    msn_debug ("write: %p", conn_end->channel);
+    msn_debug ("channel=%p", conn_end->channel);
+
+    conn_end_http = CONN_END_HTTP_OBJECT (conn_end);
+
+    if (conn_end_http->waiting_response)
+    {
+        HttpQueueData *http_data;
+
+        http_data = g_new0 (HttpQueueData, 1);
+
+        http_data->conn_end_http = conn_end_http;
+        http_data->body = g_memdup (buf, count);
+        http_data->body_len = count;
+
+        g_queue_push_tail (conn_end_http->write_queue, http_data);
+
+        return status;
+    }
 
     {
-        ConnEndHttpObject *conn_end_http;
         gchar *params;
         gchar *header;
         gchar *auth = NULL;
-
-        conn_end_http = CONN_END_HTTP_OBJECT (conn_end);
 
         if (conn_end_http->session_id)
         {
@@ -338,7 +496,7 @@ write_impl (ConnEndObject *conn_end,
         else
         {
             params = g_strdup_printf ("Action=open&Server=%s&IP=%s",
-                                      "NS",
+                                     (gchar *) conn_end->foo_data_2,
                                       conn_end->hostname);
         }
 
@@ -359,7 +517,9 @@ write_impl (ConnEndObject *conn_end,
                                   auth ? auth : "",
                                   count);
 
+#ifdef MSN_DEBUG_HTTP
         msn_debug ("header=[%s]", header);
+#endif
 
         g_free (params);
 
@@ -370,7 +530,11 @@ write_impl (ConnEndObject *conn_end,
 
     g_io_channel_flush (conn_end->channel, &tmp_error);
 
-    msn_log ("bytes_written=%d", bytes_written);
+    if (status == G_IO_STATUS_NORMAL);
+    {
+        msn_log ("bytes_written=%d", bytes_written);
+        conn_end_http->waiting_response = TRUE;
+    }
 
     if (ret_bytes_written)
         *ret_bytes_written = bytes_written;
@@ -395,6 +559,9 @@ conn_end_http_object_dispose (GObject *obj)
 
         g_free (conn_end_http->hostname);
         conn_end_http->hostname = NULL;
+
+        g_queue_free (conn_end_http->write_queue);
+        conn_end_http->write_queue = NULL;
     }
 
     G_OBJECT_CLASS (parent_class)->dispose (obj);
@@ -431,6 +598,7 @@ conn_end_http_object_instance_init (GTypeInstance *instance, gpointer g_class)
 
     conn_end_http->dispose_has_run = FALSE;
     conn_end_http->hostname = g_strdup ("gateway.messenger.hotmail.com");
+    conn_end_http->write_queue = g_queue_new ();
 }
 
 GType

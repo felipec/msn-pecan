@@ -100,6 +100,8 @@ open_cb (ConnEndObject *conn_end,
     conn = data;
     channel = conn->end->channel;
 
+    msn_log ("begin");
+
     if (channel)
     {
         conn->connected = TRUE;
@@ -120,6 +122,8 @@ open_cb (ConnEndObject *conn_end,
                                            "Unable to connect");
         conn_object_error (conn);
     }
+
+    msn_log ("end");
 }
 
 ConnObject *
@@ -188,6 +192,14 @@ conn_object_write (ConnObject *conn,
 }
 
 void
+conn_object_set_end (ConnObject *conn,
+                     ConnEndObject *conn_end)
+{
+    conn->end = conn_end;
+    g_signal_connect (conn->end, "open", G_CALLBACK (open_cb), conn);
+}
+
+void
 conn_object_connect (ConnObject *conn,
                      const gchar *hostname,
                      gint port)
@@ -202,11 +214,6 @@ conn_object_connect (ConnObject *conn,
 
     conn_object_close (conn);
 
-    /* conn->end = conn_end_object_new (NULL); */
-    conn->end = conn_end_http_object_new (NULL);
-    conn->end->foo_data = conn->foo_data;
-
-    g_signal_connect (conn->end, "open", G_CALLBACK (open_cb), conn);
     conn_end_object_connect (conn->end, hostname, port);
 
     msn_log ("end");
@@ -215,9 +222,12 @@ conn_object_connect (ConnObject *conn,
 void
 conn_object_close (ConnObject *conn)
 {
+    g_return_if_fail (conn);
+    g_return_if_fail (conn->end);
+
     msn_info ("conn=%p", conn);
 
-    if (!conn->end)
+    if (!conn->end->channel)
     {
         msn_warning ("not connected (conn=%p)", conn);
         return;
@@ -236,7 +246,6 @@ conn_object_close (ConnObject *conn)
     }
 
     conn_end_object_close (conn->end);
-    conn->end = NULL;
 }
 
 /* ConnObject stuff. */
@@ -280,6 +289,7 @@ conn_object_dispose (GObject *obj)
 
         conn_object_close (conn);
         conn_end_object_free (conn->end);
+        conn->end = NULL;
 
         msn_buffer_free (conn->read_buffer);
         msn_buffer_free (conn->buffer);

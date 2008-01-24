@@ -33,7 +33,12 @@ struct ConnEndHttpObject
 
     gchar *hostname;
     guint parser_state;
+    guint content_length;
     gchar *session_id;
+    guint timeout_id;
+
+    gboolean waiting_response;
+    GQueue *write_queue;
 };
 
 struct ConnEndHttpObjectClass

@@ -29,6 +29,8 @@
 
 #include "error.h"
 
+#include "io/conn_end_http.h"
+
 static MsnTable *cbs_table;
 
 static void msg_error_helper(MsnCmdProc *cmdproc, MsnMessage *msg,
@@ -78,10 +80,27 @@ msn_switchboard_new(MsnSession *session)
         ConnObject *conn;
         swboard->conn = cmd_conn_object_new ("switchboard server", MSN_CONN_NS);
         conn = CONN_OBJECT (swboard->conn);
-        conn->foo_data = session;
         swboard->conn->cmdproc = servconn->cmdproc;
         servconn->cmdproc->cbs_table = cbs_table;
         servconn->cmdproc->conn = conn;
+
+        {
+            ConnEndObject *conn_end;
+
+            if (session->http_method)
+            {
+                conn_end = CONN_END_OBJECT (conn_end_http_object_new (NULL));
+            }
+            else
+            {
+                conn_end = conn_end_object_new (NULL);
+            }
+
+            conn->foo_data = conn_end->foo_data = session;
+            conn_end->foo_data_2 = "SB";
+
+            conn_object_set_end (conn, conn_end);
+        }
 
         g_signal_connect (conn, "close", G_CALLBACK (close_cb), servconn);
         g_signal_connect (conn, "error", G_CALLBACK (close_cb), servconn);

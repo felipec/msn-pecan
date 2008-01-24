@@ -37,6 +37,7 @@ struct ConnEndObject
 
     PurpleProxyConnectData *connect_data;
     gpointer foo_data;
+    gpointer foo_data_2;
     gchar *hostname;
     guint port;
 };

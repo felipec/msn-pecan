@@ -235,10 +235,7 @@ msn_error_handle(MsnSession *session, unsigned int type)
 	g_snprintf(buf, sizeof(buf), _("MSN Error: %s\n"),
 			   msn_error_get_text(type));
 
-	/* Notify all the errors for now */
-#if 0
-	purple_debug_warning("msn", "error %d: %s\n", type, buf);
-#endif
+	msn_error ("error %d: %s", type, buf);
 
 	purple_notify_error(session->account->gc, NULL, buf, NULL);
 }

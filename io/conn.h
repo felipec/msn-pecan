@@ -116,5 +116,6 @@ gchar *conn_object_to_string (ConnObject *conn);
 void conn_object_poll (ConnObject *conn);
 
 void conn_object_write (ConnObject *conn, const gchar *buf, gsize len);
+void conn_object_set_end (ConnObject *conn, ConnEndObject *conn_end);
 
 #endif /* MSN_CONN_H */

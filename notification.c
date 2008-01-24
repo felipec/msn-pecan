@@ -31,6 +31,8 @@
 #include "sync.h"
 #include "slplink.h"
 
+#include "io/conn_end_http.h"
+
 static MsnTable *cbs_table;
 
 static void
@@ -96,10 +98,27 @@ msn_notification_new(MsnSession *session)
         ConnObject *conn;
         notification->conn = cmd_conn_object_new ("notification server", MSN_CONN_NS);
         conn = CONN_OBJECT (notification->conn);
-        conn->foo_data = session;
         notification->conn->cmdproc = servconn->cmdproc;
         servconn->cmdproc->cbs_table = cbs_table;
         servconn->cmdproc->conn = conn;
+
+        {
+            ConnEndObject *conn_end;
+
+            if (session->http_method)
+            {
+                conn_end = CONN_END_OBJECT (conn_end_http_object_new (NULL));
+            }
+            else
+            {
+                conn_end = conn_end_object_new (NULL);
+            }
+
+            conn->foo_data = conn_end->foo_data = session;
+            conn_end->foo_data_2 = "NS";
+
+            conn_object_set_end (conn, conn_end);
+        }
 
         g_signal_connect (conn, "close", G_CALLBACK (close_cb), notification);
         g_signal_connect (conn, "error", G_CALLBACK (close_cb), notification);
@@ -144,7 +163,7 @@ connect_cb (ConnObject *conn)
     session = conn->foo_data;
     cmd_conn = CMD_CONN_OBJECT (conn);
 
-    msn_info ("foo");
+    msn_log ("begin");
 
     cmd_conn->cmdproc->servconn->connected = TRUE;
 
@@ -154,6 +173,8 @@ connect_cb (ConnObject *conn)
         msn_session_set_login_step (session, MSN_LOGIN_STEP_HANDSHAKE2);
 
     msn_cmdproc_send (cmd_conn->cmdproc, "VER", "MSNP9 CVR0");
+
+    msn_log ("end");
 }
 
 gboolean
@@ -1107,9 +1128,6 @@ rng_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     session_id = cmd->params[0];
 
     msn_parse_socket(cmd->params[1], &host, &port);
-
-    if (session->http_method)
-        port = 80;
 
     swboard = msn_switchboard_new(session);
 
