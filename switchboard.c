@@ -33,8 +33,59 @@
 
 static MsnTable *cbs_table;
 
-static void msg_error_helper(MsnCmdProc *cmdproc, MsnMessage *msg,
-                             MsnMsgErrorType error);
+static void
+ans_usr_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error);
+
+static void
+msg_error_helper(MsnCmdProc *cmdproc, MsnMessage *msg, MsnMsgErrorType error);
+
+static void
+open_cb (ConnObject *conn)
+{
+    MsnSession *session;
+    CmdConnObject *cmd_conn;
+    MsnSwitchBoard *swboard;
+    MsnCmdProc *cmdproc;
+
+    g_return_if_fail (conn != NULL);
+
+    session = conn->foo_data;
+    cmd_conn = CMD_CONN_OBJECT (conn);
+    cmdproc = cmd_conn->cmdproc;
+
+    msn_info ("foo");
+
+    cmdproc->servconn->connected = TRUE;
+
+    swboard = cmdproc->data;
+    g_return_if_fail (swboard != NULL);
+
+    {
+        MsnTransaction *trans;
+        PurpleAccount *account;
+
+        account = session->account;
+
+        if (msn_switchboard_is_invited (swboard))
+        {
+            swboard->empty = FALSE;
+
+            trans = msn_transaction_new (cmdproc, "ANS", "%s %s %s",
+                                         purple_account_get_username (account),
+                                         swboard->auth_key, swboard->session_id);
+        }
+        else
+        {
+            trans = msn_transaction_new (cmdproc, "USR", "%s %s",
+                                         purple_account_get_username (account),
+                                         swboard->auth_key);
+        }
+
+        msn_transaction_set_error_cb (trans, ans_usr_error);
+        msn_transaction_set_data (trans, swboard);
+        msn_cmdproc_send_trans (cmdproc, trans);
+    }
+}
 
 static void
 close_cb (ConnObject *conn)
@@ -102,6 +153,7 @@ msn_switchboard_new(MsnSession *session)
             conn_object_set_end (conn, conn_end);
         }
 
+        g_signal_connect (conn, "open", G_CALLBACK (open_cb), servconn);
         g_signal_connect (conn, "close", G_CALLBACK (close_cb), servconn);
         g_signal_connect (conn, "error", G_CALLBACK (close_cb), servconn);
     }
@@ -1013,56 +1065,6 @@ nudge_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 /**************************************************************************
  * Connect stuff
  **************************************************************************/
-static void
-ans_usr_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error);
-
-static void
-connect_cb (ConnObject *conn)
-{
-    MsnSession *session;
-    CmdConnObject *cmd_conn;
-    MsnSwitchBoard *swboard;
-    MsnCmdProc *cmdproc;
-
-    g_return_if_fail (conn != NULL);
-
-    session = conn->foo_data;
-    cmd_conn = CMD_CONN_OBJECT (conn);
-    cmdproc = cmd_conn->cmdproc;
-
-    msn_info ("foo");
-
-    cmdproc->servconn->connected = TRUE;
-
-    swboard = cmdproc->data;
-    g_return_if_fail (swboard != NULL);
-
-    {
-        MsnTransaction *trans;
-        PurpleAccount *account;
-
-        account = session->account;
-
-        if (msn_switchboard_is_invited (swboard))
-        {
-            swboard->empty = FALSE;
-
-            trans = msn_transaction_new (cmdproc, "ANS", "%s %s %s",
-                                         purple_account_get_username (account),
-                                         swboard->auth_key, swboard->session_id);
-        }
-        else
-        {
-            trans = msn_transaction_new (cmdproc, "USR", "%s %s",
-                                         purple_account_get_username (account),
-                                         swboard->auth_key);
-        }
-
-        msn_transaction_set_error_cb (trans, ans_usr_error);
-        msn_transaction_set_data (trans, swboard);
-        msn_cmdproc_send_trans (cmdproc, trans);
-    }
-}
 
 static void
 ans_usr_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
@@ -1094,7 +1096,6 @@ msn_switchboard_connect(MsnSwitchBoard *swboard, const char *host, int port)
     g_return_val_if_fail (swboard != NULL, FALSE);
 
     conn_object_connect (CONN_OBJECT (swboard->conn), host, port);
-    CONN_OBJECT (swboard->conn)->connect_cb = connect_cb;
 
     return TRUE;
 }

@@ -20,25 +20,36 @@
 #define MSN_CONN_END_HTTP_H
 
 #include "conn_end.h"
+#include "http_conn.h"
 
-#include "proxy.h"
+#include "proxy.h" /* libpurple */
 
 typedef struct ConnEndHttpObject ConnEndHttpObject;
 typedef struct ConnEndHttpObjectClass ConnEndHttpObjectClass;
+
+/* Forward declarations */
+
+struct MsnSession;
+struct ConnObject;
+struct HttpConnObject;
 
 struct ConnEndHttpObject
 {
     ConnEndObject parent;
     gboolean dispose_has_run;
 
+    struct HttpConnObject *http_conn;
+
+#if 0
     gchar *hostname;
     guint parser_state;
-    guint content_length;
-    gchar *session_id;
-    guint timeout_id;
-
     gboolean waiting_response;
     GQueue *write_queue;
+    guint content_length;
+    guint timeout_id;
+#endif
+    struct MsnSession *session;
+    gchar *session_id;
 };
 
 struct ConnEndHttpObjectClass

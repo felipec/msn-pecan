@@ -116,6 +116,17 @@ struct _MsnSession
 		int client_port;
 
 	} passport_info;
+
+        struct
+        {
+            GIOChannel *channel;
+            gchar *hostname;
+            guint parser_state;
+            gboolean waiting_response;
+            GQueue *write_queue;
+            guint content_length;
+            guint timeout_id;
+        } httpconn_data;
 };
 
 /**

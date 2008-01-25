@@ -65,35 +65,27 @@ struct ConnObject
 
     GError *error; /**< The current IO error .*/
     guint read_watch; /** < The source id of the read watch. */
-    guint close_watch; /** < The source id of the close watch. */
-    void (*connect_cb) (ConnObject *conn);
 
     ConnObjectType type;
 
     gchar *name;
-    int fd;
-
-    void (*error_cb) (ConnObject *conn);
-
-    MsnBuffer *read_buffer;
-    MsnBuffer *buffer;
-    MsnBuffer *payload;
-    void (*payload_cb) (ConnObject *conn, MsnBuffer *payload);
-    gboolean parsed;
-    guint parse_pos;
-    guint last_parse_pos;
 
     gpointer data; /**< Client data. */
+    ConnObject *prev;
 };
 
 struct ConnObjectClass
 {
     GObjectClass parent_class;
 
-    void (*read) (ConnObject *conn);
-    void (*write) (ConnObject *conn);
+    guint open_sig;
+    guint close_sig;
+
+    GIOStatus (*read) (ConnObject *conn, gchar *buf, gsize count, gsize *bytes_read, GError **error);
+    GIOStatus (*write) (ConnObject *conn, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
     void (*error) (ConnObject *conn);
-    void (*connect) (ConnObject *conn);
+    void (*connect) (ConnObject *conn, const gchar *hostname, gint port);
+    void (*close) (ConnObject *conn);
     void (*parse) (ConnObject *conn, gchar *buf, gsize bytes_read);
 
 };
@@ -115,7 +107,7 @@ void conn_object_handle (ConnObject *conn, MsnCmd *cmd);
 gchar *conn_object_to_string (ConnObject *conn);
 void conn_object_poll (ConnObject *conn);
 
-void conn_object_write (ConnObject *conn, const gchar *buf, gsize len);
-void conn_object_set_end (ConnObject *conn, ConnEndObject *conn_end);
+GIOStatus conn_object_read (ConnObject *conn, gchar *buf, gsize count, gsize *bytes_read, GError **error);
+GIOStatus conn_object_write (ConnObject *conn, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
 
 #endif /* MSN_CONN_H */

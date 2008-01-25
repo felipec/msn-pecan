@@ -131,7 +131,7 @@ msn_cmdproc_send_trans(MsnCmdProc *cmdproc, MsnTransaction *trans)
         len += trans->payload_len;
     }
 
-    conn_object_write (cmdproc->conn, data, len);
+    conn_object_write (cmdproc->conn, data, len, NULL, NULL);
 
     g_free(data);
 }
@@ -173,7 +173,7 @@ msn_cmdproc_send_quick(MsnCmdProc *cmdproc, const char *command,
 
     show_debug_cmd(cmdproc, FALSE, data);
 
-    conn_object_write (cmdproc->conn, data, len);
+    conn_object_write (cmdproc->conn, data, len, NULL, NULL);
 
     g_free(data);
 }

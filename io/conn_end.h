@@ -19,14 +19,12 @@
 #ifndef MSN_CONN_END_H
 #define MSN_CONN_END_H
 
-#include <glib.h>
-
-#include "glib-object.h"
-
-#include "proxy.h"
+#include <proxy.h> /* libpurple */
 
 typedef struct ConnEndObject ConnEndObject;
 typedef struct ConnEndObjectClass ConnEndObjectClass;
+
+struct ConnObject;
 
 struct ConnEndObject
 {
@@ -34,12 +32,14 @@ struct ConnEndObject
     gboolean dispose_has_run;
 
     GIOChannel *channel; /**< The current IO channel .*/
+    gboolean is_open;
 
     PurpleProxyConnectData *connect_data;
     gpointer foo_data;
     gpointer foo_data_2;
     gchar *hostname;
     guint port;
+    struct ConnObject *prev;
 };
 
 struct ConnEndObjectClass
@@ -47,6 +47,7 @@ struct ConnEndObjectClass
     GObjectClass parent_class;
 
     guint open_sig;
+    guint close_sig;
 
     void (*connect) (ConnEndObject *end);
     void (*close) (ConnEndObject *end);

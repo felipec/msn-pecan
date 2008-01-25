@@ -14,7 +14,6 @@ objects = \
 	error.o \
 	group.o \
 	history.o \
-	httpconn.o \
 	msg.o \
 	msn.o \
 	nexus.o \
@@ -44,6 +43,7 @@ objects = \
 	io/cmd.o \
 	io/buffer.o \
 	io/cmd_conn.o \
+	io/http_conn.o \
 	fix-purple.o
 
 sources = $(patsubst %.o,%.c,$(objects))

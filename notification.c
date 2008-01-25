@@ -20,6 +20,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
+#include "session.h"
 #include "msn.h"
 #include "notification.h"
 #include "state.h"
@@ -34,6 +35,31 @@
 #include "io/conn_end_http.h"
 
 static MsnTable *cbs_table;
+
+static void
+open_cb (ConnObject *conn)
+{
+    MsnSession *session;
+    CmdConnObject *cmd_conn;
+
+    g_return_if_fail (conn != NULL);
+
+    session = conn->foo_data;
+    cmd_conn = CMD_CONN_OBJECT (conn);
+
+    msn_log ("begin");
+
+    cmd_conn->cmdproc->servconn->connected = TRUE;
+
+    if (session->login_step == MSN_LOGIN_STEP_START)
+        msn_session_set_login_step (session, MSN_LOGIN_STEP_HANDSHAKE);
+    else
+        msn_session_set_login_step (session, MSN_LOGIN_STEP_HANDSHAKE2);
+
+    msn_cmdproc_send (cmd_conn->cmdproc, "VER", "MSNP9 CVR0");
+
+    msn_log ("end");
+}
 
 static void
 close_cb (ConnObject *conn,
@@ -105,6 +131,7 @@ msn_notification_new(MsnSession *session)
         {
             ConnEndObject *conn_end;
 
+#if 0
             if (session->http_method)
             {
                 conn_end = CONN_END_OBJECT (conn_end_http_object_new (NULL));
@@ -113,6 +140,9 @@ msn_notification_new(MsnSession *session)
             {
                 conn_end = conn_end_object_new (NULL);
             }
+#else
+            conn_end = CONN_END_OBJECT (conn_end_http_object_new (NULL));
+#endif
 
             conn->foo_data = conn_end->foo_data = session;
             conn_end->foo_data_2 = "NS";
@@ -120,6 +150,7 @@ msn_notification_new(MsnSession *session)
             conn_object_set_end (conn, conn_end);
         }
 
+        g_signal_connect (conn, "open", G_CALLBACK (open_cb), notification);
         g_signal_connect (conn, "close", G_CALLBACK (close_cb), notification);
         g_signal_connect (conn, "error", G_CALLBACK (close_cb), notification);
     }
@@ -152,31 +183,6 @@ msn_notification_destroy(MsnNotification *notification)
  * Connect
  **************************************************************************/
 
-static void
-connect_cb (ConnObject *conn)
-{
-    MsnSession *session;
-    CmdConnObject *cmd_conn;
-
-    g_return_if_fail (conn != NULL);
-
-    session = conn->foo_data;
-    cmd_conn = CMD_CONN_OBJECT (conn);
-
-    msn_log ("begin");
-
-    cmd_conn->cmdproc->servconn->connected = TRUE;
-
-    if (session->login_step == MSN_LOGIN_STEP_START)
-        msn_session_set_login_step (session, MSN_LOGIN_STEP_HANDSHAKE);
-    else
-        msn_session_set_login_step (session, MSN_LOGIN_STEP_HANDSHAKE2);
-
-    msn_cmdproc_send (cmd_conn->cmdproc, "VER", "MSNP9 CVR0");
-
-    msn_log ("end");
-}
-
 gboolean
 msn_notification_connect(MsnNotification *notification, const char *host, int port)
 {
@@ -187,7 +193,6 @@ msn_notification_connect(MsnNotification *notification, const char *host, int po
     servconn = notification->servconn;
 
     conn_object_connect (CONN_OBJECT (notification->conn), host, port);
-    CONN_OBJECT (notification->conn)->connect_cb = connect_cb;
 
     return TRUE;
 }

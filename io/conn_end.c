@@ -69,6 +69,12 @@ close_cb (GIOChannel *source,
     msn_warning ("source=%p,condition=%d,id=%s",
                  source, condition, condition_to_str (condition));
 
+    {
+        ConnEndObjectClass *class;
+        class = g_type_class_peek (CONN_END_OBJECT_TYPE);
+        g_signal_emit (G_OBJECT (data), class->close_sig, 0, data);
+    }
+
     return FALSE;
 }
 
@@ -169,6 +175,7 @@ connect_cb (gpointer data,
         GIOChannel *channel;
 
         conn_end->channel = channel = g_io_channel_unix_new (source);
+        conn_end->is_open = TRUE;
 
         g_io_channel_set_encoding (channel, NULL, NULL);
         g_io_channel_set_buffered (channel, FALSE);
@@ -188,6 +195,8 @@ connect_cb (gpointer data,
 static void
 connect_impl (ConnEndObject *conn_end)
 {
+    msn_log ("foo");
+
     g_return_if_fail (conn_end->foo_data != NULL);
 
     conn_end->connect_data = purple_proxy_connect (NULL, ((MsnSession *) (conn_end->foo_data))->account,
@@ -197,7 +206,7 @@ connect_impl (ConnEndObject *conn_end)
 static void
 close_impl (ConnEndObject *conn_end)
 {
-    if (!conn_end->channel)
+    if (!conn_end->is_open)
     {
         msn_warning ("not connected: conn_end=%p", conn_end);
         return;
@@ -213,6 +222,7 @@ close_impl (ConnEndObject *conn_end)
     g_io_channel_shutdown (conn_end->channel, FALSE, NULL);
     g_io_channel_unref (conn_end->channel);
     conn_end->channel = NULL;
+    conn_end->is_open = FALSE;
 
     g_free (conn_end->hostname);
     conn_end->hostname = NULL;
@@ -293,7 +303,7 @@ write_impl (ConnEndObject *conn_end,
 /* GObject stuff. */
 
 static void
-conn_end_object_dispose (GObject *obj)
+dispose (GObject *obj)
 {
     ConnEndObject *conn_end = (ConnEndObject *) obj;
 
@@ -307,14 +317,14 @@ conn_end_object_dispose (GObject *obj)
 }
 
 static void
-conn_end_object_finalize (GObject *obj)
+finalize (GObject *obj)
 {
     /* Chain up to the parent class */
     G_OBJECT_CLASS (parent_class)->finalize (obj);
 }
 
-void
-conn_end_object_class_init (gpointer g_class, gpointer class_data)
+static void
+class_init (gpointer g_class, gpointer class_data)
 {
     ConnEndObjectClass *conn_end_class = CONN_END_OBJECT_CLASS (g_class);
     GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
@@ -324,8 +334,8 @@ conn_end_object_class_init (gpointer g_class, gpointer class_data)
     conn_end_class->read = &read_impl;
     conn_end_class->write = &write_impl;
 
-    gobject_class->dispose = conn_end_object_dispose;
-    gobject_class->finalize = conn_end_object_finalize;
+    gobject_class->dispose = dispose;
+    gobject_class->finalize = finalize;
 
     parent_class = g_type_class_peek_parent (g_class);
 
@@ -335,12 +345,9 @@ conn_end_object_class_init (gpointer g_class, gpointer class_data)
                                              G_TYPE_NONE, 0);
 }
 
-void
-conn_end_object_instance_init (GTypeInstance *instance, gpointer g_class)
+static void
+instance_init (GTypeInstance *instance, gpointer g_class)
 {
-    ConnEndObject *conn_end = CONN_END_OBJECT (instance);
-
-    conn_end->dispose_has_run = FALSE;
 }
 
 GType
@@ -355,12 +362,12 @@ conn_end_object_get_type (void)
             sizeof (ConnEndObjectClass),
             NULL, /* base_init */
             NULL, /* base_finalize */
-            conn_end_object_class_init, /* class_init */
+            class_init, /* class_init */
             NULL, /* class_finalize */
             NULL, /* class_data */
             sizeof (ConnEndObject),
             0, /* n_preallocs */
-            conn_end_object_instance_init /* instance_init */
+            instance_init /* instance_init */
         };
 
         type = g_type_register_static (G_TYPE_OBJECT, "ConnEndObjectType", &type_info, 0);

@@ -33,8 +33,6 @@
 void conn_object_error (ConnObject *conn);
 
 static GObjectClass *parent_class = NULL;
-static guint open_sig;
-static guint close_sig;
 static guint error_sig;
 
 GQuark
@@ -59,7 +57,14 @@ read_cb (GIOChannel *source,
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
-        status = conn_end_object_read (conn->end, buf, sizeof (buf), &bytes_read, &conn->error);
+        if (conn->end)
+        {
+            status = conn_end_object_read (conn->end, buf, sizeof (buf), &bytes_read, &conn->error);
+        }
+        else
+        {
+            conn_object_read (conn, buf, sizeof (buf), &bytes_read, &conn->error);
+        }
 
         if (status == G_IO_STATUS_AGAIN)
             return TRUE;
@@ -76,18 +81,21 @@ read_cb (GIOChannel *source,
     return TRUE;
 }
 
-static gboolean
-close_cb (GIOChannel *source,
-          GIOCondition condition,
+static void
+close_cb (ConnEndObject *conn_end,
           gpointer data)
 {
-    msn_warning ("source=%p", source);
+    ConnObject *conn;
 
-    conn_object_close (data);
+    conn = CONN_OBJECT (data);
 
-    g_signal_emit (G_OBJECT (data), close_sig, 0, data);
+    conn_object_close (conn);
 
-    return FALSE;
+    {
+        ConnObjectClass *class;
+        class = g_type_class_peek (CONN_OBJECT_TYPE);
+        g_signal_emit (G_OBJECT (conn), class->close_sig, 0, conn);
+    }
 }
 
 static void
@@ -98,7 +106,7 @@ open_cb (ConnEndObject *conn_end,
     GIOChannel *channel;
 
     conn = data;
-    channel = conn->end->channel;
+    channel = conn_end->channel;
 
     msn_log ("begin");
 
@@ -108,12 +116,6 @@ open_cb (ConnEndObject *conn_end,
 
         msn_info ("connected: conn=%p,channel=%p", conn, channel);
         conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, conn);
-        conn->close_watch = g_io_add_watch (channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, close_cb, conn);
-
-        CONN_OBJECT_GET_CLASS (conn)->connect (conn);
-
-        if (conn->connect_cb)
-            conn->connect_cb (conn);
     }
     else
     {
@@ -168,27 +170,24 @@ conn_object_error (ConnObject *conn)
     }
 }
 
-void
+GIOStatus
 conn_object_write (ConnObject *conn,
                    const gchar *buf,
-                   gsize len)
+                   gsize count,
+                   gsize *ret_bytes_written,
+                   GError **error)
 {
-    gsize bytes_written = 0;
+    return CONN_OBJECT_GET_CLASS (conn)->write (conn, buf, count, ret_bytes_written, error);
+}
 
-    g_return_if_fail (conn != NULL);
-
-    msn_debug ("conn=%p", conn);
-
-    {
-        GIOStatus status = G_IO_STATUS_NORMAL;
-
-        status = conn_end_object_write (conn->end, buf, len, &bytes_written, &conn->error);
-
-        if (status != G_IO_STATUS_NORMAL || conn->error)
-        {
-            conn_object_error (conn);
-        }
-    }
+GIOStatus
+conn_object_read (ConnObject *conn,
+                  gchar *buf,
+                  gsize count,
+                  gsize *ret_bytes_read,
+                  GError **error)
+{
+    return CONN_OBJECT_GET_CLASS (conn)->read (conn, buf, count, ret_bytes_read, error);
 }
 
 void
@@ -196,13 +195,39 @@ conn_object_set_end (ConnObject *conn,
                      ConnEndObject *conn_end)
 {
     conn->end = conn_end;
+    conn->prev = conn_end;
     g_signal_connect (conn->end, "open", G_CALLBACK (open_cb), conn);
+    g_signal_connect (conn->end, "close", G_CALLBACK (close_cb), conn);
 }
 
 void
 conn_object_connect (ConnObject *conn,
                      const gchar *hostname,
                      gint port)
+{
+    CONN_OBJECT_GET_CLASS (conn)->connect (conn, hostname, port);
+}
+
+void
+conn_object_close (ConnObject *conn)
+{
+    CONN_OBJECT_GET_CLASS (conn)->close (conn);
+}
+
+void
+conn_object_parse (ConnObject *conn,
+                   gchar *buf,
+                   gsize bytes_read)
+{
+    CONN_OBJECT_GET_CLASS (conn)->parse (conn, buf, bytes_read);
+}
+
+/* ConnObject stuff. */
+
+static void
+connect_impl (ConnObject *conn,
+              const gchar *hostname,
+              gint port)
 {
     g_return_if_fail (conn != NULL);
     g_return_if_fail (hostname != NULL);
@@ -214,46 +239,15 @@ conn_object_connect (ConnObject *conn,
 
     conn_object_close (conn);
 
+    conn->end->prev = conn;
     conn_end_object_connect (conn->end, hostname, port);
 
     msn_log ("end");
 }
 
-void
-conn_object_close (ConnObject *conn)
-{
-    g_return_if_fail (conn);
-    g_return_if_fail (conn->end);
-
-    msn_info ("conn=%p", conn);
-
-    if (!conn->end->channel)
-    {
-        msn_warning ("not connected (conn=%p)", conn);
-        return;
-    }
-
-    if (conn->read_watch)
-    {
-        g_source_remove (conn->read_watch);
-        conn->read_watch = 0;
-    }
-
-    if (conn->close_watch)
-    {
-        g_source_remove (conn->close_watch);
-        conn->close_watch = 0;
-    }
-
-    conn_end_object_close (conn->end);
-}
-
-/* ConnObject stuff. */
-
 static void
-connect_impl (ConnObject *conn)
+close_impl (ConnObject *conn)
 {
-    msn_info ("foo");
 }
 
 static void
@@ -262,10 +256,39 @@ error_impl (ConnObject *conn)
     msn_info ("foo");
 }
 
-static void
-read_impl (ConnObject *conn)
+static GIOStatus
+write_impl (ConnObject *conn,
+            const gchar *buf,
+            gsize count,
+            gsize *ret_bytes_written,
+            GError **error)
 {
-    msn_info ("foo");
+    GIOStatus status = G_IO_STATUS_ERROR;
+    gsize bytes_written = 0;
+
+    g_return_val_if_fail (conn, status);
+
+    msn_debug ("conn=%p", conn);
+
+    status = conn_end_object_write (conn->end, buf, count, &bytes_written, &conn->error);
+
+    if (status != G_IO_STATUS_NORMAL || conn->error)
+    {
+        conn_object_error (conn);
+    }
+
+    return status;
+}
+
+static GIOStatus
+read_impl (ConnObject *conn,
+           gchar *buf,
+           gsize count,
+           gsize *ret_bytes_read,
+           GError **error)
+{
+    GIOStatus status = G_IO_STATUS_NORMAL;
+    return status;
 }
 
 static void
@@ -291,9 +314,6 @@ conn_object_dispose (GObject *obj)
         conn_end_object_free (conn->end);
         conn->end = NULL;
 
-        msn_buffer_free (conn->read_buffer);
-        msn_buffer_free (conn->buffer);
-
         g_free (conn->name);
     }
 
@@ -314,7 +334,9 @@ class_init (gpointer g_class,
     GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
 
     conn_class->connect = &connect_impl;
+    conn_class->close = &close_impl;
     conn_class->error = &error_impl;
+    conn_class->write = &write_impl;
     conn_class->read = &read_impl;
     conn_class->parse = &parse_impl;
 
@@ -323,15 +345,15 @@ class_init (gpointer g_class,
 
     parent_class = g_type_class_peek_parent (g_class);
 
-    open_sig = g_signal_new ("open", G_TYPE_FROM_CLASS (gobject_class),
-                             G_SIGNAL_RUN_FIRST, 0, NULL, NULL,
-                             g_cclosure_marshal_VOID__VOID,
-                             G_TYPE_NONE, 0);
+    conn_class->open_sig = g_signal_new ("open", G_TYPE_FROM_CLASS (gobject_class),
+                                         G_SIGNAL_RUN_FIRST, 0, NULL, NULL,
+                                         g_cclosure_marshal_VOID__VOID,
+                                         G_TYPE_NONE, 0);
 
-    close_sig = g_signal_new ("close", G_TYPE_FROM_CLASS (gobject_class),
-                              G_SIGNAL_RUN_FIRST, 0, NULL, NULL,
-                              g_cclosure_marshal_VOID__VOID,
-                              G_TYPE_NONE, 0);
+    conn_class->close_sig = g_signal_new ("close", G_TYPE_FROM_CLASS (gobject_class),
+                                          G_SIGNAL_RUN_FIRST, 0, NULL, NULL,
+                                          g_cclosure_marshal_VOID__VOID,
+                                          G_TYPE_NONE, 0);
 
     error_sig = g_signal_new ("error", G_TYPE_FROM_CLASS (gobject_class),
                               G_SIGNAL_RUN_FIRST, 0, NULL, NULL,
@@ -346,8 +368,6 @@ instance_init (GTypeInstance *instance,
     ConnObject *conn = CONN_OBJECT (instance);
 
     conn->dispose_has_run = FALSE;
-    conn->buffer = msn_buffer_new_and_alloc (0);
-    conn->read_buffer = msn_buffer_new ();
 }
 
 GType

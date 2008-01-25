@@ -129,13 +129,10 @@ parse_impl (ConnObject *base_conn,
         }
     } while (base_conn->connected && !cmd_conn->wasted && cmd_conn->rx_len > 0);
 
-    if (base_conn->connected && !cmd_conn->wasted)
-    {
-        if (cmd_conn->rx_len > 0)
-            cmd_conn->rx_buf = g_memdup (cur, cmd_conn->rx_len);
-        else
-            cmd_conn->rx_buf = NULL;
-    }
+    if (cmd_conn->rx_len > 0)
+        cmd_conn->rx_buf = g_memdup (cur, cmd_conn->rx_len);
+    else
+        cmd_conn->rx_buf = NULL;
 
     if (cmd_conn->wasted)
         conn_object_free (base_conn);
@@ -260,9 +257,6 @@ class_init (gpointer g_class,
     ConnObjectClass *conn_class = CONN_OBJECT_CLASS (g_class);
     GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
 
-#if 0
-    conn_class->read = &read_impl;
-#endif
     conn_class->parse = &parse_impl;
 
     gobject_class->dispose = dispose;
@@ -271,7 +265,7 @@ class_init (gpointer g_class,
     parent_class = g_type_class_peek_parent (g_class);
 }
 
-void
+static void
 instance_init (GTypeInstance *instance,
                gpointer g_class)
 {
