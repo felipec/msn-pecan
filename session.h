@@ -1,7 +1,5 @@
 /**
- * @file session.h MSN session functions
- *
- * purple
+ * Copyright (C) 2008 Felipe Contreras.
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -21,17 +19,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_SESSION_H_
-#define _MSN_SESSION_H_
+
+#ifndef MSN_SESSION_H
+#define MSN_SESSION_H
 
 typedef struct MsnSession MsnSession;
 
-#include "user.h"
-#include "notification.h"
-#include "switchboard.h"
-#include "nexus.h"
-#include "userlist.h"
-#include "sync.h"
+struct MsnUser;
+struct MsnUserList;
+struct MsnNotification;
+struct MsnSwitchBoard;
+struct MsnNexus;
+struct MsnSync;
+
+struct _PurpleAccount;
+struct _PurpleConversation;
 
 /**
  * Types of errors.
@@ -69,10 +71,12 @@ typedef enum
 
 #define MSN_LOGIN_STEPS MSN_LOGIN_STEP_END
 
+#include "switchboard.h"
+
 struct MsnSession
 {
-	PurpleAccount *account;
-	MsnUser *user;
+	struct _PurpleAccount *account;
+	struct MsnUser *user;
 
 	guint protocol_ver;
 
@@ -83,11 +87,11 @@ struct MsnSession
 	gboolean destroying; /**< A flag that states if the session is being destroyed. */
 	gboolean http_method;
 
-	MsnNotification *notification;
-	MsnNexus *nexus;
-	MsnSync *sync;
+	struct MsnNotification *notification;
+	struct MsnNexus *nexus;
+	struct MsnSync *sync;
 
-	MsnUserList *userlist;
+	struct MsnUserList *userlist;
 
 	int servconns_count; /**< The count of server connections. */
 	GList *switches; /**< The list of all the switchboards. */
@@ -116,7 +120,7 @@ struct MsnSession
  *
  * @return The new MSN session.
  */
-MsnSession *msn_session_new(PurpleAccount *account);
+MsnSession *msn_session_new(struct _PurpleAccount *account);
 
 /**
  * Destroys an MSN session.
@@ -154,7 +158,7 @@ void msn_session_disconnect(MsnSession *session);
  *
  * @return The switchboard, if found.
  */
-MsnSwitchBoard *msn_session_find_swboard(MsnSession *session,
+struct MsnSwitchBoard *msn_session_find_swboard(MsnSession *session,
 										 const char *username);
 
  /**
@@ -165,8 +169,8 @@ MsnSwitchBoard *msn_session_find_swboard(MsnSession *session,
  *
  * @return The switchboard, if found.
  */
-MsnSwitchBoard *msn_session_find_swboard_with_conv(MsnSession *session,
-												   PurpleConversation *conv);
+struct MsnSwitchBoard *msn_session_find_swboard_with_conv(MsnSession *session,
+												   struct _PurpleConversation *conv);
 /**
  * Finds a switchboard with the given chat ID.
  *
@@ -175,7 +179,7 @@ MsnSwitchBoard *msn_session_find_swboard_with_conv(MsnSession *session,
  *
  * @return The switchboard, if found.
  */
-MsnSwitchBoard *msn_session_find_swboard_with_id(const MsnSession *session,
+struct MsnSwitchBoard *msn_session_find_swboard_with_id(const MsnSession *session,
 												 int chat_id);
 
 /**
@@ -187,7 +191,7 @@ MsnSwitchBoard *msn_session_find_swboard_with_id(const MsnSession *session,
  *
  * @return The switchboard.
  */
-MsnSwitchBoard *msn_session_get_swboard(MsnSession *session,
+struct MsnSwitchBoard *msn_session_get_swboard(MsnSession *session,
 										const char *username, MsnSBFlag flag);
 
 /**
@@ -215,4 +219,4 @@ void msn_session_set_login_step(MsnSession *session, MsnLoginStep step);
  */
 void msn_session_finish_login(MsnSession *session);
 
-#endif /* _MSN_SESSION_H_ */
+#endif /* MSN_SESSION_H */

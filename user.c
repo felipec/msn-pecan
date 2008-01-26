@@ -25,8 +25,11 @@
 
 #include "fix-purple.h"
 
+#include <string.h>
+
 /* libpurple stuff. */
 #include <cipher.h>
+#include <account.h>
 
 MsnUser *
 msn_user_new(MsnUserList *userlist, const char *passport)

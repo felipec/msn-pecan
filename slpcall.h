@@ -1,7 +1,5 @@
 /**
- * @file slpcall.h SLP Call functions
- *
- * purple
+ * Copyright (C) 2008 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -21,20 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_SLPCALL_H_
-#define _MSN_SLPCALL_H_
 
-#include "internal.h"
+#ifndef MSN_SLPCALL_H
+#define MSN_SLPCALL_H
 
-typedef struct _MsnSlpCall MsnSlpCall;
+typedef struct MsnSlpCall MsnSlpCall;
 
-#include "slplink.h"
-#include "slpsession.h"
+struct MsnSession;
+struct MsnSlpSession;
+struct MsnSlpLink;
+
+#include <glib.h>
 
 /* The official client seems to timeout slp calls after 5 minutes */
 #define MSN_SLPCALL_TIMEOUT 300000
 
-typedef void (*MsnSlpCb_foo)(MsnSlpCall *slpcall, const guchar *data, gsize size);
+typedef void (*MsnSlpCb_foo) (MsnSlpCall *slpcall, const guchar *data, gsize size);
 
 typedef enum
 {
@@ -43,11 +43,8 @@ typedef enum
 
 } MsnSlpCallType;
 
-struct _MsnSlpCall
+struct MsnSlpCall
 {
-	/* MsnSession *session; */
-	MsnSlpLink *slplink;
-
 	MsnSlpCallType type;
 
 	/* Call-ID */
@@ -68,7 +65,7 @@ struct _MsnSlpCall
 
 	void (*progress_cb)(MsnSlpCall *slpcall,
 						gsize total_length, gsize len, gsize offset);
-	void (*session_init_cb)(MsnSlpSession *slpsession);
+	void (*session_init_cb)(struct MsnSlpSession *slpsession);
 
 	/* Can be checksum, or smile */
 	char *data_info;
@@ -76,12 +73,14 @@ struct _MsnSlpCall
 	void *xfer;
 
 	MsnSlpCb_foo cb;
-	void (*end_cb)(MsnSlpCall *slpcall, MsnSession *session);
+	void (*end_cb)(MsnSlpCall *slpcall, struct MsnSession *session);
 
 	int timer;
+
+        struct MsnSlpLink *slplink;
 };
 
-MsnSlpCall *msn_slp_call_new(MsnSlpLink *slplink);
+MsnSlpCall *msn_slp_call_new(struct MsnSlpLink *slplink);
 void msn_slp_call_init(MsnSlpCall *slpcall, MsnSlpCallType type);
 void msn_slp_call_session_init(MsnSlpCall *slpcall);
 void msn_slp_call_destroy(MsnSlpCall *slpcall);
@@ -90,4 +89,4 @@ void msn_slp_call_invite(MsnSlpCall *slpcall, const char *euf_guid,
 void msn_slp_call_close(MsnSlpCall *slpcall);
 gboolean msn_slp_call_timeout(gpointer data);
 
-#endif /* _MSN_SLPCALL_H_ */
+#endif /* MSN_SLPCALL_H */

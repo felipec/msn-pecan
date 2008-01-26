@@ -48,6 +48,7 @@
 #include <debug.h>
 #include <privacy.h>
 #include <request.h>
+#include "internal.h"
 
 #if PHOTO_SUPPORT
 #include "imgstore.h"

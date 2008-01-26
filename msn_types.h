@@ -23,8 +23,8 @@
 #ifndef MSN_TYPES_H
 #define MSN_TYPES_H
 
-typedef struct MsnMessage MsnMessage;
 typedef struct MsnCmdProc MsnCmdProc;
+typedef struct MsnMessage MsnMessage;
 typedef struct MsnTransaction MsnTransaction;
 typedef struct MsnCommand MsnCommand;
 typedef struct MsnTable MsnTable;

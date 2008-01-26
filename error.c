@@ -23,6 +23,12 @@
 #include "error.h"
 #include "msn_log.h"
 
+#include <glib.h>
+#include "msn_intl.h"
+
+/* libpurple stuff. */
+#include <account.h>
+
 const char *
 msn_error_get_text(unsigned int type)
 {

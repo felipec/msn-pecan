@@ -20,14 +20,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#include "msn.h"
 #include "directconn.h"
+#include "msn_io.h"
+#include "msn_log.h"
 
+#include "session.h"
 #include "slp.h"
 #include "slpmsg.h"
 
-#include "msn_io.h"
-#include "msn_log.h"
+#include <netdb.h>
+
+/* libpurple stuff. */
+#include <proxy.h>
 
 /**************************************************************************
  * Directconn Specific

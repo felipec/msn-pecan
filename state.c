@@ -20,10 +20,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#include "msn.h"
 #include "state.h"
-#include "session.h"
 
+#include "msn.h"
+#include "session.h"
+#include "notification.h"
+#include "user.h"
+
+#include <string.h>
+#include "msn_intl.h"
+
+/* libpurple stuff. */
 #include <account.h>
 
 static const char *away_text[] =

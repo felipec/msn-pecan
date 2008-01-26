@@ -1,11 +1,5 @@
 /**
- * @file slpsession.h SLP Session functions
- *
- * purple
- *
- * Purple is the legal property of its developers, whose names are too numerous
- * to list here.  Please refer to the COPYRIGHT file distributed with this
- * source distribution.
+ * Copyright (C) 2008 Felipe Contreras
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
+
 #include "slpsession.h"
+
+#include "session.h"
+#include "slplink.h"
+#include "slpcall.h"
+#include "user.h"
 
 /**************************************************************************
  * SLP Session

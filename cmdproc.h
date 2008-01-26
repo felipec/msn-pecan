@@ -25,8 +25,6 @@
 
 #include "msn_types.h"
 
-#include "io/conn.h"
-
 MsnCmdProc *msn_cmdproc_new (struct MsnSession *session);
 
 void msn_cmdproc_send (MsnCmdProc *cmdproc, const char *command, const char *format, ...);

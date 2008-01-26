@@ -24,11 +24,20 @@
 #include "prefs.h"
 #include "switchboard.h"
 #include "notification.h"
+#include "table.h"
 
 #include "msn_util.h"
 #include "msn_log.h"
 
+#include "io/cmd_conn.h"
+
 #include "error.h"
+
+#include <string.h>
+#include "msn_intl.h"
+
+/* libpurple stuff. */
+#include <account.h>
 
 static MsnTable *cbs_table;
 

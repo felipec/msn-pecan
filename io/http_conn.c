@@ -22,6 +22,8 @@
 
 static ConnObjectClass *parent_class = NULL;
 
+#include <string.h>
+
 #include <proxy.h> /* libpurple */
 #include "session.h"
 

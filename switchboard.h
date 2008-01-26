@@ -23,6 +23,8 @@
 #ifndef MSN_SWITCHBOARD_H
 #define MSN_SWITCHBOARD_H
 
+#include <glib.h>
+
 typedef struct MsnSwitchBoard MsnSwitchBoard;
 
 /**
@@ -51,14 +53,13 @@ typedef enum
 
 } MsnSBFlag;
 
-#include "conversation.h"
+struct MsnSession;
+struct MsnMessage;
+struct MsnUser;
+struct MsnCmdProc;
+struct CmdConnObject;
 
-#include "msg.h"
-#include "user.h"
-
-#include "slplink.h"
-
-#include "io/cmd_conn.h"
+struct _PurpleConversation;
 
 /**
  * A switchboard.
@@ -67,17 +68,17 @@ typedef enum
  */
 struct MsnSwitchBoard
 {
-    MsnSession *session;
-    MsnCmdProc *cmdproc;
+    struct MsnSession *session;
+    struct MsnCmdProc *cmdproc;
     char *im_user;
 
-    CmdConnObject *conn;
+    struct CmdConnObject *conn;
 
     MsnSBFlag flag;
     char *auth_key;
     char *session_id;
 
-    PurpleConversation *conv; /**< The conversation that displays the
+    struct _PurpleConversation *conv; /**< The conversation that displays the
                                 messages of this switchboard, or @c NULL if
                                 this is a helper switchboard. */
 
@@ -123,7 +124,7 @@ void msn_switchboard_end(void);
  *
  * @return The new switchboard.
  */
-MsnSwitchBoard *msn_switchboard_new(MsnSession *session);
+MsnSwitchBoard *msn_switchboard_new(struct MsnSession *session);
 
 /**
  * Destroys a switchboard.
@@ -241,7 +242,7 @@ gboolean msn_switchboard_can_send(MsnSwitchBoard *swboard);
  *
  * @return @c TRUE if a message can be sent, @c FALSE otherwise.
  */
-void msn_switchboard_send_msg(MsnSwitchBoard *swboard, MsnMessage *msg,
+void msn_switchboard_send_msg(MsnSwitchBoard *swboard, struct MsnMessage *msg,
                               gboolean queue);
 
 gboolean msn_switchboard_chat_leave(MsnSwitchBoard *swboard);
@@ -256,7 +257,7 @@ void msn_switchboard_request_add_user(MsnSwitchBoard *swboard, const char *user)
  * @param cmdproc The command processor.
  * @param msg     The message.
  */
-void msn_p2p_msg(MsnCmdProc *cmdproc, MsnMessage *msg);
+void msn_p2p_msg(struct MsnCmdProc *cmdproc, struct MsnMessage *msg);
 
 /**
  * Processes emoticon messages.
@@ -264,7 +265,7 @@ void msn_p2p_msg(MsnCmdProc *cmdproc, MsnMessage *msg);
  * @param cmdproc The command processor.
  * @param msg     The message.
  */
-void msn_emoticon_msg(MsnCmdProc *cmdproc, MsnMessage *msg);
+void msn_emoticon_msg(struct MsnCmdProc *cmdproc, struct MsnMessage *msg);
 
 /**
  * Processes INVITE messages.
@@ -272,6 +273,6 @@ void msn_emoticon_msg(MsnCmdProc *cmdproc, MsnMessage *msg);
  * @param cmdproc The command processor.
  * @param msg     The message.
  */
-void msn_invite_msg(MsnCmdProc *cmdproc, MsnMessage *msg);
+void msn_invite_msg(struct MsnCmdProc *cmdproc, struct MsnMessage *msg);
 
 #endif /* MSN_SWITCHBOARD_H */

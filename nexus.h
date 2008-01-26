@@ -23,9 +23,17 @@
 #ifndef MSN_NEXUS_H
 #define MSN_NEXUS_H
 
+#include <glib.h>
+
 typedef struct MsnNexus MsnNexus;
 
 #include "session.h"
+
+struct _PurpleSslConnection;
+
+typedef void (*_PurpleSslInputFunction) (gpointer,
+                                         struct _PurpleSslConnection *,
+                                         gint);
 
 struct MsnNexus
 {
@@ -34,13 +42,13 @@ struct MsnNexus
 	char *login_host;
 	char *login_path;
 	GHashTable *challenge_data;
-	PurpleSslConnection *gsc;
+	struct _PurpleSslConnection *gsc;
 
 	guint input_handler;
 
 	char *write_buf;
 	gssize written_len;
-	PurpleInputFunction written_cb;
+	_PurpleSslInputFunction written_cb;
 
 	char *read_buf;
 	gsize read_len;

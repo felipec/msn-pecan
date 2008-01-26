@@ -25,6 +25,8 @@
 
 #include "history.h"
 
+#include <string.h>
+
 #include "msn.h"
 #include "session.h"
 

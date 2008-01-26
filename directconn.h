@@ -19,36 +19,37 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_DIRECTCONN_H_
-#define _MSN_DIRECTCONN_H_
 
-typedef struct _MsnDirectConn MsnDirectConn;
+#ifndef MSN_DIRECTCONN_H
+#define MSN_DIRECTCONN_H
+
+typedef struct MsnDirectConn MsnDirectConn;
 
 #include "slplink.h"
 #include "slp.h"
 #include "msg.h"
 
 struct ConnObject;
+struct _PurpleProxyConnectData;
 
-struct _MsnDirectConn
+struct MsnDirectConn
 {
     MsnSlpLink *slplink;
     MsnSlpCall *initial_call;
-
-    PurpleProxyConnectData *connect_data;
 
     gboolean ack_sent;
     gboolean ack_recv;
 
     char *nonce;
 
-    struct ConnObject *conn;
     guint read_watch;
     gboolean connected;
 
     int port;
 
     int c;
+    struct _PurpleProxyConnectData *connect_data;
+    struct ConnObject *conn;
 };
 
 MsnDirectConn *msn_directconn_new(MsnSlpLink *slplink);
@@ -62,4 +63,4 @@ void msn_directconn_parse_nonce(MsnDirectConn *directconn, const char *nonce);
 void msn_directconn_destroy(MsnDirectConn *directconn);
 void msn_directconn_send_handshake(MsnDirectConn *directconn);
 
-#endif /* _MSN_DIRECTCONN_H_ */
+#endif /* MSN_DIRECTCONN_H */

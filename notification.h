@@ -23,18 +23,19 @@
 #ifndef MSN_NOTIFICATION_H
 #define MSN_NOTIFICATION_H
 
+#include <glib.h>
+
 typedef struct MsnNotification MsnNotification;
 
-#include "session.h"
-#include "cmdproc.h"
-
-#include "io/cmd_conn.h"
+struct MsnSession;
+struct MsnCmdProc;
+struct CmdConnObject;
 
 struct MsnNotification
 {
-    MsnSession *session;
-    MsnCmdProc *cmdproc;
-    CmdConnObject *conn;
+    struct MsnSession *session;
+    struct MsnCmdProc *cmdproc;
+    struct CmdConnObject *conn;
 
     gboolean in_use;
 };
@@ -46,7 +47,7 @@ void msn_notification_init (void);
 
 void msn_notification_add_buddy (MsnNotification *notification, const char *list, const char *who, const char *store_name, int group_id);
 void msn_notification_rem_buddy (MsnNotification *notification, const char *list, const char *who, int group_id);
-MsnNotification *msn_notification_new (MsnSession *session);
+MsnNotification *msn_notification_new (struct MsnSession *session);
 void msn_notification_destroy (MsnNotification *notification);
 gboolean msn_notification_connect (MsnNotification *notification, const char *host, int port);
 void msn_notification_disconnect (MsnNotification *notification);
@@ -58,6 +59,6 @@ void msn_notification_disconnect (MsnNotification *notification);
  */
 void msn_notification_close (MsnNotification *notification);
 
-void msn_got_login_params (MsnSession *session, const char *login_params);
+void msn_got_login_params (struct MsnSession *session, const char *login_params);
 
 #endif /* MSN_NOTIFICATION_H */

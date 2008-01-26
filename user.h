@@ -19,10 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_USER_H_
-#define _MSN_USER_H_
 
-typedef struct _MsnUser  MsnUser;
+#ifndef MSN_USER_H
+#define MSN_USER_H
+
+typedef struct MsnUser MsnUser;
 
 #include "session.h"
 #include "object.h"
@@ -32,7 +33,7 @@ typedef struct _MsnUser  MsnUser;
 /**
  * A user.
  */
-struct _MsnUser
+struct MsnUser
 {
 	MsnUserList *userlist;
 
@@ -283,4 +284,4 @@ GList *msn_user_get_group_ids(const MsnUser *user);
 
 /*@}*/
 
-#endif /* _MSN_USER_H_ */
+#endif /* MSN_USER_H */

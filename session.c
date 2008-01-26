@@ -25,6 +25,13 @@
 #include "notification.h"
 #include "fix-purple.h"
 
+#include <glib/gstdio.h>
+#include <string.h>
+#include "msn_intl.h"
+
+/* libpurple stuff. */
+#include <account.h>
+
 MsnSession *
 msn_session_new(PurpleAccount *account)
 {

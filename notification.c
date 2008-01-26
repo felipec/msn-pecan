@@ -25,16 +25,20 @@
 #include "msn_types.h"
 #include "userlist.h"
 #include "sync.h"
+#include "nexus.h"
 
 #include "session.h"
 #include "error.h" /* for error_get_text */
 #include "msn_util.h" /* for parse_socket */
 #include "slplink.h" /* for slplink_destroy */
 
+#include "io/cmd_conn.h"
 #include "io/http_conn.h"
 
 /* libpurple stuff. */
+#include <account.h>
 #include <cipher.h>
+#include "internal.h"
 
 static MsnTable *cbs_table;
 

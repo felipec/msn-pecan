@@ -19,72 +19,72 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_SLPLINK_H_
-#define _MSN_SLPLINK_H_
 
-typedef struct _MsnSlpLink MsnSlpLink;
+#ifndef MSN_SLPLINK_H
+#define MSN_SLPLINK_H
 
-#include "slpcall.h"
-#include "session.h"
+typedef struct MsnSlpLink MsnSlpLink;
 
-#include "directconn.h"
-#include "slpmsg.h"
+struct MsnSession;
+struct MsnSwitchboard;
+struct MsnSlpMessage;
+struct MsnDirectConn;
+struct MsnMessage;
+struct MsnSlpSession;
 
-#include "switchboard.h"
+struct _PurpleXfer;
 
-#include "ft.h"
+#include <slpcall.h>
+#include <object.h>
+#include <glib.h>
 
-#include "object.h"
+typedef void (*MsnSlpCb) (MsnSlpCall *slpcall, const guchar *data, gsize size);
+typedef void (*MsnSlpEndCb) (MsnSlpCall *slpcall, struct MsnSession *session);
 
-typedef void (*MsnSlpCb)(MsnSlpCall *slpcall, const guchar *data, gsize size);
-typedef void (*MsnSlpEndCb)(MsnSlpCall *slpcall, MsnSession *session);
-
-struct _MsnSlpLink
+struct MsnSlpLink
 {
-	MsnSession *session;
-	MsnSwitchBoard *swboard;
-
 	char *local_user;
 	char *remote_user;
 
 	int slp_seq_id;
 	int slp_session_id;
 
-	MsnDirectConn *directconn;
-
 	GList *slp_calls;
 	GList *slp_sessions;
 	GList *slp_msgs;
 
 	GQueue *slp_msg_queue;
+	struct MsnSession *session;
+	struct MsnSwitchBoard *swboard;
+	struct MsnDirectConn *directconn;
 };
 
-MsnSlpLink *msn_slplink_new(MsnSession *session, const char *username);
+MsnSlpLink *msn_slplink_new(struct MsnSession *session, const char *username);
 void msn_slplink_destroy(MsnSlpLink *slplink);
-MsnSlpLink *msn_session_find_slplink(MsnSession *session,
+MsnSlpLink *msn_session_find_slplink(struct MsnSession *session,
 									 const char *who);
-MsnSlpLink *msn_session_get_slplink(MsnSession *session, const char *username);
-MsnSlpSession *msn_slplink_find_slp_session(MsnSlpLink *slplink,
+MsnSlpLink *msn_session_get_slplink(struct MsnSession *session, const char *username);
+struct MsnSlpSession *msn_slplink_find_slp_session(MsnSlpLink *slplink,
 											long session_id);
 void msn_slplink_add_slpcall(MsnSlpLink *slplink, MsnSlpCall *slpcall);
 void msn_slplink_remove_slpcall(MsnSlpLink *slplink, MsnSlpCall *slpcall);
 MsnSlpCall *msn_slplink_find_slp_call(MsnSlpLink *slplink,
 									  const char *id);
 MsnSlpCall *msn_slplink_find_slp_call_with_session_id(MsnSlpLink *slplink, long id);
-void msn_slplink_send_msg(MsnSlpLink *slplink, MsnMessage *msg);
+void msn_slplink_send_msg(MsnSlpLink *slplink, struct MsnMessage *msg);
 void msn_slplink_release_slpmsg(MsnSlpLink *slplink,
-								MsnSlpMessage *slpmsg);
-void msn_slplink_queue_slpmsg(MsnSlpLink *slplink, MsnSlpMessage *slpmsg);
+								struct MsnSlpMessage *slpmsg);
+void msn_slplink_queue_slpmsg(MsnSlpLink *slplink, struct MsnSlpMessage *slpmsg);
 void msn_slplink_send_slpmsg(MsnSlpLink *slplink,
-							 MsnSlpMessage *slpmsg);
+							 struct MsnSlpMessage *slpmsg);
 void msn_slplink_unleash(MsnSlpLink *slplink);
-void msn_slplink_send_ack(MsnSlpLink *slplink, MsnMessage *msg);
-void msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg);
-MsnSlpMessage *msn_slplink_message_find(MsnSlpLink *slplink, long session_id, long id);
-void msn_slplink_append_slp_msg(MsnSlpLink *slplink, MsnSlpMessage *slpmsg);
+void msn_slplink_send_ack(MsnSlpLink *slplink, struct MsnMessage *msg);
+void msn_slplink_process_msg(MsnSlpLink *slplink, struct MsnMessage *msg);
+struct MsnSlpMessage *msn_slplink_message_find(MsnSlpLink *slplink, long session_id, long id);
+void msn_slplink_append_slp_msg(MsnSlpLink *slplink, struct MsnSlpMessage *slpmsg);
 void msn_slplink_remove_slp_msg(MsnSlpLink *slplink,
-								MsnSlpMessage *slpmsg);
-void msn_slplink_request_ft(MsnSlpLink *slplink, PurpleXfer *xfer);
+								struct MsnSlpMessage *slpmsg);
+void msn_slplink_request_ft(MsnSlpLink *slplink, struct _PurpleXfer *xfer);
 
 void msn_slplink_request_object(MsnSlpLink *slplink,
 								const char *info,
@@ -92,6 +92,6 @@ void msn_slplink_request_object(MsnSlpLink *slplink,
 								MsnSlpEndCb end_cb,
 								const MsnObject *obj);
 
-MsnSlpCall *msn_slp_process_msg(MsnSlpLink *slplink, MsnSlpMessage *slpmsg);
+MsnSlpCall *msn_slp_process_msg(MsnSlpLink *slplink, struct MsnSlpMessage *slpmsg);
 
-#endif /* _MSN_SLPLINK_H_ */
+#endif /* MSN_SLPLINK_H */

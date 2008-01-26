@@ -19,11 +19,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#include "msn.h"
+
 #include "slpcall.h"
-#include "slpsession.h"
 
 #include "slp.h"
+#include "slpsession.h"
+#include "slpmsg.h"
+#include "directconn.h"
+#include "session.h"
 #include "msn_util.h"
 
 /* #define MSN_DEBUG_SLPCALL */

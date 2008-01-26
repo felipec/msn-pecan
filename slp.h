@@ -1,7 +1,5 @@
 /**
- * @file slp.h MSNSLP support
- *
- * purple
+ * Copyright (C) 2008 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -21,28 +19,33 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_SLP_H_
-#define _MSN_SLP_H_
 
-#include "slpcall.h"
-#include "session.h"
-#include "internal.h"
-#include "ft.h"
+#ifndef MSN_SLP_H
+#define MSN_SLP_H
 
-void msn_xfer_progress_cb(MsnSlpCall *slpcall, gsize total_length, gsize
+#include <glib.h>
+
+struct MsnSession;
+struct MsnSlpCall;
+struct MsnSlpLink;
+struct MsnUser;
+
+struct _PurpleXfer;
+
+void msn_xfer_progress_cb(struct MsnSlpCall *slpcall, gsize total_length, gsize
 						  len, gsize offset);
 
-MsnSlpCall * msn_slp_sip_recv(MsnSlpLink *slplink,
+struct MsnSlpCall * msn_slp_sip_recv(struct MsnSlpLink *slplink,
 							  const char *body);
 
-void send_bye(MsnSlpCall *slpcall, const char *type);
+void send_bye(struct MsnSlpCall *slpcall, const char *type);
 
-void msn_xfer_completed_cb(MsnSlpCall *slpcall,
+void msn_xfer_completed_cb(struct MsnSlpCall *slpcall,
 						   const guchar *body, gsize size);
 
-void msn_xfer_cancel(PurpleXfer *xfer);
-void msn_xfer_end_cb(MsnSlpCall *slpcall, MsnSession *session);
+void msn_xfer_cancel(struct _PurpleXfer *xfer);
+void msn_xfer_end_cb(struct MsnSlpCall *slpcall, struct MsnSession *session);
 
-void msn_queue_buddy_icon_request(MsnUser *user);
+void msn_queue_buddy_icon_request (struct MsnUser *user);
 
-#endif /* _MSN_SLP_H_ */
+#endif /* MSN_SLP_H */

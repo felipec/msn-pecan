@@ -23,7 +23,12 @@
 #include "userlist.h"
 #include "msn_log.h"
 
+#include "notification.h"
+
+#include <string.h>
+
 #include "fix-purple.h"
+#include "msn_intl.h"
 
 /* libpurple stuff. */
 #include <privacy.h>

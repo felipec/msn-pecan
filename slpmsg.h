@@ -1,7 +1,5 @@
 /**
- * @file slpmsg.h SLP Message functions
- *
- * purple
+ * Copyright (C) 2008 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -21,31 +19,34 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_SLPMSG_H_
-#define _MSN_SLPMSG_H_
 
-typedef struct _MsnSlpMessage MsnSlpMessage;
+#ifndef MSN_SLPMSG_H
+#define MSN_SLPMSG_H
+
+typedef struct MsnSlpMessage MsnSlpMessage;
 
 #include "imgstore.h"
 
-#include "slpsession.h"
-#include "slpcall.h"
-#include "slplink.h"
-#include "session.h"
-#include "msg.h"
+struct MsnSlpSesison;
+struct MsnSlpCall;
+struct MsnSlpLink;
+struct MsnSession;
+struct MsnMessage;
 
 #include "slp.h"
+
+#include <glib/gstdio.h>
 
 /**
  * A SLP Message  This contains everything that we will need to send a SLP
  * Message even if has to be sent in several parts.
  */
-struct _MsnSlpMessage
+struct MsnSlpMessage
 {
-	MsnSlpSession *slpsession;
-	MsnSlpCall *slpcall; /**< The slpcall to which this slp message belongs (if applicable). */
-	MsnSlpLink *slplink; /**< The slplink through which this slp message is being sent. */
-	MsnSession *session;
+	struct MsnSlpSession *slpsession;
+	struct MsnSlpCall *slpcall; /**< The slpcall to which this slp message belongs (if applicable). */
+	struct MsnSlpLink *slplink; /**< The slplink through which this slp message is being sent. */
+	struct MsnSession *session;
 
 	long session_id;
 	long id;
@@ -67,7 +68,7 @@ struct _MsnSlpMessage
 	GList *msgs; /**< The real messages. */
 
 #if 1
-	MsnMessage *msg; /**< The temporary real message that will be sent. */
+	struct MsnMessage *msg; /**< The temporary real message that will be sent. */
 #endif
 
 #ifdef MSN_DEBUG_SLP
@@ -82,7 +83,7 @@ struct _MsnSlpMessage
  * @param slplink The slplink through which this slp message will be sent.
  * @return The created slp message.
  */
-MsnSlpMessage *msn_slpmsg_new(MsnSlpLink *slplink);
+MsnSlpMessage *msn_slpmsg_new(struct MsnSlpLink *slplink);
 
 /**
  * Destroys a slp message
@@ -97,14 +98,14 @@ void msn_slpmsg_set_body(MsnSlpMessage *slpmsg,
 void msn_slpmsg_set_image(MsnSlpMessage *slpmsg, PurpleStoredImage *img);
 void msn_slpmsg_open_file(MsnSlpMessage *slpmsg,
 						  const char *file_name);
-MsnSlpMessage * msn_slpmsg_sip_new(MsnSlpCall *slpcall, int cseq,
+MsnSlpMessage * msn_slpmsg_sip_new(struct MsnSlpCall *slpcall, int cseq,
 								   const char *header,
 								   const char *branch,
 								   const char *content_type,
 								   const char *content);
 
 #ifdef MSN_DEBUG_SLP
-void msn_slpmsg_show(MsnMessage *msg);
+void msn_slpmsg_show(struct MsnMessage *msg);
 #endif
 
-#endif /* _MSN_SLPMSG_H_ */
+#endif /* MSN_SLPMSG_H */

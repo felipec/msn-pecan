@@ -1,7 +1,5 @@
 /**
- * @file slpsession.h SLP Session functions
- *
- * purple
+ * Copyright (C) 2008 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -21,19 +19,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_SLPSESSION_H_
-#define _MSN_SLPSESSION_H_
 
-typedef struct _MsnSlpSession MsnSlpSession;
+#ifndef MSN_SLPSESSION_H
+#define MSN_SLPSESSION_H
 
-#include "slpcall.h"
-#include "slpsession.h"
-#include "slpmsg.h"
+typedef struct MsnSlpSession MsnSlpSession;
 
-struct _MsnSlpSession
+struct MsnSlpMessage;
+struct MsnSlpCall;
+
+struct MsnSlpSession
 {
-	/* MsnSlpLink *slplink; */
-	MsnSlpCall *slpcall;
+	struct MsnSlpCall *slpcall;
 
 	long id;
 
@@ -41,8 +38,8 @@ struct _MsnSlpSession
 	char *call_id;
 };
 
-MsnSlpSession *msn_slp_session_new(MsnSlpCall *slpcall);
+MsnSlpSession *msn_slp_session_new(struct MsnSlpCall *slpcall);
 void msn_slp_session_destroy(MsnSlpSession *slpsession);
 void msn_slpsession_send_slpmsg(MsnSlpSession *slpsession,
-								MsnSlpMessage *slpmsg);
-#endif /* _MSN_SLPSESSION_H_ */
+								struct MsnSlpMessage *slpmsg);
+#endif /* MSN_SLPSESSION_H */

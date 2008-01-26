@@ -24,6 +24,8 @@
 #include "sync.h"
 #include "state.h"
 
+#include <string.h>
+
 /* libpurple stuff. */
 #include <privacy.h>
 

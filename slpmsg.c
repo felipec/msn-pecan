@@ -20,9 +20,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#include "msn.h"
 #include "slpmsg.h"
 #include "slplink.h"
+
+#include "slpsession.h"
+#include "slpcall.h"
+#include "slplink.h"
+#include "msg.h"
+#include "session.h"
+
+#include <glib/gstdio.h>
+#include <string.h>
 
 /**************************************************************************
  * SLP Message

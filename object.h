@@ -1,7 +1,5 @@
 /**
- * @file object.h MSNObject API
- *
- * purple
+ * Copyright (C) 2008 Felipe Contreras.
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -25,8 +23,6 @@
 #define _MSN_OBJECT_H_
 
 #include "imgstore.h"
-
-#include "internal.h"
 
 typedef enum
 {
