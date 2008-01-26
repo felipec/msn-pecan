@@ -313,6 +313,12 @@ close_impl (ConnObject *conn)
         conn->connect_data = NULL;
     }
 
+    if (conn->read_watch)
+    {
+        g_source_remove (conn->read_watch);
+        conn->read_watch = 0;
+    }
+
     msn_info ("channel shutdown: %p", conn->channel);
     g_io_channel_shutdown (conn->channel, FALSE, NULL);
     g_io_channel_unref (conn->channel);
