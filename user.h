@@ -30,6 +30,8 @@ typedef struct MsnUser MsnUser;
 
 #include "userlist.h"
 
+struct _PurpleStoredImage;
+
 /**
  * Creates a new user structure.
  *
@@ -95,7 +97,7 @@ void msn_user_set_store_name (MsnUser *user, const gchar *name);
  * @param user     The user.
  * @param img      The buddy icon image
  */
-void msn_user_set_buddy_icon (MsnUser *user, PurpleStoredImage *img);
+void msn_user_set_buddy_icon (MsnUser *user, struct _PurpleStoredImage *img);
 
 /**
  * Sets the group ID list for a user.

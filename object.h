@@ -19,36 +19,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_OBJECT_H_
-#define _MSN_OBJECT_H_
 
-#include "imgstore.h"
+#ifndef MSN_OBJECT_H
+#define MSN_OBJECT_H
+
+#include <glib.h>
+
+typedef struct MsnObject MsnObject;
+
+struct _PurpleStoredImage;
 
 typedef enum
 {
-	MSN_OBJECT_UNKNOWN    = -1, /**< Unknown object        */
-	MSN_OBJECT_RESERVED1  =  1, /**< Reserved              */
-	MSN_OBJECT_EMOTICON   =  2, /**< Custom Emoticon       */
-	MSN_OBJECT_USERTILE   =  3, /**< UserTile (buddy icon) */
-	MSN_OBJECT_RESERVED2  =  4, /**< Reserved              */
-	MSN_OBJECT_BACKGROUND =  5  /**< Background            */
-
+    MSN_OBJECT_UNKNOWN = -1, /**< Unknown object */
+    MSN_OBJECT_RESERVED1 = 1, /**< Reserved */
+    MSN_OBJECT_EMOTICON = 2, /**< Custom Emoticon */
+    MSN_OBJECT_USERTILE = 3, /**< UserTile (buddy icon) */
+    MSN_OBJECT_RESERVED2 = 4, /**< Reserved */
+    MSN_OBJECT_BACKGROUND = 5  /**< Background */
 } MsnObjectType;
-
-typedef struct
-{
-	gboolean local;
-
-	char *creator;
-	int size;
-	MsnObjectType type;
-	PurpleStoredImage *img;
-	char *location;
-	char *friendly;
-	char *sha1d;
-	char *sha1c;
-
-} MsnObject;
 
 /**
  * Creates a MsnObject structure.
@@ -64,7 +53,7 @@ MsnObject *msn_object_new(void);
  *
  * @return The new MsnObject structure.
  */
-MsnObject *msn_object_new_from_string(const char *str);
+MsnObject *msn_object_new_from_string(const gchar *str);
 
 /**
  * Destroys an MsnObject structure.
@@ -80,21 +69,21 @@ void msn_object_destroy(MsnObject *obj);
  *
  * @return The string representation. This must be freed.
  */
-char *msn_object_to_string(const MsnObject *obj);
+gchar *msn_object_to_string(const MsnObject *obj);
 
 /**
  * Sets the creator field in a MsnObject.
  *
  * @param creator The creator value.
  */
-void msn_object_set_creator(MsnObject *obj, const char *creator);
+void msn_object_set_creator(MsnObject *obj, const gchar *creator);
 
 /**
  * Sets the size field in a MsnObject.
  *
  * @param size The size value.
  */
-void msn_object_set_size(MsnObject *obj, int size);
+void msn_object_set_size(MsnObject *obj, gint size);
 
 /**
  * Sets the type field in a MsnObject.
@@ -108,28 +97,28 @@ void msn_object_set_type(MsnObject *obj, MsnObjectType type);
  *
  * @param location The location value.
  */
-void msn_object_set_location(MsnObject *obj, const char *location);
+void msn_object_set_location(MsnObject *obj, const gchar *location);
 
 /**
  * Sets the friendly name field in a MsnObject.
  *
  * @param friendly The friendly name value.
  */
-void msn_object_set_friendly(MsnObject *obj, const char *friendly);
+void msn_object_set_friendly(MsnObject *obj, const gchar *friendly);
 
 /**
  * Sets the SHA1D field in a MsnObject.
  *
  * @param sha1d The sha1d value.
  */
-void msn_object_set_sha1d(MsnObject *obj, const char *sha1d);
+void msn_object_set_sha1d(MsnObject *obj, const gchar *sha1d);
 
 /**
  * Sets the SHA1C field in a MsnObject.
  *
  * @param sha1c The sha1c value.
  */
-void msn_object_set_sha1c(MsnObject *obj, const char *sha1c);
+void msn_object_set_sha1c(MsnObject *obj, const gchar *sha1c);
 
 /**
  * Associates an image with a MsnObject.
@@ -137,7 +126,7 @@ void msn_object_set_sha1c(MsnObject *obj, const char *sha1c);
  * @param obj The object.
  * @param img The image to associate.
  */
-void msn_object_set_image(MsnObject *obj, PurpleStoredImage *img);
+void msn_object_set_image(MsnObject *obj, struct _PurpleStoredImage *img);
 
 /**
  * Returns a MsnObject's creator value.
@@ -146,7 +135,7 @@ void msn_object_set_image(MsnObject *obj, PurpleStoredImage *img);
  *
  * @return The creator value.
  */
-const char *msn_object_get_creator(const MsnObject *obj);
+const gchar *msn_object_get_creator(const MsnObject *obj);
 
 /**
  * Returns a MsnObject's size value.
@@ -155,7 +144,7 @@ const char *msn_object_get_creator(const MsnObject *obj);
  *
  * @return The size value.
  */
-int msn_object_get_size(const MsnObject *obj);
+gint msn_object_get_size(const MsnObject *obj);
 
 /**
  * Returns a MsnObject's type.
@@ -173,7 +162,7 @@ MsnObjectType msn_object_get_type(const MsnObject *obj);
  *
  * @return The location value.
  */
-const char *msn_object_get_location(const MsnObject *obj);
+const gchar *msn_object_get_location(const MsnObject *obj);
 
 /**
  * Returns a MsnObject's friendly name value.
@@ -182,7 +171,7 @@ const char *msn_object_get_location(const MsnObject *obj);
  *
  * @return The friendly name value.
  */
-const char *msn_object_get_friendly(const MsnObject *obj);
+const gchar *msn_object_get_friendly(const MsnObject *obj);
 
 /**
  * Returns a MsnObject's SHA1D value.
@@ -191,7 +180,7 @@ const char *msn_object_get_friendly(const MsnObject *obj);
  *
  * @return The SHA1D value.
  */
-const char *msn_object_get_sha1d(const MsnObject *obj);
+const gchar *msn_object_get_sha1d(const MsnObject *obj);
 
 /**
  * Returns a MsnObject's SHA1C value.
@@ -200,7 +189,7 @@ const char *msn_object_get_sha1d(const MsnObject *obj);
  *
  * @return The SHA1C value.
  */
-const char *msn_object_get_sha1c(const MsnObject *obj);
+const gchar *msn_object_get_sha1c(const MsnObject *obj);
 
 /**
  * Returns a MsnObject's SHA1C value if it exists, otherwise SHA1D.
@@ -209,7 +198,7 @@ const char *msn_object_get_sha1c(const MsnObject *obj);
  *
  * @return The SHA1C value.
  */
-const char *msn_object_get_sha1(const MsnObject *obj);
+const gchar *msn_object_get_sha1(const MsnObject *obj);
 
 /**
  * Returns the image associated with the MsnObject.
@@ -218,8 +207,8 @@ const char *msn_object_get_sha1(const MsnObject *obj);
  *
  * @return The associated image.
  */
-PurpleStoredImage *msn_object_get_image(const MsnObject *obj);
+struct _PurpleStoredImage *msn_object_get_image(const MsnObject *obj);
 
 void msn_object_set_local(MsnObject *obj);
 
-#endif /* _MSN_OBJECT_H_ */
+#endif /* MSN_OBJECT_H */
