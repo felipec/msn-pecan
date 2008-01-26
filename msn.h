@@ -54,7 +54,6 @@
 #include "proxy.h"
 #include "prpl.h"
 #include "request.h"
-#include "servconn.h"
 #include "sslconn.h"
 #include "util.h"
 

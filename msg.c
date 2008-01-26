@@ -335,7 +335,7 @@ msn_message_parse_payload(MsnMessage *msg,
 }
 
 MsnMessage *
-msn_message_new_from_cmd(MsnSession *session, MsnCommand *cmd)
+msn_message_new_from_cmd(MsnCommand *cmd)
 {
 	MsnMessage *msg;
 

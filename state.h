@@ -21,8 +21,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_STATE_H_
-#define _MSN_STATE_H_
+
+#ifndef MSN_STATE_H
+#define MSN_STATE_H
 
 /**
  * Away types.
@@ -41,12 +42,15 @@ typedef enum
 
 } MsnAwayType;
 
+struct MsnSession;
+struct _PurpleAccount;
+
 /**
  * Changes the status of the user.
  *
  * @param session The MSN session.
  */
-void msn_change_status(MsnSession *session);
+void msn_change_status(struct MsnSession *session);
 
 /**
  * Returns the string representation of an away type.
@@ -59,6 +63,6 @@ const char *msn_away_get_text(MsnAwayType type);
 
 const char *msn_state_get_text(MsnAwayType state);
 
-MsnAwayType msn_state_from_account(PurpleAccount *account);
+MsnAwayType msn_state_from_account(struct _PurpleAccount *account);
 
-#endif /* _MSN_STATE_H_ */
+#endif /* MSN_STATE_H */

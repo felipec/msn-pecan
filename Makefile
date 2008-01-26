@@ -20,7 +20,6 @@ objects = \
 	notification.o \
 	object.o \
 	page.o \
-	servconn.o \
 	session.o \
 	slp.o \
 	slpcall.o \

@@ -26,10 +26,9 @@
 #include "notification.h"
 
 #include "msn_util.h"
+#include "msn_log.h"
 
 #include "error.h"
-
-#include "io/conn_end_http.h"
 
 static MsnTable *cbs_table;
 
@@ -107,15 +106,12 @@ MsnSwitchBoard *
 msn_switchboard_new(MsnSession *session)
 {
     MsnSwitchBoard *swboard;
-    MsnServConn *servconn;
 
     g_return_val_if_fail(session != NULL, NULL);
 
     swboard = g_new0(MsnSwitchBoard, 1);
 
     swboard->session = session;
-    swboard->servconn = servconn = msn_servconn_new ();
-    swboard->cmdproc = servconn->cmdproc;
 
     swboard->msg_queue = g_queue_new();
     swboard->empty = TRUE;
@@ -129,11 +125,18 @@ msn_switchboard_new(MsnSession *session)
         ConnObject *conn;
         swboard->conn = cmd_conn_object_new ("switchboard server", MSN_CONN_NS);
         conn = CONN_OBJECT (swboard->conn);
-        swboard->conn->cmdproc = servconn->cmdproc;
-        servconn->cmdproc->cbs_table = cbs_table;
-        servconn->cmdproc->conn = conn;
 
         conn->session = session;
+
+        {
+            MsnCmdProc *cmdproc;
+            cmdproc = msn_cmdproc_new (session);
+            swboard->conn->cmdproc = cmdproc;
+            swboard->cmdproc = cmdproc;
+
+            cmdproc->cbs_table = cbs_table;
+            cmdproc->conn = conn;
+        }
 
 #if 0
         {
@@ -155,13 +158,12 @@ msn_switchboard_new(MsnSession *session)
         }
 #endif
 
-        g_signal_connect (conn, "open", G_CALLBACK (open_cb), servconn);
-        g_signal_connect (conn, "close", G_CALLBACK (close_cb), servconn);
-        g_signal_connect (conn, "error", G_CALLBACK (close_cb), servconn);
+        g_signal_connect (conn, "open", G_CALLBACK (open_cb), NULL);
+        g_signal_connect (conn, "close", G_CALLBACK (close_cb), NULL);
+        g_signal_connect (conn, "error", G_CALLBACK (close_cb), NULL);
     }
 
 #if 1
-    swboard->cmdproc = servconn->cmdproc;
     swboard->cmdproc->data = swboard;
     swboard->cmdproc->cbs_table = cbs_table;
 #endif
@@ -220,18 +222,10 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
     session = swboard->session;
     session->switches = g_list_remove(session->switches, swboard);
 
-#if 0
-    /* This should never happen or we are in trouble. */
-    if (swboard->servconn != NULL)
-        msn_servconn_destroy(swboard->servconn);
-#endif
-
     if (swboard->cmdproc)
         swboard->cmdproc->data = NULL;
 
     conn_object_free (CONN_OBJECT (swboard->conn));
-
-    msn_servconn_destroy(swboard->servconn);
 
     g_free(swboard);
 }
@@ -832,7 +826,7 @@ msg_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload, size_t len)
 {
     MsnMessage *msg;
 
-    msg = msn_message_new_from_cmd(cmdproc->session, cmd);
+    msg = msn_message_new_from_cmd(cmd);
 
     msn_message_parse_payload(msg, payload, len);
 #ifdef MSN_DEBUG_SB
@@ -1044,7 +1038,6 @@ clientcaps_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     char *passport = msg->sender;
 
     session = cmdproc->session;
-    swboard = cmdproc->servconn->swboard;
 
     clientcaps = msn_message_get_hashtable_from_body(msg);
 #endif

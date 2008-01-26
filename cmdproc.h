@@ -23,36 +23,11 @@
 #ifndef MSN_CMDPROC_H
 #define MSN_CMDPROC_H
 
-typedef struct MsnCmdProc MsnCmdProc;
-
-#include "session.h"
-#include "servconn.h"
-#include "error.h"
-#include "command.h"
-#include "table.h"
-#include "history.h"
+#include "msn_types.h"
 
 #include "io/conn.h"
 
-struct MsnCmdProc
-{
-    MsnSession *session;
-    MsnServConn *servconn;
-
-    GQueue *txqueue;
-
-    MsnCommand *last_cmd;
-
-    MsnTable *cbs_table;
-
-    MsnHistory *history;
-
-    gpointer data; /**< Extra data, like the switchboard. */
-    ConnObject *conn;
-    guint cmd_count;
-};
-
-MsnCmdProc *msn_cmdproc_new (MsnSession *session);
+MsnCmdProc *msn_cmdproc_new (struct MsnSession *session);
 
 void msn_cmdproc_send (MsnCmdProc *cmdproc, const char *command, const char *format, ...);
 void msn_cmdproc_send_quick (MsnCmdProc *cmdproc, const char *command, const char *format, ...);

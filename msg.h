@@ -21,28 +21,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_MSG_H_
-#define _MSN_MSG_H_
 
-typedef struct _MsnMessage MsnMessage;
-
-#include "session.h"
-#include "user.h"
-
-#include "command.h"
-#include "transaction.h"
-
-typedef void (*MsnMsgCb)(MsnMessage *, void *data);
-
-/*
-typedef enum
-{
-	MSN_MSG_NORMAL,
-	MSN_MSG_SLP_SB,
-	MSN_MSG_SLP_DC
-
-} MsnMsgType;
-*/
+#ifndef MSN_MSG_H_
+#define MSN_MSG_H_
 
 typedef enum
 {
@@ -65,65 +46,7 @@ typedef enum
 
 } MsnMsgErrorType;
 
-typedef struct
-{
-	guint32 session_id;
-	guint32 id;
-	guint64 offset;
-	guint64 total_size;
-	guint32 length;
-	guint32 flags;
-	guint32 ack_id;
-	guint32 ack_sub_id;
-	guint64 ack_size;
-
-} MsnSlpHeader;
-
-typedef struct
-{
-	guint32 value;
-
-} MsnSlpFooter;
-
-/**
- * A message.
- */
-struct _MsnMessage
-{
-	size_t ref_count;           /**< The reference count.       */
-
-	MsnMsgType type;
-
-	gboolean msnslp_message;
-
-	char *remote_user;
-	char flag;
-
-	char *content_type;
-	char *charset;
-	char *body;
-	gsize body_len;
-
-	MsnSlpHeader msnslp_header;
-	MsnSlpFooter msnslp_footer;
-
-	GHashTable *attr_table;
-	GList *attr_list;
-
-	gboolean ack_ref;           /**< A flag that states if this message has
-								  been ref'ed for using it in a callback. */
-
-	MsnCommand *cmd;
-	MsnTransaction *trans;
-
-	MsnMsgCb ack_cb; /**< The callback to call when we receive an ACK of this
-					   message. */
-	MsnMsgCb nak_cb; /**< The callback to call when we receive a NAK of this
-					   message. */
-	void *ack_data; /**< The data used by callbacks. */
-
-	MsnMsgErrorType error; /**< The error of the message. */
-};
+#include "msn_types.h"
 
 /**
  * Creates a new, empty message.
@@ -170,7 +93,7 @@ MsnMessage *msn_message_new_msnslp_ack(MsnMessage *acked_msg);
  *
  * @return The new message.
  */
-MsnMessage *msn_message_new_from_cmd(MsnSession *session, MsnCommand *cmd);
+MsnMessage *msn_message_new_from_cmd(MsnCommand *cmd);
 
 /**
  * Parses the payload of a message.

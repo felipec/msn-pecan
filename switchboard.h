@@ -25,17 +25,6 @@
 
 typedef struct MsnSwitchBoard MsnSwitchBoard;
 
-#include "conversation.h"
-
-#include "msg.h"
-#include "user.h"
-
-#include "servconn.h"
-
-#include "slplink.h"
-
-#include "io/cmd_conn.h"
-
 /**
  * A switchboard error.
  */
@@ -62,6 +51,15 @@ typedef enum
 
 } MsnSBFlag;
 
+#include "conversation.h"
+
+#include "msg.h"
+#include "user.h"
+
+#include "slplink.h"
+
+#include "io/cmd_conn.h"
+
 /**
  * A switchboard.
  *
@@ -70,7 +68,6 @@ typedef enum
 struct MsnSwitchBoard
 {
     MsnSession *session;
-    MsnServConn *servconn;
     MsnCmdProc *cmdproc;
     char *im_user;
 

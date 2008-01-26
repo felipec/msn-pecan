@@ -19,12 +19,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_NEXUS_H_
-#define _MSN_NEXUS_H_
 
-typedef struct _MsnNexus MsnNexus;
+#ifndef MSN_NEXUS_H
+#define MSN_NEXUS_H
 
-struct _MsnNexus
+typedef struct MsnNexus MsnNexus;
+
+#include "session.h"
+
+struct MsnNexus
 {
 	MsnSession *session;
 
@@ -47,4 +50,4 @@ void msn_nexus_connect(MsnNexus *nexus);
 MsnNexus *msn_nexus_new(MsnSession *session);
 void msn_nexus_destroy(MsnNexus *nexus);
 
-#endif /* _MSN_NEXUS_H_ */
+#endif /* MSN_NEXUS_H */

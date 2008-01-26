@@ -19,31 +19,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_TABLE_H_
-#define _MSN_TABLE_H_
 
-typedef struct _MsnTable MsnTable;
+#ifndef MSN_TABLE_H
+#define MSN_TABLE_H
 
-#include "cmdproc.h"
-#include "transaction.h"
-#include "msg.h"
-
-typedef void (*MsnMsgTypeCb)(MsnCmdProc *cmdproc, MsnMessage *msg);
-
-struct _MsnTable
-{
-	GHashTable *cmds;
-	GHashTable *msgs;
-	GHashTable *errors;
-
-	GHashTable *async;
-	GHashTable *fallback;
-};
+#include "msn_types.h"
 
 MsnTable *msn_table_new(void);
 void msn_table_destroy(MsnTable *table);
 
-void msn_table_add_cmd(MsnTable *table, const gchar *command, const gchar *answer, MsnTransCb cb);
+void msn_table_add_cmd(MsnTable *table, const gchar *command, const gchar *answer, MsnTransCb);
 void msn_table_add_error(MsnTable *table, const gchar *answer, MsnErrorCb cb);
 void msn_table_add_msg_type(MsnTable *table, const gchar *type, MsnMsgTypeCb cb);
 

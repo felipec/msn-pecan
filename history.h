@@ -21,19 +21,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_HISTORY_H
-#define _MSN_HISTORY_H
+
+#ifndef MSN_HISTORY_H
+#define MSN_HISTORY_H
 
 #define MSN_HIST_ELEMS 0x30
 
-typedef struct _MsnHistory MsnHistory;
+typedef struct MsnHistory MsnHistory;
 
 #include "transaction.h"
 
 /**
  * The history.
  */
-struct _MsnHistory
+struct MsnHistory
 {
 	GQueue *queue;
 	unsigned int trId;
@@ -44,4 +45,4 @@ void msn_history_destroy(MsnHistory *history);
 MsnTransaction *msn_history_find(MsnHistory *history, unsigned int triId);
 void msn_history_add(MsnHistory *history, MsnTransaction *trans);
 
-#endif /* _MSN_HISTORY_H */
+#endif /* MSN_HISTORY_H */

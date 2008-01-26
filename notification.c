@@ -21,6 +21,7 @@
  */
 
 #include "session.h"
+#if 0
 #include "msn.h"
 #include "notification.h"
 #include "state.h"
@@ -31,8 +32,13 @@
 #include "userlist.h"
 #include "sync.h"
 #include "slplink.h"
+#endif
 
-#include "io/conn_end_http.h"
+#include "io/http_conn.h"
+#include "transaction.h"
+#include "msn_log.h"
+#include "table.h"
+#include "msn_types.h"
 
 static MsnTable *cbs_table;
 
@@ -97,14 +103,12 @@ MsnNotification *
 msn_notification_new(MsnSession *session)
 {
     MsnNotification *notification;
-    MsnServConn *servconn;
 
     g_return_val_if_fail(session != NULL, NULL);
 
     notification = g_new0(MsnNotification, 1);
 
     notification->session = session;
-    notification->servconn = servconn = msn_servconn_new ();
 
     {
         ConnObject *conn;
@@ -114,9 +118,8 @@ msn_notification_new(MsnSession *session)
         {
             MsnCmdProc *cmdproc;
             cmdproc = msn_cmdproc_new (session);
-            cmdproc->servconn = servconn;
-            servconn->cmdproc = cmdproc;
             notification->conn->cmdproc = cmdproc;
+            notification->cmdproc = cmdproc;
 
             cmdproc->cbs_table = cbs_table;
             cmdproc->conn = conn;
@@ -154,7 +157,6 @@ msn_notification_new(MsnSession *session)
     }
 
 #if 1
-    notification->cmdproc = servconn->cmdproc;
     notification->cmdproc->data = notification;
     notification->cmdproc->cbs_table = cbs_table;
 #endif
@@ -170,8 +172,6 @@ msn_notification_destroy(MsnNotification *notification)
 
     cmd_conn_object_free (notification->conn);
 
-    msn_servconn_destroy(notification->servconn);
-
     g_free(notification);
 }
 
@@ -182,11 +182,7 @@ msn_notification_destroy(MsnNotification *notification)
 gboolean
 msn_notification_connect(MsnNotification *notification, const char *host, int port)
 {
-    MsnServConn *servconn;
-
     g_return_val_if_fail(notification != NULL, FALSE);
-
-    servconn = notification->servconn;
 
     conn_object_connect (CONN_OBJECT (notification->conn), host, port);
 
@@ -402,7 +398,7 @@ msg_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload,
 {
     MsnMessage *msg;
 
-    msg = msn_message_new_from_cmd(cmdproc->session, cmd);
+    msg = msn_message_new_from_cmd(cmd);
 
     msn_message_parse_payload(msg, payload, len);
 #ifdef MSN_DEBUG_NS
@@ -771,10 +767,6 @@ chg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 static void
 not_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload, size_t len)
 {
-#if 0
-    MSN_SET_PARAMS("NOT %d\r\n%s", cmdproc->servconn->payload, payload);
-    purple_debug_misc("msn", "Notification: {%s}\n", payload);
-#endif
 }
 
 static void
@@ -1375,7 +1367,7 @@ msn_notification_add_buddy(MsnNotification *notification, const char *list,
                            int group_id)
 {
     MsnCmdProc *cmdproc;
-    cmdproc = notification->servconn->cmdproc;
+    cmdproc = notification->cmdproc;
 
     if (group_id < 0 && !strcmp(list, "FL"))
         group_id = 0;
@@ -1397,7 +1389,7 @@ msn_notification_rem_buddy(MsnNotification *notification, const char *list,
                            const char *who, int group_id)
 {
     MsnCmdProc *cmdproc;
-    cmdproc = notification->servconn->cmdproc;
+    cmdproc = notification->cmdproc;
 
     if (group_id >= 0)
     {

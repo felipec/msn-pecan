@@ -26,19 +26,10 @@
 
 typedef struct MsnSession MsnSession;
 
-#include "sslconn.h"
-
 #include "user.h"
-#include "slpcall.h"
-
 #include "notification.h"
 #include "switchboard.h"
-#include "group.h"
-
-#include "cmdproc.h"
 #include "nexus.h"
-#include "httpconn.h"
-
 #include "userlist.h"
 #include "sync.h"
 
@@ -116,17 +107,6 @@ struct MsnSession
 		int client_port;
 
 	} passport_info;
-
-        struct
-        {
-            GIOChannel *channel;
-            gchar *hostname;
-            guint parser_state;
-            gboolean waiting_response;
-            GQueue *write_queue;
-            guint content_length;
-            guint timeout_id;
-        } httpconn_data;
 };
 
 /**

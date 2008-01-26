@@ -744,7 +744,7 @@ msn_p2p_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 	MsnSession *session;
 	MsnSlpLink *slplink;
 
-	session = cmdproc->servconn->session;
+	session = cmdproc->session;
 	slplink = msn_session_get_slplink(session, msg->remote_user);
 
 	if (slplink->swboard == NULL)
@@ -805,7 +805,7 @@ msn_emoticon_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
 	PurpleConversation *conv;
 
-	session = cmdproc->servconn->session;
+	session = cmdproc->session;
 
 	if (!purple_account_get_bool(session->account, "custom_smileys", TRUE))
 		return;

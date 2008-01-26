@@ -19,45 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_TRANSACTION_H
-#define _MSN_TRANSACTION_H
 
-typedef struct _MsnTransaction MsnTransaction;
+#ifndef MSN_TRANSACTION_H
+#define MSN_TRANSACTION_H
 
-#include "command.h"
-#include "cmdproc.h"
-
-typedef void (*MsnTransCb)(MsnCmdProc *cmdproc, MsnCommand *cmd);
-typedef void (*MsnTimeoutCb)(MsnCmdProc *cmdproc, MsnTransaction *trans);
-typedef void (*MsnErrorCb)(MsnCmdProc *cmdproc, MsnTransaction *trans,
-						   int error);
-
-/**
- * A transaction. A sending command that will initiate the transaction.
- */
-struct _MsnTransaction
-{
-	MsnCmdProc *cmdproc;
-	unsigned int trId;
-
-	char *command;
-	char *params;
-
-	int timer;
-
-	void *data; /**< The data to be used on the different callbacks. */
-	GHashTable *callbacks;
-	gboolean has_custom_callbacks;
-	MsnErrorCb error_cb;
-	MsnTimeoutCb timeout_cb;
-
-	char *payload;
-	size_t payload_len;
-
-	GQueue *queue;
-	MsnCommand *pendent_cmd; /**< The command that is waiting for the result of
-							   this transaction. */
-};
+#include "msn_types.h"
 
 MsnTransaction *msn_transaction_new(MsnCmdProc *cmdproc,
 									const char *command,
@@ -73,4 +39,4 @@ void msn_transaction_add_cb(MsnTransaction *trans, const gchar *answer, MsnTrans
 void msn_transaction_set_error_cb(MsnTransaction *trans, MsnErrorCb cb);
 void msn_transaction_set_timeout_cb(MsnTransaction *trans, MsnTimeoutCb cb);
 
-#endif /* _MSN_TRANSACTION_H */
+#endif /* MSN_TRANSACTION_H */

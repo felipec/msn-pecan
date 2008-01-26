@@ -20,8 +20,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#include "msn.h"
 #include "cmdproc.h"
+#include "msn_log.h"
+
+#include "msn.h"
+#include "session.h"
 
 MsnCmdProc *
 msn_cmdproc_new(MsnSession *session)
@@ -76,12 +79,10 @@ msn_cmdproc_queue_trans(MsnCmdProc *cmdproc, MsnTransaction *trans)
 static void
 show_debug_cmd(MsnCmdProc *cmdproc, gboolean incoming, const char *command)
 {
-    MsnServConn *servconn;
     char *show;
     char tmp;
     size_t len;
 
-    servconn = cmdproc->servconn;
     len = strlen(command);
     show = g_strdup(command);
 
@@ -101,14 +102,11 @@ show_debug_cmd(MsnCmdProc *cmdproc, gboolean incoming, const char *command)
 void
 msn_cmdproc_send_trans(MsnCmdProc *cmdproc, MsnTransaction *trans)
 {
-    MsnServConn *servconn;
     char *data;
     size_t len;
 
     g_return_if_fail(cmdproc != NULL);
     g_return_if_fail(trans != NULL);
-
-    servconn = cmdproc->servconn;
 
     msn_history_add(cmdproc->history, trans);
 
@@ -138,15 +136,12 @@ void
 msn_cmdproc_send_quick(MsnCmdProc *cmdproc, const char *command,
                        const char *format, ...)
 {
-    MsnServConn *servconn;
     char *data;
     char *params = NULL;
     size_t len;
 
     g_return_if_fail(cmdproc != NULL);
     g_return_if_fail(command != NULL);
-
-    servconn = cmdproc->servconn;
 
     if (format != NULL)
     {

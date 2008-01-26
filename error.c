@@ -19,8 +19,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#include "msn.h"
+
 #include "error.h"
+#include "msn_log.h"
 
 const char *
 msn_error_get_text(unsigned int type)

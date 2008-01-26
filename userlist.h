@@ -19,10 +19,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_USERLIST_H_
-#define _MSN_USERLIST_H_
 
-typedef struct _MsnUserList MsnUserList;
+#ifndef MSN_USERLIST_H
+#define MSN_USERLIST_H
+
+typedef struct MsnUserList MsnUserList;
 
 #include "cmdproc.h"
 #include "user.h"
@@ -44,7 +45,7 @@ typedef struct
 
 } MsnMoveBuddy;
 
-struct _MsnUserList
+struct MsnUserList
 {
 	MsnSession *session;
 
@@ -61,6 +62,9 @@ struct _MsnUserList
 	int fl_users_count;
 
 };
+
+struct _PurpleBuddy;
+struct _PurpleGroup;
 
 MsnListId msn_get_list_id(const char *list);
 
@@ -99,7 +103,7 @@ void msn_userlist_move_buddy(MsnUserList *userlist, const char *who,
 							 const char *new_group_name);
 
 void msn_userlist_add_buddy_helper (MsnUserList *userlist,
-									PurpleBuddy *buddy,
-									PurpleGroup *group);
+									struct _PurpleBuddy *buddy,
+									struct _PurpleGroup *group);
 
 #endif /* _MSN_USERLIST_H_ */

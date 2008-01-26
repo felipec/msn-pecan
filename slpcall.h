@@ -34,6 +34,8 @@ typedef struct _MsnSlpCall MsnSlpCall;
 /* The official client seems to timeout slp calls after 5 minutes */
 #define MSN_SLPCALL_TIMEOUT 300000
 
+typedef void (*MsnSlpCb_foo)(MsnSlpCall *slpcall, const guchar *data, gsize size);
+
 typedef enum
 {
 	MSN_SLPCALL_ANY,
@@ -73,7 +75,7 @@ struct _MsnSlpCall
 
 	void *xfer;
 
-	MsnSlpCb cb;
+	MsnSlpCb_foo cb;
 	void (*end_cb)(MsnSlpCall *slpcall, MsnSession *session);
 
 	int timer;

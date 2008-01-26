@@ -149,9 +149,9 @@ http_poll (gpointer data)
                               "Pragma: no-cache\r\n"
                               "Content-Type: application/x-msn-messenger\r\n"
                               "Content-Length: 0\r\n\r\n",
-                              conn->hostname,
+                              http_conn->gateway,
                               params,
-                              conn->hostname,
+                              http_conn->gateway,
                               auth ? auth : "");
 
 #ifdef MSN_DEBUG_HTTP

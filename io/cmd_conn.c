@@ -18,6 +18,7 @@
 
 #include "cmd_conn.h"
 #include "msn_log.h"
+#include "cmdproc.h"
 
 static ConnObjectClass *parent_class = NULL;
 

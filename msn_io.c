@@ -17,6 +17,7 @@
  */
 
 #include "msn_io.h"
+#include "msn_log.h"
 
 GIOStatus
 msn_io_read (GIOChannel *channel,

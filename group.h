@@ -26,11 +26,6 @@
 
 typedef struct _MsnGroup  MsnGroup;
 
-#include <stdio.h>
-
-#include "session.h"
-#include "user.h"
-
 #include "userlist.h"
 
 /**
@@ -38,8 +33,6 @@ typedef struct _MsnGroup  MsnGroup;
  */
 struct _MsnGroup
 {
-	MsnSession *session;    /**< The MSN session.           */
-
 	int id;                 /**< The group ID.              */
 	char *name;             /**< The name of the group.     */
 };
@@ -52,7 +45,6 @@ struct _MsnGroup
 /**
  * Creates a new group structure.
  *
- * @param session The MSN session.
  * @param id      The group ID.
  * @param name    The name of the group.
  *
