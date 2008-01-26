@@ -19,12 +19,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#include "msn.h"
-#include "user.h"
-#include "slp.h"
 
+#include "user.h"
+#include "user_private.h"
 #include "userlist_private.h"
 
+#include "slp.h"
 #include "fix-purple.h"
 
 #include <string.h>

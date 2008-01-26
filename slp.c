@@ -30,6 +30,7 @@
 #include "msg_private.h"
 
 #include "userlist_private.h"
+#include "user_private.h"
 
 #include "object.h"
 #include "user.h"

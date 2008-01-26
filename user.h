@@ -31,45 +31,6 @@ typedef struct MsnUser MsnUser;
 #include "userlist.h"
 
 /**
- * A user.
- */
-struct MsnUser
-{
-	MsnUserList *userlist;
-
-	char *passport;         /**< The passport account.          */
-	char *store_name;       /**< The name stored in the server. */
-	char *friendly_name;    /**< The friendly name.             */
-
-	const char *status;     /**< The state of the user.         */
-	gboolean idle;          /**< The idle state of the user.    */
-
-	struct
-	{
-		char *home;         /**< Home phone number.             */
-		char *work;         /**< Work phone number.             */
-		char *mobile;       /**< Mobile phone number.           */
-
-	} phone;
-
-	gboolean authorized;    /**< Authorized to add this user.   */
-	gboolean mobile;        /**< Signed up with MSN Mobile.     */
-
-	GList *group_ids;       /**< The group IDs.                 */
-
-	MsnObject *msnobj;      /**< The user's MSN Object.         */
-
-	GHashTable *clientcaps; /**< The client's capabilities.     */
-
-	int list_op;
-};
-
-/**************************************************************************/
-/** @name User API                                                        */
-/**************************************************************************/
-/*@{*/
-
-/**
  * Creates a new user structure.
  *
  * @param session      The MSN session.
@@ -77,14 +38,14 @@ struct MsnUser
  *
  * @return A new user structure.
  */
-MsnUser *msn_user_new(MsnUserList *userlist, const char *passport);
+MsnUser *msn_user_new (MsnUserList *userlist, const gchar *passport);
 
 /**
  * Destroys a user structure.
  *
  * @param user The user to destroy.
  */
-void msn_user_destroy(MsnUser *user);
+void msn_user_destroy (MsnUser *user);
 
 
 /**
@@ -94,7 +55,7 @@ void msn_user_destroy(MsnUser *user);
  *
  * @param user The user to update.
  */
-void msn_user_update(MsnUser *user);
+void msn_user_update (MsnUser *user);
 
 /**
  * Sets the new state of user.
@@ -102,7 +63,7 @@ void msn_user_update(MsnUser *user);
  * @param user The user.
  * @param state The state string.
  */
-void msn_user_set_state(MsnUser *user, const char *state);
+void msn_user_set_state (MsnUser *user, const gchar *state);
 
 /**
  * Sets the passport account for a user.
@@ -110,7 +71,7 @@ void msn_user_set_state(MsnUser *user, const char *state);
  * @param user     The user.
  * @param passport The passport account.
  */
-void msn_user_set_passport(MsnUser *user, const char *passport);
+void msn_user_set_passport (MsnUser *user, const gchar *passport);
 
 /**
  * Sets the friendly name for a user.
@@ -118,7 +79,7 @@ void msn_user_set_passport(MsnUser *user, const char *passport);
  * @param user The user.
  * @param name The friendly name.
  */
-void msn_user_set_friendly_name(MsnUser *user, const char *name);
+void msn_user_set_friendly_name (MsnUser *user, const gchar *name);
 
 /**
  * Sets the store name for a user.
@@ -126,7 +87,7 @@ void msn_user_set_friendly_name(MsnUser *user, const char *name);
  * @param user The user.
  * @param name The store name.
  */
-void msn_user_set_store_name(MsnUser *user, const char *name);
+void msn_user_set_store_name (MsnUser *user, const gchar *name);
 
 /**
  * Sets the buddy icon for a local user.
@@ -134,7 +95,7 @@ void msn_user_set_store_name(MsnUser *user, const char *name);
  * @param user     The user.
  * @param img      The buddy icon image
  */
-void msn_user_set_buddy_icon(MsnUser *user, PurpleStoredImage *img);
+void msn_user_set_buddy_icon (MsnUser *user, PurpleStoredImage *img);
 
 /**
  * Sets the group ID list for a user.
@@ -142,7 +103,7 @@ void msn_user_set_buddy_icon(MsnUser *user, PurpleStoredImage *img);
  * @param user The user.
  * @param ids  The group ID list.
  */
-void msn_user_set_group_ids(MsnUser *user, GList *ids);
+void msn_user_set_group_ids (MsnUser *user, GList *ids);
 
 /**
  * Adds the group ID for a user.
@@ -150,7 +111,7 @@ void msn_user_set_group_ids(MsnUser *user, GList *ids);
  * @param user The user.
  * @param id   The group ID.
  */
-void msn_user_add_group_id(MsnUser *user, int id);
+void msn_user_add_group_id (MsnUser *user, gint id);
 
 /**
  * Removes the group ID from a user.
@@ -158,7 +119,7 @@ void msn_user_add_group_id(MsnUser *user, int id);
  * @param user The user.
  * @param id   The group ID.
  */
-void msn_user_remove_group_id(MsnUser *user, int id);
+void msn_user_remove_group_id (MsnUser *user, gint id);
 
 /**
  * Sets the home phone number for a user.
@@ -166,7 +127,7 @@ void msn_user_remove_group_id(MsnUser *user, int id);
  * @param user   The user.
  * @param number The home phone number.
  */
-void msn_user_set_home_phone(MsnUser *user, const char *number);
+void msn_user_set_home_phone (MsnUser *user, const gchar *number);
 
 /**
  * Sets the work phone number for a user.
@@ -174,7 +135,7 @@ void msn_user_set_home_phone(MsnUser *user, const char *number);
  * @param user   The user.
  * @param number The work phone number.
  */
-void msn_user_set_work_phone(MsnUser *user, const char *number);
+void msn_user_set_work_phone (MsnUser *user, const gchar *number);
 
 /**
  * Sets the mobile phone number for a user.
@@ -182,7 +143,7 @@ void msn_user_set_work_phone(MsnUser *user, const char *number);
  * @param user   The user.
  * @param number The mobile phone number.
  */
-void msn_user_set_mobile_phone(MsnUser *user, const char *number);
+void msn_user_set_mobile_phone (MsnUser *user, const gchar *number);
 
 /**
  * Sets the MSNObject for a user.
@@ -190,7 +151,7 @@ void msn_user_set_mobile_phone(MsnUser *user, const char *number);
  * @param user The user.
  * @param obj  The MSNObject.
  */
-void msn_user_set_object(MsnUser *user, MsnObject *obj);
+void msn_user_set_object (MsnUser *user, MsnObject *obj);
 
 /**
  * Sets the client information for a user.
@@ -198,8 +159,7 @@ void msn_user_set_object(MsnUser *user, MsnObject *obj);
  * @param user The user.
  * @param info The client information.
  */
-void msn_user_set_client_caps(MsnUser *user, GHashTable *info);
-
+void msn_user_set_client_caps (MsnUser *user, GHashTable *info);
 
 /**
  * Returns the passport account for a user.
@@ -208,7 +168,7 @@ void msn_user_set_client_caps(MsnUser *user, GHashTable *info);
  *
  * @return The passport account.
  */
-const char *msn_user_get_passport(const MsnUser *user);
+const gchar *msn_user_get_passport (const MsnUser *user);
 
 /**
  * Returns the friendly name for a user.
@@ -217,7 +177,7 @@ const char *msn_user_get_passport(const MsnUser *user);
  *
  * @return The friendly name.
  */
-const char *msn_user_get_friendly_name(const MsnUser *user);
+const gchar *msn_user_get_friendly_name (const MsnUser *user);
 
 /**
  * Returns the store name for a user.
@@ -226,7 +186,7 @@ const char *msn_user_get_friendly_name(const MsnUser *user);
  *
  * @return The store name.
  */
-const char *msn_user_get_store_name(const MsnUser *user);
+const gchar *msn_user_get_store_name (const MsnUser *user);
 
 /**
  * Returns the home phone number for a user.
@@ -235,7 +195,7 @@ const char *msn_user_get_store_name(const MsnUser *user);
  *
  * @return The user's home phone number.
  */
-const char *msn_user_get_home_phone(const MsnUser *user);
+const gchar *msn_user_get_home_phone (const MsnUser *user);
 
 /**
  * Returns the work phone number for a user.
@@ -244,7 +204,7 @@ const char *msn_user_get_home_phone(const MsnUser *user);
  *
  * @return The user's work phone number.
  */
-const char *msn_user_get_work_phone(const MsnUser *user);
+const gchar *msn_user_get_work_phone (const MsnUser *user);
 
 /**
  * Returns the mobile phone number for a user.
@@ -253,7 +213,7 @@ const char *msn_user_get_work_phone(const MsnUser *user);
  *
  * @return The user's mobile phone number.
  */
-const char *msn_user_get_mobile_phone(const MsnUser *user);
+const gchar *msn_user_get_mobile_phone (const MsnUser *user);
 
 /**
  * Returns the MSNObject for a user.
@@ -262,7 +222,7 @@ const char *msn_user_get_mobile_phone(const MsnUser *user);
  *
  * @return The MSNObject.
  */
-MsnObject *msn_user_get_object(const MsnUser *user);
+MsnObject *msn_user_get_object (const MsnUser *user);
 
 /**
  * Returns the client information for a user.
@@ -271,7 +231,7 @@ MsnObject *msn_user_get_object(const MsnUser *user);
  *
  * @return The client information.
  */
-GHashTable *msn_user_get_client_caps(const MsnUser *user);
+GHashTable *msn_user_get_client_caps (const MsnUser *user);
 
 /**
  * Gets the group ID list for a user.
@@ -280,8 +240,6 @@ GHashTable *msn_user_get_client_caps(const MsnUser *user);
  *
  * @return The group ID list.
  */
-GList *msn_user_get_group_ids(const MsnUser *user);
-
-/*@}*/
+GList *msn_user_get_group_ids (const MsnUser *user);
 
 #endif /* MSN_USER_H */

@@ -44,6 +44,8 @@
 #include "sync.h"
 #include "slplink.h"
 
+#include "user_private.h"
+
 /* libpurple stuff. */
 #include <debug.h>
 #include <privacy.h>

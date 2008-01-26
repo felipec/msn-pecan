@@ -22,6 +22,7 @@
 
 #include "userlist.h"
 #include "userlist_private.h"
+#include "user_private.h"
 #include "msn_log.h"
 
 #include "notification.h"

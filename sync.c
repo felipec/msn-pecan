@@ -28,6 +28,8 @@
 #include "command_private.h"
 #include "cmdproc_private.h"
 
+#include "user_private.h"
+
 #include <string.h>
 
 /* libpurple stuff. */
