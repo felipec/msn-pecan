@@ -38,6 +38,9 @@ struct MsnNotification
     struct CmdConnObject *conn;
 
     gboolean in_use;
+    gulong open_handler;
+    gulong close_handler;
+    gulong error_handler;
 };
 
 #include "state.h"

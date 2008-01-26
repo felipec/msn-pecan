@@ -25,12 +25,14 @@
 
 typedef struct MsnSession MsnSession;
 
-struct MsnUser;
-struct MsnUserList;
+#include "user.h"
+#include "userlist.h"
+
 struct MsnNotification;
 struct MsnSwitchBoard;
 struct MsnNexus;
 struct MsnSync;
+struct ConnObject;
 
 struct _PurpleAccount;
 struct _PurpleConversation;
@@ -86,6 +88,7 @@ struct MsnSession
 	gboolean logged_in; /**< A temporal flag to ignore local buddy list adds. */
 	gboolean destroying; /**< A flag that states if the session is being destroyed. */
 	gboolean http_method;
+        struct ConnObject *http_conn;
 
 	struct MsnNotification *notification;
 	struct MsnNexus *nexus;
@@ -135,13 +138,11 @@ void msn_session_destroy(MsnSession *session);
  * @param session     The MSN session.
  * @param host        The dispatch server host.
  * @param port        The dispatch server port.
- * @param http_method Whether to use or not http_method.
  *
  * @return @c TRUE on success, @c FALSE on failure.
  */
 gboolean msn_session_connect(MsnSession *session,
-							 const char *host, int port,
-							 gboolean http_method);
+							 const char *host, int port);
 
 /**
  * Disconnects from an MSN session.

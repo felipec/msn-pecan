@@ -75,18 +75,45 @@ read_cb (GIOChannel *source,
         if (status == G_IO_STATUS_AGAIN)
             return TRUE;
 
-        if (status != G_IO_STATUS_NORMAL || conn->error)
+        if (conn->error)
         {
             conn_object_error (conn);
             return FALSE;
         }
+
+        if (status != G_IO_STATUS_NORMAL)
+        {
+            msn_warning ("not normal, status=%d", status);
+            return TRUE;
+        }
     }
 
-    conn_object_parse (conn->prev ? conn->prev : conn,
+    conn_object_parse (conn->cur ? conn->cur : conn,
                        buf, bytes_read);
 
     return TRUE;
 }
+
+#if 0
+static void
+open_cb (ConnObject *next,
+         gpointer data)
+{
+    ConnObject *conn;
+
+    conn = CONN_OBJECT (data);
+
+    msn_log ("begin");
+
+    {
+        ConnObjectClass *class;
+        class = g_type_class_peek (CONN_OBJECT_TYPE);
+        g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
+    }
+
+    msn_log ("end");
+}
+#endif
 
 static void
 close_cb (ConnObject *next,
@@ -110,8 +137,8 @@ close_cb (ConnObject *next,
 }
 
 static void
-open_cb (ConnObject *next,
-         gpointer data)
+error_cb (ConnObject *next,
+          gpointer data)
 {
     ConnObject *conn;
 
@@ -119,13 +146,15 @@ open_cb (ConnObject *next,
 
     msn_log ("begin");
 
+    if (next->error)
     {
-        ConnObjectClass *class;
-        class = g_type_class_peek (CONN_OBJECT_TYPE);
-        g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
+        g_propagate_error (&conn->error, next->error);
+        next->error = NULL;
     }
 
-    msn_log ("end");
+    g_signal_emit (G_OBJECT (conn), error_sig, 0, conn);
+
+    msn_log ("begin");
 }
 
 ConnObject *
@@ -194,9 +223,9 @@ void
 conn_object_link (ConnObject *conn,
                   ConnObject *next)
 {
-    conn->next = next;
-    g_signal_connect (next, "open", G_CALLBACK (open_cb), conn);
-    g_signal_connect (next, "close", G_CALLBACK (close_cb), conn);
+    conn->next = g_object_ref (next);
+    conn->close_sig_handler = g_signal_connect (next, "close", G_CALLBACK (close_cb), conn);
+    conn->error_sig_handler = g_signal_connect (next, "error", G_CALLBACK (error_cb), conn);
 }
 
 void
@@ -204,6 +233,7 @@ conn_object_connect (ConnObject *conn,
                      const gchar *hostname,
                      gint port)
 {
+    msn_debug ("conn=%p", conn);
     CONN_OBJECT_GET_CLASS (conn)->connect (conn, hostname, port);
 }
 
@@ -276,12 +306,15 @@ connect_impl (ConnObject *conn,
 
     msn_log ("begin");
 
-    msn_debug ("conn=%p", conn);
+    msn_debug ("conn=%p,name=%s", conn, conn->name);
+    msn_debug ("hostname=%s,port=%d", hostname, port);
+    msn_debug ("next=%p", conn->next);
 
     if (conn->next)
     {
         conn->next->prev = conn;
         conn_object_connect (conn->next, hostname, port);
+        conn->next->prev = NULL;
     }
     else
     {
@@ -351,6 +384,7 @@ write_impl (ConnObject *conn,
     {
         conn->next->prev = conn;
         status = conn_object_write (conn->next, buf, count, ret_bytes_written, error);
+        conn->next->prev = NULL;
     }
     else
     {
@@ -402,6 +436,7 @@ read_impl (ConnObject *conn,
     {
         conn->next->prev = conn;
         status = conn_object_read (conn->next, buf, count, ret_bytes_read, error);
+        conn->next->prev = NULL;
     }
     else
     {
@@ -443,7 +478,16 @@ parse_impl (ConnObject *conn,
 static void
 conn_object_dispose (GObject *obj)
 {
-    ConnObject *conn = (ConnObject *) obj;
+    ConnObject *conn = CONN_OBJECT (obj);
+
+    if (conn->next)
+    {
+        msn_debug ("removing signals: %p, %p", conn, conn->next);
+        g_signal_handler_disconnect (conn->next, conn->close_sig_handler);
+        g_signal_handler_disconnect (conn->next, conn->error_sig_handler);
+        conn_object_free (conn->next);
+        conn->next = NULL;
+    }
 
     if (!conn->dispose_has_run)
     {
@@ -452,12 +496,6 @@ conn_object_dispose (GObject *obj)
         conn_object_close (conn);
 
         g_free (conn->name);
-    }
-
-    if (conn->next)
-    {
-        conn_object_free (conn->next);
-        conn->next = NULL;
     }
 
     G_OBJECT_CLASS (parent_class)->dispose (obj);

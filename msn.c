@@ -722,7 +722,6 @@ msn_login(PurpleAccount *account)
 	MsnSession *session;
 	const char *username;
 	const char *host;
-	gboolean http_method = FALSE;
 	int port;
 
 	gc = purple_account_get_connection(account);
@@ -735,8 +734,6 @@ msn_login(PurpleAccount *account)
 			  "SSL library."));
 		return;
 	}
-
-	http_method = purple_account_get_bool(account, "http_method", FALSE);
 
 	host = purple_account_get_string(account, "server", MSN_SERVER);
 	port = purple_account_get_int(account, "port", MSN_PORT);
@@ -755,7 +752,7 @@ msn_login(PurpleAccount *account)
 	if (strcmp(username, purple_account_get_username(account)))
 		purple_account_set_username(account, username);
 
-	if (!msn_session_connect(session, host, port, http_method))
+	if (!msn_session_connect(session, host, port))
 		purple_connection_error(gc, _("Failed to connect to server."));
 }
 
@@ -2127,11 +2124,6 @@ init_plugin(PurplePlugin *plugin)
 
 	option = purple_account_option_bool_new(_("Use HTTP Method"),
 										  "http_method", FALSE);
-	prpl_info.protocol_options = g_list_append(prpl_info.protocol_options,
-											   option);
-
-	option = purple_account_option_string_new(_("HTTP Method Server"),
-										  "http_method_server", MSN_HTTPCONN_SERVER);
 	prpl_info.protocol_options = g_list_append(prpl_info.protocol_options,
 											   option);
 

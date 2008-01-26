@@ -41,12 +41,12 @@ msn_table_new()
 
 	table = g_new0(MsnTable, 1);
 
-	table->cmds = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, (GDestroyNotify)g_hash_table_destroy);
-	table->msgs = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, NULL);
-	table->errors = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, NULL);
+	table->cmds = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, (GDestroyNotify)g_hash_table_destroy);
+	table->msgs = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
+	table->errors = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
 
-	table->async = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, NULL);
-	table->fallback = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, NULL);
+	table->async = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
+	table->fallback = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
 
 	return table;
 }
@@ -91,15 +91,15 @@ msn_table_add_cmd(MsnTable *table,
 
 		if (cbs == NULL)
 		{
-			cbs = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, NULL);
-			g_hash_table_insert(table->cmds, (gchar *) command, cbs);
+			cbs = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
+			g_hash_table_insert(table->cmds, g_strdup (command), cbs);
 		}
 	}
 
 	if (cb == NULL)
 		cb = null_cmd_cb;
 
-	g_hash_table_insert(cbs, (gchar *) answer, cb);
+	g_hash_table_insert(cbs, g_strdup (answer), cb);
 }
 
 void
@@ -112,7 +112,7 @@ msn_table_add_error(MsnTable *table,
 	if (cb == NULL)
 		cb = null_error_cb;
 
-	g_hash_table_insert(table->errors, (gchar *) answer, cb);
+	g_hash_table_insert(table->errors, g_strdup (answer), cb);
 }
 
 void
@@ -128,5 +128,5 @@ msn_table_add_msg_type(MsnTable *table,
 		cb = null_msg_cb;
 #endif
 
-	g_hash_table_insert(table->msgs, (gchar *) type, cb);
+	g_hash_table_insert(table->msgs, g_strdup (type), cb);
 }

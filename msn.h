@@ -27,19 +27,6 @@
 
 #define MSN_DEBUG 1
 
-/* #define MSN_DEBUG_MSG 1 */
-/* #define MSN_DEBUG_SLPMSG 1 */
-#define MSN_DEBUG_HTTP 1
-
-#define MSN_DEBUG_SLP_VERBOSE 1
-/* #define MSN_DEBUG_SLP_FILES 1 */
-
-/* #define MSN_DEBUG_NS 1 */
-/* #define MSN_DEBUG_SB 1 */
-/* #define MSN_DEBUG_DC 1 */
-
-/* #define MSN_DEBUG_DC_FILES 1 */
-
 #define MSN_BUF_LEN 8192
 
 #define USEROPT_MSNSERVER 3

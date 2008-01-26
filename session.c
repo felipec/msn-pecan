@@ -25,10 +25,11 @@
 #include "notification.h"
 #include "fix-purple.h"
 
-#include "userlist.h"
 #include "slplink.h"
 #include "sync.h"
 #include "nexus.h"
+
+#include "io/http_conn.h"
 
 #include <glib/gstdio.h>
 #include <string.h>
@@ -45,6 +46,15 @@ msn_session_new(PurpleAccount *account)
 	g_return_val_if_fail(account != NULL, NULL);
 
 	session = g_new0(MsnSession, 1);
+
+	session->http_method = purple_account_get_bool (account, "http_method", FALSE);
+        if (session->http_method)
+        {
+            ConnObject *foo;
+            foo = CONN_OBJECT (http_conn_object_new ("foo server"));
+            foo->session = session;
+            session->http_conn = foo;
+        }
 
 	session->account = account;
 	session->notification = msn_notification_new(session);
@@ -103,14 +113,12 @@ msn_session_destroy(MsnSession *session)
 }
 
 gboolean
-msn_session_connect(MsnSession *session, const char *host, int port,
-					gboolean http_method)
+msn_session_connect(MsnSession *session, const char *host, int port)
 {
 	g_return_val_if_fail(session != NULL, FALSE);
 	g_return_val_if_fail(!session->connected, TRUE);
 
 	session->connected = TRUE;
-	session->http_method = http_method;
 
 	if (session->notification == NULL)
 	{

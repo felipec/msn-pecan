@@ -37,7 +37,10 @@ struct HttpConnObject
     guint content_length;
     guint timeout_id;
     gchar *last_session_id;
+    gchar *session;
     gchar *gateway;
+
+    GHashTable *childs;
 };
 
 struct HttpConnObjectClass

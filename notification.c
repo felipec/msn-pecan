@@ -141,19 +141,12 @@ msn_notification_new(MsnSession *session)
 
         conn->session = session;
 
-#if 0
-        {
-            ConnObject *foo;
-            foo = CONN_OBJECT (http_conn_object_new ("foo server"));
-            foo->session = session;
-            conn_object_link (conn, foo);
+        if (session->http_conn)
+            conn_object_link (conn, session->http_conn);
 
-        }
-#endif
-
-        g_signal_connect (conn, "open", G_CALLBACK (open_cb), notification);
-        g_signal_connect (conn, "close", G_CALLBACK (close_cb), notification);
-        g_signal_connect (conn, "error", G_CALLBACK (close_cb), notification);
+        notification->open_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), notification);
+        notification->close_handler = g_signal_connect (conn, "close", G_CALLBACK (close_cb), notification);
+        notification->error_handler = g_signal_connect (conn, "error", G_CALLBACK (close_cb), notification);
     }
 
 #if 1
@@ -169,6 +162,10 @@ msn_notification_destroy(MsnNotification *notification)
 {
     if (notification->cmdproc)
         notification->cmdproc->data = NULL;
+
+    g_signal_handler_disconnect (notification->conn, notification->open_handler);
+    g_signal_handler_disconnect (notification->conn, notification->close_handler);
+    g_signal_handler_disconnect (notification->conn, notification->error_handler);
 
     cmd_conn_object_free (notification->conn);
 

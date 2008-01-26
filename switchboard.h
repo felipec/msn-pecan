@@ -105,6 +105,9 @@ struct MsnSwitchBoard
     MsnSBErrorType error; /**< The error that occurred in this switchboard
                             (if applicable). */
     GList *slplinks; /**< The list of slplinks that are using this switchboard. */
+    gulong open_handler;
+    gulong close_handler;
+    gulong error_handler;
 };
 
 /**

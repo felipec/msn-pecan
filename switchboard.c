@@ -36,6 +36,7 @@
 #include "msn_log.h"
 
 #include "io/cmd_conn.h"
+#include "io/http_conn.h"
 
 #include "error.h"
 
@@ -150,9 +151,12 @@ msn_switchboard_new(MsnSession *session)
 
         conn->session = session;
 
-        g_signal_connect (conn, "open", G_CALLBACK (open_cb), NULL);
-        g_signal_connect (conn, "close", G_CALLBACK (close_cb), NULL);
-        g_signal_connect (conn, "error", G_CALLBACK (close_cb), NULL);
+        if (session->http_conn)
+            conn_object_link (conn, session->http_conn);
+
+        swboard->open_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), NULL);
+        swboard->close_handler = g_signal_connect (conn, "close", G_CALLBACK (close_cb), NULL);
+        swboard->error_handler = g_signal_connect (conn, "error", G_CALLBACK (close_cb), NULL);
     }
 
 #if 1
@@ -216,6 +220,10 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
 
     if (swboard->cmdproc)
         swboard->cmdproc->data = NULL;
+
+    g_signal_handler_disconnect (swboard->conn, swboard->open_handler);
+    g_signal_handler_disconnect (swboard->conn, swboard->close_handler);
+    g_signal_handler_disconnect (swboard->conn, swboard->error_handler);
 
     conn_object_free (CONN_OBJECT (swboard->conn));
 

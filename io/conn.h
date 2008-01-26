@@ -66,6 +66,7 @@ struct ConnObject
     gpointer foo_data;
     ConnObject *prev;
     ConnObject *next;
+    ConnObject *cur;
 
     GIOChannel *channel; /**< The current IO channel .*/
 
@@ -74,6 +75,8 @@ struct ConnObject
 
     struct _PurpleProxyConnectData *connect_data;
     struct MsnSession *session;
+    gulong close_sig_handler;
+    gulong error_sig_handler;
 };
 
 struct ConnObjectClass
