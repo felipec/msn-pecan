@@ -179,7 +179,7 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
     GList *l;
 
 #ifdef MSN_DEBUG_SB
-    purple_debug_info("msn", "switchboard_destroy: swboard(%p)\n", swboard);
+    msn_log ("swboard=[%p]", swboard);
 #endif
 
     g_return_if_fail(swboard != NULL);
@@ -318,14 +318,14 @@ msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
     swboard->empty = FALSE;
 
 #ifdef MSN_DEBUG_CHAT
-    purple_debug_info("msn", "user=[%s], total=%d\n", user,
-                      swboard->current_users);
+    msn_info ("user=[%s],total=%d",
+              user, swboard->current_users);
 #endif
 
     if (!(swboard->flag & MSN_SB_FLAG_IM) && (swboard->conv != NULL))
     {
         /* This is a helper switchboard. */
-        purple_debug_error("msn", "switchboard_add_user: conv != NULL\n");
+        msn_error ("conv != NULL");
         return;
     }
 
@@ -343,7 +343,7 @@ msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
             GList *l;
 
 #ifdef MSN_DEBUG_CHAT
-            purple_debug_info("msn", "[chat] Switching to chat.\n");
+            msn_info ("switching to chat");
 #endif
 
 #if 0
@@ -366,7 +366,7 @@ msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
                 tmp_user = l->data;
 
 #ifdef MSN_DEBUG_CHAT
-                purple_debug_info("msn", "[chat] Adding [%s].\n", tmp_user);
+                msn_info ("adding: tmp_user=[%s]", tmp_user);
 #endif
 
                 purple_conv_chat_add_user(PURPLE_CONV_CHAT(swboard->conv),
@@ -374,7 +374,7 @@ msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
             }
 
 #ifdef MSN_DEBUG_CHAT
-            purple_debug_info("msn", "[chat] We add ourselves.\n");
+            msn_info ("add ourselves");
 #endif
 
             purple_conv_chat_add_user(PURPLE_CONV_CHAT(swboard->conv),
@@ -392,7 +392,7 @@ msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
     }
     else
     {
-        purple_debug_warning("msn", "switchboard_add_user: This should not happen!\n");
+        msn_warning ("this should not happen");
     }
 }
 
@@ -406,7 +406,7 @@ msn_switchboard_get_conv(MsnSwitchBoard *swboard)
     if (swboard->conv != NULL)
         return swboard->conv;
 
-    purple_debug_error("msn", "Switchboard with unassigned conversation\n");
+    msn_warning ("switchboard with unassigned conversation");
 
     account = swboard->session->account;
 
@@ -433,8 +433,8 @@ swboard_error_helper(MsnSwitchBoard *swboard, int reason, const char *passport)
 {
     g_return_if_fail(swboard != NULL);
 
-    purple_debug_warning("msg", "Error: Unable to call the user %s for reason %i\n",
-                         passport ? passport : "(null)", reason);
+    msn_error ("unable to call the user: passport=[%s],reason[%i]",
+               passport ? passport : "(null)", reason);
 
     /* TODO: if current_users > 0, this is probably a chat and an invite failed,
      * we should report that in the chat or something */
@@ -458,7 +458,8 @@ cal_error_helper(MsnTransaction *trans, int reason)
 
     swboard = trans->data;
 
-    purple_debug_warning("msn", "cal_error_helper: command %s failed for reason %i\n",trans->command,reason);
+    msn_warning ("failed: command=[%s],reason=%i",
+                 trans->command, reason);
 
     swboard_error_helper(swboard, reason, passport);
 
@@ -680,7 +681,7 @@ queue_msg(MsnSwitchBoard *swboard, MsnMessage *msg)
     g_return_if_fail(swboard != NULL);
     g_return_if_fail(msg     != NULL);
 
-    purple_debug_info("msn", "Appending message to queue.\n");
+    msn_info ("appending message to queue");
 
     g_queue_push_tail(swboard->msg_queue, msg);
 
@@ -694,11 +695,11 @@ process_queue(MsnSwitchBoard *swboard)
 
     g_return_if_fail(swboard != NULL);
 
-    purple_debug_info("msn", "Processing queue\n");
+    msn_info ("processing queue");
 
     while ((msg = g_queue_pop_head(swboard->msg_queue)) != NULL)
     {
-        purple_debug_info("msn", "Sending message\n");
+        msn_info ("sending message");
         release_msg(swboard, msg);
         msn_message_unref(msg);
     }
@@ -755,7 +756,7 @@ bye_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     g_return_if_fail(swboard != NULL);
 
     if (!(swboard->flag & MSN_SB_FLAG_IM) && (swboard->conv != NULL))
-        purple_debug_error("msn_switchboard", "bye_cmd: helper bug\n");
+        msn_error ("bye_cmd: helper bug");
 
     if (swboard->conv == NULL)
     {
@@ -950,7 +951,7 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 #if 0
     if ((value = msn_message_get_attr(msg, "User-Agent")) != NULL)
     {
-        purple_debug_misc("msn", "User-Agent = '%s'\n", value);
+        msn_debug ("user-agent=[%s]", value);
     }
 #endif
 
@@ -981,8 +982,8 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
         /* If current_users is always ok as it should then there is no need to
          * check if this is a chat. */
         if (swboard->current_users <= 1)
-            purple_debug_misc("msn", "plain_msg: current_users(%d)\n",
-                              swboard->current_users);
+            msn_info ("plain_msg: current_users=[%d]",
+                      swboard->current_users);
 
         serv_got_chat_in(gc, swboard->chat_id, passport, 0, body_final,
                          time(NULL));
@@ -1074,7 +1075,8 @@ ans_usr_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
         reason = MSN_SB_ERROR_AUTHFAILED;
     }
 
-    purple_debug_warning("msn", "ans_usr_error: command %s gave error %i\n", trans->command, error);
+    msn_warning ("command=[%s],error=%i",
+                 trans->command, error);
 
     params = g_strsplit(trans->params, " ", 0);
     passport = params[0];
@@ -1122,7 +1124,7 @@ got_cal(MsnCmdProc *cmdproc, MsnCommand *cmd)
 static void
 cal_timeout(MsnCmdProc *cmdproc, MsnTransaction *trans)
 {
-    purple_debug_warning("msn", "cal_timeout: command %s timed out\n", trans->command);
+    msn_warning ("command=[%s]", trans->command);
 
     cal_error_helper(trans, MSN_SB_ERROR_UNKNOWN);
 }
@@ -1134,7 +1136,7 @@ cal_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
 
     if (error == 215)
     {
-        purple_debug_info("msn", "Invited user already in switchboard\n");
+        msn_info ("already in switchboard");
         return;
     }
     else if (error == 217)
@@ -1142,7 +1144,8 @@ cal_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
         reason = MSN_SB_ERROR_USER_OFFLINE;
     }
 
-    purple_debug_warning("msn", "cal_error: command %s gave error %i\n", trans->command, error);
+    msn_warning ("command=[%s],error=%i",
+                 trans->command, error);
 
     cal_error_helper(trans, reason);
 }
@@ -1210,9 +1213,9 @@ xfr_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
 
     swboard = trans->data;
 
-    purple_debug_info("msn", "xfr_error %i for %s: trans %x, command %s, reason %i\n",
-                      error, (swboard->im_user ? swboard->im_user : "(null)"), trans,
-                      (trans->command ? trans->command : "(null)"), reason);
+    msn_info ("error=%i,user=[%s],trans=%p,command=[%s],reason=%i",
+              error, swboard->im_user, trans,
+              trans->command, reason);
 
     swboard_error_helper(swboard, reason, swboard->im_user);
 }

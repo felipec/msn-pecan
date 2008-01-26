@@ -16,11 +16,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _MSN_CONFIG_H_
-#define _MSN_CONFIG_H_
+#ifndef MSN_CONFIG_H
+#define MSN_CONFIG_H
 
 #define PACKAGE_NAME "msn-pecan"
-#define VERSION "0.0.1"
+#define VERSION "0.0.6"
 #define PURPLE_PLUGINS
 
-#endif /* _MSN_CONFIG_H_ */
+#endif /* MSN_CONFIG_H */

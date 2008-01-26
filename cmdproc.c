@@ -23,6 +23,8 @@
 #include "cmdproc.h"
 #include "msn_log.h"
 
+#include "history.h"
+
 #include "msn.h"
 #include "session.h"
 
@@ -230,7 +232,7 @@ msn_cmdproc_process_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
     if (msn_message_get_content_type(msg) == NULL)
     {
-        purple_debug_misc("msn", "failed to find message content\n");
+        msn_warning ("failed to find message content");
         return;
     }
 
@@ -239,8 +241,8 @@ msn_cmdproc_process_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
     if (cb == NULL)
     {
-        purple_debug_warning("msn", "Unhandled content-type '%s'\n",
-                             msn_message_get_content_type(msg));
+        msn_warning ("unhandled content-type: [%s]",
+                     msn_message_get_content_type (msg));
 
         return;
     }
@@ -282,12 +284,8 @@ msn_cmdproc_process_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
             }
             else
             {
-#if 1
-                msn_error_handle(cmdproc->session, error);
-#else
-                purple_debug_warning("msn", "Unhandled error '%s'\n",
-                                     cmd->command);
-#endif
+                msn_error ("unhandled error: [%s]",
+                           cmd->command);
             }
 
             return;
@@ -314,8 +312,8 @@ msn_cmdproc_process_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     }
     else
     {
-        purple_debug_warning("msn", "Unhandled command '%s'\n",
-                             cmd->command);
+        msn_warning ("unhandled command: [%s]",
+                     cmd->command);
     }
 
     if (trans != NULL && trans->pendent_cmd != NULL)

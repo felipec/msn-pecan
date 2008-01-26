@@ -19,10 +19,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#include "msn.h"
+
 #include "userlist.h"
+#include "msn_log.h"
 
 #include "fix-purple.h"
+
+/* libpurple stuff. */
+#include <privacy.h>
 
 const char *lists[] = { "FL", "AL", "BL", "RL" };
 
@@ -225,9 +229,8 @@ msn_got_add_user(MsnSession *session, MsnUser *user,
 
 		gc = purple_account_get_connection(account);
 
-		purple_debug_info("msn",
-						"%s has added you to his or her buddy list.\n",
-						passport);
+                msn_info ("rever list add: [%s]",
+                          passport);
 
  		convo = purple_find_conversation_with_account(PURPLE_CONV_TYPE_IM, passport, account);
  		if (convo) {
@@ -290,9 +293,8 @@ msn_got_rem_user(MsnSession *session, MsnUser *user,
 	{
 		PurpleConversation *convo;
 
-		purple_debug_info("msn",
-						"%s has removed you from his or her buddy list.\n",
-						passport);
+                msn_info ("rever list rem: [%s]",
+                          passport);
 
 		convo = purple_find_conversation_with_account(PURPLE_CONV_TYPE_IM, passport, account);
 		if (convo) {
@@ -314,9 +316,8 @@ msn_got_rem_user(MsnSession *session, MsnUser *user,
 
 	if (user->list_op == 0)
 	{
-		purple_debug_info("msn", "Buddy '%s' shall be deleted?.\n",
-						passport);
-
+            msn_debug ("no list op: [%s]",
+                       passport);
 	}
 }
 
@@ -575,7 +576,7 @@ msn_userlist_rem_buddy(MsnUserList *userlist,
 		if (group_id < 0)
 		{
 			/* Whoa, there is no such group. */
-			purple_debug_error("msn", "Group doesn't exist: %s\n", group_name);
+			msn_error ("group doesn't exist: [%s]", group_name);
 			return;
 		}
 	}
@@ -584,8 +585,8 @@ msn_userlist_rem_buddy(MsnUserList *userlist,
 	if (!(user_is_there(user, list_id, group_id)))
 	{
 		list = lists[list_id];
-		purple_debug_error("msn", "User '%s' is not there: %s\n",
-						 who, list);
+                msn_error ("user not there: who=[%s],list=[%s]",
+                           who, list);
 		return;
 	}
 
@@ -684,10 +685,10 @@ msn_userlist_add_buddy_helper (MsnUserList *userlist,
 
 			if (user && msn_user_get_group_ids(user) && group_id == 0)
 			{
-				purple_debug_error("msn", "Trying to add user '%s' to a virtual group\n",
-								   who);
-				purple_blist_remove_buddy (buddy);
-				return;
+                            msn_error ("trying to add user to a virtual group: who=[%s]",
+                                       who);
+                            purple_blist_remove_buddy (buddy);
+                            return;
 			}
 		}
 
@@ -700,13 +701,13 @@ msn_userlist_add_buddy_helper (MsnUserList *userlist,
 			if ((list_id == MSN_LIST_FL) &&
 				(group_id >= 0))
 			{
-				purple_debug_error("msn", "User '%s' is already there: %s (%s)\n",
-								   who, list, group_name);
+                            msn_error ("already there: who=[%s],list=[%s],group_name=[%s]",
+                                       who, list, group_name);
 			}
 			else
 			{
-				purple_debug_error("msn", "User '%s' is already there: %s\n",
-								   who, list);
+                            msn_error ("already there: who=[%s],list=[%s]",
+                                       who, list);
 			}
 
 			purple_blist_remove_buddy (buddy);

@@ -20,8 +20,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#ifndef MSN_UTILS_H
-#define MSN_UTILS_H
+#ifndef MSN_UTIL_H
+#define MSN_UTIL_H
 
 /**
  * Parses the MSN message formatting into a format compatible with Purple.

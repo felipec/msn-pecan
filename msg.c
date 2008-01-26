@@ -19,8 +19,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#include "msn.h"
+
 #include "msg.h"
+#include "msn_log.h"
+
+#include <string.h> /* for strlen. */
+
+/* libpurple stuff. */
+#include <util.h>
+
+#include "msn.h"
 
 MsnMessage *
 msn_message_new(MsnMsgType type)
@@ -31,7 +39,7 @@ msn_message_new(MsnMsgType type)
 	msg->type = type;
 
 #ifdef MSN_DEBUG_MSG
-	purple_debug_info("msn", "message new (%p)(%d)\n", msg, type);
+	msn_log ("msg=%p,type=%d", msg, type);
 #endif
 
 	msg->attr_table = g_hash_table_new_full(g_str_hash, g_str_equal,
@@ -55,7 +63,7 @@ msn_message_destroy(MsnMessage *msg)
 	}
 
 #ifdef MSN_DEBUG_MSG
-	purple_debug_info("msn", "message destroy (%p)\n", msg);
+	msn_log ("msg=%p", msg);
 #endif
 
 	if (msg->remote_user != NULL)
@@ -84,7 +92,7 @@ msn_message_ref(MsnMessage *msg)
 	msg->ref_count++;
 
 #ifdef MSN_DEBUG_MSG
-	purple_debug_info("msn", "message ref (%p)[%d]\n", msg, msg->ref_count);
+	msn_log ("msg=%p,ref_count=%d", msg, msg->ref_count);
 #endif
 
 	return msg;
@@ -99,7 +107,7 @@ msn_message_unref(MsnMessage *msg)
 	msg->ref_count--;
 
 #ifdef MSN_DEBUG_MSG
-	purple_debug_info("msn", "message unref (%p)[%d]\n", msg, msg->ref_count);
+	msn_log ("msg=%p,ref_count=%d", msg, msg->ref_count);
 #endif
 
 	if (msg->ref_count == 0)
@@ -779,7 +787,7 @@ msn_message_show_readable(MsnMessage *msg, const char *info,
 		}
 	}
 
-	purple_debug_info("msn", "Message %s:\n{%s}\n", info, str->str);
+	msn_debug ("info=[%s],str=[%s]", info, str->str);
 
 	g_string_free(str, TRUE);
 }

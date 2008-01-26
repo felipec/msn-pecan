@@ -20,25 +20,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#include "session.h"
-#if 0
-#include "msn.h"
 #include "notification.h"
-#include "state.h"
-#include "error.h"
-#include "msn_util.h"
-#include "page.h"
-
+#include "msn_log.h"
+#include "msn_types.h"
 #include "userlist.h"
 #include "sync.h"
-#include "slplink.h"
-#endif
+
+#include "session.h"
+#include "error.h" /* for error_get_text */
+#include "msn_util.h" /* for parse_socket */
+#include "slplink.h" /* for slplink_destroy */
 
 #include "io/http_conn.h"
-#include "transaction.h"
-#include "msn_log.h"
-#include "table.h"
-#include "msn_types.h"
+
+/* libpurple stuff. */
+#include <cipher.h>
 
 static MsnTable *cbs_table;
 
@@ -677,9 +673,7 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 static void
 ipg_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload, size_t len)
 {
-#if 0
-    purple_debug_misc("msn", "Incoming Page: {%s}\n", payload);
-#endif
+    msn_info ("incoming page: [%s]", payload);
 }
 
 static void
@@ -712,7 +706,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     if (!user)
     {
-        purple_debug_error("msn", "unknown user: %s\n", passport);
+        msn_error ("unknown user: passport=[%s]", passport);
         return;
     }
 
@@ -805,7 +799,7 @@ rea_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         }
         else
         {
-            purple_debug_error("msn", "unknown user: %s\n", who);
+            msn_error ("unknown user: who=[%s]", who);
             return;
         }
     }
@@ -1013,9 +1007,8 @@ url_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     if ((fd = purple_mkstemp(&session->passport_info.file, FALSE)) == NULL)
     {
-        purple_debug_error("msn",
-                           "Error opening temp passport file: %s\n",
-                           strerror(errno));
+        msn_error ("error opening temp passport file: errno=[%s]",
+                   strerror(errno));
     }
     else
     {
@@ -1062,9 +1055,8 @@ url_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
         if (fclose(fd))
         {
-            purple_debug_error("msn",
-                               "Error closing temp passport file: %s\n",
-                               strerror(errno));
+            msn_error ("error closing temp passport file: errno=[%s]",
+                       strerror(errno));
 
             g_unlink(session->passport_info.file);
             g_free(session->passport_info.file);
@@ -1137,7 +1129,7 @@ xfr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     if (strcmp(cmd->params[1], "SB") && strcmp(cmd->params[1], "NS"))
     {
         /* Maybe we can have a generic bad command error. */
-        purple_debug_error("msn", "Bad XFR command (%s)\n", cmd->params[1]);
+        msn_error ("bad XFR command: params=[%s]", cmd->params[1]);
         return;
     }
 
@@ -1145,7 +1137,7 @@ xfr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     if (!strcmp(cmd->params[1], "SB"))
     {
-        purple_debug_error("msn", "This shouldn't be handled here.\n");
+        msn_error ("this shouldn't be handled here");
     }
     else if (!strcmp(cmd->params[1], "NS"))
     {

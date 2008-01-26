@@ -19,8 +19,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_H_
-#define _MSN_H_
+
+#ifndef MSN_H
+#define MSN_H
 
 #include "msn-config.h"
 
@@ -39,25 +40,6 @@
 /* #define MSN_DEBUG_DC 1 */
 
 /* #define MSN_DEBUG_DC_FILES 1 */
-
-#include "internal.h"
-
-#include "account.h"
-#include "accountopt.h"
-#include "blist.h"
-#include "connection.h"
-#include "conversation.h"
-#include "debug.h"
-#include "cipher.h"
-#include "notify.h"
-#include "privacy.h"
-#include "proxy.h"
-#include "prpl.h"
-#include "request.h"
-#include "sslconn.h"
-#include "util.h"
-
-#include "ft.h"
 
 #define MSN_BUF_LEN 8192
 
@@ -86,15 +68,6 @@
 
 /* Index into attention_types */
 #define MSN_NUDGE 0
-
-typedef enum
-{
-	MSN_LIST_FL_OP = 0x01,
-	MSN_LIST_AL_OP = 0x02,
-	MSN_LIST_BL_OP = 0x04,
-	MSN_LIST_RL_OP = 0x08
-
-} MsnListOp;
 
 typedef enum
 {
@@ -135,4 +108,4 @@ typedef enum
 	 (MSN_CLIENT_ID_RESERVED_2 <<  8) | \
 	 (MSN_CLIENT_ID_CAPABILITIES))
 
-#endif /* _MSN_H_ */
+#endif /* MSN_H */

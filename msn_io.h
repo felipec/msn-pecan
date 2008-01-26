@@ -19,7 +19,7 @@
 #ifndef MSN_IO_H
 #define MSN_IO_H
 
-#include "msn.h"
+#include <glib.h>
 
 GIOStatus msn_io_read (GIOChannel *channel, gchar *buf, gsize count, gsize *bytes_read, GError **error);
 GIOStatus msn_io_write (GIOChannel *channel, const gchar *buf, gsize count, gsize *bytes_written, GError **error);

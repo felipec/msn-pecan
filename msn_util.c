@@ -19,8 +19,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#include "msn.h"
+
 #include "msn_util.h"
+
+#include <string.h>
+#include <stdio.h>
+
+#include <glib.h>
+#include "msn.h"
+
+/* libpurple stuff. */
+#include <util.h>
 
 void
 msn_parse_format(const char *mime, char **pre_ret, char **post_ret)
@@ -144,7 +153,7 @@ msn_parse_format(const char *mime, char **pre_ret, char **post_ret)
 static const char *
 encode_spaces(const char *str)
 {
-    static char buf[BUF_LEN];
+    static char buf[MSN_BUF_LEN];
     const char *c;
     char *d;
 

@@ -16,10 +16,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _FIX_PURPLE_H_
-#define _FIX_PURPLE_H_
+#ifndef FIX_PURPLE_H
+#define FIX_PURPLE_H
 
-void fix_purple_buddy_set_alias(PurpleConnection *gc, const char *who, const char *alias);
-void fix_purple_buddy_set_friendly(PurpleConnection *gc, const char *who, const char *friendly);
+struct _PurpleConnection;
 
-#endif /* _FIX_PURPLE_H_ */
+void fix_purple_buddy_set_alias (struct _PurpleConnection *gc, const char *who, const char *alias);
+void fix_purple_buddy_set_friendly (struct _PurpleConnection *gc, const char *who, const char *friendly);
+
+#endif /* FIX_PURPLE_H */

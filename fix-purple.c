@@ -19,6 +19,11 @@
 #include "msn.h"
 #include "fix-purple.h"
 
+#include <string.h> /* for strcmp. */
+
+/* libpurple stuff. */
+#include <connection.h>
+
 void
 fix_purple_buddy_set_alias (PurpleConnection *gc,
                             const char *who,

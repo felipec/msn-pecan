@@ -19,8 +19,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#include "msn.h"
+
 #include "transaction.h"
+#include "msn_log.h"
+
+#include <string.h>
+
+/* libpurple stuff. */
+#include <eventloop.h>
 
 MsnTransaction *
 msn_transaction_new(MsnCmdProc *cmdproc, const char *command,
@@ -100,7 +106,7 @@ msn_transaction_to_string(MsnTransaction *trans)
 void
 msn_transaction_queue_cmd(MsnTransaction *trans, MsnCommand *cmd)
 {
-	purple_debug_info("msn", "queueing command.\n");
+	msn_log ("cmd=%p", cmd);
 	trans->pendent_cmd = cmd;
 	msn_command_ref(cmd);
 }
@@ -110,8 +116,8 @@ msn_transaction_unqueue_cmd(MsnTransaction *trans, MsnCmdProc *cmdproc)
 {
 	MsnCommand *cmd;
 
-	purple_debug_info("msn", "unqueueing command.\n");
 	cmd = trans->pendent_cmd;
+	msn_log ("cmd=%p", cmd);
 
 	g_return_if_fail(cmd != NULL);
 
@@ -191,9 +197,8 @@ transaction_timeout(gpointer data)
 	trans = data;
 	g_return_val_if_fail(trans != NULL, FALSE);
 
-#if 0
-	purple_debug_info("msn", "timed out: %s %d %s\n", trans->command, trans->trId, trans->params);
-#endif
+        msn_log ("cmd=[%s],trid=[%d],params=[%s]",
+                 trans->command, trans->trId, trans->params);
 
 	if (trans->timeout_cb != NULL)
 		trans->timeout_cb(trans->cmdproc, trans);
@@ -206,7 +211,7 @@ msn_transaction_set_timeout_cb(MsnTransaction *trans, MsnTimeoutCb cb)
 {
 	if (trans->timer)
 	{
-		purple_debug_error("msn", "This shouldn't be happening\n");
+		msn_error ("this shouldn't be happening");
 		purple_timeout_remove(trans->timer);
 	}
 	trans->timeout_cb = cb;

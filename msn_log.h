@@ -16,10 +16,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#include "msn.h"
-
 #ifndef MSN_LOG_H
 #define MSN_LOG_H
+
+#include <glib.h>
+#include "msn.h"
 
 #if defined(MSN_DEBUG)
 

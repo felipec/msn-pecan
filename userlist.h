@@ -38,6 +38,15 @@ typedef enum
 
 } MsnListId;
 
+typedef enum
+{
+	MSN_LIST_FL_OP = 0x01,
+	MSN_LIST_AL_OP = 0x02,
+	MSN_LIST_BL_OP = 0x04,
+	MSN_LIST_RL_OP = 0x08
+
+} MsnListOp;
+
 typedef struct
 {
 	char *who;
@@ -60,7 +69,6 @@ struct MsnUserList
 	guint buddy_icon_request_timer;
 
 	int fl_users_count;
-
 };
 
 struct _PurpleBuddy;
@@ -106,4 +114,4 @@ void msn_userlist_add_buddy_helper (MsnUserList *userlist,
 									struct _PurpleBuddy *buddy,
 									struct _PurpleGroup *group);
 
-#endif /* _MSN_USERLIST_H_ */
+#endif /* MSN_USERLIST_H */

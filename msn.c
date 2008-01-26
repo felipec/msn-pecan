@@ -19,6 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
+
 #define PHOTO_SUPPORT 1
 
 #include <glib.h>
@@ -42,6 +43,11 @@
 #include "notification.h"
 #include "sync.h"
 #include "slplink.h"
+
+/* libpurple stuff. */
+#include <debug.h>
+#include <privacy.h>
+#include <request.h>
 
 #if PHOTO_SUPPORT
 #include "imgstore.h"

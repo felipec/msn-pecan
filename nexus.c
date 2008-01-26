@@ -19,9 +19,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#include "msn.h"
+
 #include "nexus.h"
-#include "notification.h"
+#include "msn_log.h"
 
 /**************************************************************************
  * Main
@@ -186,7 +186,7 @@ nexus_login_written_cb(gpointer data, gint source, PurpleInputCondition cond)
 	purple_ssl_close(nexus->gsc);
 	nexus->gsc = NULL;
 
-	purple_debug_misc("msn", "ssl buffer: {%s}\n", nexus->read_buf);
+	msn_log ("ssl buffer: [%s]", nexus->read_buf);
 
 	if (strstr(nexus->read_buf, "HTTP/1.1 302") != NULL)
 	{
@@ -367,7 +367,7 @@ login_connect_cb(gpointer data, PurpleSslConnection *gsc,
 	buffer = g_strdup_printf("%s,pwd=XXXXXXXX,%s\r\n", head, tail);
 	request_str = g_strdup_printf("%s,pwd=%s,%s\r\n", head, password, tail);
 
-	purple_debug_misc("msn", "Sending: {%s}\n", buffer);
+	msn_log ("sending: [%s]", buffer);
 
 	g_free(buffer);
 	g_free(head);

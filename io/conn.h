@@ -110,5 +110,6 @@ GIOStatus conn_object_read (ConnObject *conn, gchar *buf, gsize count, gsize *by
 GIOStatus conn_object_write (ConnObject *conn, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
 void conn_object_parse (ConnObject *conn, gchar *buf, gsize bytes_read);
 void conn_object_link (ConnObject *conn, ConnObject *next);
+void conn_object_error (ConnObject *conn);
 
 #endif /* MSN_CONN_H */
