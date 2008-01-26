@@ -20,8 +20,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#include "msn.h"
 #include "slp.h"
+#include "slplink.h"
 #include "slpcall.h"
 #include "slpmsg.h"
 #include "slpsession.h"
@@ -35,7 +35,10 @@
 #include "object.h"
 #include "user.h"
 #include "switchboard.h"
+
+#ifdef MSN_DIRECTCONN
 #include "directconn.h"
+#endif /* MSN_DIRECTCONN */
 
 #include "msn_util.h"
 
@@ -180,6 +183,7 @@ msn_xfer_completed_cb(MsnSlpCall *slpcall, const guchar *body,
  * SLP Control
  **************************************************************************/
 
+#ifdef MSN_DIRECTCONN
 static void
 got_transresp(MsnSlpCall *slpcall, const char *nonce,
 			  const char *ips_str, int port)
@@ -205,6 +209,7 @@ got_transresp(MsnSlpCall *slpcall, const char *nonce,
 
 	g_strfreev(ip_addrs);
 }
+#endif /* MSN_DIRECTCONN */
 
 static void
 send_ok(MsnSlpCall *slpcall, const char *branch,
@@ -505,6 +510,7 @@ got_invite(MsnSlpCall *slpcall,
 		g_free(new_content);
 		g_free(nonce);
 	}
+#ifdef MSN_DIRECTCONN
 	else if (!strcmp(type, "application/x-msnmsgr-transrespbody"))
 	{
 		char *ip_addrs;
@@ -531,6 +537,7 @@ got_invite(MsnSlpCall *slpcall,
 		g_free(nonce);
 		g_free(ip_addrs);
 	}
+#endif /* MSN_DIRECTCONN */
 }
 
 static void
@@ -592,6 +599,7 @@ got_ok(MsnSlpCall *slpcall,
 		/* Do we get this? */
 		purple_debug_info("msn", "OK with transreqbody\n");
 	}
+#ifdef MSN_DIRECTCONN
 	else if (!strcmp(type, "application/x-msnmsgr-transrespbody"))
 	{
 		char *ip_addrs;
@@ -631,6 +639,7 @@ got_ok(MsnSlpCall *slpcall,
 		g_free(nonce);
 		g_free(ip_addrs);
 	}
+#endif /* MSN_DIRECTCONN */
 }
 
 MsnSlpCall *

@@ -24,12 +24,15 @@
 
 #include "session.h"
 #include "switchboard.h"
-#include "directconn.h"
 #include "slpsession.h"
 #include "slpcall.h"
 #include "slpmsg.h"
 #include "slp.h"
 #include "user.h"
+
+#ifdef MSN_DIRECTCONN
+#include "directconn.h"
+#endif /* MSN_DIRECTCONN */
 
 #include "msg_private.h"
 
@@ -125,8 +128,10 @@ msn_slplink_destroy(MsnSlpLink *slplink)
 	if (slplink->remote_user != NULL)
 		g_free(slplink->remote_user);
 
+#ifdef MSN_DIRECTCONN
 	if (slplink->directconn != NULL)
 		msn_directconn_destroy(slplink->directconn);
+#endif /* MSN_DIRECTCONN */
 
 	while (slplink->slp_calls != NULL)
 		msn_slp_call_destroy(slplink->slp_calls->data);
@@ -365,6 +370,7 @@ msn_slplink_send_msgpart(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
 	slpmsg->msgs =
 		g_list_append(slpmsg->msgs, msg);
 
+#ifdef MSN_DIRECTCONN
 	/* The hand-shake message has 0x100 flags. */
 	if (slplink->directconn &&
 		(slpmsg->flags == 0x100 || slplink->directconn->ack_recv))
@@ -375,6 +381,9 @@ msn_slplink_send_msgpart(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
 	{
 		msn_slplink_send_msg(slplink, msg);
 	}
+#else
+        msn_slplink_send_msg(slplink, msg);
+#endif /* MSN_DIRECTCONN */
 
 	if ((slpmsg->flags == 0x20 || slpmsg->flags == 0x1000030) &&
 		(slpmsg->slpcall != NULL))
@@ -645,6 +654,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 
 		slpcall = msn_slp_process_msg(slplink, slpmsg);
 
+#ifdef MSN_DIRECTCONN
 		if (slpmsg->flags == 0x100)
 		{
 			MsnDirectConn *directconn;
@@ -667,6 +677,16 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 			msn_slplink_send_ack(slplink, msg);
 			msn_slplink_unleash(slplink);
 		}
+#else
+                if (slpmsg->flags == 0x0 || slpmsg->flags == 0x20 ||
+                    slpmsg->flags == 0x1000030)
+                {
+                    /* Release all the messages and send the ACK */
+
+                    msn_slplink_send_ack(slplink, msg);
+                    msn_slplink_unleash(slplink);
+                }
+#endif /* MSN_DIRECTCONN */
 
 		msn_slpmsg_destroy(slpmsg);
 

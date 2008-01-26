@@ -22,7 +22,7 @@
 
 #include "object.h"
 #include "object_private.h"
-#include "debug.h"
+#include "msn_log.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -102,7 +102,7 @@ msn_object_new_from_string(const gchar *str)
     if (obj->creator == NULL || obj->size == 0 || obj->type == 0
         || obj->location == NULL || obj->friendly == NULL
         || obj->sha1d == NULL /*|| obj->sha1c == NULL*/) {
-        purple_debug_error("msn", "Discarding invalid msnobj: '%s'\n", str);
+        msn_error ("discarding: str=[%s]", str);
         msn_object_destroy(obj);
         obj = NULL;
     }

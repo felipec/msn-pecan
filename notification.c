@@ -42,10 +42,17 @@
 #include "io/cmd_conn.h"
 #include "io/http_conn.h"
 
+#include "msn_intl.h"
+
+#include <glib/gstdio.h>
+
+#include <string.h>
+#include <errno.h>
+#include <arpa/inet.h>
+
 /* libpurple stuff. */
 #include <account.h>
 #include <cipher.h>
-#include "internal.h"
 
 static MsnTable *cbs_table;
 
@@ -134,27 +141,13 @@ msn_notification_new(MsnSession *session)
 
         conn->session = session;
 
+#if 0
         {
             ConnObject *foo;
             foo = CONN_OBJECT (http_conn_object_new ("foo server"));
             foo->session = session;
             conn_object_link (conn, foo);
-        }
 
-#if 0
-        {
-            ConnEndObject *conn_end;
-
-            if (session->http_method)
-            {
-                next = CONN_OBJECT (conn_http_object_new (NULL));
-            }
-            else
-            {
-                next = conn_end_object_new (NULL);
-            }
-
-            conn_object_set_end (conn, );
         }
 #endif
 
@@ -194,11 +187,6 @@ msn_notification_connect(MsnNotification *notification, const char *host, int po
     conn_object_connect (CONN_OBJECT (notification->conn), host, port);
 
     return TRUE;
-}
-
-void
-msn_notification_disconnect(MsnNotification *notification)
-{
 }
 
 /**************************************************************************
@@ -392,7 +380,7 @@ msn_notification_close(MsnNotification *notification)
 
     msn_cmdproc_send_quick(notification->cmdproc, "OUT", NULL, NULL);
 
-    msn_notification_disconnect(notification);
+    conn_object_close (CONN_OBJECT (notification->conn));
 }
 
 /**************************************************************************

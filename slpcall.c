@@ -23,11 +23,15 @@
 #include "slpcall.h"
 
 #include "slp.h"
+#include "slplink.h"
 #include "slpsession.h"
 #include "slpmsg.h"
-#include "directconn.h"
 #include "session.h"
 #include "msn_util.h"
+
+#ifdef MSN_DIRECTCONN
+#include "directconn.h"
+#endif /* MSN_DIRECTCONN */
 
 /* libpurple stuff. */
 #include <eventloop.h>
@@ -244,6 +248,7 @@ msn_slp_process_msg(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
 			slpcall->wasted = TRUE;
 		}
 	}
+#ifdef MSN_DIRECTCONN
 	else if (slpmsg->flags == 0x100)
 	{
 		slpcall = slplink->directconn->initial_call;
@@ -251,6 +256,7 @@ msn_slp_process_msg(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
 		if (slpcall != NULL)
 			msn_slp_call_session_init(slpcall);
 	}
+#endif /* MSN_DIRECTCONN */
 
 	return slpcall;
 }

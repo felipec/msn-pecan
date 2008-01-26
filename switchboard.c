@@ -131,17 +131,12 @@ msn_switchboard_new(MsnSession *session)
     swboard->msg_queue = g_queue_new();
     swboard->empty = TRUE;
 
-    swboard->cmdproc->data = swboard;
-    swboard->cmdproc->cbs_table = cbs_table;
-
     session->switches = g_list_append(session->switches, swboard);
 
     {
         ConnObject *conn;
         swboard->conn = cmd_conn_object_new ("switchboard server", MSN_CONN_NS);
         conn = CONN_OBJECT (swboard->conn);
-
-        conn->session = session;
 
         {
             MsnCmdProc *cmdproc;
@@ -153,25 +148,7 @@ msn_switchboard_new(MsnSession *session)
             cmdproc->conn = conn;
         }
 
-#if 0
-        {
-            ConnEndObject *conn_end;
-
-            if (session->http_method)
-            {
-                conn_end = CONN_END_OBJECT (conn_end_http_object_new (NULL));
-            }
-            else
-            {
-                conn_end = conn_end_object_new (NULL);
-            }
-
-            conn->foo_data = conn_end->foo_data = session;
-            conn_end->foo_data_2 = "SB";
-
-            conn_object_set_end (conn, conn_end);
-        }
-#endif
+        conn->session = session;
 
         g_signal_connect (conn, "open", G_CALLBACK (open_cb), NULL);
         g_signal_connect (conn, "close", G_CALLBACK (close_cb), NULL);
