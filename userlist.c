@@ -487,7 +487,7 @@ msn_userlist_find_group_with_id(MsnUserList *userlist, int id)
 	{
 		MsnGroup *group = l->data;
 
-		if (group->id == id)
+		if (msn_group_get_id (group) == id)
 			return group;
 	}
 
@@ -505,8 +505,9 @@ msn_userlist_find_group_with_name(MsnUserList *userlist, const char *name)
 	for (l = userlist->groups; l != NULL; l = l->next)
 	{
 		MsnGroup *group = l->data;
+                const gchar *group_name = msn_group_get_name (group);
 
-		if ((group->name != NULL) && !g_ascii_strcasecmp(name, group->name))
+		if ((group_name) && !g_ascii_strcasecmp(name, group_name))
 			return group;
 	}
 

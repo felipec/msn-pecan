@@ -1,7 +1,5 @@
 /**
- * @file group.c Group functions
- *
- * purple
+ * Copyright (C) 2008 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -21,69 +19,72 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#include "msn.h"
+
 #include "group.h"
+#include "group_private.h"
 
 MsnGroup *
-msn_group_new(MsnUserList *userlist, int id, const char *name)
+msn_group_new (MsnUserList *userlist,
+               gint id,
+               const gchar *name)
 {
-	MsnGroup *group;
+    MsnGroup *group;
 
-	g_return_val_if_fail(id >= 0,      NULL);
-	g_return_val_if_fail(name != NULL, NULL);
+    g_return_val_if_fail (userlist, NULL);
+    g_return_val_if_fail (name, NULL);
 
-	group = g_new0(MsnGroup, 1);
+    group = g_new0 (MsnGroup, 1);
 
-	msn_userlist_add_group(userlist, group);
+    msn_userlist_add_group (userlist, group);
 
-	group->id      = id;
-	group->name    = g_strdup(name);
+    group->id = id;
+    group->name = g_strdup (name);
 
-	return group;
+    return group;
 }
 
 void
-msn_group_destroy(MsnGroup *group)
+msn_group_destroy (MsnGroup *group)
 {
-	g_return_if_fail(group != NULL);
+    g_return_if_fail (group);
 
-	g_free(group->name);
-	g_free(group);
+    g_free (group->name);
+    g_free (group);
 }
 
 void
-msn_group_set_id(MsnGroup *group, int id)
+msn_group_set_id (MsnGroup *group,
+                  gint id)
 {
-	g_return_if_fail(group != NULL);
-	g_return_if_fail(id >= 0);
+    g_return_if_fail (group);
 
-	group->id = id;
+    group->id = id;
 }
 
 void
-msn_group_set_name(MsnGroup *group, const char *name)
+msn_group_set_name (MsnGroup *group,
+                    const gchar *name)
 {
-	g_return_if_fail(group != NULL);
-	g_return_if_fail(name  != NULL);
+    g_return_if_fail (group);
+    g_return_if_fail (name);
 
-	if (group->name != NULL)
-		g_free(group->name);
+    g_free (group->name);
 
-	group->name = g_strdup(name);
+    group->name = g_strdup (name);
 }
 
-int
-msn_group_get_id(const MsnGroup *group)
+gint
+msn_group_get_id (const MsnGroup *group)
 {
-	g_return_val_if_fail(group != NULL, -1);
+    g_return_val_if_fail (group, -1);
 
-	return group->id;
+    return group->id;
 }
 
-const char *
-msn_group_get_name(const MsnGroup *group)
+const gchar *
+msn_group_get_name (const MsnGroup *group)
 {
-	g_return_val_if_fail(group != NULL, NULL);
+    g_return_val_if_fail (group, NULL);
 
-	return group->name;
+    return group->name;
 }

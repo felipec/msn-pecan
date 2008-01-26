@@ -20,18 +20,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#ifndef MSN_GROUP_H
-#define MSN_GROUP_H
+#ifndef MSN_GROUP_PRIVATE_H
+#define MSN_GROUP_PRIVATE_H
 
-typedef struct MsnGroup  MsnGroup;
+#include <glib.h>
 
-#include "userlist.h"
+/**
+ * A group.
+ */
+struct MsnGroup
+{
+    gint id; /**< The id. */
+    gchar *name; /**< The name. */
+};
 
-MsnGroup *msn_group_new (MsnUserList *userlist, gint id, const gchar *name);
-void msn_group_destroy (MsnGroup *group);
-void msn_group_set_id (MsnGroup *group, gint id);
-void msn_group_set_name (MsnGroup *group, const gchar *name);
-gint msn_group_get_id (const MsnGroup *group);
-const gchar *msn_group_get_name (const MsnGroup *group);
-
-#endif /* MSN_GROUP_H */
+#endif /* MSN_GROUP_PRIVATE_H */
