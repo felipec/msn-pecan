@@ -117,25 +117,25 @@ parse_impl (ConnObject *base_conn,
 
         cmd_conn->rx_len -= cur_len;
 
-        if (cmd_conn->payload_len)
+        if (cmd_conn->cmdproc)
         {
-            msn_cmdproc_process_payload (cmd_conn->cmdproc, cur, cur_len);
-            cmd_conn->payload_len = 0;
+            if (cmd_conn->payload_len)
+            {
+                msn_cmdproc_process_payload (cmd_conn->cmdproc, cur, cur_len);
+                cmd_conn->payload_len = 0;
+            }
+            else
+            {
+                msn_cmdproc_process_cmd_text (cmd_conn->cmdproc, cur);
+                cmd_conn->payload_len = cmd_conn->cmdproc->last_cmd->payload_len;
+            }
         }
-        else
-        {
-            msn_cmdproc_process_cmd_text (cmd_conn->cmdproc, cur);
-            cmd_conn->payload_len = cmd_conn->cmdproc->last_cmd->payload_len;
-        }
-    } while (base_conn->connected && !cmd_conn->wasted && cmd_conn->rx_len > 0);
+    } while (cmd_conn->rx_len > 0);
 
     if (cmd_conn->rx_len > 0)
         cmd_conn->rx_buf = g_memdup (cur, cmd_conn->rx_len);
     else
         cmd_conn->rx_buf = NULL;
-
-    if (cmd_conn->wasted)
-        conn_object_free (base_conn);
 
     g_free (old_rx_buf);
 }

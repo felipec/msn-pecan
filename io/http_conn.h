@@ -19,33 +19,25 @@
 #ifndef MSN_HTTP_CONN_H
 #define MSN_HTTP_CONN_H
 
-#include <glib.h>
-#include "glib-object.h"
+#include <glib-object.h>
 
 typedef struct HttpConnObject HttpConnObject;
 typedef struct HttpConnObjectClass HttpConnObjectClass;
 
 #include "conn.h"
 
-struct PurpleProxyConnectData;
-struct MsnSession;
-
 struct HttpConnObject
 {
     ConnObject parent;
     gboolean dispose_has_run;
 
-    GIOChannel *channel;
-    gchar *hostname;
     guint parser_state;
     gboolean waiting_response;
     GQueue *write_queue;
     guint content_length;
     guint timeout_id;
     gchar *last_session_id;
-
-    struct PurpleProxyConnectData *connect_data;
-    struct MsnSession *session;
+    gchar *gateway;
 };
 
 struct HttpConnObjectClass
@@ -61,6 +53,7 @@ struct HttpConnObjectClass
 #define HTTP_CONN_OBJECT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), HTTP_CONN_OBJECT_TYPE, HttpConnObjectClass))
 
 GType http_conn_object_get_type ();
+
 HttpConnObject *http_conn_object_new (gchar *name);
 void http_conn_object_free (HttpConnObject *http_conn);
 

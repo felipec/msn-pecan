@@ -23,18 +23,19 @@ typedef struct CmdConnObject CmdConnObject;
 typedef struct CmdConnObjectClass CmdConnObjectClass;
 
 #include "conn.h"
-#include "cmdproc.h"
+
+struct MsnCmdProc;
 
 struct CmdConnObject
 {
     ConnObject parent;
     gboolean dispose_has_run;
 
-    MsnCmdProc *cmdproc;
     gsize payload_len;
-    gboolean wasted;
     gchar *rx_buf;
     gsize rx_len;
+
+    struct MsnCmdProc *cmdproc;
 };
 
 struct CmdConnObjectClass
@@ -50,6 +51,7 @@ struct CmdConnObjectClass
 #define CMD_CONN_OBJECT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), CMD_CONN_OBJECT_TYPE, CmdConnObjectClass))
 
 GType cmd_conn_object_get_type ();
+
 CmdConnObject *cmd_conn_object_new (gchar *name, ConnObjectType type);
 void cmd_conn_object_free (CmdConnObject *conn);
 

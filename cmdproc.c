@@ -77,7 +77,6 @@ static void
 show_debug_cmd(MsnCmdProc *cmdproc, gboolean incoming, const char *command)
 {
     MsnServConn *servconn;
-    const char *names[] = { "NS", "SB" };
     char *show;
     char tmp;
     size_t len;
@@ -93,8 +92,8 @@ show_debug_cmd(MsnCmdProc *cmdproc, gboolean incoming, const char *command)
         show[len - 2] = '\0';
     }
 
-    msn_debug ("%c: %s %03d: %s", tmp,
-               names[servconn->type], cmdproc->cmd_count, show);
+    msn_debug ("%c: %03d: %s", tmp,
+               cmdproc->cmd_count, show);
 
     g_free(show);
 }
@@ -108,7 +107,6 @@ msn_cmdproc_send_trans(MsnCmdProc *cmdproc, MsnTransaction *trans)
 
     g_return_if_fail(cmdproc != NULL);
     g_return_if_fail(trans != NULL);
-    g_return_if_fail(cmdproc->servconn->connected);
 
     servconn = cmdproc->servconn;
 
@@ -147,12 +145,8 @@ msn_cmdproc_send_quick(MsnCmdProc *cmdproc, const char *command,
 
     g_return_if_fail(cmdproc != NULL);
     g_return_if_fail(command != NULL);
-    g_return_if_fail(cmdproc->servconn->connected);
 
     servconn = cmdproc->servconn;
-
-    if (!servconn->connected)
-        return;
 
     if (format != NULL)
     {
@@ -188,7 +182,6 @@ msn_cmdproc_send_valist (MsnCmdProc *cmdproc,
 
     g_return_if_fail (cmdproc != NULL);
     g_return_if_fail (command != NULL);
-    g_return_if_fail (cmdproc->servconn->connected);
 
     trans = g_new0 (MsnTransaction, 1);
 
@@ -210,7 +203,6 @@ msn_cmdproc_send (MsnCmdProc *cmdproc,
 {
     g_return_if_fail (cmdproc != NULL);
     g_return_if_fail (command != NULL);
-    g_return_if_fail (cmdproc->servconn->connected);
 
     {
         va_list args;

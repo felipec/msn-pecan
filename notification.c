@@ -44,12 +44,10 @@ open_cb (ConnObject *conn)
 
     g_return_if_fail (conn != NULL);
 
-    session = conn->foo_data;
+    session = conn->session;
     cmd_conn = CMD_CONN_OBJECT (conn);
 
     msn_log ("begin");
-
-    cmd_conn->cmdproc->servconn->connected = TRUE;
 
     if (session->login_step == MSN_LOGIN_STEP_START)
         msn_session_set_login_step (session, MSN_LOGIN_STEP_HANDSHAKE);
@@ -95,17 +93,6 @@ close_cb (ConnObject *conn,
  * Main
  **************************************************************************/
 
-static void
-destroy_cb(MsnServConn *servconn)
-{
-    MsnNotification *notification;
-
-    notification = servconn->cmdproc->data;
-    g_return_if_fail(notification != NULL);
-
-    msn_notification_destroy(notification);
-}
-
 MsnNotification *
 msn_notification_new(MsnSession *session)
 {
@@ -117,38 +104,49 @@ msn_notification_new(MsnSession *session)
     notification = g_new0(MsnNotification, 1);
 
     notification->session = session;
-    notification->servconn = servconn = msn_servconn_new(session, MSN_SERVCONN_NS);
-    msn_servconn_set_destroy_cb(servconn, destroy_cb);
+    notification->servconn = servconn = msn_servconn_new ();
 
     {
         ConnObject *conn;
         notification->conn = cmd_conn_object_new ("notification server", MSN_CONN_NS);
         conn = CONN_OBJECT (notification->conn);
-        notification->conn->cmdproc = servconn->cmdproc;
-        servconn->cmdproc->cbs_table = cbs_table;
-        servconn->cmdproc->conn = conn;
 
+        {
+            MsnCmdProc *cmdproc;
+            cmdproc = msn_cmdproc_new (session);
+            cmdproc->servconn = servconn;
+            servconn->cmdproc = cmdproc;
+            notification->conn->cmdproc = cmdproc;
+
+            cmdproc->cbs_table = cbs_table;
+            cmdproc->conn = conn;
+        }
+
+        conn->session = session;
+
+        {
+            ConnObject *foo;
+            foo = CONN_OBJECT (http_conn_object_new ("foo server"));
+            foo->session = session;
+            conn_object_link (conn, foo);
+        }
+
+#if 0
         {
             ConnEndObject *conn_end;
 
-#if 0
             if (session->http_method)
             {
-                conn_end = CONN_END_OBJECT (conn_end_http_object_new (NULL));
+                next = CONN_OBJECT (conn_http_object_new (NULL));
             }
             else
             {
-                conn_end = conn_end_object_new (NULL);
+                next = conn_end_object_new (NULL);
             }
-#else
-            conn_end = CONN_END_OBJECT (conn_end_http_object_new (NULL));
-#endif
 
-            conn->foo_data = conn_end->foo_data = session;
-            conn_end->foo_data_2 = "NS";
-
-            conn_object_set_end (conn, conn_end);
+            conn_object_set_end (conn, );
         }
+#endif
 
         g_signal_connect (conn, "open", G_CALLBACK (open_cb), notification);
         g_signal_connect (conn, "close", G_CALLBACK (close_cb), notification);
@@ -171,8 +169,6 @@ msn_notification_destroy(MsnNotification *notification)
         notification->cmdproc->data = NULL;
 
     cmd_conn_object_free (notification->conn);
-
-    msn_servconn_set_destroy_cb(notification->servconn, NULL);
 
     msn_servconn_destroy(notification->servconn);
 
@@ -200,11 +196,6 @@ msn_notification_connect(MsnNotification *notification, const char *host, int po
 void
 msn_notification_disconnect(MsnNotification *notification)
 {
-    g_return_if_fail (notification != NULL);
-    g_return_if_fail (notification->in_use);
-
-    msn_servconn_disconnect (notification->servconn);
-    notification->in_use = FALSE;
 }
 
 /**************************************************************************
@@ -395,9 +386,6 @@ void
 msn_notification_close(MsnNotification *notification)
 {
     g_return_if_fail(notification != NULL);
-
-    if (!notification->in_use)
-        return;
 
     msn_cmdproc_send_quick(notification->cmdproc, "OUT", NULL, NULL);
 

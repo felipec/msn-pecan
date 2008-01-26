@@ -19,9 +19,7 @@
 #ifndef MSN_CONN_H
 #define MSN_CONN_H
 
-#include <glib.h>
-
-#include "glib-object.h"
+#include <glib-object.h>
 
 typedef struct MsnBuff MsnBuff;
 typedef enum ConnObjectType ConnObjectType;
@@ -29,13 +27,12 @@ typedef enum ConnObjectType ConnObjectType;
 typedef struct ConnObject ConnObject;
 typedef struct ConnObjectClass ConnObjectClass;
 
-#include "cmd.h"
-#include "buffer.h"
-#include "conn_end.h"
-
-#define SOCKET_ERROR -1
-
 #define CONN_OBJECT_ERROR conn_object_error_quark ()
+
+/* Forward declarations */
+
+struct PurpleProxyConnectData;
+struct MsnSesion;
 
 enum
 {
@@ -58,11 +55,6 @@ struct ConnObject
     GObject parent;
     gboolean dispose_has_run;
 
-    gpointer foo_data;
-
-    ConnEndObject *end;
-    gboolean connected;
-
     GError *error; /**< The current IO error .*/
     guint read_watch; /** < The source id of the read watch. */
 
@@ -71,7 +63,17 @@ struct ConnObject
     gchar *name;
 
     gpointer data; /**< Client data. */
+    gpointer foo_data;
     ConnObject *prev;
+    ConnObject *next;
+
+    GIOChannel *channel; /**< The current IO channel .*/
+
+    gchar *hostname;
+    guint port;
+
+    struct _PurpleProxyConnectData *connect_data;
+    struct MsnSession *session;
 };
 
 struct ConnObjectClass
@@ -98,16 +100,15 @@ struct ConnObjectClass
 #define CONN_OBJECT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), CONN_OBJECT_TYPE, ConnObjectClass))
 
 GType conn_object_get_type ();
+
 ConnObject *conn_object_new (gchar *name, ConnObjectType type);
 void conn_object_free (ConnObject *conn);
 void conn_object_connect (ConnObject *conn, const gchar *hostname, gint port);
-void conn_object_send_cmd (ConnObject *conn, MsnCmd *cmd);
 void conn_object_close (ConnObject *conn);
-void conn_object_handle (ConnObject *conn, MsnCmd *cmd);
-gchar *conn_object_to_string (ConnObject *conn);
-void conn_object_poll (ConnObject *conn);
 
 GIOStatus conn_object_read (ConnObject *conn, gchar *buf, gsize count, gsize *bytes_read, GError **error);
 GIOStatus conn_object_write (ConnObject *conn, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
+void conn_object_parse (ConnObject *conn, gchar *buf, gsize bytes_read);
+void conn_object_link (ConnObject *conn, ConnObject *next);
 
 #endif /* MSN_CONN_H */

@@ -17,18 +17,10 @@
  */
 
 #include "conn.h"
-
-#include <netdb.h>
-#include <string.h>
-
-#include <sys/poll.h>
-
+#include "msn_io.h"
 #include "msn_log.h"
-#include "session.h"
 
-/* For open. */
-#include <fcntl.h>
-#include <unistd.h>
+#include "session.h" /* for libpurple account */
 
 void conn_object_error (ConnObject *conn);
 
@@ -41,6 +33,23 @@ conn_object_error_quark (void)
     return g_quark_from_static_string ("conn-object-error-quark");
 }
 
+inline const gchar *
+status_to_str (GIOStatus status)
+{
+    const gchar *id;
+
+    switch (status)
+    {
+        case G_IO_STATUS_ERROR: id = "ERROR"; break;
+        case G_IO_STATUS_NORMAL: id = "NORMAL"; break;
+        case G_IO_STATUS_EOF: id = "EOF"; break;
+        case G_IO_STATUS_AGAIN: id = "AGAIN"; break;
+        default: id = NULL; break;
+    }
+
+    return id;
+}
+
 static gboolean
 read_cb (GIOChannel *source,
          GIOCondition condition,
@@ -50,21 +59,15 @@ read_cb (GIOChannel *source,
     gchar buf[MSN_BUF_LEN];
     gsize bytes_read;
 
-    conn = data;
+    conn = CONN_OBJECT (data);
 
+    msn_debug ("name=%s", conn->name);
     msn_debug ("source=%p", source);
 
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
-        if (conn->end)
-        {
-            status = conn_end_object_read (conn->end, buf, sizeof (buf), &bytes_read, &conn->error);
-        }
-        else
-        {
-            conn_object_read (conn, buf, sizeof (buf), &bytes_read, &conn->error);
-        }
+        status = conn_object_read (conn, buf, sizeof (buf), &bytes_read, &conn->error);
 
         if (status == G_IO_STATUS_AGAIN)
             return TRUE;
@@ -76,18 +79,21 @@ read_cb (GIOChannel *source,
         }
     }
 
-    CONN_OBJECT_GET_CLASS (conn)->parse (conn, buf, bytes_read);
+    conn_object_parse (conn->prev ? conn->prev : conn,
+                       buf, bytes_read);
 
     return TRUE;
 }
 
 static void
-close_cb (ConnEndObject *conn_end,
+close_cb (ConnObject *next,
           gpointer data)
 {
     ConnObject *conn;
 
     conn = CONN_OBJECT (data);
+
+    msn_log ("begin");
 
     conn_object_close (conn);
 
@@ -96,33 +102,24 @@ close_cb (ConnEndObject *conn_end,
         class = g_type_class_peek (CONN_OBJECT_TYPE);
         g_signal_emit (G_OBJECT (conn), class->close_sig, 0, conn);
     }
+
+    msn_log ("begin");
 }
 
 static void
-open_cb (ConnEndObject *conn_end,
+open_cb (ConnObject *next,
          gpointer data)
 {
     ConnObject *conn;
-    GIOChannel *channel;
 
-    conn = data;
-    channel = conn_end->channel;
+    conn = CONN_OBJECT (data);
 
     msn_log ("begin");
 
-    if (channel)
     {
-        conn->connected = TRUE;
-
-        msn_info ("connected: conn=%p,channel=%p", conn, channel);
-        conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, conn);
-    }
-    else
-    {
-        /* msn_error ("connection error: conn=%p,msg=[%s]", conn, error_message); */
-        conn->error = g_error_new_literal (CONN_OBJECT_ERROR, CONN_OBJECT_ERROR_OPEN,
-                                           "Unable to connect");
-        conn_object_error (conn);
+        ConnObjectClass *class;
+        class = g_type_class_peek (CONN_OBJECT_TYPE);
+        g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
     }
 
     msn_log ("end");
@@ -191,13 +188,12 @@ conn_object_read (ConnObject *conn,
 }
 
 void
-conn_object_set_end (ConnObject *conn,
-                     ConnEndObject *conn_end)
+conn_object_link (ConnObject *conn,
+                  ConnObject *next)
 {
-    conn->end = conn_end;
-    conn->prev = conn_end;
-    g_signal_connect (conn->end, "open", G_CALLBACK (open_cb), conn);
-    g_signal_connect (conn->end, "close", G_CALLBACK (close_cb), conn);
+    conn->next = next;
+    g_signal_connect (next, "open", G_CALLBACK (open_cb), conn);
+    g_signal_connect (next, "close", G_CALLBACK (close_cb), conn);
 }
 
 void
@@ -225,22 +221,72 @@ conn_object_parse (ConnObject *conn,
 /* ConnObject stuff. */
 
 static void
+connect_cb (gpointer data,
+            gint source,
+            const gchar *error_message)
+{
+    ConnObject *conn;
+
+    msn_log ("begin");
+
+    conn = CONN_OBJECT (data);
+    conn->connect_data = NULL;
+
+    if (source >= 0)
+    {
+        GIOChannel *channel;
+
+        conn->channel = channel = g_io_channel_unix_new (source);
+
+        g_io_channel_set_encoding (channel, NULL, NULL);
+        g_io_channel_set_buffered (channel, FALSE);
+
+        msn_info ("connected: conn=%p,channel=%p", conn, channel);
+        conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, conn);
+#if 0
+        g_io_add_watch (channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, close_cb, conn);
+#endif
+    }
+    else
+    {
+        /* msn_error ("connection error: conn=%p,msg=[%s]", conn, error_message); */
+        conn->error = g_error_new_literal (CONN_OBJECT_ERROR, CONN_OBJECT_ERROR_OPEN,
+                                           "Unable to connect");
+        conn_object_error (conn);
+    }
+
+    {
+        ConnObjectClass *class;
+        class = g_type_class_peek (CONN_OBJECT_TYPE);
+        g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
+    }
+
+    msn_log ("end");
+}
+
+static void
 connect_impl (ConnObject *conn,
               const gchar *hostname,
               gint port)
 {
-    g_return_if_fail (conn != NULL);
-    g_return_if_fail (hostname != NULL);
-    g_return_if_fail (port > 0);
+    g_return_if_fail (conn);
 
     msn_log ("begin");
 
     msn_debug ("conn=%p", conn);
 
-    conn_object_close (conn);
+    if (conn->next)
+    {
+        conn->next->prev = conn;
+        conn_object_connect (conn->next, hostname, port);
+    }
+    else
+    {
+        conn_object_close (conn);
 
-    conn->end->prev = conn;
-    conn_end_object_connect (conn->end, hostname, port);
+        conn->connect_data = purple_proxy_connect (NULL, conn->session->account,
+                                                   hostname, port, connect_cb, conn);
+    }
 
     msn_log ("end");
 }
@@ -248,6 +294,31 @@ connect_impl (ConnObject *conn,
 static void
 close_impl (ConnObject *conn)
 {
+    g_return_if_fail (conn != NULL);
+
+    msn_log ("begin");
+
+    if (!conn->channel)
+    {
+        msn_warning ("not connected: conn=%p", conn);
+        return;
+    }
+
+    if (conn->connect_data)
+    {
+        purple_proxy_connect_cancel (conn->connect_data);
+        conn->connect_data = NULL;
+    }
+
+    msn_info ("channel shutdown: %p", conn->channel);
+    g_io_channel_shutdown (conn->channel, FALSE, NULL);
+    g_io_channel_unref (conn->channel);
+    conn->channel = NULL;
+
+    g_free (conn->hostname);
+    conn->hostname = NULL;
+
+    msn_log ("end");
 }
 
 static void
@@ -263,18 +334,45 @@ write_impl (ConnObject *conn,
             gsize *ret_bytes_written,
             GError **error)
 {
-    GIOStatus status = G_IO_STATUS_ERROR;
-    gsize bytes_written = 0;
+    GIOStatus status = G_IO_STATUS_NORMAL;
 
-    g_return_val_if_fail (conn, status);
+    msn_debug ("name=%s", conn->name);
 
-    msn_debug ("conn=%p", conn);
-
-    status = conn_end_object_write (conn->end, buf, count, &bytes_written, &conn->error);
-
-    if (status != G_IO_STATUS_NORMAL || conn->error)
+    if (conn->next)
     {
-        conn_object_error (conn);
+        conn->next->prev = conn;
+        status = conn_object_write (conn->next, buf, count, ret_bytes_written, error);
+    }
+    else
+    {
+        GError *tmp_error = NULL;
+        gsize bytes_written = 0;
+
+        msn_debug ("channel=%p", conn->channel);
+
+        status = msn_io_write_full (conn->channel, buf, count, &bytes_written, &tmp_error);
+
+        msn_log ("bytes_written=%d", bytes_written);
+
+        if (status == G_IO_STATUS_NORMAL)
+        {
+            if (bytes_written < count)
+            {
+                /* This shouldn't happen, right? */
+                msn_error ("write check: %d < %d", bytes_written, count);
+            }
+        }
+        else
+        {
+            msn_warning ("not normal: status=%d (%s)",
+                         status, status_to_str (status));
+        }
+
+        if (ret_bytes_written)
+            *ret_bytes_written = bytes_written;
+
+        if (tmp_error)
+            g_propagate_error (error, tmp_error);
     }
 
     return status;
@@ -288,6 +386,38 @@ read_impl (ConnObject *conn,
            GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
+
+    msn_debug ("name=%s", conn->name);
+
+    if (conn->next)
+    {
+        conn->next->prev = conn;
+        status = conn_object_read (conn->next, buf, count, ret_bytes_read, error);
+    }
+    else
+    {
+        GError *tmp_error = NULL;
+        gsize bytes_read = 0;
+
+        msn_debug ("channel=%p", conn->channel);
+
+        status = msn_io_read (conn->channel, buf, count, &bytes_read, &tmp_error);
+
+        if (status != G_IO_STATUS_NORMAL)
+        {
+            msn_info ("not normal: status=%d (%s)",
+                      status, status_to_str (status));
+        }
+
+        msn_log ("bytes_read=%d", bytes_read);
+
+        if (ret_bytes_read)
+            *ret_bytes_read = bytes_read;
+
+        if (tmp_error)
+            g_propagate_error (error, tmp_error);
+    }
+
     return status;
 }
 
@@ -296,7 +426,7 @@ parse_impl (ConnObject *conn,
             gchar *buf,
             gsize bytes_read)
 {
-    msn_info ("foo");
+    msn_debug ("name=%s", conn->name);
 }
 
 /* GObject stuff. */
@@ -311,10 +441,14 @@ conn_object_dispose (GObject *obj)
         conn->dispose_has_run = TRUE;
 
         conn_object_close (conn);
-        conn_end_object_free (conn->end);
-        conn->end = NULL;
 
         g_free (conn->name);
+    }
+
+    if (conn->next)
+    {
+        conn_object_free (conn->next);
+        conn->next = NULL;
     }
 
     G_OBJECT_CLASS (parent_class)->dispose (obj);
@@ -365,9 +499,6 @@ static void
 instance_init (GTypeInstance *instance,
                gpointer g_class)
 {
-    ConnObject *conn = CONN_OBJECT (instance);
-
-    conn->dispose_has_run = FALSE;
 }
 
 GType

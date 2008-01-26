@@ -182,12 +182,12 @@ msn_directconn_write(MsnDirectConn *directconn,
     body_len = GUINT32_TO_LE(len);
 
     /* Let's write the length of the data. */
-    status = conn_end_object_write (directconn->conn_end, (gchar *) &body_len, sizeof(body_len), &tmp, NULL);
+    status = conn_object_write (directconn->conn, (gchar *) &body_len, sizeof(body_len), &tmp, NULL);
 
     if (status == G_IO_STATUS_NORMAL)
     {
         /* Let's write the data. */
-        status = conn_end_object_write (directconn->conn_end, data, len, &tmp, NULL);
+        status = conn_object_write (directconn->conn, data, len, &tmp, NULL);
     }
 
     if (status == G_IO_STATUS_NORMAL)
@@ -359,7 +359,7 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
     {
         GIOChannel *channel = g_io_channel_unix_new (fd);
 
-        directconn->conn_end = conn_end_object_new (channel);
+        /* directconn->conn = conn_object_new (channel); */
         directconn->connected = TRUE;
 
         msn_info ("connected: %p", channel);
@@ -471,7 +471,7 @@ msn_directconn_destroy(MsnDirectConn *directconn)
         directconn->read_watch = 0;
     }
 
-    conn_end_object_free (directconn->conn_end);
+    conn_object_free (directconn->conn);
 
     if (directconn->nonce != NULL)
         g_free(directconn->nonce);

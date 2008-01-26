@@ -28,7 +28,7 @@ typedef struct _MsnDirectConn MsnDirectConn;
 #include "slp.h"
 #include "msg.h"
 
-#include "io/conn_end.h"
+struct ConnObject;
 
 struct _MsnDirectConn
 {
@@ -42,7 +42,7 @@ struct _MsnDirectConn
 
     char *nonce;
 
-    ConnEndObject *conn_end;
+    struct ConnObject *conn;
     guint read_watch;
     gboolean connected;
 

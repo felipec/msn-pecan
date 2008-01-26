@@ -31,27 +31,16 @@
  **************************************************************************/
 
 MsnServConn *
-msn_servconn_new(MsnSession *session, MsnServConnType type)
+msn_servconn_new()
 {
     MsnServConn *servconn;
-
-    g_return_val_if_fail(session != NULL, NULL);
 
     msn_log ("begin");
     servconn = g_new0(MsnServConn, 1);
 
-    servconn->type = type;
-
-    servconn->session = session;
+#if 0
     servconn->cmdproc = msn_cmdproc_new(session);
     servconn->cmdproc->servconn = servconn;
-
-#if 0
-    servconn->httpconn = msn_httpconn_new(servconn);
-
-    servconn->num = session->servconns_count++;
-
-    servconn->tx_buf = purple_circ_buffer_new(MSN_BUF_LEN);
 #endif
 
     msn_log ("end");
@@ -66,79 +55,20 @@ msn_servconn_destroy(MsnServConn *servconn)
 
     msn_log ("begin");
 
-    if (servconn->processing)
-    {
-        servconn->wasted = TRUE;
-        return;
-    }
-
-    conn_end_object_free (servconn->conn_end);
-
-    if (servconn->destroy_cb)
-        servconn->destroy_cb(servconn);
-
 #if 0
-    if (servconn->httpconn != NULL)
-        msn_httpconn_destroy(servconn->httpconn);
-
-    g_free(servconn->host);
-
-    purple_circ_buffer_destroy(servconn->tx_buf);
-#endif
-
     if (servconn->cmdproc)
     {
         msn_cmdproc_destroy (servconn->cmdproc);
     }
+#endif
 
     g_free(servconn);
     msn_log ("end");
 }
 
-void
-msn_servconn_set_destroy_cb(MsnServConn *servconn,
-                            void (*destroy_cb)(MsnServConn *))
-{
-    g_return_if_fail(servconn != NULL);
-
-    servconn->destroy_cb = destroy_cb;
-}
-
 /**************************************************************************
  * Connect
  **************************************************************************/
-
-void
-msn_servconn_disconnect(MsnServConn *servconn)
-{
-    g_return_if_fail(servconn != NULL);
-
-    msn_log ("begin");
-
-    if (servconn->connect_data != NULL)
-    {
-        purple_proxy_connect_cancel(servconn->connect_data);
-        servconn->connect_data = NULL;
-    }
-
-    if (servconn->read_watch)
-    {
-        g_source_remove (servconn->read_watch);
-        servconn->read_watch = 0;
-    }
-
-    conn_end_object_close (servconn->conn_end);
-
-#if 0
-    servconn->rx_buf = NULL;
-    servconn->rx_len = 0;
-    servconn->payload_len = 0;
-#endif
-
-    servconn->connected = FALSE;
-
-    msn_log ("end");
-}
 
 #if 0
 static int

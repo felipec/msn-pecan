@@ -49,13 +49,11 @@ open_cb (ConnObject *conn)
 
     g_return_if_fail (conn != NULL);
 
-    session = conn->foo_data;
+    session = conn->session;
     cmd_conn = CMD_CONN_OBJECT (conn);
     cmdproc = cmd_conn->cmdproc;
 
     msn_info ("foo");
-
-    cmdproc->servconn->connected = TRUE;
 
     swboard = cmdproc->data;
     g_return_if_fail (swboard != NULL);
@@ -116,7 +114,7 @@ msn_switchboard_new(MsnSession *session)
     swboard = g_new0(MsnSwitchBoard, 1);
 
     swboard->session = session;
-    swboard->servconn = servconn = msn_servconn_new(session, MSN_SERVCONN_SB);
+    swboard->servconn = servconn = msn_servconn_new ();
     swboard->cmdproc = servconn->cmdproc;
 
     swboard->msg_queue = g_queue_new();
@@ -135,6 +133,9 @@ msn_switchboard_new(MsnSession *session)
         servconn->cmdproc->cbs_table = cbs_table;
         servconn->cmdproc->conn = conn;
 
+        conn->session = session;
+
+#if 0
         {
             ConnEndObject *conn_end;
 
@@ -152,6 +153,7 @@ msn_switchboard_new(MsnSession *session)
 
             conn_object_set_end (conn, conn_end);
         }
+#endif
 
         g_signal_connect (conn, "open", G_CALLBACK (open_cb), servconn);
         g_signal_connect (conn, "close", G_CALLBACK (close_cb), servconn);
@@ -1104,8 +1106,6 @@ void
 msn_switchboard_disconnect(MsnSwitchBoard *swboard)
 {
     g_return_if_fail(swboard != NULL);
-
-    msn_servconn_disconnect(swboard->servconn);
 }
 
 /**************************************************************************

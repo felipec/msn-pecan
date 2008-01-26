@@ -24,7 +24,7 @@
 #ifndef _MSN_SESSION_H_
 #define _MSN_SESSION_H_
 
-typedef struct _MsnSession MsnSession;
+typedef struct MsnSession MsnSession;
 
 #include "sslconn.h"
 
@@ -78,7 +78,7 @@ typedef enum
 
 #define MSN_LOGIN_STEPS MSN_LOGIN_STEP_END
 
-struct _MsnSession
+struct MsnSession
 {
 	PurpleAccount *account;
 	MsnUser *user;
