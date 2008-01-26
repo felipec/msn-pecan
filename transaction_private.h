@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2008 Felipe Contreras.
+ * Copyright (C) 2007-2008 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -20,16 +20,39 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#ifndef MSN_COMMAND_H
-#define MSN_COMMAND_H
+#ifndef MSN_TRANSACTION_PRIVATE_H
+#define MSN_TRANSACTION_PRIVATE_H
 
 #include <glib.h>
 
-typedef struct MsnCommand MsnCommand;
+#include "transaction.h"
+#include "command.h"
 
-MsnCommand *msn_command_from_string (const gchar *string);
-void msn_command_destroy (MsnCommand *cmd);
-MsnCommand *msn_command_ref (MsnCommand *cmd);
-MsnCommand *msn_command_unref (MsnCommand *cmd);
+/**
+ * A transaction. A sending command that will initiate the transaction.
+ */
+struct MsnTransaction
+{
+    MsnCmdProc *cmdproc;
+    guint trId;
 
-#endif /* MSN_COMMAND_H */
+    gchar *command;
+    gchar *params;
+
+    gint timer;
+
+    gpointer data; /**< The data to be used on the different callbacks. */
+    GHashTable *callbacks;
+    gboolean has_custom_callbacks;
+    MsnErrorCb error_cb;
+    MsnTimeoutCb timeout_cb;
+
+    gchar *payload;
+    gsize payload_len;
+
+    GQueue *queue;
+    MsnCommand *pendent_cmd; /**< The command that is waiting for the result of
+                               this transaction. */
+};
+
+#endif /* MSN_TRANSACTION_PRIVATE_H */

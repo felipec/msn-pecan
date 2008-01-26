@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2008 Felipe Contreras.
+ * Copyright (C) 2008 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -20,16 +20,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#ifndef MSN_COMMAND_H
-#define MSN_COMMAND_H
+#ifndef MSN_TABLE_PRIVATE_H
+#define MSN_TABLE_PRIVATE_H
 
 #include <glib.h>
 
-typedef struct MsnCommand MsnCommand;
+#include "table.h"
 
-MsnCommand *msn_command_from_string (const gchar *string);
-void msn_command_destroy (MsnCommand *cmd);
-MsnCommand *msn_command_ref (MsnCommand *cmd);
-MsnCommand *msn_command_unref (MsnCommand *cmd);
+struct MsnTable
+{
+    GHashTable *cmds;
+    GHashTable *msgs;
+    GHashTable *errors;
 
-#endif /* MSN_COMMAND_H */
+    GHashTable *async;
+    GHashTable *fallback;
+};
+
+#endif /* MSN_TABLE_PRIVATE_H */

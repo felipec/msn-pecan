@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008 Felipe Contreras
+ * Copyright (C) 2008 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -23,13 +23,17 @@
 #ifndef MSN_TABLE_H
 #define MSN_TABLE_H
 
-#include "msn_types.h"
+#include <glib.h>
 
-MsnTable *msn_table_new(void);
-void msn_table_destroy(MsnTable *table);
+#include "msg.h"
+#include "transaction.h"
 
-void msn_table_add_cmd(MsnTable *table, const gchar *command, const gchar *answer, MsnTransCb);
-void msn_table_add_error(MsnTable *table, const gchar *answer, MsnErrorCb cb);
-void msn_table_add_msg_type(MsnTable *table, const gchar *type, MsnMsgTypeCb cb);
+typedef struct MsnTable MsnTable;
 
-#endif /* _MSN_TABLE_H_ */
+MsnTable *msn_table_new (void);
+void msn_table_destroy (MsnTable *table);
+void msn_table_add_cmd (MsnTable *table, const gchar *command, const gchar *answer, MsnTransCb);
+void msn_table_add_error (MsnTable *table, const gchar *answer, MsnErrorCb cb);
+void msn_table_add_msg_type (MsnTable *table, const gchar *type, MsnMsgTypeCb cb);
+
+#endif /* MSN_TABLE_H */

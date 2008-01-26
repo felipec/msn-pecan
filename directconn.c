@@ -28,6 +28,8 @@
 #include "slp.h"
 #include "slpmsg.h"
 
+#include "io/conn.h"
+
 #include <netdb.h>
 
 /* libpurple stuff. */

@@ -25,6 +25,12 @@
 #include "switchboard.h"
 #include "notification.h"
 #include "table.h"
+#include "slplink.h"
+
+#include "cmdproc_private.h"
+#include "transaction_private.h"
+#include "msg_private.h"
+#include "command_private.h"
 
 #include "msn_util.h"
 #include "msn_log.h"

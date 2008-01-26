@@ -22,6 +22,9 @@
 
 #include "session.h" /* for libpurple account */
 
+/* libpurple stuff. */
+#include <proxy.h>
+
 void conn_object_error (ConnObject *conn);
 
 static GObjectClass *parent_class = NULL;

@@ -20,15 +20,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#include "cmdproc.h"
+#include "cmdproc_private.h"
+#include "transaction_private.h"
+#include "table_private.h"
+#include "command_private.h"
+
+#include "io/conn.h"
+
 #include "msn_log.h"
 
 #include "history.h"
 
 #include <string.h>
+#include <stdlib.h>
 
 #include "msn.h"
 #include "session.h"
+
+/* libpurple stuff. */
+#include <eventloop.h>
 
 MsnCmdProc *
 msn_cmdproc_new(MsnSession *session)

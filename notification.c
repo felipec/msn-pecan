@@ -22,10 +22,14 @@
 
 #include "notification.h"
 #include "msn_log.h"
-#include "msn_types.h"
 #include "userlist.h"
 #include "sync.h"
 #include "nexus.h"
+
+#include "cmdproc_private.h"
+#include "command_private.h"
+#include "transaction_private.h"
+#include "msg_private.h"
 
 #include "session.h"
 #include "error.h" /* for error_get_text */

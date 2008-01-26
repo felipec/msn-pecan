@@ -23,7 +23,16 @@
 #ifndef MSN_CMDPROC_H
 #define MSN_CMDPROC_H
 
-#include "msn_types.h"
+typedef struct MsnCmdProc MsnCmdProc;
+
+struct MsnSession;
+
+#include "msg.h"
+#include "command.h"
+#include "transaction.h"
+
+typedef void (*MsnMsgTypeCb) (MsnCmdProc *cmdproc, MsnMessage *msg);
+typedef void (*MsnPayloadCb) (MsnCmdProc *cmdproc, MsnCommand *cmd, gchar *payload, gsize len);
 
 MsnCmdProc *msn_cmdproc_new (struct MsnSession *session);
 

@@ -23,10 +23,15 @@
 #include "msn.h"
 #include "sync.h"
 #include "state.h"
+#include "session.h"
+
+#include "command_private.h"
+#include "cmdproc_private.h"
 
 #include <string.h>
 
 /* libpurple stuff. */
+#include <account.h>
 #include <privacy.h>
 
 static MsnTable *cbs_table;

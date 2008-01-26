@@ -25,6 +25,11 @@
 #include "notification.h"
 #include "fix-purple.h"
 
+#include "userlist.h"
+#include "slplink.h"
+#include "sync.h"
+#include "nexus.h"
+
 #include <glib/gstdio.h>
 #include <string.h>
 #include "msn_intl.h"

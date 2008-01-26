@@ -1,7 +1,5 @@
 /**
- * @file msg.h Message functions
- *
- * purple
+ * Copyright (C) 2008 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -22,8 +20,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#ifndef MSN_MSG_H_
-#define MSN_MSG_H_
+#ifndef MSN_MSG_H
+#define MSN_MSG_H
+
+#include <glib.h>
+
+typedef struct MsnMessage MsnMessage;
 
 typedef enum
 {
@@ -46,7 +48,9 @@ typedef enum
 
 } MsnMsgErrorType;
 
-#include "msn_types.h"
+typedef void (*MsnMsgCb) (MsnMessage *msg, gpointer data);
+
+#include "command.h"
 
 /**
  * Creates a new, empty message.
@@ -269,4 +273,4 @@ char *msn_message_gen_slp_body(MsnMessage *msg, size_t *ret_size);
 
 char *msn_message_to_string(MsnMessage *msg);
 
-#endif /* _MSN_MSG_H_ */
+#endif /* MSN_MSG_H */

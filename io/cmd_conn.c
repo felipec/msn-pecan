@@ -17,8 +17,10 @@
  */
 
 #include "cmd_conn.h"
+#include "cmdproc_private.h"
+#include "command_private.h"
+
 #include "msn_log.h"
-#include "cmdproc.h"
 
 #include <string.h>
 

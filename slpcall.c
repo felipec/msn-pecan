@@ -29,6 +29,10 @@
 #include "session.h"
 #include "msn_util.h"
 
+/* libpurple stuff. */
+#include <eventloop.h>
+#include <ft.h>
+
 /* #define MSN_DEBUG_SLPCALL */
 
 /**************************************************************************

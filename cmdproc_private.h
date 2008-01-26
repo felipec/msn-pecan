@@ -20,16 +20,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#ifndef MSN_COMMAND_H
-#define MSN_COMMAND_H
+#ifndef MSN_CMDPROC_PRIVATE_H
+#define MSN_CMDPROC_PRIVATE_H
 
-#include <glib.h>
+#include "cmdproc.h"
+#include "table.h"
 
-typedef struct MsnCommand MsnCommand;
+struct MsnSession;
+struct MsnHistory;
+struct ConnObject;
 
-MsnCommand *msn_command_from_string (const gchar *string);
-void msn_command_destroy (MsnCommand *cmd);
-MsnCommand *msn_command_ref (MsnCommand *cmd);
-MsnCommand *msn_command_unref (MsnCommand *cmd);
+struct MsnCmdProc
+{
+    struct MsnSession *session;
 
-#endif /* MSN_COMMAND_H */
+    GQueue *txqueue;
+
+    MsnCommand *last_cmd;
+
+    MsnTable *cbs_table;
+
+    gpointer data; /**< Extra data, like the switchboard. */
+    guint cmd_count;
+
+    struct MsnHistory *history;
+    struct ConnObject *conn;
+};
+
+#endif /* MSN_CMDPROC_PRIVATE_H */

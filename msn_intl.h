@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2008 Felipe Contreras.
+ * Copyright (C) 2008 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -20,16 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#ifndef MSN_COMMAND_H
-#define MSN_COMMAND_H
+#ifndef MSN_INTL_H
+#define MSN_INTL_H
 
-#include <glib.h>
+#ifdef ENABLE_NLS
+#  include <locale.h>
+#  include <libintl.h>
+#  define _(String) ((const char *)dgettext(PACKAGE, String))
+#  ifdef gettext_noop
+#    define N_(String) gettext_noop (String)
+#  else
+#    define N_(String) (String)
+#  endif
+#else
+#  include <locale.h>
+#  define N_(String) (String)
+#  ifndef _
+#    define _(String) ((const char *)String)
+#  endif
+#  define ngettext(Singular, Plural, Number) ((Number == 1) ? ((const char *)Singular) : ((const char *)Plural))
+#  define dngettext(Domain, Singular, Plural, Number) ((Number == 1) ? ((const char *)Singular) : ((const char *)Plural))
+#endif
 
-typedef struct MsnCommand MsnCommand;
-
-MsnCommand *msn_command_from_string (const gchar *string);
-void msn_command_destroy (MsnCommand *cmd);
-MsnCommand *msn_command_ref (MsnCommand *cmd);
-MsnCommand *msn_command_unref (MsnCommand *cmd);
-
-#endif /* MSN_COMMAND_H */
+#endif /* MSN_INTL_H */

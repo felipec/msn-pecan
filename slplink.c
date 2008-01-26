@@ -29,6 +29,9 @@
 #include "slpcall.h"
 #include "slpmsg.h"
 #include "slp.h"
+#include "user.h"
+
+#include "msg_private.h"
 
 #include <glib/gstdio.h>
 #include <string.h>

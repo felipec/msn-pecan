@@ -31,9 +31,7 @@ typedef struct MsnNexus MsnNexus;
 
 struct _PurpleSslConnection;
 
-typedef void (*_PurpleSslInputFunction) (gpointer,
-                                         struct _PurpleSslConnection *,
-                                         gint);
+typedef void (*_PurpleInputFunction) (gpointer, gint, guint);
 
 struct MsnNexus
 {
@@ -48,7 +46,7 @@ struct MsnNexus
 
 	char *write_buf;
 	gssize written_len;
-	_PurpleSslInputFunction written_cb;
+	_PurpleInputFunction written_cb;
 
 	char *read_buf;
 	gsize read_len;
