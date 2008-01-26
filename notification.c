@@ -31,6 +31,8 @@
 #include "transaction_private.h"
 #include "msg_private.h"
 
+#include "userlist_private.h"
+
 #include "session.h"
 #include "error.h" /* for error_get_text */
 #include "msn_util.h" /* for parse_socket */

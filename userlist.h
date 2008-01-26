@@ -31,87 +31,47 @@ typedef struct MsnUserList MsnUserList;
 
 typedef enum
 {
-	MSN_LIST_FL,
-	MSN_LIST_AL,
-	MSN_LIST_BL,
-	MSN_LIST_RL
-
+    MSN_LIST_FL,
+    MSN_LIST_AL,
+    MSN_LIST_BL,
+    MSN_LIST_RL
 } MsnListId;
 
 typedef enum
 {
-	MSN_LIST_FL_OP = 0x01,
-	MSN_LIST_AL_OP = 0x02,
-	MSN_LIST_BL_OP = 0x04,
-	MSN_LIST_RL_OP = 0x08
-
+    MSN_LIST_FL_OP = 0x01,
+    MSN_LIST_AL_OP = 0x02,
+    MSN_LIST_BL_OP = 0x04,
+    MSN_LIST_RL_OP = 0x08
 } MsnListOp;
-
-typedef struct
-{
-	char *who;
-	char *old_group_name;
-
-} MsnMoveBuddy;
-
-struct MsnUserList
-{
-	MsnSession *session;
-
-	/* MsnUsers *users; */
-	/* MsnGroups *groups; */
-
-	GList *users;
-	GList *groups;
-
-	GQueue *buddy_icon_requests;
-	int buddy_icon_window;
-	guint buddy_icon_request_timer;
-
-	int fl_users_count;
-};
 
 struct _PurpleBuddy;
 struct _PurpleGroup;
 
-MsnListId msn_get_list_id(const char *list);
+MsnListId msn_get_list_id (const gchar *list);
 
-void msn_got_add_user(MsnSession *session, MsnUser *user,
-					  MsnListId list_id, int group_id);
-void msn_got_rem_user(MsnSession *session, MsnUser *user,
-					  MsnListId list_id, int group_id);
-void msn_got_lst_user(MsnSession *session, MsnUser *user, const char *extra,
-					  int list_op, GSList *group_ids);
+void msn_got_add_user (MsnSession *session, MsnUser *user, MsnListId list_id, gint group_id);
+void msn_got_rem_user (MsnSession *session, MsnUser *user, MsnListId list_id, gint group_id);
+void msn_got_lst_user (MsnSession *session, MsnUser *user, const gchar *extra, gint list_op, GSList *group_ids);
 
-MsnUserList *msn_userlist_new(MsnSession *session);
-void msn_userlist_destroy(MsnUserList *userlist);
-void msn_userlist_add_user(MsnUserList *userlist, MsnUser *user);
-void msn_userlist_remove_user(MsnUserList *userlist, MsnUser *user);
-MsnUser *msn_userlist_find_user(MsnUserList *userlist,
-								const char *passport);
-void msn_userlist_add_group(MsnUserList *userlist, MsnGroup *group);
-void msn_userlist_remove_group(MsnUserList *userlist, MsnGroup *group);
-MsnGroup *msn_userlist_find_group_with_id(MsnUserList *userlist, int id);
-MsnGroup *msn_userlist_find_group_with_name(MsnUserList *userlist,
-											const char *name);
-int msn_userlist_find_group_id(MsnUserList *userlist,
-							   const char *group_name);
-const char *msn_userlist_find_group_name(MsnUserList *userlist,
-										 int group_id);
-void msn_userlist_rename_group_id(MsnUserList *userlist, int group_id,
-								  const char *new_name);
-void msn_userlist_remove_group_id(MsnUserList *userlist, int group_id);
+MsnUserList *msn_userlist_new (MsnSession *session);
+void msn_userlist_destroy (MsnUserList *userlist);
+void msn_userlist_add_user (MsnUserList *userlist, MsnUser *user);
+void msn_userlist_remove_user (MsnUserList *userlist, MsnUser *user);
+MsnUser *msn_userlist_find_user (MsnUserList *userlist, const gchar *passport);
+void msn_userlist_add_group (MsnUserList *userlist, MsnGroup *group);
+void msn_userlist_remove_group (MsnUserList *userlist, MsnGroup *group);
+MsnGroup *msn_userlist_find_group_with_id (MsnUserList *userlist, int id);
+MsnGroup *msn_userlist_find_group_with_name (MsnUserList *userlist, const gchar *name);
+int msn_userlist_find_group_id (MsnUserList *userlist, const gchar *group_name);
+const char *msn_userlist_find_group_name (MsnUserList *userlist, gint group_id);
+void msn_userlist_rename_group_id (MsnUserList *userlist, gint group_id, const gchar *new_name);
+void msn_userlist_remove_group_id (MsnUserList *userlist, gint group_id);
 
-void msn_userlist_rem_buddy(MsnUserList *userlist, const char *who,
-							int list_id, const char *group_name);
-void msn_userlist_add_buddy(MsnUserList *userlist, const char *who,
-							int list_id, const char *group_name);
-void msn_userlist_move_buddy(MsnUserList *userlist, const char *who,
-							 const char *old_group_name,
-							 const char *new_group_name);
+void msn_userlist_rem_buddy (MsnUserList *userlist, const gchar *who, gint list_id, const gchar *group_name);
+void msn_userlist_add_buddy (MsnUserList *userlist, const gchar *who, gint list_id, const gchar *group_name);
+void msn_userlist_move_buddy (MsnUserList *userlist, const gchar *who, const gchar *old_group_name, const gchar *new_group_name);
 
-void msn_userlist_add_buddy_helper (MsnUserList *userlist,
-									struct _PurpleBuddy *buddy,
-									struct _PurpleGroup *group);
+void msn_userlist_add_buddy_helper (MsnUserList *userlist, struct _PurpleBuddy *buddy, struct _PurpleGroup *group);
 
 #endif /* MSN_USERLIST_H */

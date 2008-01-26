@@ -23,6 +23,8 @@
 #include "user.h"
 #include "slp.h"
 
+#include "userlist_private.h"
+
 #include "fix-purple.h"
 
 #include <string.h>

@@ -25,8 +25,11 @@
 #include "slpcall.h"
 #include "slpmsg.h"
 #include "slpsession.h"
+
 #include "cmdproc_private.h"
 #include "msg_private.h"
+
+#include "userlist_private.h"
 
 #include "object.h"
 #include "user.h"
