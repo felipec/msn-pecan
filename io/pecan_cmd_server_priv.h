@@ -21,16 +21,16 @@
 
 #include <glib-object.h>
 
-typedef struct CmdConnObjectClass CmdConnObjectClass;
+typedef struct PecanCmdServerClass PecanCmdServerClass;
 
-#include "conn_private.h"
-#include "cmd_conn.h"
+#include "pecan_node_priv.h"
+#include "pecan_cmd_server.h"
 
 struct MsnCmdProc;
 
-struct CmdConnObject
+struct PecanCmdServer
 {
-    ConnObject parent;
+    PecanNode parent;
     gboolean dispose_has_run;
 
     gsize payload_len;
@@ -40,11 +40,11 @@ struct CmdConnObject
     struct MsnCmdProc *cmdproc;
 };
 
-struct CmdConnObjectClass
+struct PecanCmdServerClass
 {
-    ConnObjectClass parent_class;
+    PecanNodeClass parent_class;
 };
 
-GType cmd_conn_object_get_type ();
+GType pecan_cmd_server_get_type ();
 
 #endif /* MSN_CMD_CONN_PRIVATe_H */

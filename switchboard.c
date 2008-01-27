@@ -34,9 +34,9 @@
 #include "cmd/command_private.h"
 #include "cmd/table.h"
 
-#include "io/conn_private.h"
-#include "io/cmd_conn_private.h"
-#include "io/http_conn.h"
+#include "io/pecan_node_priv.h"
+#include "io/pecan_cmd_server_priv.h"
+#include "io/pecan_http_server.h"
 
 #include "msn_util.h"
 #include "msn_log.h"
@@ -62,17 +62,17 @@ static void
 msn_switchboard_report_user(MsnSwitchBoard *swboard, PurpleMessageFlags flags, const char *msg);
 
 static void
-open_cb (ConnObject *conn)
+open_cb (PecanNode *conn)
 {
     MsnSession *session;
-    CmdConnObject *cmd_conn;
+    PecanCmdServer *cmd_conn;
     MsnSwitchBoard *swboard;
     MsnCmdProc *cmdproc;
 
     g_return_if_fail (conn != NULL);
 
     session = conn->session;
-    cmd_conn = CMD_CONN_OBJECT (conn);
+    cmd_conn = CMD_PECAN_NODE (conn);
     cmdproc = cmd_conn->cmdproc;
 
     msn_info ("foo");
@@ -108,7 +108,7 @@ open_cb (ConnObject *conn)
 }
 
 static void
-close_cb (ConnObject *conn,
+close_cb (PecanNode *conn,
           MsnSwitchBoard *swboard)
 {
     char *tmp;
@@ -163,9 +163,9 @@ msn_switchboard_new(MsnSession *session)
     session->switches = g_list_append(session->switches, swboard);
 
     {
-        ConnObject *conn;
-        swboard->conn = cmd_conn_object_new ("switchboard server", MSN_CONN_SB);
-        conn = CONN_OBJECT (swboard->conn);
+        PecanNode *conn;
+        swboard->conn = pecan_cmd_server_new ("switchboard server", PECAN_NODE_SB);
+        conn = PECAN_NODE (swboard->conn);
 
         {
             MsnCmdProc *cmdproc;
@@ -181,7 +181,7 @@ msn_switchboard_new(MsnSession *session)
 
         if (session->http_method)
         {
-            ConnObject *foo;
+            PecanNode *foo;
 
             if (session->http_conn)
             {
@@ -189,12 +189,12 @@ msn_switchboard_new(MsnSession *session)
             }
             else
             {
-                foo = CONN_OBJECT (http_conn_object_new ("foo server"));
+                foo = PECAN_NODE (pecan_http_server_new ("foo server"));
                 foo->session = session;
                 swboard->http_conn = foo;
             }
 
-            conn_object_link (conn, foo);
+            pecan_node_link (conn, foo);
         }
 
         swboard->open_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), swboard);
@@ -269,8 +269,8 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
     g_signal_handler_disconnect (swboard->conn, swboard->error_handler);
 
     if (swboard->http_conn)
-        conn_object_free (swboard->http_conn);
-    conn_object_free (CONN_OBJECT (swboard->conn));
+        pecan_node_free (swboard->http_conn);
+    pecan_node_free (PECAN_NODE (swboard->conn));
 
     g_free(swboard);
 }
@@ -1137,7 +1137,7 @@ msn_switchboard_connect(MsnSwitchBoard *swboard, const char *host, int port)
 {
     g_return_val_if_fail (swboard != NULL, FALSE);
 
-    conn_object_connect (CONN_OBJECT (swboard->conn), host, port);
+    pecan_node_connect (PECAN_NODE (swboard->conn), host, port);
 
     return TRUE;
 }

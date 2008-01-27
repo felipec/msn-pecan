@@ -27,8 +27,8 @@
 
 typedef struct MsnNotification MsnNotification;
 
-#include "io/cmd_conn.h"
-#include "io/conn.h"
+#include "io/pecan_cmd_server.h"
+#include "io/pecan_node.h"
 
 struct MsnSession;
 struct MsnCmdProc;
@@ -37,10 +37,10 @@ struct MsnNotification
 {
     struct MsnSession *session;
     struct MsnCmdProc *cmdproc;
-    CmdConnObject *conn;
+    PecanCmdServer *conn;
 
     gboolean in_use;
-    ConnObject *http_conn;
+    PecanNode *http_conn;
     gulong open_handler;
     gulong close_handler;
     gulong error_handler;

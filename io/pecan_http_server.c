@@ -21,7 +21,7 @@
  * So commands are sent through an HTTP gateway.
  */
 
-#include "http_conn_private.h"
+#include "pecan_http_server_priv.h"
 #include "msn_io.h"
 #include "msn_log.h"
 
@@ -30,25 +30,25 @@
 #include <proxy.h> /* libpurple */
 #include "session.h"
 
-static ConnObjectClass *parent_class = NULL;
+static PecanNodeClass *parent_class = NULL;
 
 typedef struct
 {
-    ConnObject *conn;
+    PecanNode *conn;
     gchar *body;
     gsize body_len;
 } HttpQueueData;
 
 static GIOStatus
-foo_write (ConnObject *conn,
-           ConnObject *prev,
+foo_write (PecanNode *conn,
+           PecanNode *prev,
            const gchar *buf,
            gsize count,
            gsize *ret_bytes_written,
            GError **error);
 
 static void
-process_queue (HttpConnObject *http_conn,
+process_queue (PecanHttpServer *http_conn,
                GError **error)
 {
     HttpQueueData *queue_data;
@@ -57,7 +57,7 @@ process_queue (HttpConnObject *http_conn,
 
     if (queue_data)
     {
-        foo_write (CONN_OBJECT (http_conn),
+        foo_write (PECAN_NODE (http_conn),
                    queue_data->conn,
                    queue_data->body,
                    queue_data->body_len,
@@ -74,27 +74,27 @@ read_cb (GIOChannel *source,
          GIOCondition condition,
          gpointer data)
 {
-    ConnObject *conn;
+    PecanNode *conn;
     gchar buf[MSN_BUF_LEN];
     gsize bytes_read;
 
     msn_log ("begin");
 
-    conn = CONN_OBJECT (data);
+    conn = PECAN_NODE (data);
 
     msn_debug ("conn=%p,source=%p", conn, source);
 
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
-        status = conn_object_read (conn, buf, sizeof (buf), &bytes_read, &conn->error);
+        status = pecan_node_read (conn, buf, sizeof (buf), &bytes_read, &conn->error);
 
         if (status == G_IO_STATUS_AGAIN)
             return TRUE;
 
         if (conn->error)
         {
-            conn_object_error (conn);
+            pecan_node_error (conn);
             return FALSE;
         }
 
@@ -107,15 +107,15 @@ read_cb (GIOChannel *source,
 
     if (!conn->error)
     {
-        HttpConnObject *http_conn;
+        PecanHttpServer *http_conn;
 
-        http_conn = HTTP_CONN_OBJECT (conn);
+        http_conn = PECAN_HTTP_SERVER (conn);
 
         g_object_ref (http_conn);
 
         if (http_conn->cur)
         {
-            conn_object_parse (http_conn->cur, buf, bytes_read);
+            pecan_node_parse (http_conn->cur, buf, bytes_read);
         }
 
         http_conn->waiting_response = FALSE;
@@ -124,7 +124,7 @@ read_cb (GIOChannel *source,
 
         if (conn->error)
         {
-            conn_object_error (conn);
+            pecan_node_error (conn);
             g_object_unref (http_conn);
             return FALSE;
         }
@@ -137,17 +137,17 @@ read_cb (GIOChannel *source,
     return TRUE;
 }
 
-HttpConnObject *
-http_conn_object_new (gchar *name)
+PecanHttpServer *
+pecan_http_server_new (gchar *name)
 {
-    HttpConnObject *http_conn;
+    PecanHttpServer *http_conn;
 
     msn_log ("begin");
 
-    http_conn = HTTP_CONN_OBJECT (g_type_create_instance (HTTP_CONN_OBJECT_TYPE));
+    http_conn = PECAN_HTTP_SERVER (g_type_create_instance (PECAN_HTTP_SERVER_TYPE));
 
     {
-        ConnObject *tmp = CONN_OBJECT (http_conn);
+        PecanNode *tmp = PECAN_NODE (http_conn);
         tmp->name = g_strdup (name);
     }
 
@@ -157,7 +157,7 @@ http_conn_object_new (gchar *name)
 }
 
 void
-http_conn_object_free (HttpConnObject *http_conn)
+pecan_http_server_free (PecanHttpServer *http_conn)
 {
     msn_log ("begin");
     g_object_unref (G_OBJECT (http_conn));
@@ -167,8 +167,8 @@ http_conn_object_free (HttpConnObject *http_conn)
 static gboolean
 http_poll (gpointer data)
 {
-    ConnObject *conn;
-    HttpConnObject *http_conn;
+    PecanNode *conn;
+    PecanHttpServer *http_conn;
     GIOStatus status = G_IO_STATUS_NORMAL;
     GError *tmp_error = NULL;
     gsize bytes_written = 0;
@@ -179,8 +179,8 @@ http_poll (gpointer data)
 
     g_return_val_if_fail (data != NULL, FALSE);
 
-    conn = CONN_OBJECT (data);
-    http_conn = HTTP_CONN_OBJECT (data);
+    conn = PECAN_NODE (data);
+    http_conn = PECAN_HTTP_SERVER (data);
 
     msn_debug ("channel=%p", conn->channel);
 
@@ -249,13 +249,13 @@ connect_cb (gpointer data,
             gint source,
             const gchar *error_message)
 {
-    ConnObject *conn;
-    HttpConnObject *http_conn;
+    PecanNode *conn;
+    PecanHttpServer *http_conn;
 
     msn_log ("begin");
 
-    conn = CONN_OBJECT (data);
-    http_conn = HTTP_CONN_OBJECT (data);
+    conn = PECAN_NODE (data);
+    http_conn = PECAN_HTTP_SERVER (data);
 
     conn->connect_data = NULL;
 
@@ -272,8 +272,8 @@ connect_cb (gpointer data,
     }
 
     {
-        ConnObjectClass *class;
-        class = g_type_class_peek (CONN_OBJECT_TYPE);
+        PecanNodeClass *class;
+        class = g_type_class_peek (PECAN_NODE_TYPE);
         g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
     }
 
@@ -281,13 +281,13 @@ connect_cb (gpointer data,
 }
 
 static void
-connect_impl (ConnObject *conn,
+connect_impl (PecanNode *conn,
               const gchar *hostname,
               gint port)
 {
-    HttpConnObject *http_conn;
+    PecanHttpServer *http_conn;
 
-    http_conn = HTTP_CONN_OBJECT (conn);
+    http_conn = PECAN_HTTP_SERVER (conn);
 
     g_return_if_fail (conn->session);
 
@@ -302,21 +302,21 @@ connect_impl (ConnObject *conn,
         if (conn->prev)
         {
             /* fake open */
-            ConnObjectClass *class;
-            class = g_type_class_peek (CONN_OBJECT_TYPE);
+            PecanNodeClass *class;
+            class = g_type_class_peek (PECAN_NODE_TYPE);
             g_signal_emit (G_OBJECT (conn->prev), class->open_sig, 0, conn->prev);
         }
     }
 }
 
 static void
-close_impl (ConnObject *conn)
+close_impl (PecanNode *conn)
 {
-    HttpConnObject *http_conn;
+    PecanHttpServer *http_conn;
 
     msn_log ("begin");
 
-    http_conn = HTTP_CONN_OBJECT (conn);
+    http_conn = PECAN_HTTP_SERVER (conn);
 
     if (http_conn->timeout_id)
     {
@@ -343,26 +343,26 @@ close_impl (ConnObject *conn)
         }
     }
 
-    CONN_OBJECT_CLASS (parent_class)->close (conn);
+    PECAN_NODE_CLASS (parent_class)->close (conn);
 
     msn_log ("end");
 }
 
 static GIOStatus
-read_impl (ConnObject *conn,
+read_impl (PecanNode *conn,
            gchar *buf,
            gsize count,
            gsize *ret_bytes_read,
            GError **error)
 {
-    HttpConnObject *http_conn;
+    PecanHttpServer *http_conn;
     GIOStatus status = G_IO_STATUS_NORMAL;
     GError *tmp_error = NULL;
     gsize bytes_read = 0;
 
     msn_log ("begin");
 
-    http_conn = HTTP_CONN_OBJECT (conn);
+    http_conn = PECAN_HTTP_SERVER (conn);
 
     msn_debug ("channel=%p", conn->channel);
 
@@ -400,7 +400,7 @@ read_impl (ConnObject *conn,
             if (!(tokens[0] && (strcmp (tokens[0], "HTTP/1.1") == 0)))
             {
                 msn_debug ("error reading: parse error");
-                tmp_error = g_error_new_literal (CONN_OBJECT_ERROR, CONN_OBJECT_ERROR_OPEN,
+                tmp_error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
                                                  "Parse error");
                 goto leave;
             }
@@ -408,7 +408,7 @@ read_impl (ConnObject *conn,
             if (!(tokens[1]))
             {
                 msn_debug ("error reading: parse error");
-                tmp_error = g_error_new_literal (CONN_OBJECT_ERROR, CONN_OBJECT_ERROR_OPEN,
+                tmp_error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
                                                  "Parse error");
                 goto leave;
             }
@@ -418,7 +418,7 @@ read_impl (ConnObject *conn,
             if (code != 200 && code != 100)
             {
                 msn_debug ("error reading: %d %s", code, tokens[2]);
-                tmp_error = g_error_new (CONN_OBJECT_ERROR, CONN_OBJECT_ERROR_OPEN,
+                tmp_error = g_error_new (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
                                          "%s",  tokens[2]);
                 goto leave;
             }
@@ -464,7 +464,7 @@ read_impl (ConnObject *conn,
                 if (!(tokens[0] && tokens[1]))
                 {
                     msn_debug ("error reading: parse error");
-                    tmp_error = g_error_new_literal (CONN_OBJECT_ERROR, CONN_OBJECT_ERROR_OPEN,
+                    tmp_error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
                                                      "Parse error");
                     goto leave;
                 }
@@ -529,7 +529,7 @@ read_impl (ConnObject *conn,
         if (http_conn->parser_state == 2)
         {
             {
-                ConnObject *child;
+                PecanNode *child;
                 gchar *session_id;
                 gchar *t;
 
@@ -545,10 +545,10 @@ read_impl (ConnObject *conn,
                     if (child)
                     {
                         GList *list;
-                        ConnObject *foo;
+                        PecanNode *foo;
 
                         msn_info ("removing child");
-                        conn_object_close (child);
+                        pecan_node_close (child);
                         g_hash_table_remove (http_conn->childs, session_id);
                         list = g_hash_table_get_values (http_conn->childs);
 
@@ -557,7 +557,7 @@ read_impl (ConnObject *conn,
                         g_free (http_conn->last_session_id);
                         if (list && list->data)
                         {
-                            foo = CONN_OBJECT (list->data);
+                            foo = PECAN_NODE (list->data);
                             http_conn->cur = foo;
                             http_conn->gateway = g_strdup (foo->hostname);
                             http_conn->last_session_id = g_strdup (foo->foo_data);
@@ -622,19 +622,19 @@ leave:
 }
 
 static GIOStatus
-foo_write (ConnObject *conn,
-           ConnObject *prev,
+foo_write (PecanNode *conn,
+           PecanNode *prev,
            const gchar *buf,
            gsize count,
            gsize *ret_bytes_written,
            GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
-    HttpConnObject *http_conn;
+    PecanHttpServer *http_conn;
     GError *tmp_error = NULL;
     gsize bytes_written = 0;
 
-    http_conn = HTTP_CONN_OBJECT (conn);
+    http_conn = PECAN_HTTP_SERVER (conn);
 
     msn_debug ("channel=%p", conn->channel);
 
@@ -654,7 +654,7 @@ foo_write (ConnObject *conn,
         else
         {
             params = g_strdup_printf ("Action=open&Server=%s&IP=%s",
-                                      prev->type == MSN_CONN_NS ? "NS" : "SB",
+                                      prev->type == PECAN_NODE_NS ? "NS" : "SB",
                                       prev->hostname);
         }
 
@@ -714,18 +714,18 @@ foo_write (ConnObject *conn,
 }
 
 static GIOStatus
-write_impl (ConnObject *conn,
+write_impl (PecanNode *conn,
             const gchar *buf,
             gsize count,
             gsize *ret_bytes_written,
             GError **error)
 {
-    HttpConnObject *http_conn;
-    ConnObject *prev;
+    PecanHttpServer *http_conn;
+    PecanNode *prev;
     GIOStatus status = G_IO_STATUS_NORMAL;
 
-    http_conn = HTTP_CONN_OBJECT (conn);
-    prev = CONN_OBJECT (conn->prev);
+    http_conn = PECAN_HTTP_SERVER (conn);
+    prev = PECAN_NODE (conn->prev);
 
     msn_debug ("channel=%p", conn->channel);
     msn_debug ("conn=%p,prev=%p", conn, prev);
@@ -757,7 +757,7 @@ write_impl (ConnObject *conn,
 static void
 dispose (GObject *obj)
 {
-    HttpConnObject *http_conn = HTTP_CONN_OBJECT (obj);
+    PecanHttpServer *http_conn = PECAN_HTTP_SERVER (obj);
 
     g_free (http_conn->gateway);
     http_conn->gateway = NULL;
@@ -781,7 +781,7 @@ static void
 class_init (gpointer g_class,
             gpointer class_data)
 {
-    ConnObjectClass *conn_class = CONN_OBJECT_CLASS (g_class);
+    PecanNodeClass *conn_class = PECAN_NODE_CLASS (g_class);
     GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
 
     conn_class->connect = &connect_impl;
@@ -799,7 +799,7 @@ static void
 instance_init (GTypeInstance *instance,
                gpointer g_class)
 {
-    HttpConnObject *http_conn = HTTP_CONN_OBJECT (instance);
+    PecanHttpServer *http_conn = PECAN_HTTP_SERVER (instance);
 
     http_conn->gateway = g_strdup ("gateway.messenger.hotmail.com");
     http_conn->write_queue = g_queue_new ();
@@ -807,7 +807,7 @@ instance_init (GTypeInstance *instance,
 }
 
 GType
-http_conn_object_get_type (void)
+pecan_http_server_get_type (void)
 {
     static GType type = 0;
 
@@ -815,18 +815,18 @@ http_conn_object_get_type (void)
     {
         static const GTypeInfo type_info =
         {
-            sizeof (HttpConnObjectClass),
+            sizeof (PecanHttpServerClass),
             NULL, /* base_init */
             NULL, /* base_finalize */
             class_init, /* class_init */
             NULL, /* class_finalize */
             NULL, /* class_data */
-            sizeof (HttpConnObject),
+            sizeof (PecanHttpServer),
             0, /* n_preallocs */
             instance_init /* instance_init */
         };
 
-        type = g_type_register_static (CONN_OBJECT_TYPE, "HttpConnObjectType", &type_info, 0);
+        type = g_type_register_static (PECAN_NODE_TYPE, "PecanHttpServerType", &type_info, 0);
     }
 
     return type;

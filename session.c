@@ -30,7 +30,7 @@
 #include "sync.h"
 #include "nexus.h"
 
-#include "io/http_conn_private.h"
+#include "io/pecan_http_server_priv.h"
 
 #include <glib/gstdio.h>
 #include <string.h>
@@ -52,8 +52,8 @@ msn_session_new(PurpleAccount *account)
 #if 0
         if (session->http_method)
         {
-            ConnObject *foo;
-            foo = CONN_OBJECT (http_conn_object_new ("foo server"));
+            PecanNode *foo;
+            foo = PECAN_NODE (pecan_http_server_new ("foo server"));
             foo->session = session;
             session->http_conn = foo;
         }
@@ -159,7 +159,7 @@ msn_session_disconnect(MsnSession *session)
 		msn_notification_close(session->notification);
 
         if (session->http_conn)
-            conn_object_close (session->http_conn);
+            pecan_node_close (session->http_conn);
 }
 
 /* TODO: This must go away when conversation is redesigned */

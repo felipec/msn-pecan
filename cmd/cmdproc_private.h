@@ -29,7 +29,7 @@
 
 struct MsnSession;
 struct MsnHistory;
-struct ConnObject;
+struct PecanNode;
 
 struct MsnCmdProc
 {
@@ -46,7 +46,7 @@ struct MsnCmdProc
     guint cmd_count;
 
     struct MsnHistory *history;
-    struct ConnObject *conn;
+    struct PecanNode *conn;
 };
 
 #endif /* MSN_CMDPROC_PRIVATE_H */

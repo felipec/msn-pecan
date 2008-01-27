@@ -31,9 +31,9 @@ objects = \
 	ab/group.o \
 	ab/user.o \
 	ab/userlist.o \
-	io/conn.o \
-	io/cmd_conn.o \
-	io/http_conn.o \
+	io/pecan_node.o \
+	io/pecan_cmd_server.o \
+	io/pecan_http_server.o \
 	cvr/slp.o \
 	cvr/slpcall.o \
 	cvr/slplink.o \

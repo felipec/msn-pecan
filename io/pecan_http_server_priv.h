@@ -16,19 +16,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef MSN_HTTP_CONN_PRIVATE_H
-#define MSN_HTTP_CONN_PRIVATE_H
+#ifndef PECAN_HTTP_SERVER_PRIVATE_H
+#define PECAN_HTTP_SERVER_PRIVATE_H
 
 #include <glib-object.h>
 
-typedef struct HttpConnObjectClass HttpConnObjectClass;
+typedef struct PecanHttpServerClass PecanHttpServerClass;
 
-#include "conn_private.h"
-#include "http_conn.h"
+#include "pecan_node_priv.h"
+#include "pecan_http_server.h"
 
-struct HttpConnObject
+struct PecanHttpServer
 {
-    ConnObject parent;
+    PecanNode parent;
     gboolean dispose_has_run;
 
     guint parser_state;
@@ -41,14 +41,14 @@ struct HttpConnObject
     gchar *gateway;
 
     GHashTable *childs;
-    ConnObject *cur;
+    PecanNode *cur;
 };
 
-struct HttpConnObjectClass
+struct PecanHttpServerClass
 {
-    ConnObjectClass parent_class;
+    PecanNodeClass parent_class;
 };
 
-GType http_conn_object_get_type ();
+GType pecan_http_server_get_type ();
 
-#endif /* MSN_HTTP_CONN_PRIVATE_H */
+#endif /* PECAN_HTTP_SERVER_PRIVATE_H */

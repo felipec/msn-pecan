@@ -37,10 +37,10 @@
 #include "ab/userlist_private.h"
 #include "ab/user_private.h"
 
-#include "io/cmd_conn.h"
-#include "io/http_conn.h"
-#include "io/conn_private.h"
-#include "io/cmd_conn_private.h"
+#include "io/pecan_cmd_server.h"
+#include "io/pecan_http_server.h"
+#include "io/pecan_node_priv.h"
+#include "io/pecan_cmd_server_priv.h"
 
 #include "cvr/slplink.h" /* for slplink_destroy */
 
@@ -60,15 +60,15 @@
 static MsnTable *cbs_table;
 
 static void
-open_cb (ConnObject *conn)
+open_cb (PecanNode *conn)
 {
     MsnSession *session;
-    CmdConnObject *cmd_conn;
+    PecanCmdServer *cmd_conn;
 
     g_return_if_fail (conn != NULL);
 
     session = conn->session;
-    cmd_conn = CMD_CONN_OBJECT (conn);
+    cmd_conn = CMD_PECAN_NODE (conn);
 
     msn_log ("begin");
 
@@ -83,7 +83,7 @@ open_cb (ConnObject *conn)
 }
 
 static void
-close_cb (ConnObject *conn,
+close_cb (PecanNode *conn,
           MsnNotification *notification)
 {
     char *tmp;
@@ -152,9 +152,9 @@ msn_notification_new(MsnSession *session)
     notification->session = session;
 
     {
-        ConnObject *conn;
-        notification->conn = cmd_conn_object_new ("notification server", MSN_CONN_NS);
-        conn = CONN_OBJECT (notification->conn);
+        PecanNode *conn;
+        notification->conn = pecan_cmd_server_new ("notification server", PECAN_NODE_NS);
+        conn = PECAN_NODE (notification->conn);
 
         {
             MsnCmdProc *cmdproc;
@@ -171,7 +171,7 @@ msn_notification_new(MsnSession *session)
 
         if (session->http_method)
         {
-            ConnObject *foo;
+            PecanNode *foo;
 
             if (session->http_conn)
             {
@@ -179,12 +179,12 @@ msn_notification_new(MsnSession *session)
             }
             else
             {
-                foo = CONN_OBJECT (http_conn_object_new ("foo server"));
+                foo = PECAN_NODE (pecan_http_server_new ("foo server"));
                 foo->session = session;
                 notification->http_conn = foo;
             }
 
-            conn_object_link (conn, foo);
+            pecan_node_link (conn, foo);
         }
 
         notification->open_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), notification);
@@ -211,8 +211,8 @@ msn_notification_destroy(MsnNotification *notification)
     g_signal_handler_disconnect (notification->conn, notification->error_handler);
 
     if (notification->http_conn)
-        conn_object_free (notification->http_conn);
-    cmd_conn_object_free (notification->conn);
+        pecan_node_free (notification->http_conn);
+    pecan_cmd_server_free (notification->conn);
 
     g_free(notification);
 }
@@ -226,7 +226,7 @@ msn_notification_connect(MsnNotification *notification, const char *host, int po
 {
     g_return_val_if_fail(notification != NULL, FALSE);
 
-    conn_object_connect (CONN_OBJECT (notification->conn), host, port);
+    pecan_node_connect (PECAN_NODE (notification->conn), host, port);
 
     return TRUE;
 }
@@ -423,8 +423,8 @@ msn_notification_close(MsnNotification *notification)
     msn_cmdproc_send_quick(notification->cmdproc, "OUT", NULL, NULL);
 
     if (notification->http_conn)
-        conn_object_close (notification->http_conn);
-    conn_object_close (CONN_OBJECT (notification->conn));
+        pecan_node_close (notification->http_conn);
+    pecan_node_close (PECAN_NODE (notification->conn));
 }
 
 /**************************************************************************

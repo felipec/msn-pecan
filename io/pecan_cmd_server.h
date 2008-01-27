@@ -21,18 +21,18 @@
 
 #include <glib-object.h>
 
-typedef struct CmdConnObject CmdConnObject;
+typedef struct PecanCmdServer PecanCmdServer;
 
-#include "conn.h"
+#include "pecan_node.h"
 
-#define CMD_CONN_OBJECT_TYPE (cmd_conn_object_get_type ())
-#define CMD_CONN_OBJECT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), CMD_CONN_OBJECT_TYPE, CmdConnObject))
-#define CMD_CONN_OBJECT_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), CMD_CONN_OBJECT_TYPE, CmdConnObjectClass))
-#define CMD_CONN_IS_OBJECT(obj) (G_TYPE_CHECK_TYPE ((obj), CMD_CONN_OBJECT_TYPE))
-#define CMD_CONN_IS_OBJECT_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), CMD_CONN_OBJECT_TYPE))
-#define CMD_CONN_OBJECT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), CMD_CONN_OBJECT_TYPE, CmdConnObjectClass))
+#define CMD_PECAN_NODE_TYPE (pecan_cmd_server_get_type ())
+#define CMD_PECAN_NODE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), CMD_PECAN_NODE_TYPE, PecanCmdServer))
+#define CMD_PECAN_NODE_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), CMD_PECAN_NODE_TYPE, PecanCmdServerClass))
+#define CMD_PECAN_IS_NODE(obj) (G_TYPE_CHECK_TYPE ((obj), CMD_PECAN_NODE_TYPE))
+#define CMD_PECAN_IS_NODE_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), CMD_PECAN_NODE_TYPE))
+#define CMD_PECAN_NODE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), CMD_PECAN_NODE_TYPE, PecanCmdServerClass))
 
-CmdConnObject *cmd_conn_object_new (gchar *name, ConnObjectType type);
-void cmd_conn_object_free (CmdConnObject *conn);
+PecanCmdServer *pecan_cmd_server_new (gchar *name, PecanNodeType type);
+void pecan_cmd_server_free (PecanCmdServer *conn);
 
 #endif /* MSN_CMD_CONN_H */

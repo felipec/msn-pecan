@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "cmd_conn_private.h"
+#include "pecan_cmd_server_priv.h"
 #include "cmd/cmdproc_private.h"
 #include "cmd/command_private.h"
 
@@ -24,20 +24,20 @@
 
 #include <string.h>
 
-static ConnObjectClass *parent_class = NULL;
+static PecanNodeClass *parent_class = NULL;
 
-CmdConnObject *
-cmd_conn_object_new (gchar *name,
-                     ConnObjectType type)
+PecanCmdServer *
+pecan_cmd_server_new (gchar *name,
+                     PecanNodeType type)
 {
-    CmdConnObject *conn;
+    PecanCmdServer *conn;
 
     msn_log ("begin");
 
-    conn = CMD_CONN_OBJECT (g_type_create_instance (CMD_CONN_OBJECT_TYPE));
+    conn = CMD_PECAN_NODE (g_type_create_instance (CMD_PECAN_NODE_TYPE));
 
     {
-        ConnObject *tmp = CONN_OBJECT (conn);
+        PecanNode *tmp = PECAN_NODE (conn);
         tmp->name = g_strdup (name);
         tmp->type = type;
     }
@@ -48,7 +48,7 @@ cmd_conn_object_new (gchar *name,
 }
 
 void
-cmd_conn_object_free (CmdConnObject *conn)
+pecan_cmd_server_free (PecanCmdServer *conn)
 {
     msn_log ("begin");
     g_object_unref (G_OBJECT (conn));
@@ -56,7 +56,7 @@ cmd_conn_object_free (CmdConnObject *conn)
 }
 
 void
-cmd_conn_object_send (CmdConnObject *conn,
+pecan_cmd_server_send (PecanCmdServer *conn,
                       const char *command,
                       const char *format,
                       ...)
@@ -76,15 +76,15 @@ cmd_conn_object_send (CmdConnObject *conn,
 }
 
 static void
-parse_impl (ConnObject *base_conn,
+parse_impl (PecanNode *base_conn,
             gchar *buf,
             gsize bytes_read)
 {
-    CmdConnObject *cmd_conn;
+    PecanCmdServer *cmd_conn;
     gchar *cur, *end, *old_rx_buf;
     gint cur_len;
 
-    cmd_conn = CMD_CONN_OBJECT (base_conn);
+    cmd_conn = CMD_PECAN_NODE (base_conn);
 
     buf[bytes_read] = '\0';
 
@@ -147,7 +147,7 @@ parse_impl (ConnObject *base_conn,
 
 #if 0
 static void
-read_impl (ConnObject *conn)
+read_impl (PecanNode *conn)
 {
     MsnBuffer *read_buffer;
     int r;
@@ -172,14 +172,14 @@ read_impl (ConnObject *conn)
     if (r == 0)
     {
         /* connection closed */
-        conn_object_close (conn);
+        pecan_node_close (conn);
         return;
     }
 
     if (r < 0)
     {
         /* connection error */
-        conn_object_close (conn);
+        pecan_node_close (conn);
         return;
     }
 
@@ -214,7 +214,7 @@ read_impl (ConnObject *conn)
         }
         else
         {
-            /* CONN_OBJECT_GET_CLASS (conn)->parse (conn); */
+            /* PECAN_NODE_GET_CLASS (conn)->parse (conn); */
         }
 
         /** @todo only if parsed? yes indeed! */
@@ -239,7 +239,7 @@ read_impl (ConnObject *conn)
 static void
 dispose (GObject *obj)
 {
-    CmdConnObject *conn = CMD_CONN_OBJECT (obj);
+    PecanCmdServer *conn = CMD_PECAN_NODE (obj);
 
     if (!conn->dispose_has_run)
     {
@@ -259,7 +259,7 @@ static void
 class_init (gpointer g_class,
             gpointer class_data)
 {
-    ConnObjectClass *conn_class = CONN_OBJECT_CLASS (g_class);
+    PecanNodeClass *conn_class = PECAN_NODE_CLASS (g_class);
     GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
 
     conn_class->parse = &parse_impl;
@@ -274,13 +274,13 @@ static void
 instance_init (GTypeInstance *instance,
                gpointer g_class)
 {
-    CmdConnObject *conn = CMD_CONN_OBJECT (instance);
+    PecanCmdServer *conn = CMD_PECAN_NODE (instance);
 
     conn->dispose_has_run = FALSE;
 }
 
 GType
-cmd_conn_object_get_type (void)
+pecan_cmd_server_get_type (void)
 {
     static GType type = 0;
 
@@ -288,18 +288,18 @@ cmd_conn_object_get_type (void)
     {
         static const GTypeInfo type_info =
         {
-            sizeof (CmdConnObjectClass),
+            sizeof (PecanCmdServerClass),
             NULL, /* base_init */
             NULL, /* base_finalize */
             class_init, /* class_init */
             NULL, /* class_finalize */
             NULL, /* class_data */
-            sizeof (CmdConnObject),
+            sizeof (PecanCmdServer),
             0, /* n_preallocs */
             instance_init /* instance_init */
         };
 
-        type = g_type_register_static (CONN_OBJECT_TYPE, "CmdConnObjectType", &type_info, 0);
+        type = g_type_register_static (PECAN_NODE_TYPE, "PecanCmdServerType", &type_info, 0);
     }
 
     return type;

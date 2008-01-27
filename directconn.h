@@ -30,7 +30,7 @@ typedef struct MsnDirectConn MsnDirectConn;
 
 #include "cmd/msg.h"
 
-struct ConnObject;
+struct PecanNode;
 struct _PurpleProxyConnectData;
 
 struct MsnDirectConn
@@ -50,7 +50,7 @@ struct MsnDirectConn
 
     int c;
     struct _PurpleProxyConnectData *connect_data;
-    struct ConnObject *conn;
+    struct PecanNode *conn;
 };
 
 MsnDirectConn *msn_directconn_new(MsnSlpLink *slplink);

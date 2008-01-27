@@ -16,25 +16,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef MSN_CONN_PRIVATE_H
-#define MSN_CONN_PRIVATE_H
+#ifndef PECAN_NODE_PRIVATE_H
+#define PECAN_NODE_PRIVATE_H
 
 #include <glib-object.h>
 
-#include "conn.h"
+#include "pecan_node.h"
 
-typedef struct ConnObjectClass ConnObjectClass;
+typedef struct PecanNodeClass PecanNodeClass;
 
-#define CONN_OBJECT_ERROR conn_object_error_quark ()
+#define PECAN_NODE_ERROR pecan_node_error_quark ()
 
 /* Forward declarations */
 
 struct _PurpleProxyConnectData;
 struct MsnSesion;
 
-GQuark conn_object_error_quark (void);
+GQuark pecan_node_error_quark (void);
 
-struct ConnObject
+struct PecanNode
 {
     GObject parent;
     gboolean dispose_has_run;
@@ -42,14 +42,14 @@ struct ConnObject
     GError *error; /**< The current IO error .*/
     guint read_watch; /** < The source id of the read watch. */
 
-    ConnObjectType type;
+    PecanNodeType type;
 
     gchar *name;
 
     gpointer data; /**< Client data. */
     gpointer foo_data;
-    ConnObject *prev;
-    ConnObject *next;
+    PecanNode *prev;
+    PecanNode *next;
 
     GIOChannel *channel; /**< The current IO channel .*/
 
@@ -63,29 +63,29 @@ struct ConnObject
     gulong error_sig_handler;
 };
 
-struct ConnObjectClass
+struct PecanNodeClass
 {
     GObjectClass parent_class;
 
     guint open_sig;
     guint close_sig;
 
-    GIOStatus (*read) (ConnObject *conn, gchar *buf, gsize count, gsize *bytes_read, GError **error);
-    GIOStatus (*write) (ConnObject *conn, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
-    void (*error) (ConnObject *conn);
-    void (*connect) (ConnObject *conn, const gchar *hostname, gint port);
-    void (*close) (ConnObject *conn);
-    void (*parse) (ConnObject *conn, gchar *buf, gsize bytes_read);
+    GIOStatus (*read) (PecanNode *conn, gchar *buf, gsize count, gsize *bytes_read, GError **error);
+    GIOStatus (*write) (PecanNode *conn, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
+    void (*error) (PecanNode *conn);
+    void (*connect) (PecanNode *conn, const gchar *hostname, gint port);
+    void (*close) (PecanNode *conn);
+    void (*parse) (PecanNode *conn, gchar *buf, gsize bytes_read);
 
 };
 
-#define CONN_OBJECT_TYPE (conn_object_get_type ())
-#define CONN_OBJECT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), CONN_OBJECT_TYPE, ConnObject))
-#define CONN_OBJECT_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), CONN_OBJECT_TYPE, ConnObjectClass))
-#define CONN_IS_OBJECT(obj) (G_TYPE_CHECK_TYPE ((obj), CONN_OBJECT_TYPE))
-#define CONN_IS_OBJECT_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), CONN_OBJECT_TYPE))
-#define CONN_OBJECT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), CONN_OBJECT_TYPE, ConnObjectClass))
+#define PECAN_NODE_TYPE (pecan_node_get_type ())
+#define PECAN_NODE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), PECAN_NODE_TYPE, PecanNode))
+#define PECAN_NODE_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), PECAN_NODE_TYPE, PecanNodeClass))
+#define PECAN_IS_NODE(obj) (G_TYPE_CHECK_TYPE ((obj), PECAN_NODE_TYPE))
+#define PECAN_IS_NODE_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), PECAN_NODE_TYPE))
+#define PECAN_NODE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), PECAN_NODE_TYPE, PecanNodeClass))
 
-GType conn_object_get_type ();
+GType pecan_node_get_type ();
 
-#endif /* MSN_CONN_PRIVATE_H */
+#endif /* PECAN_NODE_PRIVATE_H */

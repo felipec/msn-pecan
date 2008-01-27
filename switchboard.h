@@ -53,8 +53,8 @@ typedef enum
 
 } MsnSBFlag;
 
-#include "io/cmd_conn.h"
-#include "io/conn.h"
+#include "io/pecan_cmd_server.h"
+#include "io/pecan_node.h"
 
 struct MsnSession;
 struct MsnMessage;
@@ -106,8 +106,8 @@ struct MsnSwitchBoard
                             (if applicable). */
     GList *slplinks; /**< The list of slplinks that are using this switchboard. */
 
-    CmdConnObject *conn;
-    ConnObject *http_conn;
+    PecanCmdServer *conn;
+    PecanNode *http_conn;
     gulong open_handler;
     gulong close_handler;
     gulong error_handler;
