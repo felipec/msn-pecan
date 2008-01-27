@@ -335,7 +335,7 @@ connect_impl (ConnObject *conn,
 static void
 close_impl (ConnObject *conn)
 {
-    g_return_if_fail (conn != NULL);
+    g_return_if_fail (conn);
 
     msn_log ("begin");
 
@@ -347,7 +347,6 @@ close_impl (ConnObject *conn)
     if (!conn->channel)
     {
         msn_warning ("not connected: conn=%p", conn);
-        return;
     }
 
     if (conn->connect_data)
@@ -362,10 +361,13 @@ close_impl (ConnObject *conn)
         conn->read_watch = 0;
     }
 
-    msn_info ("channel shutdown: %p", conn->channel);
-    g_io_channel_shutdown (conn->channel, FALSE, NULL);
-    g_io_channel_unref (conn->channel);
-    conn->channel = NULL;
+    if (conn->channel)
+    {
+        msn_info ("channel shutdown: %p", conn->channel);
+        g_io_channel_shutdown (conn->channel, FALSE, NULL);
+        g_io_channel_unref (conn->channel);
+        conn->channel = NULL;
+    }
 
     msn_log ("end");
 }

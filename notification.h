@@ -27,17 +27,20 @@
 
 typedef struct MsnNotification MsnNotification;
 
+#include "io/cmd_conn.h"
+#include "io/conn.h"
+
 struct MsnSession;
 struct MsnCmdProc;
-struct CmdConnObject;
 
 struct MsnNotification
 {
     struct MsnSession *session;
     struct MsnCmdProc *cmdproc;
-    struct CmdConnObject *conn;
+    CmdConnObject *conn;
 
     gboolean in_use;
+    ConnObject *http_conn;
     gulong open_handler;
     gulong close_handler;
     gulong error_handler;

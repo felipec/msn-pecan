@@ -47,7 +47,8 @@ msn_session_new(PurpleAccount *account)
 
 	session = g_new0(MsnSession, 1);
 
-	session->http_method = purple_account_get_bool (account, "http_method", FALSE);
+        session->http_method = purple_account_get_bool (account, "http_method", FALSE);
+#if 0
         if (session->http_method)
         {
             ConnObject *foo;
@@ -55,6 +56,7 @@ msn_session_new(PurpleAccount *account)
             foo->session = session;
             session->http_conn = foo;
         }
+#endif
 
 	session->account = account;
 	session->notification = msn_notification_new(session);
@@ -148,7 +150,8 @@ msn_session_disconnect(MsnSession *session)
 	if (session->notification != NULL)
 		msn_notification_close(session->notification);
 
-        conn_object_close (session->http_conn);
+        if (session->http_conn)
+            conn_object_close (session->http_conn);
 }
 
 /* TODO: This must go away when conversation is redesigned */

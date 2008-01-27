@@ -16,16 +16,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/*
+ * Each command connection (NS,SB) can use the auxiliar HTTP connection method.
+ * So commands are sent through an HTTP gateway.
+ */
+
 #include "http_conn_private.h"
 #include "msn_io.h"
 #include "msn_log.h"
-
-static ConnObjectClass *parent_class = NULL;
 
 #include <string.h>
 
 #include <proxy.h> /* libpurple */
 #include "session.h"
+
+static ConnObjectClass *parent_class = NULL;
 
 typedef struct
 {
@@ -77,7 +82,7 @@ read_cb (GIOChannel *source,
 
     conn = CONN_OBJECT (data);
 
-    msn_debug ("source=%p", source);
+    msn_debug ("conn=%p,source=%p", conn, source);
 
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
@@ -539,22 +544,30 @@ read_impl (ConnObject *conn,
                 {
                     if (child)
                     {
-                        msn_info ("removing child");
                         GList *list;
                         ConnObject *foo;
-                        g_hash_table_remove (http_conn->childs, session_id);
+
+                        msn_info ("removing child");
                         conn_object_close (child);
+                        g_hash_table_remove (http_conn->childs, session_id);
                         list = g_hash_table_get_values (http_conn->childs);
-                        msn_info ("removing child: %d", g_hash_table_size (http_conn->childs));
+
+                        g_object_unref (G_OBJECT (http_conn->cur));
+                        g_free (http_conn->gateway);
+                        g_free (http_conn->last_session_id);
                         if (list && list->data)
                         {
                             foo = CONN_OBJECT (list->data);
+                            http_conn->cur = foo;
+                            http_conn->gateway = g_strdup (foo->hostname);
                             http_conn->last_session_id = g_strdup (foo->foo_data);
                             g_list_free (list);
                         }
                         else
                         {
                             msn_info ("no more childs");
+                            http_conn->cur = NULL;
+                            http_conn->gateway = NULL;
                             http_conn->last_session_id = NULL;
                         }
                     }
@@ -566,7 +579,6 @@ read_impl (ConnObject *conn,
                         child = http_conn->cur;
                         msn_info ("adding child: %p", child);
                         g_hash_table_insert (http_conn->childs, g_strdup (session_id), g_object_ref (child));
-                        g_object_unref (G_OBJECT (http_conn->cur));
                     }
 
                     if (child)
@@ -681,7 +693,8 @@ foo_write (ConnObject *conn,
     {
         msn_log ("bytes_written=%d", bytes_written);
         http_conn->waiting_response = TRUE;
-        g_object_unref (http_conn->cur);
+        if (http_conn->cur)
+            g_object_unref (http_conn->cur);
         http_conn->cur = prev;
         g_object_ref (G_OBJECT (http_conn->cur));
 

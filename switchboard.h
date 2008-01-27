@@ -53,11 +53,13 @@ typedef enum
 
 } MsnSBFlag;
 
+#include "io/cmd_conn.h"
+#include "io/conn.h"
+
 struct MsnSession;
 struct MsnMessage;
 struct MsnUser;
 struct MsnCmdProc;
-struct CmdConnObject;
 
 struct _PurpleConversation;
 
@@ -71,8 +73,6 @@ struct MsnSwitchBoard
     struct MsnSession *session;
     struct MsnCmdProc *cmdproc;
     char *im_user;
-
-    struct CmdConnObject *conn;
 
     MsnSBFlag flag;
     char *auth_key;
@@ -105,6 +105,9 @@ struct MsnSwitchBoard
     MsnSBErrorType error; /**< The error that occurred in this switchboard
                             (if applicable). */
     GList *slplinks; /**< The list of slplinks that are using this switchboard. */
+
+    CmdConnObject *conn;
+    ConnObject *http_conn;
     gulong open_handler;
     gulong close_handler;
     gulong error_handler;

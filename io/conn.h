@@ -35,9 +35,10 @@ enum
 
 enum ConnObjectType
 {
-    MSN_CONN_NS,
-    MSN_CONN_PASSPORT,
-    MSN_CONN_CS
+    MSN_CONN_NS, /**< Notification Server */
+    MSN_CONN_PASSPORT, /**< Passport Server (for login) */
+    MSN_CONN_CS, /**< Contact Server (addressbook stuff) */
+    MSN_CONN_SB /**< Switcbhard Server (a conversation) */
 };
 
 #define CONN_OBJECT_TYPE (conn_object_get_type ())

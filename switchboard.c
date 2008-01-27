@@ -56,6 +56,9 @@ static void
 msg_error_helper(MsnCmdProc *cmdproc, MsnMessage *msg, MsnMsgErrorType error);
 
 static void
+msn_switchboard_report_user(MsnSwitchBoard *swboard, PurpleMessageFlags flags, const char *msg);
+
+static void
 open_cb (ConnObject *conn)
 {
     MsnSession *session;
@@ -102,17 +105,38 @@ open_cb (ConnObject *conn)
 }
 
 static void
-close_cb (ConnObject *conn)
+close_cb (ConnObject *conn,
+          MsnSwitchBoard *swboard)
 {
-    MsnSwitchBoard *swboard;
-
-    swboard = conn->data;
+    char *tmp;
 
     g_return_if_fail (swboard != NULL);
 
-    msn_debug ("foo");
+    {
+        const char *reason = NULL;
+
+        if (conn->error)
+        {
+            reason = conn->error->message;
+
+            msn_error ("connection error: (SB):reason=[%s]", reason);
+            tmp = g_strdup_printf (_("Error: %s"), reason);
+
+            g_clear_error (&conn->error);
+        }
+        else
+        {
+            msn_error ("connection error: (SB)");
+            tmp = g_strdup_printf (_("Error: Unknown"));
+        }
+
+    }
+
+    msn_switchboard_report_user (swboard, PURPLE_MESSAGE_ERROR, tmp);
 
     msn_switchboard_destroy (swboard);
+
+    g_free (tmp);
 }
 
 /**************************************************************************
@@ -137,7 +161,7 @@ msn_switchboard_new(MsnSession *session)
 
     {
         ConnObject *conn;
-        swboard->conn = cmd_conn_object_new ("switchboard server", MSN_CONN_NS);
+        swboard->conn = cmd_conn_object_new ("switchboard server", MSN_CONN_SB);
         conn = CONN_OBJECT (swboard->conn);
 
         {
@@ -152,12 +176,27 @@ msn_switchboard_new(MsnSession *session)
 
         conn->session = session;
 
-        if (session->http_conn)
-            conn_object_link (conn, session->http_conn);
+        if (session->http_method)
+        {
+            ConnObject *foo;
 
-        swboard->open_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), NULL);
-        swboard->close_handler = g_signal_connect (conn, "close", G_CALLBACK (close_cb), NULL);
-        swboard->error_handler = g_signal_connect (conn, "error", G_CALLBACK (close_cb), NULL);
+            if (session->http_conn)
+            {
+                foo = session->http_conn;
+            }
+            else
+            {
+                foo = CONN_OBJECT (http_conn_object_new ("foo server"));
+                foo->session = session;
+                swboard->http_conn = foo;
+            }
+
+            conn_object_link (conn, foo);
+        }
+
+        swboard->open_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), swboard);
+        swboard->close_handler = g_signal_connect (conn, "close", G_CALLBACK (close_cb), swboard);
+        swboard->error_handler = g_signal_connect (conn, "error", G_CALLBACK (close_cb), swboard);
     }
 
 #if 1
@@ -226,6 +265,8 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
     g_signal_handler_disconnect (swboard->conn, swboard->close_handler);
     g_signal_handler_disconnect (swboard->conn, swboard->error_handler);
 
+    if (swboard->http_conn)
+        conn_object_free (swboard->http_conn);
     conn_object_free (CONN_OBJECT (swboard->conn));
 
     g_free(swboard);
