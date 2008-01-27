@@ -19,29 +19,11 @@
 #ifndef MSN_CMD_CONN_H
 #define MSN_CMD_CONN_H
 
+#include <glib-object.h>
+
 typedef struct CmdConnObject CmdConnObject;
-typedef struct CmdConnObjectClass CmdConnObjectClass;
 
 #include "conn.h"
-
-struct MsnCmdProc;
-
-struct CmdConnObject
-{
-    ConnObject parent;
-    gboolean dispose_has_run;
-
-    gsize payload_len;
-    gchar *rx_buf;
-    gsize rx_len;
-
-    struct MsnCmdProc *cmdproc;
-};
-
-struct CmdConnObjectClass
-{
-    ConnObjectClass parent_class;
-};
 
 #define CMD_CONN_OBJECT_TYPE (cmd_conn_object_get_type ())
 #define CMD_CONN_OBJECT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), CMD_CONN_OBJECT_TYPE, CmdConnObject))
@@ -49,8 +31,6 @@ struct CmdConnObjectClass
 #define CMD_CONN_IS_OBJECT(obj) (G_TYPE_CHECK_TYPE ((obj), CMD_CONN_OBJECT_TYPE))
 #define CMD_CONN_IS_OBJECT_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), CMD_CONN_OBJECT_TYPE))
 #define CMD_CONN_OBJECT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), CMD_CONN_OBJECT_TYPE, CmdConnObjectClass))
-
-GType cmd_conn_object_get_type ();
 
 CmdConnObject *cmd_conn_object_new (gchar *name, ConnObjectType type);
 void cmd_conn_object_free (CmdConnObject *conn);

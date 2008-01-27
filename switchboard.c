@@ -32,11 +32,12 @@
 #include "msg_private.h"
 #include "command_private.h"
 
+#include "io/conn_private.h"
+#include "io/cmd_conn_private.h"
+#include "io/http_conn.h"
+
 #include "msn_util.h"
 #include "msn_log.h"
-
-#include "io/cmd_conn.h"
-#include "io/http_conn.h"
 
 #include "error.h"
 

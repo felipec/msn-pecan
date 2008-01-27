@@ -34,13 +34,15 @@
 #include "userlist_private.h"
 #include "user_private.h"
 
+#include "io/cmd_conn.h"
+#include "io/http_conn.h"
+#include "io/conn_private.h"
+#include "io/cmd_conn_private.h"
+
 #include "session.h"
 #include "error.h" /* for error_get_text */
 #include "msn_util.h" /* for parse_socket */
 #include "slplink.h" /* for slplink_destroy */
-
-#include "io/cmd_conn.h"
-#include "io/http_conn.h"
 
 #include "msn_intl.h"
 

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "http_conn.h"
+#include "http_conn_private.h"
 #include "msn_io.h"
 #include "msn_log.h"
 

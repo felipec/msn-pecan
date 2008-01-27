@@ -29,7 +29,7 @@
 #include "sync.h"
 #include "nexus.h"
 
-#include "io/http_conn.h"
+#include "io/http_conn_private.h"
 
 #include <glib/gstdio.h>
 #include <string.h>

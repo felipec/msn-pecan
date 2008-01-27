@@ -21,18 +21,10 @@
 
 #include <glib-object.h>
 
-typedef struct MsnBuff MsnBuff;
 typedef enum ConnObjectType ConnObjectType;
-
 typedef struct ConnObject ConnObject;
-typedef struct ConnObjectClass ConnObjectClass;
 
 #define CONN_OBJECT_ERROR conn_object_error_quark ()
-
-/* Forward declarations */
-
-struct PurpleProxyConnectData;
-struct MsnSesion;
 
 enum
 {
@@ -41,58 +33,11 @@ enum
     CONN_OBJECT_ERROR_WRITE
 };
 
-GQuark conn_object_error_quark (void);
-
 enum ConnObjectType
 {
     MSN_CONN_NS,
     MSN_CONN_PASSPORT,
     MSN_CONN_CS
-};
-
-struct ConnObject
-{
-    GObject parent;
-    gboolean dispose_has_run;
-
-    GError *error; /**< The current IO error .*/
-    guint read_watch; /** < The source id of the read watch. */
-
-    ConnObjectType type;
-
-    gchar *name;
-
-    gpointer data; /**< Client data. */
-    gpointer foo_data;
-    ConnObject *prev;
-    ConnObject *next;
-
-    GIOChannel *channel; /**< The current IO channel .*/
-
-    gchar *hostname;
-    guint port;
-
-    struct _PurpleProxyConnectData *connect_data;
-    struct MsnSession *session;
-    gulong open_sig_handler;
-    gulong close_sig_handler;
-    gulong error_sig_handler;
-};
-
-struct ConnObjectClass
-{
-    GObjectClass parent_class;
-
-    guint open_sig;
-    guint close_sig;
-
-    GIOStatus (*read) (ConnObject *conn, gchar *buf, gsize count, gsize *bytes_read, GError **error);
-    GIOStatus (*write) (ConnObject *conn, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
-    void (*error) (ConnObject *conn);
-    void (*connect) (ConnObject *conn, const gchar *hostname, gint port);
-    void (*close) (ConnObject *conn);
-    void (*parse) (ConnObject *conn, gchar *buf, gsize bytes_read);
-
 };
 
 #define CONN_OBJECT_TYPE (conn_object_get_type ())
@@ -101,8 +46,6 @@ struct ConnObjectClass
 #define CONN_IS_OBJECT(obj) (G_TYPE_CHECK_TYPE ((obj), CONN_OBJECT_TYPE))
 #define CONN_IS_OBJECT_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), CONN_OBJECT_TYPE))
 #define CONN_OBJECT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), CONN_OBJECT_TYPE, ConnObjectClass))
-
-GType conn_object_get_type ();
 
 ConnObject *conn_object_new (gchar *name, ConnObjectType type);
 void conn_object_free (ConnObject *conn);

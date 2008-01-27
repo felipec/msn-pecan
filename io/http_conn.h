@@ -22,32 +22,8 @@
 #include <glib-object.h>
 
 typedef struct HttpConnObject HttpConnObject;
-typedef struct HttpConnObjectClass HttpConnObjectClass;
 
 #include "conn.h"
-
-struct HttpConnObject
-{
-    ConnObject parent;
-    gboolean dispose_has_run;
-
-    guint parser_state;
-    gboolean waiting_response;
-    GQueue *write_queue;
-    guint content_length;
-    guint timeout_id;
-    gchar *last_session_id;
-    gchar *session;
-    gchar *gateway;
-
-    GHashTable *childs;
-    ConnObject *cur;
-};
-
-struct HttpConnObjectClass
-{
-    ConnObjectClass parent_class;
-};
 
 #define HTTP_CONN_OBJECT_TYPE (http_conn_object_get_type ())
 #define HTTP_CONN_OBJECT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), HTTP_CONN_OBJECT_TYPE, HttpConnObject))
@@ -55,8 +31,6 @@ struct HttpConnObjectClass
 #define CONN_IS_HTTP_OBJECT(obj) (G_TYPE_CHECK_TYPE ((obj), HTTP_CONN_OBJECT_TYPE))
 #define CONN_IS_HTTP_OBJECT_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), HTTP_CONN_OBJECT_TYPE))
 #define HTTP_CONN_OBJECT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), HTTP_CONN_OBJECT_TYPE, HttpConnObjectClass))
-
-GType http_conn_object_get_type ();
 
 HttpConnObject *http_conn_object_new (gchar *name);
 void http_conn_object_free (HttpConnObject *http_conn);
