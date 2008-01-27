@@ -34,9 +34,10 @@ struct MsnSlpSession;
 
 struct _PurpleXfer;
 
-#include <slpcall.h>
-#include <object.h>
 #include <glib.h>
+
+#include "slpcall.h"
+#include "object.h"
 
 typedef void (*MsnSlpCb) (MsnSlpCall *slpcall, const guchar *data, gsize size);
 typedef void (*MsnSlpEndCb) (MsnSlpCall *slpcall, struct MsnSession *session);

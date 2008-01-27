@@ -25,23 +25,14 @@
 #include <glib.h>
 
 #include "msn.h"
-#include "accountopt.h"
 #include "page.h"
-#include "pluginpref.h"
-#include "prefs.h"
 #include "session.h"
 #include "state.h"
-#include "util.h"
-#include "cmds.h"
-#include "core.h"
-#include "prpl.h"
 #include "msn_util.h"
-#include "version.h"
 
 #include "switchboard.h"
 #include "notification.h"
 #include "sync.h"
-#include "slplink.h"
 
 #include "session_private.h"
 
@@ -49,10 +40,20 @@
 
 #include "ab/user_private.h"
 
+#include "cvr/slplink.h"
+
 /* libpurple stuff. */
 #include <debug.h>
 #include <privacy.h>
 #include <request.h>
+#include <accountopt.h>
+#include <pluginpref.h>
+#include <cmds.h>
+#include <version.h>
+#include <core.h>
+#include <prpl.h>
+#include <util.h>
+#include <prefs.h>
 #include "internal.h"
 
 #if PHOTO_SUPPORT

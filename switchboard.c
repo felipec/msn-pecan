@@ -24,7 +24,7 @@
 #include "session.h"
 #include "switchboard.h"
 #include "notification.h"
-#include "slplink.h"
+#include "cvr/slplink.h"
 
 #include "session_private.h"
 

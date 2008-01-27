@@ -25,7 +25,8 @@
 #include "notification.h"
 #include "fix-purple.h"
 
-#include "slplink.h"
+#include "cvr/slplink.h"
+
 #include "sync.h"
 #include "nexus.h"
 

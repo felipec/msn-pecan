@@ -25,6 +25,7 @@
 #include "sync.h"
 #include "nexus.h"
 
+#include "session.h"
 #include "session_private.h"
 
 #include "cmd/cmdproc_private.h"
@@ -41,10 +42,10 @@
 #include "io/conn_private.h"
 #include "io/cmd_conn_private.h"
 
-#include "session.h"
+#include "cvr/slplink.h" /* for slplink_destroy */
+
 #include "error.h" /* for error_get_text */
 #include "msn_util.h" /* for parse_socket */
-#include "slplink.h" /* for slplink_destroy */
 
 #include "msn_intl.h"
 

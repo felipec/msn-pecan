@@ -16,11 +16,6 @@ objects = \
 	object.o \
 	page.o \
 	session.o \
-	slp.o \
-	slpcall.o \
-	slplink.o \
-	slpmsg.o \
-	slpsession.o \
 	state.o \
 	switchboard.o \
 	sync.o \
@@ -39,6 +34,11 @@ objects = \
 	io/conn.o \
 	io/cmd_conn.o \
 	io/http_conn.o \
+	cvr/slp.o \
+	cvr/slpcall.o \
+	cvr/slplink.o \
+	cvr/slpmsg.o \
+	cvr/slpsession.o \
 	fix-purple.o
 
 sources = $(patsubst %.o,%.c,$(objects))

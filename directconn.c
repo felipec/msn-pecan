@@ -25,8 +25,8 @@
 #include "msn_log.h"
 
 #include "session.h"
-#include "slp.h"
-#include "slpmsg.h"
+#include "cvr/slp.h"
+#include "cvr/slpmsg.h"
 
 #include "io/conn.h"
 

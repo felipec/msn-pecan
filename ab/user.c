@@ -24,7 +24,7 @@
 #include "user_private.h"
 #include "userlist_private.h"
 
-#include "slp.h"
+#include "cvr/slp.h"
 #include "fix-purple.h"
 
 #include <string.h>

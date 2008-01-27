@@ -25,8 +25,8 @@
 
 typedef struct MsnDirectConn MsnDirectConn;
 
-#include "slplink.h"
-#include "slp.h"
+#include "cvr/slplink.h"
+#include "cvr/slp.h"
 
 #include "cmd/msg.h"
 
