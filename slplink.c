@@ -37,7 +37,7 @@
 #include "directconn.h"
 #endif /* MSN_DIRECTCONN */
 
-#include "msg_private.h"
+#include "cmd/msg_private.h"
 
 #include <glib/gstdio.h>
 #include <string.h>

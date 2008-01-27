@@ -25,9 +25,10 @@
 
 typedef struct MsnUserList MsnUserList;
 
-#include "cmdproc.h"
 #include "user.h"
 #include "group.h"
+
+#include "cmd/cmdproc.h"
 
 typedef enum
 {

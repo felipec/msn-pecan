@@ -17,8 +17,8 @@
  */
 
 #include "cmd_conn_private.h"
-#include "cmdproc_private.h"
-#include "command_private.h"
+#include "cmd/cmdproc_private.h"
+#include "cmd/command_private.h"
 
 #include "msn_log.h"
 

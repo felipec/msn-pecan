@@ -27,7 +27,8 @@ typedef struct MsnDirectConn MsnDirectConn;
 
 #include "slplink.h"
 #include "slp.h"
-#include "msg.h"
+
+#include "cmd/msg.h"
 
 struct ConnObject;
 struct _PurpleProxyConnectData;

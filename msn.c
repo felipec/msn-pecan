@@ -26,7 +26,6 @@
 
 #include "msn.h"
 #include "accountopt.h"
-#include "msg.h"
 #include "page.h"
 #include "pluginpref.h"
 #include "prefs.h"
@@ -45,6 +44,8 @@
 #include "slplink.h"
 
 #include "session_private.h"
+
+#include "cmd/msg.h"
 
 #include "ab/user_private.h"
 

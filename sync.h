@@ -26,7 +26,8 @@
 typedef struct MsnSync MsnSync;
 
 #include "session.h"
-#include "table.h"
+
+#include "cmd/table.h"
 
 #include "ab/user.h"
 

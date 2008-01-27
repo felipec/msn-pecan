@@ -28,7 +28,7 @@
 #include "slplink.h"
 #include "session.h"
 
-#include "msg_private.h"
+#include "cmd/msg_private.h"
 
 #include <glib/gstdio.h>
 #include <string.h>

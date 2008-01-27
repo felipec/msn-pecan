@@ -26,8 +26,8 @@
 
 #include "session_private.h"
 
-#include "command_private.h"
-#include "cmdproc_private.h"
+#include "cmd/command_private.h"
+#include "cmd/cmdproc_private.h"
 
 #include "ab/user_private.h"
 

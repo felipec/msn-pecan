@@ -8,12 +8,8 @@ CFLAGS=-Wall -ggdb -I.
 purpledir=$(DESTDIR)/usr/lib/purple-2
 
 objects = \
-	cmdproc.o \
-	command.o \
 	directconn.o \
 	error.o \
-	history.o \
-	msg.o \
 	msn.o \
 	nexus.o \
 	notification.o \
@@ -28,11 +24,15 @@ objects = \
 	state.o \
 	switchboard.o \
 	sync.o \
-	table.o \
-	transaction.o \
 	msn_io.o \
 	msn_log.o \
 	msn_util.o \
+	cmd/cmdproc.o \
+	cmd/command.o \
+	cmd/history.o \
+	cmd/msg.o \
+	cmd/table.o \
+	cmd/transaction.o \
 	ab/group.o \
 	ab/user.o \
 	ab/userlist.o \

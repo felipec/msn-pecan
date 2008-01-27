@@ -24,15 +24,15 @@
 #include "session.h"
 #include "switchboard.h"
 #include "notification.h"
-#include "table.h"
 #include "slplink.h"
 
 #include "session_private.h"
 
-#include "cmdproc_private.h"
-#include "transaction_private.h"
-#include "msg_private.h"
-#include "command_private.h"
+#include "cmd/cmdproc_private.h"
+#include "cmd/transaction_private.h"
+#include "cmd/msg_private.h"
+#include "cmd/command_private.h"
+#include "cmd/table.h"
 
 #include "io/conn_private.h"
 #include "io/cmd_conn_private.h"

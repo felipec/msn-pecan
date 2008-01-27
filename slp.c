@@ -28,8 +28,8 @@
 
 #include "session_private.h"
 
-#include "cmdproc_private.h"
-#include "msg_private.h"
+#include "cmd/cmdproc_private.h"
+#include "cmd/msg_private.h"
 
 #include "ab/user.h"
 #include "ab/userlist_private.h"
