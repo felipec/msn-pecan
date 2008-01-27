@@ -325,7 +325,7 @@ connect_impl (ConnObject *conn,
     {
         conn_object_close (conn);
 
-        conn->connect_data = purple_proxy_connect (NULL, conn->session->account,
+        conn->connect_data = purple_proxy_connect (NULL, msn_session_get_account (conn->session),
                                                    hostname, port, connect_cb, conn);
     }
 

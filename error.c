@@ -244,5 +244,5 @@ msn_error_handle(MsnSession *session, unsigned int type)
 
 	msn_error ("error %d: %s", type, buf);
 
-	purple_notify_error(session->account->gc, NULL, buf, NULL);
+	purple_notify_error (msn_session_get_account (session)->gc, NULL, buf, NULL);
 }

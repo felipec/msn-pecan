@@ -44,6 +44,7 @@
 #include "sync.h"
 #include "slplink.h"
 
+#include "session_private.h"
 #include "user_private.h"
 
 /* libpurple stuff. */
@@ -53,7 +54,7 @@
 #include "internal.h"
 
 #if PHOTO_SUPPORT
-#include "imgstore.h"
+#include <imgstore.h>
 #endif
 
 typedef struct

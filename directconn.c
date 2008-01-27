@@ -412,7 +412,7 @@ msn_directconn_connect(MsnDirectConn *directconn, const char *host, int port)
     }
 #endif
 
-    directconn->connect_data = purple_proxy_connect(NULL, session->account,
+    directconn->connect_data = purple_proxy_connect(NULL, msn_session_get_account (session),
                                                     host, port, directconn_connect_cb, directconn);
 
     msn_log ("end");

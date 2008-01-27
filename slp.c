@@ -26,6 +26,8 @@
 #include "slpmsg.h"
 #include "slpsession.h"
 
+#include "session_private.h"
+
 #include "cmdproc_private.h"
 #include "msg_private.h"
 

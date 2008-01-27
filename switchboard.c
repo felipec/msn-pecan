@@ -21,11 +21,13 @@
  */
 
 #include "msn.h"
-#include "prefs.h"
+#include "session.h"
 #include "switchboard.h"
 #include "notification.h"
 #include "table.h"
 #include "slplink.h"
+
+#include "session_private.h"
 
 #include "cmdproc_private.h"
 #include "transaction_private.h"
@@ -46,6 +48,7 @@
 
 /* libpurple stuff. */
 #include <account.h>
+#include <prefs.h>
 
 static MsnTable *cbs_table;
 

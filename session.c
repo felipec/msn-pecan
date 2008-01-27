@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#include "session.h"
+#include "session_private.h"
 #include "msn_log.h"
 #include "notification.h"
 #include "fix-purple.h"
@@ -114,6 +114,13 @@ msn_session_destroy(MsnSession *session)
 	g_free(session);
 }
 
+PurpleAccount *
+msn_session_get_account (MsnSession *session)
+{
+    g_return_val_if_fail (session, NULL);
+    return session->account;
+}
+
 gboolean
 msn_session_connect(MsnSession *session, const char *host, int port)
 {
@@ -156,7 +163,7 @@ msn_session_disconnect(MsnSession *session)
 
 /* TODO: This must go away when conversation is redesigned */
 MsnSwitchBoard *
-msn_session_find_swboard(MsnSession *session, const char *username)
+msn_session_find_swboard(const MsnSession *session, const gchar *username)
 {
 	GList *l;
 
@@ -177,7 +184,7 @@ msn_session_find_swboard(MsnSession *session, const char *username)
 }
 
 MsnSwitchBoard *
-msn_session_find_swboard_with_conv(MsnSession *session, PurpleConversation *conv)
+msn_session_find_swboard_with_conv(const MsnSession *session, const PurpleConversation *conv)
 {
 	GList *l;
 

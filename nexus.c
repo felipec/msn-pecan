@@ -23,7 +23,10 @@
 #include "nexus.h"
 #include "msn_log.h"
 
+#include "session.h"
 #include "notification.h"
+
+#include "session_private.h"
 
 /* libpurple stuff. */
 #include <sslconn.h>

@@ -30,6 +30,8 @@
 #include "slp.h"
 #include "user.h"
 
+#include "session_private.h"
+
 #ifdef MSN_DIRECTCONN
 #include "directconn.h"
 #endif /* MSN_DIRECTCONN */

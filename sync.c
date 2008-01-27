@@ -20,10 +20,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#include "msn.h"
+#include "session.h"
 #include "sync.h"
 #include "state.h"
-#include "session.h"
+
+#include "session_private.h"
 
 #include "command_private.h"
 #include "cmdproc_private.h"

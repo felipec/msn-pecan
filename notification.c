@@ -26,6 +26,8 @@
 #include "sync.h"
 #include "nexus.h"
 
+#include "session_private.h"
+
 #include "cmdproc_private.h"
 #include "command_private.h"
 #include "transaction_private.h"

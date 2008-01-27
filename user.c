@@ -76,7 +76,7 @@ msn_user_update(MsnUser *user)
 {
 	PurpleAccount *account;
 
-	account = user->userlist->session->account;
+	account = msn_session_get_account (user->userlist->session);
 
 	if (user->status != NULL) {
 		if (!strcmp(user->status, "offline") && user->mobile) {
@@ -140,7 +140,7 @@ msn_user_set_friendly_name(MsnUser *user, const char *name)
 	{
 		PurpleAccount *account;
 		PurpleConnection *gc;
-		account = user->userlist->session->account;
+		account = msn_session_get_account (user->userlist->session);
 		gc = purple_account_get_connection(account);
 		fix_purple_buddy_set_friendly(gc, user->passport, user->friendly_name);
 	}
@@ -157,7 +157,7 @@ msn_user_set_store_name(MsnUser *user, const char *name)
 	{
 		PurpleAccount *account;
 		PurpleConnection *gc;
-		account = user->userlist->session->account;
+		account = msn_session_get_account (user->userlist->session);
 		gc = purple_account_get_connection(account);
 		fix_purple_buddy_set_alias(gc, user->passport, user->store_name);
 	}
@@ -247,7 +247,7 @@ msn_user_add_group_id(MsnUser *user, int id)
 	user->group_ids = g_list_append(user->group_ids, GINT_TO_POINTER(id));
 
 	userlist = user->userlist;
-	account = userlist->session->account;
+	account = msn_session_get_account (userlist->session);
 	passport = msn_user_get_passport(user);
 
 	group_name = msn_userlist_find_group_name(userlist, id);

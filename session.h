@@ -25,32 +25,22 @@
 
 typedef struct MsnSession MsnSession;
 
-#include "user.h"
-#include "userlist.h"
-
-struct MsnNotification;
 struct MsnSwitchBoard;
-struct MsnNexus;
-struct MsnSync;
-struct ConnObject;
-
 struct _PurpleAccount;
-struct _PurpleConversation;
 
 /**
  * Types of errors.
  */
 typedef enum
 {
-	MSN_ERROR_SERVCONN,
-	MSN_ERROR_UNSUPPORTED_PROTOCOL,
-	MSN_ERROR_HTTP_MALFORMED,
-	MSN_ERROR_AUTH,
-	MSN_ERROR_BAD_BLIST,
-	MSN_ERROR_SIGN_OTHER,
-	MSN_ERROR_SERV_DOWN,
-	MSN_ERROR_SERV_UNAVAILABLE
-
+    MSN_ERROR_SERVCONN,
+    MSN_ERROR_UNSUPPORTED_PROTOCOL,
+    MSN_ERROR_HTTP_MALFORMED,
+    MSN_ERROR_AUTH,
+    MSN_ERROR_BAD_BLIST,
+    MSN_ERROR_SIGN_OTHER,
+    MSN_ERROR_SERV_DOWN,
+    MSN_ERROR_SERV_UNAVAILABLE
 } MsnErrorType;
 
 /**
@@ -58,98 +48,71 @@ typedef enum
  */
 typedef enum
 {
-	MSN_LOGIN_STEP_START,
-	MSN_LOGIN_STEP_HANDSHAKE,
-	MSN_LOGIN_STEP_TRANSFER,
-	MSN_LOGIN_STEP_HANDSHAKE2,
-	MSN_LOGIN_STEP_AUTH_START,
-	MSN_LOGIN_STEP_AUTH,
-	MSN_LOGIN_STEP_GET_COOKIE,
-	MSN_LOGIN_STEP_AUTH_END,
-	MSN_LOGIN_STEP_SYN,
-	MSN_LOGIN_STEP_END
-
+    MSN_LOGIN_STEP_START,
+    MSN_LOGIN_STEP_HANDSHAKE,
+    MSN_LOGIN_STEP_TRANSFER,
+    MSN_LOGIN_STEP_HANDSHAKE2,
+    MSN_LOGIN_STEP_AUTH_START,
+    MSN_LOGIN_STEP_AUTH,
+    MSN_LOGIN_STEP_GET_COOKIE,
+    MSN_LOGIN_STEP_AUTH_END,
+    MSN_LOGIN_STEP_SYN,
+    MSN_LOGIN_STEP_END
 } MsnLoginStep;
 
 #define MSN_LOGIN_STEPS MSN_LOGIN_STEP_END
 
 #include "switchboard.h"
 
-struct MsnSession
-{
-	struct _PurpleAccount *account;
-	struct MsnUser *user;
-
-	guint protocol_ver;
-
-	MsnLoginStep login_step; /**< The current step in the login process. */
-
-	gboolean connected;
-	gboolean logged_in; /**< A temporal flag to ignore local buddy list adds. */
-	gboolean destroying; /**< A flag that states if the session is being destroyed. */
-	gboolean http_method;
-        struct ConnObject *http_conn;
-
-	struct MsnNotification *notification;
-	struct MsnNexus *nexus;
-	struct MsnSync *sync;
-
-	struct MsnUserList *userlist;
-
-	int servconns_count; /**< The count of server connections. */
-	GList *switches; /**< The list of all the switchboards. */
-	GList *directconns; /**< The list of all the directconnections. */
-	GList *slplinks; /**< The list of all the slplinks. */
-
-	int conv_seq; /**< The current conversation sequence number. */
-
-	struct
-	{
-		char *kv;
-		char *sid;
-		char *mspauth;
-		unsigned long sl;
-		char *file;
-		char *client_ip;
-		int client_port;
-
-	} passport_info;
-};
-
 /**
- * Creates an MSN session.
+ * Creates a new MSN session.
  *
  * @param account The account.
  *
  * @return The new MSN session.
  */
-MsnSession *msn_session_new(struct _PurpleAccount *account);
+MsnSession *
+msn_session_new (struct _PurpleAccount *account);
 
 /**
  * Destroys an MSN session.
  *
- * @param session The MSN session to destroy.
+ * @param session The MSN session.
  */
-void msn_session_destroy(MsnSession *session);
+void
+msn_session_destroy (MsnSession *session);
+
+/**
+ * Gets the session account.
+ *
+ * @param The MSN session.
+ *
+ * @return The libpurple account.
+ */
+struct _PurpleAccount *
+msn_session_get_account (MsnSession *session);
 
 /**
  * Connects to and initiates an MSN session.
  *
- * @param session     The MSN session.
- * @param host        The dispatch server host.
- * @param port        The dispatch server port.
+ * @param session The MSN session.
+ * @param host The dispatch server host.
+ * @param port The dispatch server port.
  *
  * @return @c TRUE on success, @c FALSE on failure.
  */
-gboolean msn_session_connect(MsnSession *session,
-							 const char *host, int port);
+gboolean
+msn_session_connect (MsnSession *session,
+                     const gchar *host,
+                     gint port);
 
 /**
  * Disconnects from an MSN session.
  *
  * @param session The MSN session.
  */
-void msn_session_disconnect(MsnSession *session);
+void
+msn_session_disconnect (MsnSession *session);
 
  /**
  * Finds a switchboard with the given username.
@@ -159,19 +122,22 @@ void msn_session_disconnect(MsnSession *session);
  *
  * @return The switchboard, if found.
  */
-struct MsnSwitchBoard *msn_session_find_swboard(MsnSession *session,
-										 const char *username);
+struct MsnSwitchBoard *
+msn_session_find_swboard (const MsnSession *session,
+                          const gchar *username);
 
  /**
  * Finds a switchboard with the given conversation.
  *
  * @param session The MSN session.
- * @param conv    The conversation to search for.
+ * @param conv The conversation to search for.
  *
  * @return The switchboard, if found.
  */
-struct MsnSwitchBoard *msn_session_find_swboard_with_conv(MsnSession *session,
-												   struct _PurpleConversation *conv);
+struct MsnSwitchBoard *
+msn_session_find_swboard_with_conv (const MsnSession *session,
+                                    const struct _PurpleConversation *conv);
+
 /**
  * Finds a switchboard with the given chat ID.
  *
@@ -180,8 +146,9 @@ struct MsnSwitchBoard *msn_session_find_swboard_with_conv(MsnSession *session,
  *
  * @return The switchboard, if found.
  */
-struct MsnSwitchBoard *msn_session_find_swboard_with_id(const MsnSession *session,
-												 int chat_id);
+struct MsnSwitchBoard *
+msn_session_find_swboard_with_id (const MsnSession *session,
+                                  gint chat_id);
 
 /**
  * Returns a switchboard to communicate with certain username.
@@ -192,8 +159,10 @@ struct MsnSwitchBoard *msn_session_find_swboard_with_id(const MsnSession *sessio
  *
  * @return The switchboard.
  */
-struct MsnSwitchBoard *msn_session_get_swboard(MsnSession *session,
-										const char *username, MsnSBFlag flag);
+struct MsnSwitchBoard *
+msn_session_get_swboard (MsnSession *session,
+                         const gchar *username,
+                         MsnSBFlag flag);
 
 /**
  * Sets an error for the MSN session.
@@ -202,8 +171,10 @@ struct MsnSwitchBoard *msn_session_get_swboard(MsnSession *session,
  * @param error The error.
  * @param info Extra information.
  */
-void msn_session_set_error(MsnSession *session, MsnErrorType error,
-						   const char *info);
+void
+msn_session_set_error (MsnSession *session,
+                       MsnErrorType error,
+                       const gchar *info);
 
 /**
  * Sets the current step in the login proccess.
@@ -211,13 +182,16 @@ void msn_session_set_error(MsnSession *session, MsnErrorType error,
  * @param session The MSN session.
  * @param step The current step.
  */
-void msn_session_set_login_step(MsnSession *session, MsnLoginStep step);
+void
+msn_session_set_login_step (MsnSession *session,
+                            MsnLoginStep step);
 
 /**
  * Finish the login proccess.
  *
  * @param session The MSN session.
  */
-void msn_session_finish_login(MsnSession *session);
+void
+msn_session_finish_login (MsnSession *session);
 
 #endif /* MSN_SESSION_H */

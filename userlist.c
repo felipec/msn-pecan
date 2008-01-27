@@ -20,11 +20,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
+#include "session.h"
 #include "userlist.h"
 #include "userlist_private.h"
 #include "user_private.h"
 #include "msn_log.h"
 
+#include "session_private.h"
 #include "notification.h"
 
 #include <string.h>

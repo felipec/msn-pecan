@@ -22,10 +22,13 @@
 
 #include "state.h"
 
-#include "msn.h"
 #include "session.h"
 #include "notification.h"
 #include "user.h"
+
+#include "session_private.h"
+
+#include "msn.h"
 
 #include <string.h>
 #include "msn_intl.h"

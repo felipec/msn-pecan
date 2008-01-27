@@ -293,7 +293,7 @@ connect_impl (ConnObject *conn,
 
     if (!conn->channel)
     {
-        conn->connect_data = purple_proxy_connect (NULL, conn->session->account,
+        conn->connect_data = purple_proxy_connect (NULL, msn_session_get_account (conn->session),
                                                    http_conn->gateway, 80, connect_cb, conn);
         return;
     }
