@@ -51,8 +51,6 @@
 #include <glib/gstdio.h>
 
 #include <string.h>
-#include <errno.h>
-#include <arpa/inet.h>
 
 /* libpurple stuff. */
 #include <account.h>
@@ -1009,11 +1007,12 @@ url_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     PurpleCipher *cipher;
     PurpleCipherContext *context;
     guchar digest[16];
-    FILE *fd;
     char *buf;
     char buf2[3];
     char sendbuf[64];
     int i;
+    GError *error = NULL;
+    gint fd;
 
     session = cmdproc->session;
     account = session->account;
@@ -1049,87 +1048,66 @@ url_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         g_free(session->passport_info.file);
     }
 
-    if ((fd = purple_mkstemp(&session->passport_info.file, FALSE)) == NULL)
+    if ((fd = g_file_open_tmp ("XXXXXX.html", &session->passport_info.file, &error)))
     {
-        msn_error ("error opening temp passport file: errno=[%s]",
-                   strerror(errno));
-    }
-    else
-    {
-#ifdef _WIN32
-        fputs("<!-- saved from url=(0013)about:internet -->\n", fd);
-#endif
-        fputs("<html>\n"
-              "<head>\n"
-              "<noscript>\n"
-              "<meta http-equiv=\"Refresh\" content=\"0; "
-              "url=http://www.hotmail.com\">\n"
-              "</noscript>\n"
-              "</head>\n\n",
-              fd);
+        GString *str;
+        str = g_string_new (NULL);
 
-        fprintf(fd, "<body onload=\"document.pform.submit(); \">\n");
-        fprintf(fd, "<form name=\"pform\" action=\"%s\" method=\"POST\">\n\n",
-                url);
-        fprintf(fd, "<input type=\"hidden\" name=\"mode\" value=\"ttl\">\n");
-        fprintf(fd, "<input type=\"hidden\" name=\"login\" value=\"%s\">\n",
-                purple_account_get_username(account));
-        fprintf(fd, "<input type=\"hidden\" name=\"username\" value=\"%s\">\n",
-                purple_account_get_username(account));
+        g_string_append_printf (str,
+                                "<html>\n"
+                                "<head>\n"
+                                "<noscript>\n"
+                                "<meta http-equiv=\"Refresh\" content=\"0; "
+                                "url=http://www.hotmail.com\">\n"
+                                "</noscript>\n"
+                                "</head>\n\n");
+
+        g_string_append_printf (str, "<body onload=\"document.pform.submit(); \">\n");
+        g_string_append_printf (str, "<form name=\"pform\" action=\"%s\" method=\"POST\">\n\n",
+                                url);
+        g_string_append_printf (str, "<input type=\"hidden\" name=\"mode\" value=\"ttl\">\n");
+        g_string_append_printf (str, "<input type=\"hidden\" name=\"login\" value=\"%s\">\n",
+                                purple_account_get_username (account));
+        g_string_append_printf (str, "<input type=\"hidden\" name=\"username\" value=\"%s\">\n",
+                                purple_account_get_username (account));
         if (session->passport_info.sid != NULL)
-            fprintf(fd, "<input type=\"hidden\" name=\"sid\" value=\"%s\">\n",
-                    session->passport_info.sid);
+            g_string_append_printf (str, "<input type=\"hidden\" name=\"sid\" value=\"%s\">\n",
+                                    session->passport_info.sid);
         if (session->passport_info.kv != NULL)
-            fprintf(fd, "<input type=\"hidden\" name=\"kv\" value=\"%s\">\n",
-                    session->passport_info.kv);
-        fprintf(fd, "<input type=\"hidden\" name=\"id\" value=\"2\">\n");
-        fprintf(fd, "<input type=\"hidden\" name=\"sl\" value=\"%ld\">\n",
-                time(NULL) - session->passport_info.sl);
-        fprintf(fd, "<input type=\"hidden\" name=\"rru\" value=\"%s\">\n",
-                rru);
+            g_string_append_printf (str, "<input type=\"hidden\" name=\"kv\" value=\"%s\">\n",
+                                    session->passport_info.kv);
+        g_string_append_printf (str, "<input type=\"hidden\" name=\"id\" value=\"2\">\n");
+        g_string_append_printf (str, "<input type=\"hidden\" name=\"sl\" value=\"%ld\">\n",
+                                time (NULL) - session->passport_info.sl);
+        g_string_append_printf (str, "<input type=\"hidden\" name=\"rru\" value=\"%s\">\n",
+                                rru);
         if (session->passport_info.mspauth != NULL)
-            fprintf(fd, "<input type=\"hidden\" name=\"auth\" value=\"%s\">\n",
-                    session->passport_info.mspauth);
-        fprintf(fd, "<input type=\"hidden\" name=\"creds\" value=\"%s\">\n",
-                sendbuf); /* TODO Digest me (huh? -- ChipX86) */
-        fprintf(fd, "<input type=\"hidden\" name=\"svc\" value=\"mail\">\n");
-        fprintf(fd, "<input type=\"hidden\" name=\"js\" value=\"yes\">\n");
-        fprintf(fd, "</form></body>\n");
-        fprintf(fd, "</html>\n");
+            g_string_append_printf (str, "<input type=\"hidden\" name=\"auth\" value=\"%s\">\n",
+                                    session->passport_info.mspauth);
+        g_string_append_printf (str, "<input type=\"hidden\" name=\"creds\" value=\"%s\">\n",
+                                sendbuf); /* TODO Digest me (huh? -- ChipX86) */
+        g_string_append_printf (str, "<input type=\"hidden\" name=\"svc\" value=\"mail\">\n");
+        g_string_append_printf (str, "<input type=\"hidden\" name=\"js\" value=\"yes\">\n");
+        g_string_append_printf (str, "</form></body>\n");
+        g_string_append_printf (str, "</html>\n");
 
-        if (fclose(fd))
         {
-            msn_error ("error closing temp passport file: errno=[%s]",
-                       strerror(errno));
-
-            g_unlink(session->passport_info.file);
-            g_free(session->passport_info.file);
-            session->passport_info.file = NULL;
+            GIOChannel *channel;
+            channel = g_io_channel_unix_new (fd);
+            g_io_channel_write_chars (channel, str->str, str->len, NULL, &error);
+            g_io_channel_shutdown (channel, TRUE, &error);
+            g_io_channel_unref (channel);
         }
-#ifdef _WIN32
-        else
-        {
-            /*
-             * Renaming file with .html extension, so that the
-             * win32 open_url will work.
-             */
-            char *tmp;
 
-            if ((tmp =
-                 g_strdup_printf("%s.html",
-                                 session->passport_info.file)) != NULL)
-            {
-                if (g_rename(session->passport_info.file,
-                             tmp) == 0)
-                {
-                    g_free(session->passport_info.file);
-                    session->passport_info.file = tmp;
-                }
-                else
-                    g_free(tmp);
-            }
-        }
-#endif
+        g_string_free (str, TRUE);
+    }
+
+    if (error)
+    {
+        msn_error ("error opening temp passport file: [%s]",
+                   error->message);
+
+        g_error_free (error);
     }
 }
 /**************************************************************************
@@ -1238,7 +1216,7 @@ profile_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     }
 
     if ((value = msn_message_get_attr(msg, "ClientPort")) != NULL)
-        session->passport_info.client_port = ntohs(atoi(value));
+        session->passport_info.client_port = g_ntohs(atoi(value));
 
     if ((value = msn_message_get_attr(msg, "LoginTime")) != NULL)
         session->passport_info.sl = atol(value);
