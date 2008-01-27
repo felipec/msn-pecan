@@ -41,6 +41,7 @@ struct HttpConnObject
     gchar *gateway;
 
     GHashTable *childs;
+    ConnObject *cur;
 };
 
 struct HttpConnObjectClass

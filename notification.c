@@ -74,7 +74,7 @@ open_cb (ConnObject *conn)
     else
         msn_session_set_login_step (session, MSN_LOGIN_STEP_HANDSHAKE2);
 
-    msn_cmdproc_send (cmd_conn->cmdproc, "VER", "MSNP9 CVR0");
+    msn_cmdproc_send (cmd_conn->cmdproc, "VER", "MSNP9 MSNP8 CVR0");
 
     msn_log ("end");
 }
@@ -113,6 +113,30 @@ close_cb (ConnObject *conn,
  * Main
  **************************************************************************/
 
+static void
+error_handler (MsnCmdProc *cmdproc,
+               MsnTransaction *trans,
+               gint error)
+{
+    MsnNotification *notification;
+    char *tmp;
+
+    notification = cmdproc->data;
+
+    {
+        const gchar *reason;
+
+        reason = msn_error_get_text (error);
+
+        msn_error ("connection error: (NS):reason=[%s]", reason);
+        tmp = g_strdup_printf (_("Error on notification server:\n%s"), reason);
+    }
+
+    msn_session_set_error (notification->session, MSN_ERROR_SERVCONN, tmp);
+
+    g_free (tmp);
+}
+
 MsnNotification *
 msn_notification_new(MsnSession *session)
 {
@@ -132,6 +156,7 @@ msn_notification_new(MsnSession *session)
         {
             MsnCmdProc *cmdproc;
             cmdproc = msn_cmdproc_new (session);
+            cmdproc->error_handler = error_handler;
             notification->conn->cmdproc = cmdproc;
             notification->cmdproc = cmdproc;
 

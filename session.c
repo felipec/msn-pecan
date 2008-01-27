@@ -147,6 +147,8 @@ msn_session_disconnect(MsnSession *session)
 
 	if (session->notification != NULL)
 		msn_notification_close(session->notification);
+
+        conn_object_close (session->http_conn);
 }
 
 /* TODO: This must go away when conversation is redesigned */

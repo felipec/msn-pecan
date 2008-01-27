@@ -27,6 +27,43 @@ static ConnObjectClass *parent_class = NULL;
 #include <proxy.h> /* libpurple */
 #include "session.h"
 
+typedef struct
+{
+    ConnObject *conn;
+    gchar *body;
+    gsize body_len;
+} HttpQueueData;
+
+static GIOStatus
+foo_write (ConnObject *conn,
+           ConnObject *prev,
+           const gchar *buf,
+           gsize count,
+           gsize *ret_bytes_written,
+           GError **error);
+
+static void
+process_queue (HttpConnObject *http_conn,
+               GError **error)
+{
+    HttpQueueData *queue_data;
+
+    queue_data = g_queue_pop_head (http_conn->write_queue);
+
+    if (queue_data)
+    {
+        foo_write (CONN_OBJECT (http_conn),
+                   queue_data->conn,
+                   queue_data->body,
+                   queue_data->body_len,
+                   NULL,
+                   error);
+        g_object_unref (G_OBJECT (queue_data->conn));
+        g_free (queue_data->body);
+        g_free (queue_data);
+    }
+}
+
 static gboolean
 read_cb (GIOChannel *source,
          GIOCondition condition,
@@ -36,6 +73,8 @@ read_cb (GIOChannel *source,
     gchar buf[MSN_BUF_LEN];
     gsize bytes_read;
 
+    msn_log ("begin");
+
     conn = CONN_OBJECT (data);
 
     msn_debug ("source=%p", source);
@@ -43,7 +82,7 @@ read_cb (GIOChannel *source,
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
-        conn_object_read (conn, buf, sizeof (buf), &bytes_read, &conn->error);
+        status = conn_object_read (conn, buf, sizeof (buf), &bytes_read, &conn->error);
 
         if (status == G_IO_STATUS_AGAIN)
             return TRUE;
@@ -61,12 +100,34 @@ read_cb (GIOChannel *source,
         }
     }
 
-    if (conn->cur)
+    if (!conn->error)
     {
-        conn_object_parse (conn->cur, buf, bytes_read);
-        g_object_unref (G_OBJECT (conn->cur));
-        conn->cur = NULL;
+        HttpConnObject *http_conn;
+
+        http_conn = HTTP_CONN_OBJECT (conn);
+
+        g_object_ref (http_conn);
+
+        if (http_conn->cur)
+        {
+            conn_object_parse (http_conn->cur, buf, bytes_read);
+        }
+
+        http_conn->waiting_response = FALSE;
+
+        process_queue (http_conn, &conn->error);
+
+        if (conn->error)
+        {
+            conn_object_error (conn);
+            g_object_unref (http_conn);
+            return FALSE;
+        }
+
+        g_object_unref (http_conn);
     }
+
+    msn_log ("end");
 
     return TRUE;
 }
@@ -98,14 +159,6 @@ http_conn_object_free (HttpConnObject *http_conn)
     msn_log ("end");
 }
 
-typedef struct
-{
-    HttpConnObject *http_conn;
-    ConnObject *conn;
-    gchar *body;
-    gsize body_len;
-} HttpQueueData;
-
 static gboolean
 http_poll (gpointer data)
 {
@@ -126,10 +179,10 @@ http_poll (gpointer data)
 
     msn_debug ("channel=%p", conn->channel);
 
-    if (http_conn->last_session_id == NULL)
+    if (!http_conn->cur)
         return TRUE;
 
-    g_return_val_if_fail (http_conn->last_session_id != NULL, FALSE);
+    g_return_val_if_fail (http_conn->cur, FALSE);
 
     if (http_conn->waiting_response)
     {
@@ -139,7 +192,7 @@ http_poll (gpointer data)
     }
 
     params = g_strdup_printf ("Action=poll&SessionID=%s",
-                              http_conn->last_session_id);
+                              (gchar *) http_conn->cur->foo_data);
 
     header = g_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
                               "Accept: */*\r\n"
@@ -213,13 +266,10 @@ connect_cb (gpointer data,
         conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, conn);
     }
 
-    if (conn->cur)
     {
         ConnObjectClass *class;
         class = g_type_class_peek (CONN_OBJECT_TYPE);
-        g_signal_emit (G_OBJECT (conn->cur), class->open_sig, 0, conn->cur);
-        g_object_unref (G_OBJECT (conn->cur));
-        conn->cur = NULL;
+        g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
     }
 
     msn_log ("end");
@@ -238,10 +288,6 @@ connect_impl (ConnObject *conn,
 
     if (!conn->channel)
     {
-        if (conn->cur)
-            msn_error ("cur=%p", conn->cur);
-        conn->cur = conn->prev;
-        g_object_ref (G_OBJECT (conn->cur));
         conn->connect_data = purple_proxy_connect (NULL, conn->session->account,
                                                    http_conn->gateway, 80, connect_cb, conn);
         return;
@@ -295,34 +341,6 @@ close_impl (ConnObject *conn)
     CONN_OBJECT_CLASS (parent_class)->close (conn);
 
     msn_log ("end");
-}
-
-static void
-process_queue (HttpConnObject *http_conn,
-               GError **error)
-{
-    http_conn->waiting_response = FALSE;
-
-    {
-        HttpQueueData *queue_data;
-
-        queue_data = g_queue_pop_head (http_conn->write_queue);
-
-        if (queue_data)
-        {
-            CONN_OBJECT (queue_data->http_conn)->cur = queue_data->conn;
-
-            conn_object_write (CONN_OBJECT (queue_data->http_conn),
-                               queue_data->body,
-                               queue_data->body_len,
-                               NULL,
-                               error);
-
-            g_object_unref (G_OBJECT (queue_data->conn));
-            g_free (queue_data->body);
-            g_free (queue_data);
-        }
-    }
 }
 
 static GIOStatus
@@ -526,8 +544,9 @@ read_impl (ConnObject *conn,
                         ConnObject *foo;
                         g_hash_table_remove (http_conn->childs, session_id);
                         conn_object_close (child);
-                        list = g_hash_table_get_keys (http_conn->childs);
-                        if (list)
+                        list = g_hash_table_get_values (http_conn->childs);
+                        msn_info ("removing child: %d", g_hash_table_size (http_conn->childs));
+                        if (list && list->data)
                         {
                             foo = CONN_OBJECT (list->data);
                             http_conn->last_session_id = g_strdup (foo->foo_data);
@@ -544,17 +563,15 @@ read_impl (ConnObject *conn,
                 {
                     if (!child)
                     {
-                        if (conn->cur)
-                        {
-                            /** @todo properly ref/unref childs */
-                            msn_info ("adding child");
-                            conn->cur->foo_data = g_strdup (http_conn->last_session_id);
-                            g_hash_table_insert (http_conn->childs, g_strdup (session_id), conn->cur);
-                        }
-                        else
-                        {
-                            msn_info ("error");
-                        }
+                        child = http_conn->cur;
+                        msn_info ("adding child: %p", child);
+                        g_hash_table_insert (http_conn->childs, g_strdup (session_id), g_object_ref (child));
+                        g_object_unref (G_OBJECT (http_conn->cur));
+                    }
+
+                    if (child)
+                    {
+                        child->foo_data = g_strdup (http_conn->last_session_id);
                     }
 
                     msn_info ("session=%s", http_conn->session);
@@ -586,8 +603,6 @@ leave:
 
     if (tmp_error)
         g_propagate_error (error, tmp_error);
-    else
-        process_queue (http_conn, &tmp_error);
 
     msn_log ("end");
 
@@ -595,42 +610,21 @@ leave:
 }
 
 static GIOStatus
-write_impl (ConnObject *conn,
-            const gchar *buf,
-            gsize count,
-            gsize *ret_bytes_written,
-            GError **error)
+foo_write (ConnObject *conn,
+           ConnObject *prev,
+           const gchar *buf,
+           gsize count,
+           gsize *ret_bytes_written,
+           GError **error)
 {
-    HttpConnObject *http_conn;
-    ConnObject *prev;
     GIOStatus status = G_IO_STATUS_NORMAL;
+    HttpConnObject *http_conn;
     GError *tmp_error = NULL;
     gsize bytes_written = 0;
 
     http_conn = HTTP_CONN_OBJECT (conn);
-    prev = CONN_OBJECT (conn->prev);
 
     msn_debug ("channel=%p", conn->channel);
-    msn_debug ("conn=%p,prev=%p", conn, prev);
-
-    g_return_val_if_fail (prev, G_IO_STATUS_ERROR);
-
-    if (http_conn->waiting_response)
-    {
-        HttpQueueData *queue_data;
-
-        queue_data = g_new0 (HttpQueueData, 1);
-
-        queue_data->http_conn = http_conn;
-        g_object_ref (G_OBJECT (prev));
-        queue_data->conn = prev;
-        queue_data->body = g_memdup (buf, count);
-        queue_data->body_len = count;
-
-        g_queue_push_tail (http_conn->write_queue, queue_data);
-
-        return status;
-    }
 
     {
         gchar *params;
@@ -687,11 +681,10 @@ write_impl (ConnObject *conn,
     {
         msn_log ("bytes_written=%d", bytes_written);
         http_conn->waiting_response = TRUE;
+        g_object_unref (http_conn->cur);
+        http_conn->cur = prev;
+        g_object_ref (G_OBJECT (http_conn->cur));
 
-        if (conn->cur)
-            msn_error ("cur=%p", conn->cur);
-        conn->cur = prev;
-        g_object_ref (G_OBJECT (conn->cur));
     }
     else
     {
@@ -703,6 +696,45 @@ write_impl (ConnObject *conn,
 
     if (tmp_error)
         g_propagate_error (error, tmp_error);
+
+    return status;
+}
+
+static GIOStatus
+write_impl (ConnObject *conn,
+            const gchar *buf,
+            gsize count,
+            gsize *ret_bytes_written,
+            GError **error)
+{
+    HttpConnObject *http_conn;
+    ConnObject *prev;
+    GIOStatus status = G_IO_STATUS_NORMAL;
+
+    http_conn = HTTP_CONN_OBJECT (conn);
+    prev = CONN_OBJECT (conn->prev);
+
+    msn_debug ("channel=%p", conn->channel);
+    msn_debug ("conn=%p,prev=%p", conn, prev);
+
+    g_return_val_if_fail (prev, G_IO_STATUS_ERROR);
+
+    if (http_conn->waiting_response)
+    {
+        HttpQueueData *queue_data;
+
+        queue_data = g_new0 (HttpQueueData, 1);
+
+        g_object_ref (G_OBJECT (prev));
+        queue_data->conn = prev;
+        queue_data->body = g_memdup (buf, count);
+        queue_data->body_len = count;
+
+        g_queue_push_tail (http_conn->write_queue, queue_data);
+        return status;
+    }
+
+    status = foo_write (conn, prev, buf, count, ret_bytes_written, error);
 
     return status;
 }
@@ -758,7 +790,7 @@ instance_init (GTypeInstance *instance,
 
     http_conn->gateway = g_strdup ("gateway.messenger.hotmail.com");
     http_conn->write_queue = g_queue_new ();
-    http_conn->childs = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+    http_conn->childs = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
 }
 
 GType

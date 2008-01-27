@@ -25,6 +25,7 @@
 
 #include "cmdproc.h"
 #include "table.h"
+#include "transaction.h"
 
 struct MsnSession;
 struct MsnHistory;
@@ -39,6 +40,7 @@ struct MsnCmdProc
     MsnCommand *last_cmd;
 
     MsnTable *cbs_table;
+    MsnErrorCb error_handler;
 
     gpointer data; /**< Extra data, like the switchboard. */
     guint cmd_count;

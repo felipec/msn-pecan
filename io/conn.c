@@ -88,13 +88,11 @@ read_cb (GIOChannel *source,
         }
     }
 
-    conn_object_parse (conn->cur ? conn->cur : conn,
-                       buf, bytes_read);
+    conn_object_parse (conn, buf, bytes_read);
 
     return TRUE;
 }
 
-#if 0
 static void
 open_cb (ConnObject *next,
          gpointer data)
@@ -111,9 +109,11 @@ open_cb (ConnObject *next,
         g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
     }
 
+    g_signal_handler_disconnect (conn->next, conn->open_sig_handler);
+    conn->open_sig_handler = 0;
+
     msn_log ("end");
 }
-#endif
 
 static void
 close_cb (ConnObject *next,
@@ -224,6 +224,7 @@ conn_object_link (ConnObject *conn,
                   ConnObject *next)
 {
     conn->next = g_object_ref (next);
+    conn->open_sig_handler = g_signal_connect (next, "open", G_CALLBACK (open_cb), conn);
     conn->close_sig_handler = g_signal_connect (next, "close", G_CALLBACK (close_cb), conn);
     conn->error_sig_handler = g_signal_connect (next, "error", G_CALLBACK (error_cb), conn);
 }
@@ -310,6 +311,10 @@ connect_impl (ConnObject *conn,
     msn_debug ("hostname=%s,port=%d", hostname, port);
     msn_debug ("next=%p", conn->next);
 
+    g_free (conn->hostname);
+    conn->hostname = g_strdup (hostname);
+    conn->port = port;
+
     if (conn->next)
     {
         conn->next->prev = conn;
@@ -334,6 +339,11 @@ close_impl (ConnObject *conn)
 
     msn_log ("begin");
 
+    msn_log ("conn=%p,name=%s", conn, conn->name);
+
+    g_free (conn->hostname);
+    conn->hostname = NULL;
+
     if (!conn->channel)
     {
         msn_warning ("not connected: conn=%p", conn);
@@ -356,9 +366,6 @@ close_impl (ConnObject *conn)
     g_io_channel_shutdown (conn->channel, FALSE, NULL);
     g_io_channel_unref (conn->channel);
     conn->channel = NULL;
-
-    g_free (conn->hostname);
-    conn->hostname = NULL;
 
     msn_log ("end");
 }
@@ -434,6 +441,7 @@ read_impl (ConnObject *conn,
 
     if (conn->next)
     {
+        msn_error ("whaaat");
         conn->next->prev = conn;
         status = conn_object_read (conn->next, buf, count, ret_bytes_read, error);
         conn->next->prev = NULL;
@@ -482,7 +490,7 @@ conn_object_dispose (GObject *obj)
 
     if (conn->next)
     {
-        msn_debug ("removing signals: %p, %p", conn, conn->next);
+        g_signal_handler_disconnect (conn->next, conn->open_sig_handler);
         g_signal_handler_disconnect (conn->next, conn->close_sig_handler);
         g_signal_handler_disconnect (conn->next, conn->error_sig_handler);
         conn_object_free (conn->next);
