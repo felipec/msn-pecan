@@ -25,8 +25,6 @@
 
 #include "msn-config.h"
 
-#define MSN_DEBUG 1
-
 #define MSN_BUF_LEN 8192
 
 #define USEROPT_MSNSERVER 3
