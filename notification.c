@@ -22,7 +22,6 @@
 
 #include "notification.h"
 #include "msn_log.h"
-#include "userlist.h"
 #include "sync.h"
 #include "nexus.h"
 
@@ -33,8 +32,9 @@
 #include "transaction_private.h"
 #include "msg_private.h"
 
-#include "userlist_private.h"
-#include "user_private.h"
+#include "ab/userlist.h"
+#include "ab/userlist_private.h"
+#include "ab/user_private.h"
 
 #include "io/cmd_conn.h"
 #include "io/http_conn.h"

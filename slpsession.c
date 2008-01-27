@@ -21,7 +21,8 @@
 #include "session.h"
 #include "slplink.h"
 #include "slpcall.h"
-#include "user.h"
+
+#include "ab/user.h"
 
 /**************************************************************************
  * SLP Session

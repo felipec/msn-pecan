@@ -26,8 +26,10 @@
 #include "session.h"
 #include "io/conn.h"
 
-#include "user.h"
-#include "userlist.h"
+#include "ab/user.h"
+#include "ab/userlist.h"
+
+#include "io/conn.h"
 
 struct MsnNotification;
 struct MsnNexus;
@@ -39,7 +41,7 @@ struct _PurpleConversation;
 struct MsnSession
 {
     struct _PurpleAccount *account;
-    struct MsnUser *user;
+    MsnUser *user;
 
     guint protocol_ver;
 
@@ -49,13 +51,13 @@ struct MsnSession
     gboolean logged_in; /**< A temporal flag to ignore local buddy list adds. */
     gboolean destroying; /**< A flag that states if the session is being destroyed. */
     gboolean http_method;
-    struct ConnObject *http_conn;
+    ConnObject *http_conn;
 
     struct MsnNotification *notification;
     struct MsnNexus *nexus;
     struct MsnSync *sync;
 
-    struct MsnUserList *userlist;
+    MsnUserList *userlist;
 
     int servconns_count; /**< The count of server connections. */
     GList *switches; /**< The list of all the switchboards. */

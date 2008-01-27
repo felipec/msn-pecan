@@ -31,11 +31,11 @@
 #include "cmdproc_private.h"
 #include "msg_private.h"
 
-#include "userlist_private.h"
-#include "user_private.h"
+#include "ab/user.h"
+#include "ab/userlist_private.h"
+#include "ab/user_private.h"
 
 #include "object.h"
-#include "user.h"
 #include "switchboard.h"
 
 #ifdef MSN_DIRECTCONN

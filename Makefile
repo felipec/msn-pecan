@@ -12,7 +12,6 @@ objects = \
 	command.o \
 	directconn.o \
 	error.o \
-	group.o \
 	history.o \
 	msg.o \
 	msn.o \
@@ -31,11 +30,12 @@ objects = \
 	sync.o \
 	table.o \
 	transaction.o \
-	user.o \
-	userlist.o \
 	msn_io.o \
 	msn_log.o \
 	msn_util.o \
+	ab/group.o \
+	ab/user.o \
+	ab/userlist.o \
 	io/conn.o \
 	io/cmd_conn.o \
 	io/http_conn.o \

@@ -24,7 +24,8 @@
 
 #include "session.h"
 #include "notification.h"
-#include "user.h"
+
+#include "ab/user.h"
 
 #include "session_private.h"
 

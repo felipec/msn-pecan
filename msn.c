@@ -45,7 +45,8 @@
 #include "slplink.h"
 
 #include "session_private.h"
-#include "user_private.h"
+
+#include "ab/user_private.h"
 
 /* libpurple stuff. */
 #include <debug.h>
