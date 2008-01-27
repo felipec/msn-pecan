@@ -1,7 +1,5 @@
 /**
- * @file sync.h MSN list synchronization functions
- *
- * purple
+ * Copyright (C) 2008 Felipe Contreras.
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -22,8 +20,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#ifndef MSN_SYNC_H_
-#define MSN_SYNC_H_
+#ifndef MSN_SYNC_H
+#define MSN_SYNC_H
 
 typedef struct MsnSync MsnSync;
 
@@ -33,21 +31,21 @@ typedef struct MsnSync MsnSync;
 
 struct MsnSync
 {
-	MsnSession *session;
-	MsnTable *cbs_table;
-	MsnTable *old_cbs_table;
+    MsnSession *session;
+    MsnTable *cbs_table;
+    MsnTable *old_cbs_table;
 
-	int num_users;
-	int total_users;
-	int num_groups;
-	int total_groups;
-	MsnUser *last_user;
+    gint num_users;
+    gint total_users;
+    gint num_groups;
+    gint total_groups;
+    MsnUser *last_user;
 };
 
-void msn_sync_init(void);
-void msn_sync_end(void);
+void msn_sync_init (void);
+void msn_sync_end (void);
 
-MsnSync * msn_sync_new(MsnSession *session);
-void msn_sync_destroy(MsnSync *sync);
+MsnSync *msn_sync_new (MsnSession *session);
+void msn_sync_destroy (MsnSync *sync);
 
-#endif /* MSN_SYNC_H_ */
+#endif /* MSN_SYNC_H */
