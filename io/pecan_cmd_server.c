@@ -55,10 +55,11 @@ pecan_cmd_server_free (PecanCmdServer *conn)
     msn_log ("end");
 }
 
+#if 0
 void
 pecan_cmd_server_send (PecanCmdServer *conn,
-                      const char *command,
-                      const char *format,
+                      const gchar *command,
+                      const gchar *format,
                       ...)
 {
     va_list args;
@@ -74,6 +75,7 @@ pecan_cmd_server_send (PecanCmdServer *conn,
         msn_cmdproc_send_valist (conn->cmdproc, command, format, args);
     }
 }
+#endif
 
 static void
 parse_impl (PecanNode *base_conn,
@@ -286,20 +288,15 @@ pecan_cmd_server_get_type (void)
 
     if (type == 0) 
     {
-        static const GTypeInfo type_info =
-        {
-            sizeof (PecanCmdServerClass),
-            NULL, /* base_init */
-            NULL, /* base_finalize */
-            class_init, /* class_init */
-            NULL, /* class_finalize */
-            NULL, /* class_data */
-            sizeof (PecanCmdServer),
-            0, /* n_preallocs */
-            instance_init /* instance_init */
-        };
+        GTypeInfo *type_info;
 
-        type = g_type_register_static (PECAN_NODE_TYPE, "PecanCmdServerType", &type_info, 0);
+        type_info = g_new0 (GTypeInfo, 1);
+        type_info->class_size = sizeof (PecanCmdServerClass);
+        type_info->class_init = class_init;
+        type_info->instance_size = sizeof (PecanCmdServer);
+        type_info->instance_init = instance_init;
+
+        type = g_type_register_static (PECAN_NODE_TYPE, "PecanCmdServerType", type_info, 0);
     }
 
     return type;

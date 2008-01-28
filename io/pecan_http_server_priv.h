@@ -49,6 +49,6 @@ struct PecanHttpServerClass
     PecanNodeClass parent_class;
 };
 
-GType pecan_http_server_get_type ();
+GType pecan_http_server_get_type (void);
 
 #endif /* PECAN_HTTP_SERVER_PRIVATE_H */

@@ -30,7 +30,9 @@
 
 #include "io/pecan_node.h"
 
+#ifndef _WIN32
 #include <netdb.h>
+#endif
 
 /* libpurple stuff. */
 #include <proxy.h>

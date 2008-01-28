@@ -49,7 +49,7 @@ msn_base_log_helper (guint level,
     va_start (args, fmt);
 
     tmp = g_strdup_vprintf (fmt, args);
-    msn_print ("%s %s(%d):%s %s\n",
+    msn_print ("%s %s:%d:%s() %s\n",
                log_level_to_string (level),
                file, line, function,
                tmp);

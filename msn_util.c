@@ -458,3 +458,33 @@ msn_rand_guid()
                            rand() % 0xAAFF + 0x1111,
                            rand() % 0xAAFF + 0x1111);
 }
+
+struct FooGHashNode
+{
+  gpointer key;
+  gpointer value;
+  struct FooGHashNode *next;
+  guint key_hash;
+};
+
+struct FooGHashTable
+{
+    gint size;
+    gint nnodes;
+    struct FooGHashNode **nodes;
+};
+
+gpointer
+g_hash_table_peek_first (GHashTable *hash_table)
+{
+    struct FooGHashTable *foo;
+
+    g_return_val_if_fail (hash_table, NULL);
+
+    foo = (struct FooGHashTable *) hash_table;
+
+    if (foo->size >= 1)
+        return foo->nodes[0]->value;
+
+    return NULL;
+}

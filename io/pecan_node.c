@@ -25,6 +25,8 @@
 /* libpurple stuff. */
 #include <proxy.h>
 
+#include "fix-purple-win32.h"
+
 void pecan_node_error (PecanNode *conn);
 
 static GObjectClass *parent_class = NULL;
@@ -36,7 +38,7 @@ pecan_node_error_quark (void)
     return g_quark_from_static_string ("conn-object-error-quark");
 }
 
-inline const gchar *
+static inline const gchar *
 status_to_str (GIOStatus status)
 {
     const gchar *id;
@@ -563,22 +565,19 @@ pecan_node_get_type (void)
 {
     static GType type = 0;
 
-    if (type == 0) 
+    if (type == 0)
     {
-        static const GTypeInfo type_info =
-        {
-            sizeof (PecanNodeClass),
-            NULL, /* base_init */
-            NULL, /* base_finalize */
-            class_init, /* class_init */
-            NULL, /* class_finalize */
-            NULL, /* class_data */
-            sizeof (PecanNode),
-            0, /* n_preallocs */
-            instance_init, /* instance_init */
-        };
+        GTypeInfo *type_info;
 
-        type = g_type_register_static (G_TYPE_OBJECT, "PecanNodeType", &type_info, 0);
+        type_info = g_new0 (GTypeInfo, 1);
+        type_info->class_size = sizeof (PecanNodeClass);
+        type_info->class_init = class_init;
+        type_info->instance_size = sizeof (PecanNode);
+        type_info->instance_init = instance_init;
+
+        type = g_type_register_static (G_TYPE_OBJECT, "PecanNodeType", type_info, 0);
+
+        g_free (type_info);
     }
 
     return type;

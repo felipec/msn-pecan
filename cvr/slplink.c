@@ -28,6 +28,7 @@
 #include "slpcall.h"
 #include "slpmsg.h"
 #include "slp.h"
+#include "msn_log.h"
 
 #include "ab/user.h"
 
@@ -67,7 +68,7 @@ debug_msg_to_file(MsnMessage *msg, gboolean send)
 	tf = g_fopen(tmp, "wb");
 	if (tf == NULL)
 	{
-		purple_debug_error("msn", "could not open debug file\n");
+		msn_error ("could not open debug file");
 		return;
 	}
 	pload = msn_message_gen_payload(msg, &pload_size);
@@ -91,7 +92,7 @@ msn_slplink_new(MsnSession *session, const char *username)
 	slplink = g_new0(MsnSlpLink, 1);
 
 #ifdef MSN_DEBUG_SLPLINK
-	purple_debug_info("msn", "slplink_new: slplink(%p)\n", slplink);
+	msn_info ("slplink_new: slplink(%p)", slplink);
 #endif
 
 	slplink->session = session;
@@ -115,7 +116,7 @@ msn_slplink_destroy(MsnSlpLink *slplink)
 	MsnSession *session;
 
 #ifdef MSN_DEBUG_SLPLINK
-	purple_debug_info("msn", "slplink_destroy: slplink(%p)\n", slplink);
+	msn_info ("slplink_destroy: slplink(%p)", slplink);
 #endif
 
 	g_return_if_fail(slplink != NULL);
@@ -549,7 +550,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 
 	if (msg->msnslp_header.total_size < msg->msnslp_header.length)
 	{
-		purple_debug_error("msn", "This can't be good\n");
+		msn_error ("This can't be good");
 		g_return_if_reached();
 	}
 
@@ -599,7 +600,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 			slpmsg->buffer = g_try_malloc(slpmsg->size);
 			if (slpmsg->buffer == NULL)
 			{
-				purple_debug_error("msn", "Failed to allocate buffer for slpmsg\n");
+				msn_error ("failed to allocate buffer for slpmsg");
 				return;
 			}
 		}
@@ -612,7 +613,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 	if (slpmsg == NULL)
 	{
 		/* Probably the transfer was canceled */
-		purple_debug_error("msn", "Couldn't find slpmsg\n");
+		msn_error ("couldn't find slpmsg");
 		return;
 	}
 
@@ -625,7 +626,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 	{
 		if ((offset + len) > slpmsg->size)
 		{
-			purple_debug_error("msn", "Oversized slpmsg\n");
+			msn_error ("oversized slpmsg");
 			g_return_if_reached();
 		}
 		else
@@ -668,7 +669,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 
 			if (!directconn->ack_sent)
 			{
-				purple_debug_warning("msn", "Bad ACK\n");
+				msn_warning ("bad ACK");
 				msn_directconn_send_handshake(directconn);
 			}
 		}

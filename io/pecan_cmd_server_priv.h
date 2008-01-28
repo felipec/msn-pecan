@@ -45,6 +45,6 @@ struct PecanCmdServerClass
     PecanNodeClass parent_class;
 };
 
-GType pecan_cmd_server_get_type ();
+GType pecan_cmd_server_get_type (void);
 
 #endif /* MSN_CMD_CONN_PRIVATe_H */

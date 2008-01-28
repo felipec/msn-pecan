@@ -53,7 +53,7 @@ void msn_base_log_helper (guint level, const gchar *file, const gchar *function,
 #define msn_print(...) g_print (__VA_ARGS__);
 /* #define msn_print(...) purple_debug_info ("msn", __VA_ARGS__); */
 
-#define msn_base_log(level, ...) msn_base_log_helper (level, __FILE__, __PRETTY_FUNCTION__, __LINE__, __VA_ARGS__);
+#define msn_base_log(level, ...) msn_base_log_helper (level, __FILE__, __func__, __LINE__, __VA_ARGS__);
 
 #define msn_error(...) msn_base_log (MSN_LOG_LEVEL_ERROR, __VA_ARGS__);
 #define msn_warning(...) msn_base_log (MSN_LOG_LEVEL_WARNING, __VA_ARGS__);
@@ -63,12 +63,12 @@ void msn_base_log_helper (guint level, const gchar *file, const gchar *function,
 
 #elif !defined(MSN_DEBUG)
 
-#define msn_print(...)
-#define msn_error(...)
-#define msn_warning(...)
-#define msn_info(...)
-#define msn_debug(...)
-#define msn_log(...)
+#define msn_print(...) {}
+#define msn_error(...) {}
+#define msn_warning(...) {}
+#define msn_info(...) {}
+#define msn_debug(...) {}
+#define msn_log(...) {}
 
 #endif /* !defined(MSN_DEBUG) */
 

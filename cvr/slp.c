@@ -25,6 +25,7 @@
 #include "slpcall.h"
 #include "slpmsg.h"
 #include "slpsession.h"
+#include "msn_log.h"
 
 #include "session_private.h"
 
@@ -100,7 +101,7 @@ msn_xfer_init(PurpleXfer *xfer)
 	/* MsnSlpLink *slplink; */
 	char *content;
 
-	purple_debug_info("msn", "xfer_init\n");
+	msn_info ("xfer_init");
 
 	slpcall = xfer->data;
 
@@ -204,7 +205,7 @@ got_transresp(MsnSlpCall *slpcall, const char *nonce,
 
 	for (c = ip_addrs; *c != NULL; c++)
 	{
-		purple_debug_info("msn", "ip_addr = %s\n", *c);
+		msn_info ("ip_addr = %s", *c);
 		if (msn_directconn_connect(directconn, *c, port))
 			break;
 	}
@@ -296,7 +297,7 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 
 		if (!(type == MSN_OBJECT_USERTILE))
 		{
-			purple_debug_error("msn", "Wrong object?\n");
+			msn_error ("Wrong object?");
 			msn_object_destroy(obj);
 			g_return_if_reached();
 		}
@@ -304,7 +305,7 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 		img = msn_object_get_image(obj);
 		if (img == NULL)
 		{
-			purple_debug_error("msn", "Wrong object.\n");
+			msn_error ("Wrong object");
 			msn_object_destroy(obj);
 			g_return_if_reached();
 		}
@@ -599,7 +600,7 @@ got_ok(MsnSlpCall *slpcall,
 	else if (!strcmp(type, "application/x-msnmsgr-transreqbody"))
 	{
 		/* Do we get this? */
-		purple_debug_info("msn", "OK with transreqbody\n");
+		msn_info ("OK with transreqbody");
 	}
 #ifdef MSN_DIRECTCONN
 	else if (!strcmp(type, "application/x-msnmsgr-transrespbody"))
@@ -651,7 +652,7 @@ msn_slp_sip_recv(MsnSlpLink *slplink, const char *body)
 
 	if (body == NULL)
 	{
-		purple_debug_warning("msn", "received bogus message\n");
+		msn_info ("received bogus message");
 		return NULL;
 	}
 
@@ -722,7 +723,7 @@ msn_slp_sip_recv(MsnSlpLink *slplink, const char *body)
 				temp[offset] = '\0';
 			}
 
-			purple_debug_error("msn", "Received non-OK result: %s\n", temp);
+			msn_error ("received non-OK result: %s", temp);
 
 			slpcall->wasted = TRUE;
 
@@ -783,7 +784,7 @@ msn_p2p_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 		if (slplink->swboard != NULL)
 			slplink->swboard->slplinks = g_list_prepend(slplink->swboard->slplinks, slplink);
 		else
-			purple_debug_error("msn", "msn_p2p_msg, swboard is NULL, ouch!\n");
+			msn_error ("msn_p2p_msg, swboard is NULL, ouch!");
 	}
 
 	msn_slplink_process_msg(slplink, msg);
@@ -811,7 +812,7 @@ got_emoticon(MsnSlpCall *slpcall,
 		purple_conv_custom_smiley_close(conv, slpcall->data_info);
 	}
 #ifdef MSN_DEBUG_UD
-	purple_debug_info("msn", "Got smiley: %s\n", slpcall->data_info);
+	msn_info ("got smiley: %s", slpcall->data_info);
 #endif
 }
 
@@ -922,7 +923,7 @@ msn_release_buddy_icon_request(MsnUserList *userlist)
 	g_return_if_fail(userlist != NULL);
 
 #ifdef MSN_DEBUG_UD
-	purple_debug_info("msn", "Releasing buddy icon request\n");
+	msn_info ("releasing buddy icon request");
 #endif
 
 	if (userlist->buddy_icon_window > 0)
@@ -945,8 +946,8 @@ msn_release_buddy_icon_request(MsnUserList *userlist)
 		msn_request_user_display(user);
 
 #ifdef MSN_DEBUG_UD
-		purple_debug_info("msn", "msn_release_buddy_icon_request(): buddy_icon_window-- yields =%d\n",
-						  userlist->buddy_icon_window);
+                msn_info ("msn_release_buddy_icon_request(): buddy_icon_window-- yields =%d",
+                          userlist->buddy_icon_window);
 #endif
 	}
 }
@@ -998,8 +999,8 @@ msn_queue_buddy_icon_request(MsnUser *user)
 		queue = userlist->buddy_icon_requests;
 
 #ifdef MSN_DEBUG_UD
-		purple_debug_info("msn", "Queueing buddy icon request for %s (buddy_icon_window = %i)\n",
-						  user->passport, userlist->buddy_icon_window);
+                msn_info ("queueing buddy icon request for %s (buddy_icon_window = %i)",
+                          user->passport, userlist->buddy_icon_window);
 #endif
 
 		g_queue_push_tail(queue, user);
@@ -1021,7 +1022,7 @@ got_user_display(MsnSlpCall *slpcall,
 
 	info = slpcall->data_info;
 #ifdef MSN_DEBUG_UD
-	purple_debug_info("msn", "Got User Display: %s\n", slpcall->slplink->remote_user);
+	msn_info ("got User Display: %s", slpcall->slplink->remote_user);
 #endif
 
 	userlist = slpcall->slplink->session->userlist;
@@ -1034,8 +1035,8 @@ got_user_display(MsnSlpCall *slpcall,
 	/* Free one window slot */
 	userlist->buddy_icon_window++;
 
-	purple_debug_info("msn", "got_user_display(): buddy_icon_window++ yields =%d\n",
-					  userlist->buddy_icon_window);
+        msn_info ("got_user_display(): buddy_icon_window++ yields =%d",
+                  userlist->buddy_icon_window);
 
 	msn_release_buddy_icon_request(userlist);
 #endif
@@ -1049,7 +1050,7 @@ end_user_display(MsnSlpCall *slpcall, MsnSession *session)
 	g_return_if_fail(session != NULL);
 
 #ifdef MSN_DEBUG_UD
-	purple_debug_info("msn", "End User Display\n");
+	msn_info ("End User Display");
 #endif
 
 	userlist = session->userlist;
@@ -1109,7 +1110,7 @@ msn_request_user_display(MsnUser *user)
 		size_t len = 0;
 
 #ifdef MSN_DEBUG_UD
-		purple_debug_info("msn", "Requesting our own user display\n");
+		msn_info ("requesting our own user display");
 #endif
 
 		my_obj = msn_user_get_object(session->user);
@@ -1127,8 +1128,8 @@ msn_request_user_display(MsnUser *user)
 		session->userlist->buddy_icon_window++;
 
 #ifdef MSN_DEBUG_UD
-		purple_debug_info("msn", "msn_request_user_display(): buddy_icon_window++ yields =%d\n",
-						  session->userlist->buddy_icon_window);
+                msn_info ("msn_request_user_display(): buddy_icon_window++ yields =%d",
+                          session->userlist->buddy_icon_window);
 #endif
 
 		msn_release_buddy_icon_request(session->userlist);

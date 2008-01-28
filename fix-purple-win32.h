@@ -16,14 +16,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef FIX_PURPLE_H
-#define FIX_PURPLE_H
+#ifndef FIX_PURPLE_WIN32_H
+#define FIX_PURPLE_WIN32_H
 
-struct _PurpleConnection;
+#undef connect
+#undef write
+#undef read
+#undef close
 
-#include <glib.h>
-
-void fix_purple_buddy_set_alias (struct _PurpleConnection *gc, const gchar *who, const gchar *alias);
-void fix_purple_buddy_set_friendly (struct _PurpleConnection *gc, const gchar *who, const gchar *friendly);
-
-#endif /* FIX_PURPLE_H */
+#endif /* FIX_PURPLE_WIN32_H */

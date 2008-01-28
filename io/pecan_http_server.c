@@ -25,10 +25,16 @@
 #include "msn_io.h"
 #include "msn_log.h"
 
+#include <glib.h>
 #include <string.h>
 
 #include <proxy.h> /* libpurple */
 #include "session.h"
+
+#include "fix-purple.h"
+#include "msn_util.h"
+
+#include "fix-purple-win32.h"
 
 static PecanNodeClass *parent_class = NULL;
 
@@ -223,20 +229,20 @@ http_poll (gpointer data)
 
     status = msn_io_write_full (conn->channel, header, strlen (header), &bytes_written, &tmp_error);
 
-    if (status == G_IO_STATUS_NORMAL);
+    if (status == G_IO_STATUS_NORMAL)
     {
         status = g_io_channel_flush (conn->channel, &tmp_error);
 
         g_free (header);
 
-        if (status == G_IO_STATUS_NORMAL);
+        if (status == G_IO_STATUS_NORMAL)
         {
             msn_log ("bytes_written=%d", bytes_written);
             http_conn->waiting_response = TRUE;
         }
     }
 
-    if (status != G_IO_STATUS_NORMAL);
+    if (status != G_IO_STATUS_NORMAL)
     {
         msn_error ("not normal: status=%d", status);
     }
@@ -544,24 +550,20 @@ read_impl (PecanNode *conn,
                 {
                     if (child)
                     {
-                        GList *list;
                         PecanNode *foo;
 
                         msn_info ("removing child");
                         pecan_node_close (child);
                         g_hash_table_remove (http_conn->childs, session_id);
-                        list = g_hash_table_get_values (http_conn->childs);
 
                         g_object_unref (G_OBJECT (http_conn->cur));
                         g_free (http_conn->gateway);
                         g_free (http_conn->last_session_id);
-                        if (list && list->data)
+                        if ((foo = PECAN_NODE (g_hash_table_peek_first (http_conn->childs))))
                         {
-                            foo = PECAN_NODE (list->data);
                             http_conn->cur = foo;
                             http_conn->gateway = g_strdup (foo->hostname);
                             http_conn->last_session_id = g_strdup (foo->foo_data);
-                            g_list_free (list);
                         }
                         else
                         {
@@ -813,20 +815,15 @@ pecan_http_server_get_type (void)
 
     if (type == 0) 
     {
-        static const GTypeInfo type_info =
-        {
-            sizeof (PecanHttpServerClass),
-            NULL, /* base_init */
-            NULL, /* base_finalize */
-            class_init, /* class_init */
-            NULL, /* class_finalize */
-            NULL, /* class_data */
-            sizeof (PecanHttpServer),
-            0, /* n_preallocs */
-            instance_init /* instance_init */
-        };
+        GTypeInfo *type_info;
 
-        type = g_type_register_static (PECAN_NODE_TYPE, "PecanHttpServerType", &type_info, 0);
+        type_info = g_new0 (GTypeInfo, 1);
+        type_info->class_size = sizeof (PecanHttpServerClass);
+        type_info->class_init = class_init;
+        type_info->instance_size = sizeof (PecanHttpServer);
+        type_info->instance_init = instance_init;
+
+        type = g_type_register_static (PECAN_NODE_TYPE, "PecanHttpServerType", type_info, 0);
     }
 
     return type;

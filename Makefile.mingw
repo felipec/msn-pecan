@@ -1,0 +1,77 @@
+# Set this
+# PIDGIN_TREE_TOP := 
+include $(PIDGIN_TREE_TOP)/libpurple/win32/global.mak
+
+TARGET = libmsn-pecan
+TYPE = PLUGIN
+DEFINES = 
+
+INCLUDE_PATHS += -I. \
+		 -I$(GTK_TOP)/include \
+		 -I$(GTK_TOP)/include/glib-2.0 \
+		 -I$(GTK_TOP)/lib/glib-2.0/include \
+		 -I$(PURPLE_TOP) \
+		 -I$(PURPLE_TOP)/win32 \
+		 -I$(PIDGIN_TREE_TOP)
+
+LIB_PATHS += -L$(GTK_TOP)/lib \
+	     -L$(PURPLE_TOP)
+
+OBJECTS = \
+	  directconn.o \
+	  error.o \
+	  msn.o \
+	  nexus.o \
+	  notification.o \
+	  object.o \
+	  page.o \
+	  session.o \
+	  state.o \
+	  switchboard.o \
+	  sync.o \
+	  msn_io.o \
+	  msn_log.o \
+	  msn_util.o \
+	  cmd/cmdproc.o \
+	  cmd/command.o \
+	  cmd/history.o \
+	  cmd/msg.o \
+	  cmd/table.o \
+	  cmd/transaction.o \
+	  ab/group.o \
+	  ab/user.o \
+	  ab/userlist.o \
+	  io/pecan_node.o \
+	  io/pecan_cmd_server.o \
+	  io/pecan_http_server.o \
+	  cvr/slp.o \
+	  cvr/slpcall.o \
+	  cvr/slplink.o \
+	  cvr/slpmsg.o \
+	  cvr/slpsession.o \
+	  fix-purple.o
+
+C_SRC = $(patsubst %.o,%.c,$(OBJECTS))
+
+LIBS = -lglib-2.0 \
+       -lgobject-2.0 \
+       -lintl \
+       -lws2_32 \
+       -lpurple
+
+include $(PIDGIN_COMMON_RULES)
+
+.PHONY: all clean
+
+all: $(TARGET).dll
+
+$(OBJECTS): $(PURPLE_CONFIG_H)
+
+$(TARGET).dll: $(PURPLE_DLL).a $(OBJECTS)
+	$(CC) -shared $(OBJECTS) $(LIB_PATHS) $(LIBS) $(DLL_LD_FLAGS) -o $(TARGET).dll
+
+clean:
+	rm -f $(OBJECTS)
+	rm -f $(TARGET).dll
+
+include $(PIDGIN_COMMON_TARGETS)

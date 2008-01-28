@@ -23,6 +23,8 @@
 #ifndef MSN_UTIL_H
 #define MSN_UTIL_H
 
+#include <glib.h>
+
 /**
  * Parses the MSN message formatting into a format compatible with Purple.
  *
@@ -47,5 +49,7 @@ void msn_import_html(const char *html, char **attributes, char **message);
 
 void msn_parse_socket(const char *str, char **ret_host, int *ret_port);
 char *msn_rand_guid(void);
+
+gpointer g_hash_table_peek_first (GHashTable *hash_table);
 
 #endif /* MSN_UTIL_H */
