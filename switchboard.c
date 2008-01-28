@@ -169,12 +169,13 @@ msn_switchboard_new(MsnSession *session)
 
         {
             MsnCmdProc *cmdproc;
-            cmdproc = msn_cmdproc_new (session);
-            swboard->conn->cmdproc = cmdproc;
-            swboard->cmdproc = cmdproc;
-
+            cmdproc = swboard->conn->cmdproc;
+            cmdproc->session = session;
             cmdproc->cbs_table = cbs_table;
             cmdproc->conn = conn;
+            cmdproc->data = swboard;
+
+            swboard->cmdproc = cmdproc;
         }
 
         conn->session = session;
@@ -202,11 +203,6 @@ msn_switchboard_new(MsnSession *session)
         swboard->error_handler = g_signal_connect (conn, "error", G_CALLBACK (close_cb), swboard);
     }
 
-#if 1
-    swboard->cmdproc->data = swboard;
-    swboard->cmdproc->cbs_table = cbs_table;
-#endif
-
     return swboard;
 }
 
@@ -216,6 +212,8 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
     MsnSession *session;
     MsnMessage *msg;
     GList *l;
+
+    msn_log ("begin");
 
 #ifdef MSN_DEBUG_SB
     msn_log ("swboard=[%p]", swboard);
@@ -273,6 +271,8 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
     pecan_node_free (PECAN_NODE (swboard->conn));
 
     g_free(swboard);
+
+    msn_log ("end");
 }
 
 void

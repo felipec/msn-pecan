@@ -86,6 +86,10 @@ parse_impl (PecanNode *base_conn,
     gchar *cur, *end, *old_rx_buf;
     gint cur_len;
 
+    msn_log ("begin");
+
+    msn_log ("conn=%p,name=%s", base_conn, base_conn->name);
+
     cmd_conn = CMD_PECAN_NODE (base_conn);
 
     buf[bytes_read] = '\0';
@@ -145,6 +149,8 @@ parse_impl (PecanNode *base_conn,
         cmd_conn->rx_buf = NULL;
 
     g_free (old_rx_buf);
+
+    msn_log ("end");
 }
 
 #if 0
@@ -246,6 +252,7 @@ dispose (GObject *obj)
     if (!conn->dispose_has_run)
     {
         conn->dispose_has_run = TRUE;
+        msn_cmdproc_destroy (conn->cmdproc);
     }
 
     G_OBJECT_CLASS (parent_class)->dispose (obj);
@@ -278,7 +285,7 @@ instance_init (GTypeInstance *instance,
 {
     PecanCmdServer *conn = CMD_PECAN_NODE (instance);
 
-    conn->dispose_has_run = FALSE;
+    conn->cmdproc = msn_cmdproc_new ();
 }
 
 GType

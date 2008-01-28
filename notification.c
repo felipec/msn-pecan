@@ -158,13 +158,14 @@ msn_notification_new(MsnSession *session)
 
         {
             MsnCmdProc *cmdproc;
-            cmdproc = msn_cmdproc_new (session);
-            cmdproc->error_handler = error_handler;
-            notification->conn->cmdproc = cmdproc;
-            notification->cmdproc = cmdproc;
-
+            cmdproc = notification->conn->cmdproc;
+            cmdproc->session = session;
             cmdproc->cbs_table = cbs_table;
             cmdproc->conn = conn;
+            cmdproc->error_handler = error_handler;
+            cmdproc->data = notification;
+
+            notification->cmdproc = cmdproc;
         }
 
         conn->session = session;
@@ -191,11 +192,6 @@ msn_notification_new(MsnSession *session)
         notification->close_handler = g_signal_connect (conn, "close", G_CALLBACK (close_cb), notification);
         notification->error_handler = g_signal_connect (conn, "error", G_CALLBACK (close_cb), notification);
     }
-
-#if 1
-    notification->cmdproc->data = notification;
-    notification->cmdproc->cbs_table = cbs_table;
-#endif
 
     return notification;
 }

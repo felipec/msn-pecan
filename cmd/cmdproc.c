@@ -41,13 +41,12 @@
 #include <eventloop.h>
 
 MsnCmdProc *
-msn_cmdproc_new(MsnSession *session)
+msn_cmdproc_new()
 {
     MsnCmdProc *cmdproc;
 
     cmdproc = g_new0(MsnCmdProc, 1);
 
-    cmdproc->session = session;
     cmdproc->txqueue = g_queue_new();
     cmdproc->history = msn_history_new();
 

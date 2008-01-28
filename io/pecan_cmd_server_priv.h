@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef MSN_CMD_CONN_PRIVATe_H
-#define MSN_CMD_CONN_PRIVATe_H
+#ifndef MSN_CMD_CONN_PRIV_H
+#define MSN_CMD_CONN_PRIV_H
 
 #include <glib-object.h>
 
@@ -47,4 +47,4 @@ struct PecanCmdServerClass
 
 GType pecan_cmd_server_get_type (void);
 
-#endif /* MSN_CMD_CONN_PRIVATe_H */
+#endif /* MSN_CMD_CONN_PRIV_H */

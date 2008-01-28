@@ -90,7 +90,11 @@ read_cb (GIOChannel *source,
         }
     }
 
+    g_object_ref (conn);
+
     pecan_node_parse (conn, buf, bytes_read);
+
+    g_object_unref (conn);
 
     return TRUE;
 }
