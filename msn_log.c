@@ -20,6 +20,8 @@
 
 #ifdef MSN_DEBUG
 
+#include <glib/gstdio.h>
+
 static const gchar *
 log_level_to_string (enum MsnLogLevel level)
 {
@@ -40,19 +42,35 @@ msn_base_log_helper (guint level,
                      const gchar *file,
                      const gchar *function,
                      gint line,
-                     const char *fmt,
+                     const gchar *fmt,
                      ...)
 {
-    char *tmp;
+    gchar *tmp;
     va_list args;
 
     va_start (args, fmt);
 
     tmp = g_strdup_vprintf (fmt, args);
+#ifdef MSN_DEBUG_FILE
+    {
+        static FILE *logfile;
+        if (!logfile)
+        {
+            gint fd;
+            fd = g_file_open_tmp ("pecan-XXXXXX.log", NULL, NULL);
+            logfile = fdopen (fd, "w");
+        }
+        g_fprintf (logfile, "%s\t%s:%d:%s()\t%s\n",
+                   log_level_to_string (level),
+                   file, line, function,
+                   tmp);
+    }
+#else
     msn_print ("%s %s:%d:%s() %s\n",
                log_level_to_string (level),
                file, line, function,
                tmp);
+#endif
     g_free (tmp);
 
     va_end (args);
