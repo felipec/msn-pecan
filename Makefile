@@ -2,10 +2,11 @@ CC=gcc
 
 PURPLE_CFLAGS=`pkg-config --cflags purple`
 PURPLE_LIBS=`pkg-config --libs purple`
+PURPLE_PREFIX=`pkg-config --variable=prefix purple`
 
 CFLAGS=-Wall -ggdb -I.
 
-purpledir=$(DESTDIR)/usr/lib/purple-2
+purpledir=$(DESTDIR)/$(PURPLE_PREFIX)/lib/purple-2
 
 objects = \
 	directconn.o \
