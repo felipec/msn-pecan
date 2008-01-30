@@ -22,23 +22,22 @@
 #include <glib.h>
 #include "msn.h"
 
-#define MSN_DEBUG
-#define MSN_DEBUG_FILE
-
-/* #define MSN_DEBUG_MSG 1 */
-/* #define MSN_DEBUG_SLPMSG 1 */
-/* #define MSN_DEBUG_HTTP 1 */
-
-/* #define MSN_DEBUG_SLP_VERBOSE 1 */
-/* #define MSN_DEBUG_SLP_FILES 1 */
-
-/* #define MSN_DEBUG_NS 1 */
-/* #define MSN_DEBUG_SB 1 */
-/* #define MSN_DEBUG_DC 1 */
-
-/* #define MSN_DEBUG_DC_FILES 1 */
-
 #if defined(MSN_DEBUG)
+
+/* #define MSN_DEBUG_FILE */
+
+/* #define MSN_DEBUG_MSG */
+/* #define MSN_DEBUG_SLPMSG */
+/* #define MSN_DEBUG_HTTP */
+
+/* #define MSN_DEBUG_SLP_VERBOSE */
+/* #define MSN_DEBUG_SLP_FILES  */
+
+/* #define MSN_DEBUG_NS */
+/* #define MSN_DEBUG_SB */
+/* #define MSN_DEBUG_DC */
+
+/* #define MSN_DEBUG_DC_FILES */
 
 enum MsnLogLevel
 {
