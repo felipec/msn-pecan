@@ -32,7 +32,7 @@ typedef struct PecanCmdServer PecanCmdServer;
 #define CMD_PECAN_IS_NODE_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), CMD_PECAN_NODE_TYPE))
 #define CMD_PECAN_NODE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), CMD_PECAN_NODE_TYPE, PecanCmdServerClass))
 
-PecanCmdServer *pecan_cmd_server_new (gchar *name, PecanNodeType type);
+PecanCmdServer *pecan_cmd_server_new (const gchar *name, PecanNodeType type);
 void pecan_cmd_server_free (PecanCmdServer *conn);
 
 #endif /* MSN_CMD_CONN_H */

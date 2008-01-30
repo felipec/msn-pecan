@@ -144,7 +144,7 @@ read_cb (GIOChannel *source,
 }
 
 PecanHttpServer *
-pecan_http_server_new (gchar *name)
+pecan_http_server_new (const gchar *name)
 {
     PecanHttpServer *http_conn;
 

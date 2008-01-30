@@ -21,7 +21,6 @@
 
 #include <glib-object.h>
 
-typedef enum PecanNodeType PecanNodeType;
 typedef struct PecanNode PecanNode;
 
 #define PECAN_NODE_ERROR pecan_node_error_quark ()
@@ -40,6 +39,8 @@ enum PecanNodeType
     PECAN_NODE_CS, /**< Contact Server (addressbook stuff) */
     PECAN_NODE_SB /**< Switcbhard Server (a conversation) */
 };
+
+typedef enum PecanNodeType PecanNodeType;
 
 #define PECAN_NODE_TYPE (pecan_node_get_type ())
 #define PECAN_NODE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), PECAN_NODE_TYPE, PecanNode))

@@ -1784,17 +1784,17 @@ msn_got_info(PurpleUtilFetchUrlData *url_data, gpointer data,
 		 * exists.
 		 */
 		/* This doesn't work with the new spaces profiles - Stu 3/2/06
-		char *p = strstr(url_buffer, "Unknown Member </TITLE>");
+		char *p2 = strstr(url_buffer, "Unknown Member </TITLE>");
 		 * This might not work for long either ... */
 		/* Nope, it failed some time before 5/2/07 :(
-		char *p = strstr(url_buffer, "form id=\"SpacesSearch\" name=\"SpacesSearch\"");
+		char *p2 = strstr(url_buffer, "form id=\"SpacesSearch\" name=\"SpacesSearch\"");
 		 * Let's see how long this one holds out for ... */
-		char *p = strstr(url_buffer, "<form id=\"profile_form\" name=\"profile_form\" action=\"http&#58;&#47;&#47;spaces.live.com&#47;profile.aspx&#63;cid&#61;0\"");
+		char *p2 = strstr(url_buffer, "<form id=\"profile_form\" name=\"profile_form\" action=\"http&#58;&#47;&#47;spaces.live.com&#47;profile.aspx&#63;cid&#61;0\"");
 		PurpleBuddy *b = purple_find_buddy
 				(purple_connection_get_account(info_data->gc), info_data->name);
 		purple_notify_user_info_add_pair(user_info, _("Error retrieving profile"),
-									   ((p && b) ? _("The user has not created a public profile.") :
-										(p ? _("MSN reported not being able to find the user's profile. "
+									   ((p2 && b) ? _("The user has not created a public profile.") :
+										(p2 ? _("MSN reported not being able to find the user's profile. "
 											   "This either means that the user does not exist, "
 											   "or that the user exists "
 											   "but has not created a public profile.") :
@@ -2147,4 +2147,4 @@ init_plugin(PurplePlugin *plugin)
 		PURPLE_CALLBACK(msn_uri_handler), NULL);
 }
 
-PURPLE_INIT_PLUGIN(msn, init_plugin, info);
+PURPLE_INIT_PLUGIN(msn, init_plugin, info)

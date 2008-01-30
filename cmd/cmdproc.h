@@ -32,7 +32,7 @@ typedef struct MsnCmdProc MsnCmdProc;
 typedef void (*MsnMsgTypeCb) (MsnCmdProc *cmdproc, MsnMessage *msg);
 typedef void (*MsnPayloadCb) (MsnCmdProc *cmdproc, MsnCommand *cmd, gchar *payload, gsize len);
 
-MsnCmdProc *msn_cmdproc_new ();
+MsnCmdProc *msn_cmdproc_new (void);
 
 void msn_cmdproc_send (MsnCmdProc *cmdproc, const char *command, const char *format, ...);
 void msn_cmdproc_send_quick (MsnCmdProc *cmdproc, const char *command, const char *format, ...);

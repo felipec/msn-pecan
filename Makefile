@@ -4,7 +4,19 @@ PURPLE_CFLAGS=`pkg-config --cflags purple`
 PURPLE_LIBS=`pkg-config --libs purple`
 PURPLE_PREFIX=`pkg-config --variable=prefix purple`
 
-CFLAGS=-Wall -ggdb -I. -DHAVE_LIBPURPLE -DMSN_DEBUG
+EXTRA_WARNINGS=-Wall -W -Wformat-nonliteral -Wcast-align -Wpointer-arith \
+	       -Wbad-function-cast -Wmissing-prototypes -Wstrict-prototypes \
+	       -Wmissing-declarations -Winline -Wundef -Wnested-externs -Wcast-qual \
+	       -Wshadow -Wwrite-strings -Wno-unused-parameter -Wfloat-equal -pedantic -ansi -std=c99
+
+OTHER_WARNINGS=-D_FORTIFY_SOURCE=2 -fstack-protector -g3 -pedantic -W -Wall \
+	       -Wbad-function-cast -Wcast-align -Wcast-qual -Wdisabled-optimization \
+	       -Wendif-labels -Wfloat-equal -Wformat=2 -Wformat-nonliteral -Winline \
+	       -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wno-unused-parameter \
+	       -Wpointer-arith -Wshadow -Wstack-protector -Wstrict-prototypes \
+	       -Wswitch -Wundef -Wwrite-strings
+
+CFLAGS=-Wall -ggdb -I. -DHAVE_LIBPURPLE -DMSN_DEBUG $(EXTRA_WARNINGS)
 
 purpledir=$(DESTDIR)/$(PURPLE_PREFIX)/lib/purple-2
 
