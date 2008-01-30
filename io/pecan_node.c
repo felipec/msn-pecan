@@ -22,10 +22,12 @@
 
 #include "session.h" /* for libpurple account */
 
+#ifdef HAVE_LIBPURPLE
 /* libpurple stuff. */
 #include <proxy.h>
 
 #include "fix-purple-win32.h"
+#endif /* HAVE_LIBPURPLE */
 
 void pecan_node_error (PecanNode *conn);
 
@@ -333,8 +335,10 @@ connect_impl (PecanNode *conn,
     {
         pecan_node_close (conn);
 
+#ifdef HAVE_LIBPURPLE
         conn->connect_data = purple_proxy_connect (NULL, msn_session_get_account (conn->session),
                                                    hostname, port, connect_cb, conn);
+#endif /* HAVE_LIBPURPLE */
     }
 
     msn_log ("end");
@@ -357,11 +361,13 @@ close_impl (PecanNode *conn)
         msn_warning ("not connected: conn=%p", conn);
     }
 
+#ifdef HAVE_LIBPURPLE
     if (conn->connect_data)
     {
         purple_proxy_connect_cancel (conn->connect_data);
         conn->connect_data = NULL;
     }
+#endif /* HAVE_LIBPURPLE */
 
     if (conn->read_watch)
     {

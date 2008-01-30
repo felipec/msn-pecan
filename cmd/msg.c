@@ -26,8 +26,10 @@
 
 #include <string.h> /* for strlen. */
 
+#ifdef HAVE_LIBPURPLE
 /* libpurple stuff. */
 #include <util.h>
+#endif /* HAVE_LIBPURPLE */
 
 #include "msn.h"
 
@@ -135,8 +137,10 @@ msn_message_new_plain(const char *message)
 	msn_message_set_attr(msg, "X-MMS-IM-Format",
 						 "FN=MS%20Sans%20Serif; EF=; CO=0; PF=0");
 
+#ifdef HAVE_LIBPURPLE
 	message_cr = purple_str_add_cr(message);
 	msn_message_set_bin_data(msg, message_cr, strlen(message_cr));
+#endif /* HAVE_LIBPURPLE */
 	g_free(message_cr);
 
 	return msg;

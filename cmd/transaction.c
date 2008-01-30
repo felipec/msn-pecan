@@ -25,8 +25,10 @@
 
 #include <string.h>
 
+#ifdef HAVE_LIBPURPLE
 /* libpurple stuff. */
 #include <eventloop.h>
+#endif /* HAVE_LIBPURPLE */
 
 MsnTransaction *
 msn_transaction_new(MsnCmdProc *cmdproc, const char *command,
@@ -82,8 +84,10 @@ msn_transaction_destroy(MsnTransaction *trans)
 	if (trans->callbacks != NULL && trans->has_custom_callbacks)
 		g_hash_table_destroy(trans->callbacks);
 
+#ifdef HAVE_LIBPURPLE
 	if (trans->timer)
 		purple_timeout_remove(trans->timer);
+#endif /* HAVE_LIBPURPLE */
 
 	g_free(trans);
 }
@@ -209,6 +213,7 @@ transaction_timeout(gpointer data)
 void
 msn_transaction_set_timeout_cb(MsnTransaction *trans, MsnTimeoutCb cb)
 {
+#ifdef HAVE_LIBPURPLE
 	if (trans->timer)
 	{
 		msn_error ("this shouldn't be happening");
@@ -216,6 +221,7 @@ msn_transaction_set_timeout_cb(MsnTransaction *trans, MsnTimeoutCb cb)
 	}
 	trans->timeout_cb = cb;
 	trans->timer = purple_timeout_add(60000, transaction_timeout, trans);
+#endif /* HAVE_LIBPURPLE */
 }
 
 void

@@ -4,7 +4,7 @@ PURPLE_CFLAGS=`pkg-config --cflags purple`
 PURPLE_LIBS=`pkg-config --libs purple`
 PURPLE_PREFIX=`pkg-config --variable=prefix purple`
 
-CFLAGS=-Wall -ggdb -I. -DMSN_DEBUG
+CFLAGS=-Wall -ggdb -I. -DHAVE_LIBPURPLE -DMSN_DEBUG
 
 purpledir=$(DESTDIR)/$(PURPLE_PREFIX)/lib/purple-2
 
