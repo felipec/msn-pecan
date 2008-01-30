@@ -28,7 +28,7 @@ static PecanNodeClass *parent_class = NULL;
 
 PecanCmdServer *
 pecan_cmd_server_new (gchar *name,
-                     PecanNodeType type)
+                      PecanNodeType type)
 {
     PecanCmdServer *conn;
 

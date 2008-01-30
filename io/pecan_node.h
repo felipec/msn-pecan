@@ -59,4 +59,6 @@ void pecan_node_parse (PecanNode *conn, gchar *buf, gsize bytes_read);
 void pecan_node_link (PecanNode *conn, PecanNode *next);
 void pecan_node_error (PecanNode *conn);
 
+GType pecan_node_get_type (void);
+
 #endif /* PECAN_NODE_H */
