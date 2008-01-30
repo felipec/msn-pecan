@@ -269,6 +269,8 @@ msn_cmdproc_process_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     MsnTransCb cb = NULL;
     MsnTransaction *trans = NULL;
 
+    g_return_if_fail (cmdproc->cbs_table);
+
     if (cmd->trId)
         trans = msn_history_find(cmdproc->history, cmd->trId);
 
