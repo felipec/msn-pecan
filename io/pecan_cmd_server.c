@@ -77,6 +77,8 @@ pecan_cmd_server_send (PecanCmdServer *conn,
 }
 #endif
 
+/** @todo reimplement this in a safer way (GIOChannel) */
+/** @todo add extensive tests for this */
 static void
 parse_impl (PecanNode *base_conn,
             gchar *buf,
@@ -88,7 +90,7 @@ parse_impl (PecanNode *base_conn,
 
     msn_log ("begin");
 
-    msn_log ("conn=%p,name=%s", base_conn, base_conn->name);
+    msn_debug ("conn=%p,name=%s", base_conn, base_conn->name);
 
     cmd_conn = CMD_PECAN_NODE (base_conn);
 
@@ -99,6 +101,7 @@ parse_impl (PecanNode *base_conn,
     cmd_conn->rx_len += bytes_read;
 
     end = old_rx_buf = cmd_conn->rx_buf;
+    cmd_conn->rx_buf = NULL;
 
     do
     {
@@ -149,6 +152,25 @@ parse_impl (PecanNode *base_conn,
         cmd_conn->rx_buf = NULL;
 
     g_free (old_rx_buf);
+
+    msn_log ("end");
+}
+
+static void
+close_impl (PecanNode *conn)
+{
+    PecanCmdServer *cmd_conn;
+
+    msn_log ("begin");
+
+    cmd_conn = CMD_PECAN_NODE (conn);
+
+    g_free (cmd_conn->rx_buf);
+    cmd_conn->rx_buf = NULL;
+    cmd_conn->rx_len = 0;
+    cmd_conn->payload_len = 0;
+
+    PECAN_NODE_CLASS (parent_class)->close (conn);
 
     msn_log ("end");
 }
@@ -272,6 +294,7 @@ class_init (gpointer g_class,
     GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
 
     conn_class->parse = &parse_impl;
+    conn_class->close = &close_impl;
 
     gobject_class->dispose = dispose;
     gobject_class->finalize = finalize;

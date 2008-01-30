@@ -61,18 +61,19 @@ read_cb (GIOChannel *source,
          gpointer data)
 {
     PecanNode *conn;
-    gchar buf[MSN_BUF_LEN];
+    gchar buf[MSN_BUF_LEN + 1];
     gsize bytes_read;
+
+    msn_log ("begin");
 
     conn = PECAN_NODE (data);
 
-    msn_debug ("name=%s", conn->name);
-    msn_debug ("source=%p", source);
+    msn_debug ("conn=%p,name=%s", conn, conn->name);
 
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
-        status = pecan_node_read (conn, buf, sizeof (buf), &bytes_read, &conn->error);
+        status = pecan_node_read (conn, buf, MSN_BUF_LEN, &bytes_read, &conn->error);
 
         if (status == G_IO_STATUS_AGAIN)
             return TRUE;
@@ -95,6 +96,8 @@ read_cb (GIOChannel *source,
     pecan_node_parse (conn, buf, bytes_read);
 
     g_object_unref (conn);
+
+    msn_log ("end");
 
     return TRUE;
 }
@@ -194,7 +197,7 @@ pecan_node_error (PecanNode *conn)
 {
     g_return_if_fail (conn != NULL);
 
-    msn_debug ("foo");
+    msn_debug ("conn=%p", conn);
 
     g_signal_emit (G_OBJECT (conn), error_sig, 0, conn);
 
@@ -240,7 +243,6 @@ pecan_node_connect (PecanNode *conn,
                      const gchar *hostname,
                      gint port)
 {
-    msn_debug ("conn=%p", conn);
     PECAN_NODE_GET_CLASS (conn)->connect (conn, hostname, port);
 }
 
