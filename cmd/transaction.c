@@ -182,7 +182,7 @@ msn_transaction_add_cb(MsnTransaction *trans,
 	if (trans->callbacks == NULL)
 	{
 		trans->has_custom_callbacks = TRUE;
-		trans->callbacks = g_hash_table_new_full(g_str_hash, g_str_equal, NULL,
+		trans->callbacks = g_hash_table_new_full(g_str_hash, g_str_equal, g_free,
 												 NULL);
 	}
 	else if (trans->has_custom_callbacks != TRUE)
@@ -190,7 +190,7 @@ msn_transaction_add_cb(MsnTransaction *trans,
 		g_return_if_reached ();
 	}
 
-	g_hash_table_insert(trans->callbacks, (gchar *) answer, cb);
+	g_hash_table_insert(trans->callbacks, g_strdup (answer), cb);
 }
 
 static gboolean
