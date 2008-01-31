@@ -4,7 +4,7 @@ include $(PIDGIN_TREE_TOP)/libpurple/win32/global.mak
 
 TARGET = libmsn-pecan
 TYPE = PLUGIN
-DEFINES = 
+DEFINES = -DHAVE_LIBPURPLE
 
 INCLUDE_PATHS += -I. \
 		 -I$(GTK_TOP)/include \

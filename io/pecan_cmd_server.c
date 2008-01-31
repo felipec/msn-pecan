@@ -24,6 +24,10 @@
 
 #include <string.h>
 
+#ifdef HAVE_LIBPURPLE
+#include "fix-purple-win32.h"
+#endif /* HAVE_LIBPURPLE */
+
 static PecanNodeClass *parent_class = NULL;
 
 PecanCmdServer *
