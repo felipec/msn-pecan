@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-008 Felipe Contreras.
+ * Copyright (C) 2006-2008 Felipe Contreras.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,28 +16,28 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef MSN_BUFFER_H
-#define MSN_BUFFER_H
+#ifndef PECAN_BUFFER_H
+#define PECAN_BUFFER_H
 
 #include <glib.h>
 
-typedef struct MsnBuffer MsnBuffer;
+typedef struct PecanBuffer PecanBuffer;
 
-#define MSN_BUF_SIZE 0x1000
-
-struct MsnBuffer
+struct PecanBuffer
 {
     gchar *data;
     gchar *alloc_data;
-    guint size;
-    guint filled;
+    gsize size;
+    gsize len;
 };
 
-MsnBuffer *msn_buffer_new ();
-MsnBuffer *msn_buffer_new_and_alloc (guint size);
-void msn_buffer_free (MsnBuffer *);
-void msn_buffer_resize (MsnBuffer *buffer, guint new_size);
-gchar *msn_buffer_to_string (MsnBuffer *buffer);
-void msn_buffer_prepare (MsnBuffer *buffer, guint extra_size);
+#define PECAN_BUF_SIZE 0x1000
 
-#endif /* MSN_BUFFER_H */
+PecanBuffer *pecan_buffer_new (void);
+PecanBuffer *pecan_buffer_new_and_alloc (gsize size);
+void pecan_buffer_free (PecanBuffer *buffer);
+void pecan_buffer_resize (PecanBuffer *buffer, gsize new_size);
+gchar *pecan_buffer_to_string (PecanBuffer *buffer);
+void pecan_buffer_prepare (PecanBuffer *buffer, gsize extra_size);
+
+#endif /* PECAN_BUFFER_H */

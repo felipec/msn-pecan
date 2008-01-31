@@ -16,60 +16,59 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "buffer.h"
+#include "pecan_buffer.h"
 
-MsnBuffer *
-msn_buffer_new (void)
+PecanBuffer *
+pecan_buffer_new (void)
 {
-    MsnBuffer *buffer;
-    buffer = g_new (MsnBuffer, 1);
+    PecanBuffer *buffer;
+    buffer = g_new (PecanBuffer, 1);
     buffer->data = NULL;
     buffer->alloc_data = NULL;
     buffer->size = 0;
-    buffer->filled = 0;
+    buffer->len = 0;
     return buffer;
 }
 
-MsnBuffer *
-msn_buffer_new_and_alloc (guint size)
+PecanBuffer *
+pecan_buffer_new_and_alloc (gsize size)
 {
-    MsnBuffer *buffer;
+    PecanBuffer *buffer;
 
     if (size <= 0)
-        size = MSN_BUF_SIZE;
+        size = PECAN_BUF_SIZE;
 
-    buffer = g_new (MsnBuffer, 1);
+    buffer = g_new (PecanBuffer, 1);
     buffer->data = buffer->alloc_data = g_malloc (size);
     buffer->size = size;
-    buffer->filled = 0;
+    buffer->len = 0;
     return buffer;
 }
 
 void
-msn_buffer_free (MsnBuffer *buffer)
+pecan_buffer_free (PecanBuffer *buffer)
 {
-    if (buffer == NULL)
-        return;
+    g_return_if_fail (buffer);
 
     g_free (buffer->alloc_data);
     g_free (buffer);
 }
 
 void
-msn_buffer_resize (MsnBuffer *buffer,
-                   guint new_size)
+pecan_buffer_resize (PecanBuffer *buffer,
+                     gsize new_size)
 {
-    new_size = ((new_size / MSN_BUF_SIZE) + 1) * MSN_BUF_SIZE;
+    new_size = ((new_size / PECAN_BUF_SIZE) + 1) * PECAN_BUF_SIZE;
     buffer->data = buffer->alloc_data = g_realloc (buffer->data, new_size);
     buffer->size = new_size;
 }
 
 void
-msn_buffer_prepare (MsnBuffer *buffer,
-                    guint extra_size)
+pecan_buffer_prepare (PecanBuffer *buffer,
+                      gsize extra_size)
 {
-    if (buffer->size - buffer->filled < extra_size)
+    if (buffer->size - buffer->len < extra_size)
     {
-        msn_buffer_resize (buffer, buffer->filled + extra_size);
+        pecan_buffer_resize (buffer, buffer->len + extra_size);
     }
 }

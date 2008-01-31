@@ -16,9 +16,15 @@ parse_test_objects=parse.o \
 		   ../msn_io.o \
 		   ../msn_log.o
 
-all: parse_test
+buffer_test_objects=buffer.o \
+		   ../io/pecan_buffer.o
+
+all: parse_test buffer_test
 
 parse_test: $(parse_test_objects)
+	$(CC) $(GOBJECT_LIBS) $+ -o $@
+
+buffer_test: $(buffer_test_objects)
 	$(CC) $(GOBJECT_LIBS) $+ -o $@
 
 %.o: %.c
@@ -26,3 +32,4 @@ parse_test: $(parse_test_objects)
 
 clean:
 	rm -f parse_test $(parse_test_objects)
+	rm -f buffer_test $(buffer_test_objects)
