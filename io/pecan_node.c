@@ -86,10 +86,11 @@ read_cb (GIOChannel *source,
             return FALSE;
         }
 
-        if (status != G_IO_STATUS_NORMAL)
+        if (status == G_IO_STATUS_EOF)
         {
-            msn_warning ("not normal, status=%d", status);
-            return TRUE;
+            conn->error = g_error_new (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN, "End of stream");
+            pecan_node_error (conn);
+            return FALSE;
         }
     }
 
