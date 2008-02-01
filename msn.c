@@ -93,6 +93,8 @@ typedef struct
 	time_t when;
 } MsnIMData;
 
+static void msn_set_prp(PurpleConnection *gc, const char *type, const char *entry);
+
 /** @todo remove this crap */
 static const char *
 msn_normalize(const PurpleAccount *account, const char *str)
@@ -187,9 +189,7 @@ msn_act_id(PurpleConnection *gc, const char *entry)
 		return;
 	}
 
-	msn_cmdproc_send(cmdproc, "REA", "%s %s",
-					 purple_account_get_username(account),
-					 alias);
+        msn_set_prp(gc, "MFN", alias);
 }
 
 static void
@@ -1230,24 +1230,18 @@ msn_rename_group(PurpleConnection *gc, const char *old_name,
 {
 	MsnSession *session;
 	MsnCmdProc *cmdproc;
-	int old_gid;
+	const gchar *old_group_guid;
 	const char *enc_new_group_name;
 
 	session = gc->proto_data;
 	cmdproc = session->notification->cmdproc;
 	enc_new_group_name = purple_url_encode(group->name);
 
-	old_gid = msn_userlist_find_group_id(session->userlist, old_name);
+	old_group_guid = msn_userlist_find_group_id(session->userlist, old_name);
 
-	if (old_gid >= 0)
-	{
-		msn_cmdproc_send(cmdproc, "REG", "%d %s 0", old_gid,
-						 enc_new_group_name);
-	}
-	else
-	{
-		msn_cmdproc_send(cmdproc, "ADG", "%s 0", enc_new_group_name);
-	}
+        g_return_if_fail (old_group_guid);
+        msn_cmdproc_send (cmdproc, "REG", "%s %s", old_group_guid,
+                          enc_new_group_name);
 }
 
 static void
@@ -1306,14 +1300,14 @@ msn_remove_group(PurpleConnection *gc, PurpleGroup *group)
 {
 	MsnSession *session;
 	MsnCmdProc *cmdproc;
-	int group_id;
+	const gchar *group_guid;
 
 	session = gc->proto_data;
 	cmdproc = session->notification->cmdproc;
 
-	if ((group_id = msn_userlist_find_group_id(session->userlist, group->name)) >= 0)
+	if ((group_guid = msn_userlist_find_group_id(session->userlist, group->name)))
 	{
-		msn_cmdproc_send(cmdproc, "RMG", "%d", group_id);
+		msn_cmdproc_send(cmdproc, "RMG", "%s", group_guid);
 	}
 }
 

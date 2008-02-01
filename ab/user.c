@@ -35,7 +35,8 @@
 
 MsnUser *
 msn_user_new (MsnUserList *userlist,
-              const gchar *passport)
+              const gchar *passport,
+              const gchar *guid)
 {
     MsnUser *user;
 
@@ -44,6 +45,7 @@ msn_user_new (MsnUserList *userlist,
     user->userlist = userlist;
 
     msn_user_set_passport (user, passport);
+    msn_user_set_guid (user, guid);
 
     return user;
 }
@@ -57,7 +59,10 @@ msn_user_destroy (MsnUser *user)
         g_hash_table_destroy (user->clientcaps);
 
     if (user->group_ids != NULL)
+    {
+        g_list_foreach (user->group_ids, (GFunc) g_free, NULL);
         g_list_free (user->group_ids);
+    }
 
     if (user->msnobj != NULL)
         msn_object_destroy (user->msnobj);
@@ -65,6 +70,7 @@ msn_user_destroy (MsnUser *user)
     g_free (user->passport);
     g_free (user->friendly_name);
     g_free (user->store_name);
+    g_free (user->guid);
     g_free (user->phone.home);
     g_free (user->phone.work);
     g_free (user->phone.mobile);
@@ -173,6 +179,16 @@ msn_user_set_store_name (MsnUser *user,
 }
 
 void
+msn_user_set_guid (MsnUser *user,
+                   const gchar *guid)
+{
+    g_return_if_fail (user);
+
+    g_free (user->guid);
+    user->guid = g_strdup (guid);
+}
+
+void
 msn_user_set_buddy_icon (MsnUser *user,
                          PurpleStoredImage *img)
 {
@@ -242,30 +258,53 @@ msn_user_set_buddy_icon (MsnUser *user,
 
 void
 msn_user_add_group_id (MsnUser *user,
-                       gint id)
+                       const gchar *group_guid)
 {
     MsnUserList *userlist;
     PurpleAccount *account;
-    PurpleBuddy *b;
-    PurpleGroup *g;
+    PurpleBuddy *b = NULL;
+    PurpleGroup *g = NULL;
     const gchar *passport;
     const gchar *group_name;
 
     g_return_if_fail (user);
-    g_return_if_fail (id >= 0);
-
-    user->group_ids = g_list_append (user->group_ids, GINT_TO_POINTER (id));
 
     userlist = user->userlist;
     account = msn_session_get_account (userlist->session);
     passport = msn_user_get_passport (user);
 
-    group_name = msn_userlist_find_group_name (userlist, id);
+    group_name = msn_userlist_find_group_name (userlist, group_guid);
 
-    g = purple_find_group( group_name);
+    if (group_name)
+        g = purple_find_group (group_name);
 
-    /* If the group is not there, add it */
-    if ((id == 0) && (g == NULL))
+    if (group_guid)
+    {
+        user->group_ids = g_list_append (user->group_ids, g_strdup (group_guid));
+
+        /* If this user is in the no-group, remove him, since now he is in a
+         * group. */
+        {
+            const gchar *t_group_name;
+            PurpleGroup *t_g;
+
+            t_group_name = msn_userlist_find_group_name (userlist, NULL);
+            t_g = purple_find_group (t_group_name);
+
+            if (t_g)
+            {
+                b = purple_find_buddy_in_group (account, passport, t_g);
+
+                if (b)
+                {
+                    purple_blist_remove_buddy (b);
+                }
+            }
+        }
+    }
+
+    /* If the group is not there, add him */
+    if (!g)
     {
         g = purple_group_new (group_name);
         purple_blist_add_group (g, NULL);
@@ -280,29 +319,21 @@ msn_user_add_group_id (MsnUser *user,
     }
 
     b->proto_data = user;
-
-    /* If we have users on the 'Individuals' group, remove them. */
-    if (id != 0)
-    {
-        group_name = msn_userlist_find_group_name (userlist, 0);
-        g = purple_find_group (group_name);
-        b = purple_find_buddy_in_group (account, passport, g);
-
-        if (b)
-        {
-            purple_blist_remove_buddy (b);
-        }
-    }
 }
 
 void
 msn_user_remove_group_id (MsnUser *user,
-                          gint id)
+                          const gchar *group_guid)
 {
     g_return_if_fail (user);
-    g_return_if_fail (id >= 0);
+    g_return_if_fail (group_guid);
 
-    user->group_ids = g_list_remove (user->group_ids, GINT_TO_POINTER (id));
+    {
+        GList *l;
+        l = g_list_find_custom (user->group_ids, group_guid, (GCompareFunc) strcmp);
+        user->group_ids = g_list_remove (user->group_ids, l->data);
+        g_free (l->data);
+    }
 }
 
 void

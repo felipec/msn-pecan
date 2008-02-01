@@ -63,7 +63,7 @@ msn_session_new(PurpleAccount *account)
 	session->notification = msn_notification_new(session);
 	session->userlist = msn_userlist_new(session);
 
-	session->user = msn_user_new(session->userlist, purple_account_get_username(account));
+	session->user = msn_user_new(session->userlist, purple_account_get_username(account), NULL);
 
 	session->protocol_ver = 9;
 	session->conv_seq = 1;

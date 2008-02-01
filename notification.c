@@ -77,7 +77,7 @@ open_cb (PecanNode *conn)
     else
         msn_session_set_login_step (session, MSN_LOGIN_STEP_HANDSHAKE2);
 
-    msn_cmdproc_send (cmd_conn->cmdproc, "VER", "MSNP9 MSNP8 CVR0");
+    msn_cmdproc_send (cmd_conn->cmdproc, "VER", "MSNP10 CVR0");
 
     msn_log ("end");
 }
@@ -135,7 +135,14 @@ error_handler (MsnCmdProc *cmdproc,
         tmp = g_strdup_printf (_("Error on notification server:\n%s"), reason);
     }
 
-    msn_session_set_error (notification->session, MSN_ERROR_SERVCONN, tmp);
+    switch (error)
+    {
+        case 913:
+            /* non-fatal */
+            break;
+        default:
+            msn_session_set_error (notification->session, MSN_ERROR_SERVCONN, tmp);
+    }
 
     g_free (tmp);
 }
@@ -232,7 +239,7 @@ msn_notification_connect(MsnNotification *notification, const char *host, int po
  **************************************************************************/
 
 static void
-group_error_helper(MsnSession *session, const char *msg, int group_id, int error)
+group_error_helper(MsnSession *session, const char *msg, const gchar *group_guid, int error)
 {
     PurpleAccount *account;
     PurpleConnection *gc;
@@ -245,7 +252,7 @@ group_error_helper(MsnSession *session, const char *msg, int group_id, int error
     if (error == 224)
     {
         const char *group_name;
-        group_name = msn_userlist_find_group_name(session->userlist, group_id);
+        group_name = msn_userlist_find_group_name(session->userlist, group_guid);
         reason = g_strdup_printf(_("%s is not a valid group."),
                                  group_name);
     }
@@ -303,13 +310,9 @@ usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     if (!g_ascii_strcasecmp(cmd->params[1], "OK"))
     {
         /* OK */
-        const char *friendly = purple_url_decode(cmd->params[3]);
-
-        purple_connection_set_display_name(gc, friendly);
-
         msn_session_set_login_step(session, MSN_LOGIN_STEP_SYN);
 
-        msn_cmdproc_send(cmdproc, "SYN", "%s", "0");
+        msn_cmdproc_send(cmdproc, "SYN", "%s %s", "0", "0");
     }
     else if (!g_ascii_strcasecmp(cmd->params[1], "TWN"))
     {
@@ -368,13 +371,13 @@ ver_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     MsnSession *session;
     PurpleAccount *account;
     gboolean protocol_supported = FALSE;
-    char proto_str[8];
+    const gchar *proto_str;
     guint i;
 
     session = cmdproc->session;
     account = session->account;
 
-    g_snprintf(proto_str, sizeof(proto_str), "MSNP%d", session->protocol_ver);
+    proto_str = "MSNP10";
 
     for (i = 1; i < cmd->param_count; i++)
     {
@@ -507,19 +510,21 @@ chl_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
  **************************************************************************/
 
 static void
-add_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
+adc_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSession *session;
     MsnUser *user;
     const char *list;
     const char *passport;
     const char *friendly;
+    const gchar *user_guid;
     MsnListId list_id;
-    int group_id;
+    const gchar *group_guid;
 
     list     = cmd->params[1];
-    passport = cmd->params[3];
-    friendly = purple_url_decode(cmd->params[4]);
+    passport = cmd->params[2] + 2; /* Strip off the preceeding F= */
+    friendly = purple_url_decode(passport);
+    user_guid = cmd->params[3]; /* NOTE: If !FL, this == NULL. It doesn't matter. */
 
     session = cmdproc->session;
 
@@ -527,7 +532,7 @@ add_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     if (user == NULL)
     {
-        user = msn_user_new(session->userlist, passport);
+        user = msn_user_new(session->userlist, passport, user_guid);
         msn_userlist_add_user(session->userlist, user);
     }
 
@@ -536,16 +541,16 @@ add_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     list_id = msn_get_list_id(list);
 
     if (cmd->param_count >= 6)
-        group_id = atoi(cmd->params[5]);
+        group_guid = cmd->params[4];
     else
-        group_id = -1;
+        group_guid = NULL;
 
-    msn_got_add_user(session, user, list_id, group_id);
+    msn_got_add_user(session, user, list_id, group_guid);
     msn_user_update(user);
 }
 
 static void
-add_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
+adc_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
 {
     MsnSession *session;
     PurpleAccount *account;
@@ -601,16 +606,16 @@ static void
 adg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSession *session;
-    gint group_id;
+    const gchar *group_guid;
     const char *group_name;
 
     session = cmdproc->session;
 
-    group_id = atoi(cmd->params[3]);
+    group_guid = cmd->params[2];
 
-    group_name = purple_url_decode(cmd->params[2]);
+    group_name = purple_url_decode(cmd->params[1]);
 
-    msn_group_new(session->userlist, group_id, group_name);
+    msn_group_new(session->userlist, group_guid, group_name);
 
     /* There is a user that must me moved to this group */
     if (cmd->trans->data)
@@ -809,6 +814,7 @@ not_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     cmdproc->last_cmd->payload_cb = not_cmd_post;
 }
 
+#if 0
 static void
 rea_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
@@ -843,26 +849,30 @@ rea_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         }
     }
 }
+#endif
 
 static void
 prp_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSession *session = cmdproc->session;
-    const char *type, *value;
+    PurpleConnection *gc = session->account->gc;
+    const gchar *type, *value;
 
     g_return_if_fail(cmd->param_count >= 3);
 
-    type  = cmd->params[2];
+    type = cmd->params[1];
 
-    if (cmd->param_count == 4)
+    if (cmd->param_count == 3)
     {
-        value = cmd->params[3];
+        value = cmd->params[2];
         if (!strcmp(type, "PHH"))
             msn_user_set_home_phone(session->user, purple_url_decode(value));
         else if (!strcmp(type, "PHW"))
             msn_user_set_work_phone(session->user, purple_url_decode(value));
         else if (!strcmp(type, "PHM"))
             msn_user_set_mobile_phone(session->user, purple_url_decode(value));
+        else if (!strcmp(type, "MFN"))
+            purple_connection_set_display_name(gc, purple_url_decode(value));
     }
     else
     {
@@ -879,27 +889,27 @@ static void
 reg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSession *session;
-    int group_id;
+    const gchar *group_guid;
     const char *group_name;
 
     session = cmdproc->session;
-    group_id = atoi(cmd->params[2]);
-    group_name = purple_url_decode(cmd->params[3]);
+    group_guid = cmd->params[1];
+    group_name = purple_url_decode(cmd->params[2]);
 
-    msn_userlist_rename_group_id(session->userlist, group_id, group_name);
+    msn_userlist_rename_group_id(session->userlist, group_guid, group_name);
 }
 
 static void
 reg_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
 {
-    int group_id;
+    const gchar *group_guid;
     char **params;
 
     params = g_strsplit(trans->params, " ", 0);
 
-    group_id = atoi(params[0]);
+    group_guid = params[0];
 
-    group_error_helper(cmdproc->session, _("Unable to rename group"), group_id, error);
+    group_error_helper(cmdproc->session, _("Unable to rename group"), group_guid, error);
 
     g_strfreev(params);
 }
@@ -910,25 +920,29 @@ rem_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     MsnSession *session;
     MsnUser *user;
     const char *list;
-    const char *passport;
+    const gchar *user_id; /* passport or guid */
     MsnListId list_id;
-    int group_id;
+    const gchar *group_guid;
 
     session = cmdproc->session;
     list = cmd->params[1];
-    passport = cmd->params[3];
-    user = msn_userlist_find_user(session->userlist, passport);
+    user_id = cmd->params[2];
+
+    if (strcmp (list, "FL") == 0)
+        user = msn_userlist_find_user (session->userlist, user_id);
+    else
+        user = msn_userlist_find_user_by_guid (session->userlist, user_id);
 
     g_return_if_fail(user != NULL);
 
     list_id = msn_get_list_id(list);
 
     if (cmd->param_count == 5)
-        group_id = atoi(cmd->params[4]);
+        group_guid = cmd->params[4];
     else
-        group_id = -1;
+        group_guid = NULL;
 
-    msn_got_rem_user(session, user, list_id, group_id);
+    msn_got_rem_user(session, user, list_id, group_guid);
     msn_user_update(user);
 }
 
@@ -936,25 +950,25 @@ static void
 rmg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSession *session;
-    int group_id;
+    const gchar *group_guid;
 
     session = cmdproc->session;
-    group_id = atoi(cmd->params[2]);
+    group_guid = cmd->params[1];
 
-    msn_userlist_remove_group_id(session->userlist, group_id);
+    msn_userlist_remove_group_id(session->userlist, group_guid);
 }
 
 static void
 rmg_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
 {
-    int group_id;
+    const gchar *group_guid;
     char **params;
 
     params = g_strsplit(trans->params, " ", 0);
 
-    group_id = atoi(params[0]);
+    group_guid = params[0];
 
-    group_error_helper(cmdproc->session, _("Unable to delete group"), group_id, error);
+    group_error_helper(cmdproc->session, _("Unable to delete group"), group_guid, error);
 
     g_strfreev(params);
 }
@@ -980,7 +994,7 @@ syn_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         return;
     }
 
-    total_users  = atoi(cmd->params[2]);
+    total_users  = atoi(cmd->params[3]);
 
     sync = msn_sync_new(session);
     sync->total_users = total_users;
@@ -1374,41 +1388,53 @@ system_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
 void
 msn_notification_add_buddy(MsnNotification *notification, const char *list,
-                           const char *who, const char *store_name,
-                           int group_id)
+                           const char *who, const gchar *user_guid, const char *store_name,
+                           const gchar *group_guid)
 {
     MsnCmdProc *cmdproc;
     cmdproc = notification->cmdproc;
 
-    if (group_id < 0 && !strcmp(list, "FL"))
-        group_id = 0;
-
-    if (group_id >= 0)
+    /* moogman: 
+     * If old_group_name == NULL, then ADC cmd is different.
+     * If a new buddy (as opposed to a buddy move), ADC cmd is different. 
+     * If !Fl, then do same as "new". */
+    if (user_guid && group_guid)
     {
-        msn_cmdproc_send(cmdproc, "ADD", "%s %s %s %d",
-                         list, who, store_name, group_id);
+        /* Buddy already in FL. Add it to group_guid. */
+        msn_cmdproc_send (cmdproc, "ADC", "%s C=%s %s", list, user_guid, group_guid);
+    }
+    else if (strcmp(list, "FL") == 0)
+    {
+        /* Add buddy to our FL. */
+        msn_cmdproc_send (cmdproc, "ADC", "%s N=%s F=%s", list, who, store_name);
     }
     else
     {
-        msn_cmdproc_send(cmdproc, "ADD", "%s %s %s",
-                         list, who, store_name);
+        /* Add buddy to another list (BL, AL). */
+        msn_cmdproc_send (cmdproc, "ADC", "%s N=%s", list, who);
     }
 }
 
 void
 msn_notification_rem_buddy(MsnNotification *notification, const char *list,
-                           const char *who, int group_id)
+                           const char *who, const gchar *user_guid, const gchar *group_guid)
 {
     MsnCmdProc *cmdproc;
     cmdproc = notification->cmdproc;
+    const gchar *final_who;
 
-    if (group_id >= 0)
+    final_who = ((strcmp (list, "FL") == 0) ? user_guid : who);
+
+    /* moogman: If user is only in one group, set group_id == NULL (force a complete remove).
+     * It seems as if we don't need to do the above check. I've tested it as it is and it seems 
+     * to work fine. However, a note is left here incase things change. */
+    if (group_guid)
     {
-        msn_cmdproc_send(cmdproc, "REM", "%s %s %d", list, who, group_id);
+        msn_cmdproc_send (cmdproc, "REM", "%s %s %s", list, final_who, group_guid);
     }
     else
     {
-        msn_cmdproc_send(cmdproc, "REM", "%s %s", list, who);
+        msn_cmdproc_send (cmdproc, "REM", "%s %s", list, final_who);
     }
 }
 
@@ -1426,15 +1452,15 @@ msn_notification_init(void)
     /* Synchronous */
     msn_table_add_cmd(cbs_table, "CHG", "CHG", NULL);
     msn_table_add_cmd(cbs_table, "CHG", "ILN", iln_cmd);
-    msn_table_add_cmd(cbs_table, "ADD", "ADD", add_cmd);
-    msn_table_add_cmd(cbs_table, "ADD", "ILN", iln_cmd);
+    msn_table_add_cmd(cbs_table, "ADC", "ADC", adc_cmd);
+    msn_table_add_cmd(cbs_table, "ADC", "ILN", iln_cmd);
     msn_table_add_cmd(cbs_table, "REM", "REM", rem_cmd);
     msn_table_add_cmd(cbs_table, "USR", "USR", usr_cmd);
     msn_table_add_cmd(cbs_table, "USR", "XFR", xfr_cmd);
     msn_table_add_cmd(cbs_table, "SYN", "SYN", syn_cmd);
     msn_table_add_cmd(cbs_table, "CVR", "CVR", cvr_cmd);
     msn_table_add_cmd(cbs_table, "VER", "VER", ver_cmd);
-    msn_table_add_cmd(cbs_table, "REA", "REA", rea_cmd);
+    /* msn_table_add_cmd(cbs_table, "REA", "REA", rea_cmd); */
     msn_table_add_cmd(cbs_table, "PRP", "PRP", prp_cmd);
     /* msn_table_add_cmd(cbs_table, "BLP", "BLP", blp_cmd); */
     msn_table_add_cmd(cbs_table, "BLP", "BLP", NULL);
@@ -1450,7 +1476,7 @@ msn_notification_init(void)
 
     msn_table_add_cmd(cbs_table, NULL, "CHL", chl_cmd);
     msn_table_add_cmd(cbs_table, NULL, "REM", rem_cmd);
-    msn_table_add_cmd(cbs_table, NULL, "ADD", add_cmd);
+    msn_table_add_cmd(cbs_table, NULL, "ADC", adc_cmd);
 
     msn_table_add_cmd(cbs_table, NULL, "QRY", NULL);
     msn_table_add_cmd(cbs_table, NULL, "QNG", qng_cmd);
@@ -1464,7 +1490,7 @@ msn_notification_init(void)
 
     msn_table_add_cmd(cbs_table, "fallback", "XFR", xfr_cmd);
 
-    msn_table_add_error(cbs_table, "ADD", add_error);
+    msn_table_add_error(cbs_table, "ADC", adc_error);
     msn_table_add_error(cbs_table, "REG", reg_error);
     msn_table_add_error(cbs_table, "RMG", rmg_error);
     /* msn_table_add_error(cbs_table, "REA", rea_error); */

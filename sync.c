@@ -72,7 +72,8 @@ static void
 prp_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
 	MsnSession *session = cmdproc->session;
-	const char *type, *value;
+        PurpleConnection *gc = session->account->gc;
+	const gchar *type, *value;
 
 	type  = cmd->params[0];
 	value = cmd->params[1];
@@ -85,6 +86,8 @@ prp_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 			msn_user_set_work_phone(session->user, purple_url_decode(value));
 		else if (!strcmp(type, "PHM"))
 			msn_user_set_mobile_phone(session->user, purple_url_decode(value));
+                else if (!strcmp(type, "MFN"))
+			purple_connection_set_display_name(gc, purple_url_decode(value));
 	}
 	else
 	{
@@ -102,12 +105,12 @@ lsg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
 	MsnSession *session = cmdproc->session;
 	const char *name;
-	int group_id;
+	const gchar *group_guid;
 
-	group_id = atoi(cmd->params[0]);
-	name = purple_url_decode(cmd->params[1]);
+	name = purple_url_decode(cmd->params[0]);
+	group_guid = cmd->params[1];
 
-	msn_group_new(session->userlist, group_id, name);
+	msn_group_new(session->userlist, group_guid, name);
 
 	if ((purple_find_group(name)) == NULL)
 	{
@@ -116,7 +119,7 @@ lsg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 	}
 
 	/* Group of ungroupped buddies */
-	if (group_id == 0)
+	if (!group_guid)
 	{
 		if (session->sync->total_users == 0)
 		{
@@ -135,16 +138,35 @@ static void
 lst_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
 	MsnSession *session = cmdproc->session;
-	char *passport = NULL;
-	int list_op;
+	const gchar *passport = NULL;
 	MsnUser *user;
-	const char *extra;
+	const gchar *friendly;
+        const gchar *user_guid = NULL;
+	int list_op = -1;
+        guint i;
 
-	passport = cmd->params[0];
-	extra = purple_url_decode(cmd->params[1]);
-	list_op = atoi(cmd->params[2]);
+        for (i = 0; i < cmd->param_count; i++)
+        {
+            const char *chopped_str;
 
-	user = msn_user_new(session->userlist, passport);
+            chopped_str = cmd->params[i] + 2;
+
+            /* Check for Name/email. */
+            if (!strncmp (cmd->params[i], "N=", 2))
+                passport = chopped_str;
+            /* Check for Friendlyname. */
+            else if (!strncmp (cmd->params[i], "F=", 2))
+                friendly = purple_url_decode (chopped_str);
+            /* Check for Contact GUID. */
+            else if (!strncmp (cmd->params[i], "C=", 2))
+                user_guid = chopped_str;
+            else
+                break;
+        }
+
+        list_op = g_ascii_strtod (cmd->params[i++], NULL);
+
+	user = msn_user_new (session->userlist, passport, user_guid);
 
 	msn_userlist_add_user(session->userlist, user);
 
@@ -152,41 +174,42 @@ lst_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
 	/* TODO: This can be improved */
 
-	if (list_op & MSN_LIST_FL_OP)
-	{
-		char **c;
-		char **tokens;
-		const char *group_nums;
-		GSList *group_ids;
+        if (list_op & MSN_LIST_FL_OP)
+        {
+            if (cmd->params[i])
+            {
+                gchar **c;
+                gchar **tokens;
+                const gchar *group_guids;
+                GSList *group_ids;
 
-		group_nums = cmd->params[3];
+                group_guids = cmd->params[4];
 
-		group_ids = NULL;
+                group_ids = NULL;
 
-		tokens = g_strsplit(group_nums, ",", -1);
+                tokens = g_strsplit (group_guids, ",", -1);
 
-		for (c = tokens; *c != NULL; c++)
-		{
-			int id;
+                for (c = tokens; *c != NULL; c++)
+                {
+                    group_ids = g_slist_append (group_ids, g_strdup (*c));
+                }
 
-			id = atoi(*c);
-			group_ids = g_slist_append(group_ids, GINT_TO_POINTER(id));
-		}
+                g_strfreev (tokens);
 
-		g_strfreev(tokens);
+                msn_got_lst_user (session, user, friendly, list_op, group_ids);
 
-		msn_got_lst_user(session, user, extra, list_op, group_ids);
-
-		g_slist_free(group_ids);
-	}
-	else
-	{
-		msn_got_lst_user(session, user, extra, list_op, NULL);
-	}
+                g_slist_foreach (group_ids, (GFunc)g_free, NULL);
+                g_slist_free (group_ids);
+            }
+            else
+            {
+                msn_got_lst_user (session, user, friendly, list_op, NULL);
+            }
+        }
 
 	session->sync->num_users++;
 
-	if (session->sync->num_users == session->sync->total_users)
+        if (session->sync->num_users == session->sync->total_users)
 	{
 		cmdproc->cbs_table = session->sync->old_cbs_table;
 

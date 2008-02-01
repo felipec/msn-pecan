@@ -51,8 +51,8 @@ struct _PurpleGroup;
 
 MsnListId msn_get_list_id (const gchar *list);
 
-void msn_got_add_user (MsnSession *session, MsnUser *user, MsnListId list_id, gint group_id);
-void msn_got_rem_user (MsnSession *session, MsnUser *user, MsnListId list_id, gint group_id);
+void msn_got_add_user (MsnSession *session, MsnUser *user, MsnListId list_id, const gchar *group_guid);
+void msn_got_rem_user (MsnSession *session, MsnUser *user, MsnListId list_id, const gchar *group_guid);
 void msn_got_lst_user (MsnSession *session, MsnUser *user, const gchar *extra, gint list_op, GSList *group_ids);
 
 MsnUserList *msn_userlist_new (MsnSession *session);
@@ -60,14 +60,15 @@ void msn_userlist_destroy (MsnUserList *userlist);
 void msn_userlist_add_user (MsnUserList *userlist, MsnUser *user);
 void msn_userlist_remove_user (MsnUserList *userlist, MsnUser *user);
 MsnUser *msn_userlist_find_user (MsnUserList *userlist, const gchar *passport);
+MsnUser *msn_userlist_find_user_by_guid (MsnUserList *userlist, const gchar *user_guid);
 void msn_userlist_add_group (MsnUserList *userlist, MsnGroup *group);
 void msn_userlist_remove_group (MsnUserList *userlist, MsnGroup *group);
-MsnGroup *msn_userlist_find_group_with_id (MsnUserList *userlist, int id);
+MsnGroup *msn_userlist_find_group_with_id (MsnUserList *userlist, const gchar *group_guid);
 MsnGroup *msn_userlist_find_group_with_name (MsnUserList *userlist, const gchar *name);
-int msn_userlist_find_group_id (MsnUserList *userlist, const gchar *group_name);
-const char *msn_userlist_find_group_name (MsnUserList *userlist, gint group_id);
-void msn_userlist_rename_group_id (MsnUserList *userlist, gint group_id, const gchar *new_name);
-void msn_userlist_remove_group_id (MsnUserList *userlist, gint group_id);
+const gchar *msn_userlist_find_group_id (MsnUserList *userlist, const gchar *group_name);
+const gchar *msn_userlist_find_group_name (MsnUserList *userlist, const gchar *group_guid);
+void msn_userlist_rename_group_id (MsnUserList *userlist, const gchar *group_guid, const gchar *new_name);
+void msn_userlist_remove_group_id (MsnUserList *userlist, const gchar *group_guid);
 
 void msn_userlist_rem_buddy (MsnUserList *userlist, const gchar *who, gint list_id, const gchar *group_name);
 void msn_userlist_add_buddy (MsnUserList *userlist, const gchar *who, gint list_id, const gchar *group_name);

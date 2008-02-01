@@ -37,10 +37,11 @@ struct _PurpleStoredImage;
  *
  * @param session      The MSN session.
  * @param passport     The initial passport.
+ * @param guid         The contact guid.
  *
  * @return A new user structure.
  */
-MsnUser *msn_user_new (MsnUserList *userlist, const gchar *passport);
+MsnUser *msn_user_new (MsnUserList *userlist, const gchar *passport, const gchar *guid);
 
 /**
  * Destroys a user structure.
@@ -92,6 +93,14 @@ void msn_user_set_friendly_name (MsnUser *user, const gchar *name);
 void msn_user_set_store_name (MsnUser *user, const gchar *name);
 
 /**
+ * Sets the contact guid for a user.
+ *
+ * @param user The user.
+ * @param name The contact guid.
+ */
+void msn_user_set_guid (MsnUser *user, const gchar *guid);
+
+/**
  * Sets the buddy icon for a local user.
  *
  * @param user     The user.
@@ -113,7 +122,7 @@ void msn_user_set_group_ids (MsnUser *user, GList *ids);
  * @param user The user.
  * @param id   The group ID.
  */
-void msn_user_add_group_id (MsnUser *user, gint id);
+void msn_user_add_group_id (MsnUser *user, const gchar *group_guid);
 
 /**
  * Removes the group ID from a user.
@@ -121,7 +130,7 @@ void msn_user_add_group_id (MsnUser *user, gint id);
  * @param user The user.
  * @param id   The group ID.
  */
-void msn_user_remove_group_id (MsnUser *user, gint id);
+void msn_user_remove_group_id (MsnUser *user, const gchar *group_guid);
 
 /**
  * Sets the home phone number for a user.

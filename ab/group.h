@@ -27,11 +27,11 @@ typedef struct MsnGroup  MsnGroup;
 
 #include "userlist.h"
 
-MsnGroup *msn_group_new (MsnUserList *userlist, gint id, const gchar *name);
+MsnGroup *msn_group_new (MsnUserList *userlist, const gchar *guid, const gchar *name);
 void msn_group_destroy (MsnGroup *group);
-void msn_group_set_id (MsnGroup *group, gint id);
+void msn_group_set_id (MsnGroup *group, const gchar *guid);
 void msn_group_set_name (MsnGroup *group, const gchar *name);
-gint msn_group_get_id (const MsnGroup *group);
+const gchar *msn_group_get_id (const MsnGroup *group);
 const gchar *msn_group_get_name (const MsnGroup *group);
 
 #endif /* MSN_GROUP_H */

@@ -51,8 +51,8 @@ struct MsnNotification
 void msn_notification_end (void);
 void msn_notification_init (void);
 
-void msn_notification_add_buddy (MsnNotification *notification, const char *list, const char *who, const char *store_name, int group_id);
-void msn_notification_rem_buddy (MsnNotification *notification, const char *list, const char *who, int group_id);
+void msn_notification_add_buddy (MsnNotification *notification, const char *list, const char *who, const gchar *user_guid, const char *store_name, const gchar *group_guid);
+void msn_notification_rem_buddy (MsnNotification *notification, const char *list, const char *who, const gchar *user_guid, const gchar *group_guid);
 MsnNotification *msn_notification_new (struct MsnSession *session);
 void msn_notification_destroy (MsnNotification *notification);
 gboolean msn_notification_connect (MsnNotification *notification, const char *host, int port);

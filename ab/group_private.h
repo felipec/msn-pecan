@@ -30,7 +30,7 @@
  */
 struct MsnGroup
 {
-    gint id; /**< The id. */
+    gchar *guid; /**< The GUID. */
     gchar *name; /**< The name. */
 };
 

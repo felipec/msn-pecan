@@ -25,19 +25,20 @@
 
 MsnGroup *
 msn_group_new (MsnUserList *userlist,
-               gint id,
+               const gchar *guid,
                const gchar *name)
 {
     MsnGroup *group;
 
     g_return_val_if_fail (userlist, NULL);
-    g_return_val_if_fail (name, NULL);
 
     group = g_new0 (MsnGroup, 1);
 
     msn_userlist_add_group (userlist, group);
 
-    group->id = id;
+    if (guid)
+        group->guid = g_strdup (guid);
+
     group->name = g_strdup (name);
 
     return group;
@@ -48,17 +49,21 @@ msn_group_destroy (MsnGroup *group)
 {
     g_return_if_fail (group);
 
+    g_free (group->guid);
     g_free (group->name);
     g_free (group);
 }
 
 void
 msn_group_set_id (MsnGroup *group,
-                  gint id)
+                  const gchar *guid)
 {
     g_return_if_fail (group);
 
-    group->id = id;
+    g_free (group->guid);
+
+    if (guid)
+        group->guid = g_strdup (guid);
 }
 
 void
@@ -69,16 +74,15 @@ msn_group_set_name (MsnGroup *group,
     g_return_if_fail (name);
 
     g_free (group->name);
-
     group->name = g_strdup (name);
 }
 
-gint
+const gchar *
 msn_group_get_id (const MsnGroup *group)
 {
-    g_return_val_if_fail (group, -1);
+    g_return_val_if_fail (group, NULL);
 
-    return group->id;
+    return group->guid;
 }
 
 const gchar *

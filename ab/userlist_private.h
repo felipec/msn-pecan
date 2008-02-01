@@ -25,6 +25,8 @@
 
 #include <glib.h>
 
+#include "group.h"
+
 typedef struct
 {
     gchar *who;
@@ -39,6 +41,7 @@ struct MsnUserList
 
     GList *users;
     GList *groups;
+    MsnGroup *null_group;
 
     GQueue *buddy_icon_requests;
     gint buddy_icon_window;
