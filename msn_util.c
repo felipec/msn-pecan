@@ -483,7 +483,7 @@ g_hash_table_peek_first (GHashTable *hash_table)
 
     foo = (struct FooGHashTable *) hash_table;
 
-    if (foo->size >= 1)
+    if (foo->nnodes >= 1)
         return foo->nodes[0]->value;
 
     return NULL;
