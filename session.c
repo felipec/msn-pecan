@@ -115,6 +115,14 @@ msn_session_destroy(MsnSession *session)
 	g_free(session);
 }
 
+PecanContact *
+msn_session_get_contact (MsnSession *session)
+{
+    g_return_val_if_fail (session, NULL);
+
+    return session->user;
+}
+
 PurpleAccount *
 msn_session_get_account (MsnSession *session)
 {

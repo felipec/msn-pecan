@@ -27,8 +27,6 @@
 #include "cvr/slp.h"
 #include "fix-purple.h"
 
-#include "session_private.h"
-
 #include <string.h>
 
 #ifdef HAVE_LIBPURPLE
@@ -148,6 +146,15 @@ pecan_contact_set_passport (PecanContact *contact,
     contact->passport = g_strdup (passport);
 }
 
+static gboolean
+contact_is_account (PecanContact *contact)
+{
+    if (strcmp (msn_session_get_contact (contact->contactlist->session)->passport, contact->passport) == 0)
+        return TRUE;
+
+    return FALSE;
+}
+
 void
 pecan_contact_set_friendly_name (PecanContact *contact,
                                  const gchar *name)
@@ -171,13 +178,14 @@ pecan_contact_set_friendly_name (PecanContact *contact,
         gc = purple_account_get_connection (account);
 
         fix_purple_buddy_set_friendly (gc, contact->passport, contact->friendly_name);
-
-        if (strcmp (session->user->passport, contact->passport) == 0)
-        {
-            pecan_contact_set_store_name (contact, name);
-        }
     }
 #endif /* HAVE_LIBPURPLE */
+
+    /* If contact == account; display and friendly are the same thing. */
+    if (contact_is_account (contact))
+    {
+        pecan_contact_set_store_name (contact, name);
+    }
 }
 
 void
@@ -203,13 +211,14 @@ pecan_contact_set_store_name (PecanContact *contact,
         gc = purple_account_get_connection (account);
 
         fix_purple_buddy_set_alias (gc, contact->passport, contact->store_name);
-
-        if (strcmp (session->user->passport, contact->passport) == 0)
-        {
-            pecan_contact_set_friendly_name (contact, name);
-        }
     }
 #endif /* HAVE_LIBPURPLE */
+
+    /* If contact == account; display and friendly are the same thing. */
+    if (contact_is_account (contact))
+    {
+        pecan_contact_set_friendly_name (contact, name);
+    }
 }
 
 void

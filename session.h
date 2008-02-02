@@ -25,6 +25,8 @@
 
 typedef struct MsnSession MsnSession;
 
+#include "ab/pecan_contact.h"
+
 struct MsnSwitchBoard;
 struct _PurpleAccount;
 
@@ -81,6 +83,16 @@ msn_session_new (struct _PurpleAccount *account);
  */
 void
 msn_session_destroy (MsnSession *session);
+
+/**
+ * Retrieves the session contact.
+ *
+ * @param The MSN session.
+ *
+ * @return The contact.
+ */
+PecanContact *
+msn_session_get_contact (MsnSession *session);
 
 /**
  * Gets the session account.
