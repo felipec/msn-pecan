@@ -196,20 +196,22 @@ void
 pecan_contact_set_store_name (PecanContact *contact,
                               const gchar *name)
 {
+    const gchar *tmp_name;
     g_return_if_fail (contact);
 
     msn_debug ("passport=[%s],name=[%s]", contact->passport, name);
 
-    if (contact->store_name && strcmp (contact->store_name, name) == 0)
+    /** @todo this is a hack to disable display names. */
+    if (strcmp (contact->passport, name) == 0)
+        tmp_name = NULL;
+    else
+        tmp_name = name;
+
+    if (contact->store_name && strcmp (contact->store_name, tmp_name) == 0)
         return;
 
     g_free (contact->store_name);
-
-    /** @todo this is a hack to disable display names. */
-    if (strcmp (contact->passport, name) == 0)
-        contact->store_name = NULL;
-    else
-        contact->store_name = g_strdup (name);
+    contact->store_name = g_strdup (tmp_name);
 
 #ifdef HAVE_LIBPURPLE
     {
