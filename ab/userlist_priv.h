@@ -39,15 +39,15 @@ struct MsnUserList
 {
     struct MsnSession *session;
 
-    GList *users;
-    GList *groups;
+    GHashTable *user_names;
+    GHashTable *user_guids;
+    GHashTable *group_names;
+    GHashTable *group_guids;
     MsnGroup *null_group;
 
     GQueue *buddy_icon_requests;
     gint buddy_icon_window;
     guint buddy_icon_request_timer;
-
-    gint fl_users_count;
 };
 
 #endif /* MSN_USERLIST_PRIV_H */

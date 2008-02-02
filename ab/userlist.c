@@ -45,6 +45,30 @@ typedef struct
     gchar *who;
 } MsnPermitAdd;
 
+gboolean
+g_ascii_strcase_equal (gconstpointer v1,
+                       gconstpointer v2)
+{
+  const gchar *string1 = v1;
+  const gchar *string2 = v2;
+  
+  return g_ascii_strcasecmp (string1, string2) == 0;
+}
+
+guint
+g_ascii_strcase_hash (gconstpointer v)
+{
+  /* 31 bit hash function */
+  const signed char *p = v;
+  guint32 h = *p;
+
+  if (h)
+    for (p += 1; *p != '\0'; p++)
+      h = (h << 5) - h + g_ascii_tolower (*p);
+
+  return h;
+}
+
 /**************************************************************************
  * Callbacks
  **************************************************************************/
@@ -221,10 +245,6 @@ msn_got_add_user (MsnSession *session,
         {
             msn_user_add_group_id (user, group_guid);
         }
-        else
-        {
-            /* session->sync->fl_users_count++; */
-        }
     }
     else if (list_id == MSN_LIST_AL)
     {
@@ -284,15 +304,11 @@ msn_got_rem_user (MsnSession *session,
 
     if (list_id == MSN_LIST_FL)
     {
-        /* TODO: When is the user totally removed? */
+        /** @todo when is the user totally removed? */
         if (group_guid)
         {
             msn_user_remove_group_id (user, group_guid);
             return;
-        }
-        else
-        {
-            /* session->sync->fl_users_count--; */
         }
     }
     else if (list_id == MSN_LIST_AL)
@@ -411,9 +427,15 @@ msn_userlist_new (MsnSession *session)
     userlist = g_new0 (MsnUserList, 1);
 
     userlist->session = session;
-    userlist->buddy_icon_requests = g_queue_new ();
 
+    userlist->user_names = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+    userlist->user_guids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+
+    userlist->group_names = g_hash_table_new_full (g_ascii_strcase_hash, g_ascii_strcase_equal, g_free, NULL);
+    userlist->group_guids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
     userlist->null_group = msn_group_new (userlist, NULL, "NULL 2");
+
+    userlist->buddy_icon_requests = g_queue_new ();
 
     /* buddy_icon_window is the number of allowed simultaneous buddy icon requests.
      * XXX With smarter rate limiting code, we could allow more at once... 5 was the limit set when
@@ -426,21 +448,10 @@ msn_userlist_new (MsnSession *session)
 void
 msn_userlist_destroy (MsnUserList *userlist)
 {
-    GList *l;
-
-    for (l = userlist->users; l; l = l->next)
-    {
-        msn_user_destroy (l->data);
-    }
-
-    g_list_free (userlist->users);
-
-    for (l = userlist->groups; l; l = l->next)
-    {
-        msn_group_destroy (l->data);
-    }
-
-    g_list_free (userlist->groups);
+    g_hash_table_destroy (userlist->user_guids);
+    g_hash_table_destroy (userlist->user_names);
+    g_hash_table_destroy (userlist->group_guids);
+    g_hash_table_destroy (userlist->group_names);
 
     g_queue_free (userlist->buddy_icon_requests);
 
@@ -454,119 +465,95 @@ void
 msn_userlist_add_user (MsnUserList *userlist,
                        MsnUser *user)
 {
-    userlist->users = g_list_prepend (userlist->users, user);
+    g_hash_table_insert (userlist->user_names, g_strdup (msn_user_get_passport (user)), user);
+    {
+        const gchar *guid;
+        guid = msn_user_get_guid (user);
+        if (guid)
+            g_hash_table_insert (userlist->user_guids, g_strdup (guid), user);
+    }
 }
 
 void
 msn_userlist_remove_user (MsnUserList *userlist,
                           MsnUser *user)
 {
-    userlist->users = g_list_remove (userlist->users, user);
+    g_hash_table_remove (userlist->user_names, msn_user_get_passport (user));
+    {
+        const gchar *guid;
+        guid = msn_user_get_guid (user);
+        if (guid)
+            g_hash_table_remove (userlist->user_guids, guid);
+    }
 }
 
 MsnUser *
 msn_userlist_find_user (MsnUserList *userlist,
                         const gchar *passport)
 {
-    GList *l;
-
     g_return_val_if_fail (passport, NULL);
 
-    for (l = userlist->users; l; l = l->next)
-    {
-        MsnUser *user = (MsnUser *) l->data;
-
-        g_return_val_if_fail (user->passport, NULL);
-
-        if (strcmp (passport, user->passport) == 0)
-            return user;
-    }
-
-    return NULL;
+    return g_hash_table_lookup (userlist->user_names, passport);
 }
 
 MsnUser *
 msn_userlist_find_user_by_guid (MsnUserList *userlist,
                                 const gchar *guid)
 {
-    GList *l;
-
     g_return_val_if_fail (guid, NULL);
 
-    for (l = userlist->users; l; l = l->next)
-    {
-        MsnUser *user = (MsnUser *) l->data;
-
-        g_return_val_if_fail (user->guid, NULL);
-
-        if (strcmp (guid, user->guid) == 0)
-            return user;
-    }
-
-    return NULL;
+    return g_hash_table_lookup (userlist->user_guids, guid);
 }
 
 void
 msn_userlist_add_group (MsnUserList *userlist,
                         MsnGroup *group)
 {
-    userlist->groups = g_list_append (userlist->groups, group);
+    g_hash_table_insert (userlist->group_names, g_strdup (msn_group_get_name (group)), group);
+    {
+        const gchar *guid;
+        guid = msn_group_get_id (group);
+        if (guid)
+            g_hash_table_insert (userlist->group_guids, g_strdup (guid), group);
+    }
 }
 
 void
 msn_userlist_remove_group (MsnUserList *userlist,
                            MsnGroup *group)
 {
-    userlist->groups = g_list_remove (userlist->groups, group);
+    g_hash_table_remove (userlist->group_names, msn_group_get_name (group));
+    {
+        const gchar *guid;
+        guid = msn_group_get_id (group);
+        if (guid)
+            g_hash_table_remove (userlist->group_guids, guid);
+    }
 }
 
 MsnGroup *
 msn_userlist_find_group_with_id (MsnUserList *userlist,
                                  const gchar *guid)
 {
-    GList *l;
-
     g_return_val_if_fail (userlist, NULL);
 
     if (!guid)
         return userlist->null_group;
 
-    for (l = userlist->groups; l; l = l->next)
-    {
-        MsnGroup *group = l->data;
-        const gchar *group_guid;
-
-        group_guid = msn_group_get_id (group);
-
-        if (group_guid && strcmp (group_guid, guid) == 0)
-            return group;
-    }
-
-    return NULL;
+    return g_hash_table_lookup (userlist->group_guids, guid);
 }
 
 MsnGroup *
 msn_userlist_find_group_with_name (MsnUserList *userlist,
                                    const gchar *name)
 {
-    GList *l;
-
     g_return_val_if_fail (userlist, NULL);
     g_return_val_if_fail (name, NULL);
-
-    for (l = userlist->groups; l; l = l->next)
-    {
-        MsnGroup *group = l->data;
-        const gchar *group_name = msn_group_get_name (group);
-
-        if ((group_name) && g_ascii_strcasecmp (name, group_name) == 0)
-            return group;
-    }
 
     if (g_ascii_strcasecmp (msn_group_get_name (userlist->null_group), name) == 0)
         return userlist->null_group;
 
-    return NULL;
+    return g_hash_table_lookup (userlist->group_names, name);
 }
 
 const gchar *

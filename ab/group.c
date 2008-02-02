@@ -34,12 +34,12 @@ msn_group_new (MsnUserList *userlist,
 
     group = g_new0 (MsnGroup, 1);
 
-    msn_userlist_add_group (userlist, group);
-
     if (guid)
         group->guid = g_strdup (guid);
 
     group->name = g_strdup (name);
+
+    msn_userlist_add_group (userlist, group);
 
     return group;
 }

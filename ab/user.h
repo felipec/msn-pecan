@@ -192,6 +192,15 @@ const gchar *msn_user_get_friendly_name (const MsnUser *user);
 const gchar *msn_user_get_store_name (const MsnUser *user);
 
 /**
+ * Returns the user's GUID.
+ *
+ * @param user The user.
+ *
+ * @return The GUID.
+ */
+const gchar *msn_user_get_guid (const MsnUser *user);
+
+/**
  * Returns the home phone number for a user.
  *
  * @param user The user.

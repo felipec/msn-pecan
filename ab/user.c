@@ -415,6 +415,14 @@ msn_user_get_store_name (const MsnUser *user)
 }
 
 const gchar *
+msn_user_get_guid (const MsnUser *user)
+{
+    g_return_val_if_fail (user, NULL);
+
+    return user->guid;
+}
+
+const gchar *
 msn_user_get_home_phone (const MsnUser *user)
 {
     g_return_val_if_fail (user, NULL);
