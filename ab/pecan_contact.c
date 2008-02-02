@@ -207,8 +207,11 @@ pecan_contact_set_store_name (PecanContact *contact,
     else
         tmp_name = name;
 
-    if (contact->store_name && strcmp (contact->store_name, tmp_name) == 0)
+    if (contact->store_name && tmp_name &&
+        strcmp (contact->store_name, tmp_name) == 0)
+    {
         return;
+    }
 
     g_free (contact->store_name);
     contact->store_name = g_strdup (tmp_name);
