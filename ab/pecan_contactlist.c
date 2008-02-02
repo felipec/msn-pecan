@@ -237,10 +237,6 @@ msn_got_add_contact (MsnSession *session,
 
     if (list_id == MSN_LIST_FL)
     {
-        PurpleConnection *gc;
-
-        gc = purple_account_get_connection (account);
-
         if (group_guid)
         {
             pecan_contact_add_group_id (contact, group_guid);
@@ -671,8 +667,8 @@ pecan_contactlist_rem_buddy (PecanContactList *contactlist,
     /* First we're going to check if not there. */
     if (!(contact_is_there (contact, list_id, group_guid)))
     {
-        msn_error ("contact not there: who=[%s],list=[%s]",
-                   who, list);
+        msn_error ("contact not there: who=[%s],list=[%s],group_guid=[%s]",
+                   who, list, group_guid);
         return;
     }
 
@@ -833,16 +829,9 @@ pecan_contactlist_add_buddy_helper (PecanContactList *contactlist,
             const gchar *list;
 
             list = lists[list_id];
-            if ((list_id == MSN_LIST_FL) && (group_guid))
-            {
-                msn_error ("already there: who=[%s],list=[%s],group_name=[%s]",
-                           who, list, group_name);
-            }
-            else
-            {
-                msn_error ("already there: who=[%s],list=[%s]",
-                           who, list);
-            }
+
+            msn_error ("already there: who=[%s],list=[%s],group_guid=[%s]",
+                       who, list, group_guid);
 
             /* MSN doesn't support the same contact twice in the same group. */
             purple_blist_remove_buddy (buddy);

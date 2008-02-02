@@ -328,6 +328,8 @@ pecan_contact_add_group_id (PecanContact *contact,
 
     passport = pecan_contact_get_passport (contact);
 
+    msn_debug ("passport=[%s],group_guid=[%s]", contact->passport, group_guid);
+
     if (group_guid)
     {
         g_hash_table_insert (contact->groups, g_strdup (group_guid), "foo");
@@ -395,6 +397,8 @@ pecan_contact_remove_group_id (PecanContact *contact,
 {
     g_return_if_fail (contact);
     g_return_if_fail (group_guid);
+
+    msn_debug ("passport=[%s],group_guid=[%s]", contact->passport, group_guid);
 
     g_hash_table_remove (contact->groups, group_guid);
 }

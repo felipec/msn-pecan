@@ -514,20 +514,44 @@ static void
 adc_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSession *session;
-    PecanContact *user;
-    const char *list;
-    const char *passport;
-    const gchar *user_guid;
+    PecanContact *user = NULL;
+    const gchar *list = NULL;
+    const gchar *passport = NULL;
+    const gchar *friendly = NULL;
+    const gchar *user_guid = NULL;
+    const gchar *group_guid = NULL;
     MsnListId list_id;
-    const gchar *group_guid;
+    guint i = 1;
 
-    list     = cmd->params[1];
-    passport = cmd->params[2] + 2; /* Strip off the preceeding F= */
-    user_guid = cmd->params[3]; /* NOTE: If !FL, this == NULL. It doesn't matter. */
+    list = cmd->params[i++];
+
+    for (; i < cmd->param_count; i++)
+    {
+        const char *chopped_str;
+
+        chopped_str = cmd->params[i] + 2;
+
+        /* Check for Name/email. */
+        if (strncmp (cmd->params[i], "N=", 2) == 0)
+            passport = chopped_str;
+        /* Check for Friendlyname. */
+        else if (strncmp (cmd->params[i], "F=", 2) == 0)
+            friendly = purple_url_decode (chopped_str);
+        /* Check for Contact GUID. */
+        else if (strncmp (cmd->params[i], "C=", 2) == 0)
+            user_guid = chopped_str;
+        else
+            break;
+    }
+
+    group_guid = cmd->params[i++];
 
     session = cmdproc->session;
 
-    user = pecan_contactlist_find_contact(session->contactlist, passport);
+    if (passport)
+        user = pecan_contactlist_find_contact (session->contactlist, passport);
+    else if (user_guid)
+        user = pecan_contactlist_find_contact_by_guid (session->contactlist, user_guid);
 
     if (user == NULL)
     {
@@ -536,11 +560,6 @@ adc_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     }
 
     list_id = msn_get_list_id(list);
-
-    if (cmd->param_count >= 6)
-        group_guid = cmd->params[4];
-    else
-        group_guid = NULL;
 
     msn_got_add_contact(session, user, list_id, group_guid);
     pecan_contact_update(user);
@@ -958,8 +977,8 @@ rem_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     list_id = msn_get_list_id(list);
 
-    if (cmd->param_count == 5)
-        group_guid = cmd->params[4];
+    if (cmd->param_count == 4)
+        group_guid = cmd->params[3];
     else
         group_guid = NULL;
 
