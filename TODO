@@ -1,3 +1,4 @@
  * GObjectify NS and SB
  * Add testing framework
  * GObjectify AdressBook
+ * Use hashetables in AB stuff (user/group/userlist)
