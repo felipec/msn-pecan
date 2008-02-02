@@ -517,14 +517,12 @@ adc_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     PecanContact *user;
     const char *list;
     const char *passport;
-    const char *friendly;
     const gchar *user_guid;
     MsnListId list_id;
     const gchar *group_guid;
 
     list     = cmd->params[1];
     passport = cmd->params[2] + 2; /* Strip off the preceeding F= */
-    friendly = purple_url_decode(passport);
     user_guid = cmd->params[3]; /* NOTE: If !FL, this == NULL. It doesn't matter. */
 
     session = cmdproc->session;
@@ -536,8 +534,6 @@ adc_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         user = pecan_contact_new(session->contactlist, passport, user_guid);
         pecan_contactlist_add_contact(session->contactlist, user);
     }
-
-    pecan_contact_set_friendly_name(user, friendly);
 
     list_id = msn_get_list_id(list);
 
@@ -851,6 +847,30 @@ rea_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     }
 }
 #endif
+
+static void
+sbp_cmd (MsnCmdProc *cmdproc,
+         MsnCommand *cmd)
+{
+    MsnSession *session;
+    const gchar *contact_guid;
+    const gchar *type;
+    const gchar *value;
+    PecanContact *contact;
+
+    session = cmdproc->session;
+    contact_guid = cmd->params[1];
+    type = cmd->params[2];
+    value = purple_url_decode (cmd->params[3]);
+
+    contact = pecan_contactlist_find_contact_by_guid (session->contactlist, contact_guid);
+
+    if (contact)
+    {
+        if (strcmp (type, "MFN") == 0)
+            pecan_contact_set_store_name (contact, value);
+    }
+}
 
 static void
 prp_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
@@ -1463,6 +1483,7 @@ msn_notification_init(void)
     msn_table_add_cmd(cbs_table, "CVR", "CVR", cvr_cmd);
     msn_table_add_cmd(cbs_table, "VER", "VER", ver_cmd);
     /* msn_table_add_cmd(cbs_table, "REA", "REA", rea_cmd); */
+    msn_table_add_cmd(cbs_table, "SBP", "SBP", sbp_cmd);
     msn_table_add_cmd(cbs_table, "PRP", "PRP", prp_cmd);
     /* msn_table_add_cmd(cbs_table, "BLP", "BLP", blp_cmd); */
     msn_table_add_cmd(cbs_table, "BLP", "BLP", NULL);

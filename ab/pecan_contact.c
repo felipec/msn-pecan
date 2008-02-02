@@ -23,6 +23,7 @@
 #include "pecan_contact.h"
 #include "pecan_contact_priv.h"
 #include "pecan_contactlist_priv.h"
+#include "msn_log.h"
 
 #include "cvr/slp.h"
 #include "fix-purple.h"
@@ -161,6 +162,8 @@ pecan_contact_set_friendly_name (PecanContact *contact,
 {
     g_return_if_fail (contact);
 
+    msn_debug ("passport=[%s],name=[%s]", contact->passport, name);
+
     if (contact->friendly_name && strcmp (contact->friendly_name, name) == 0)
         return;
 
@@ -184,6 +187,7 @@ pecan_contact_set_friendly_name (PecanContact *contact,
     /* If contact == account; display and friendly are the same thing. */
     if (contact_is_account (contact))
     {
+        msn_debug ("contact is account");
         pecan_contact_set_store_name (contact, name);
     }
 }
@@ -194,11 +198,18 @@ pecan_contact_set_store_name (PecanContact *contact,
 {
     g_return_if_fail (contact);
 
+    msn_debug ("passport=[%s],name=[%s]", contact->passport, name);
+
     if (contact->store_name && strcmp (contact->store_name, name) == 0)
         return;
 
     g_free (contact->store_name);
-    contact->store_name = g_strdup (name);
+
+    /** @todo this is a hack to disable display names. */
+    if (strcmp (contact->passport, name) == 0)
+        contact->store_name = NULL;
+    else
+        contact->store_name = g_strdup (name);
 
 #ifdef HAVE_LIBPURPLE
     {
@@ -217,6 +228,7 @@ pecan_contact_set_store_name (PecanContact *contact,
     /* If contact == account; display and friendly are the same thing. */
     if (contact_is_account (contact))
     {
+        msn_debug ("contact is account");
         pecan_contact_set_friendly_name (contact, name);
     }
 }

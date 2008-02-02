@@ -1197,19 +1197,18 @@ msn_alias_buddy (PurpleConnection *gc, const char *name, const char *alias)
 {
 	MsnSession *session;
 	MsnCmdProc *cmdproc;
-	const gchar *tmp;
-	PecanContact *user;
+	PecanContact *contact;
 
 	session = gc->proto_data;
 	cmdproc = session->notification->cmdproc;
-	user = pecan_contactlist_find_contact (session->contactlist, name);
+	contact = pecan_contactlist_find_contact (session->contactlist, name);
 
-	if(alias && strlen(alias))
-		tmp = purple_url_encode(alias);
-	else
-		tmp = "";
+        if (alias && strlen (alias))
+            alias = purple_url_encode (alias);
+        else
+            alias = pecan_contact_get_passport (contact);
 
-	msn_cmdproc_send(cmdproc, "SBP", "%s %s %s", pecan_contact_get_guid (user), "MFN", tmp);
+        msn_cmdproc_send(cmdproc, "SBP", "%s %s %s", pecan_contact_get_guid (contact), "MFN", alias);
 }
 
 static void
