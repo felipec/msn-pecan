@@ -38,7 +38,7 @@
 
 #include "cmd/msg.h"
 
-#include "ab/user_private.h"
+#include "ab/user_priv.h"
 
 #include "cvr/slplink.h"
 

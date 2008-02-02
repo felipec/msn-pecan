@@ -34,8 +34,8 @@
 #include "cmd/msg_private.h"
 
 #include "ab/userlist.h"
-#include "ab/userlist_private.h"
-#include "ab/user_private.h"
+#include "ab/userlist_priv.h"
+#include "ab/user_priv.h"
 
 #include "io/pecan_cmd_server.h"
 #include "io/pecan_http_server.h"

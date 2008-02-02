@@ -21,8 +21,8 @@
  */
 
 #include "user.h"
-#include "user_private.h"
-#include "userlist_private.h"
+#include "user_priv.h"
+#include "userlist_priv.h"
 
 #include "cvr/slp.h"
 #include "fix-purple.h"
@@ -53,18 +53,18 @@ msn_user_new (MsnUserList *userlist,
 void
 msn_user_destroy (MsnUser *user)
 {
-    g_return_if_fail (user != NULL);
+    g_return_if_fail (user);
 
-    if (user->clientcaps != NULL)
+    if (user->clientcaps)
         g_hash_table_destroy (user->clientcaps);
 
-    if (user->group_ids != NULL)
+    if (user->group_ids)
     {
         g_list_foreach (user->group_ids, (GFunc) g_free, NULL);
         g_list_free (user->group_ids);
     }
 
-    if (user->msnobj != NULL)
+    if (user->msnobj)
         msn_object_destroy (user->msnobj);
 
     g_free (user->passport);
@@ -85,9 +85,9 @@ msn_user_update (MsnUser *user)
 
     account = msn_session_get_account (user->userlist->session);
 
-    if (user->status != NULL)
+    if (user->status)
     {
-        if (!strcmp(user->status, "offline") && user->mobile)
+        if (!strcmp (user->status, "offline") && user->mobile)
         {
             purple_prpl_got_user_status (account, user->passport, "offline", NULL);
             purple_prpl_got_user_status (account, user->passport, "mobile", NULL);
@@ -136,7 +136,7 @@ void
 msn_user_set_passport (MsnUser *user,
                        const gchar *passport)
 {
-    g_return_if_fail (user != NULL);
+    g_return_if_fail (user);
 
     g_free (user->passport);
     user->passport = g_strdup (passport);
@@ -146,9 +146,9 @@ void
 msn_user_set_friendly_name (MsnUser *user,
                             const gchar *name)
 {
-    g_return_if_fail (user != NULL);
+    g_return_if_fail (user);
 
-    g_free( user->friendly_name);
+    g_free (user->friendly_name);
     user->friendly_name = g_strdup (name);
 
     {
@@ -207,7 +207,7 @@ msn_user_set_buddy_icon (MsnUser *user,
         char *base64;
         unsigned char digest[20];
 
-        if (msnobj == NULL)
+        if (!msnobj)
         {
             msnobj = msn_object_new ();
             msn_object_set_local (msnobj);
@@ -344,7 +344,7 @@ msn_user_set_home_phone (MsnUser *user,
 
     g_free (user->phone.home);
 
-    user->phone.home = (number == NULL ? NULL : g_strdup(number));
+    user->phone.home = (!number ? NULL : g_strdup (number));
 }
 
 void
@@ -355,7 +355,7 @@ msn_user_set_work_phone (MsnUser *user,
 
     g_free (user->phone.work);
 
-    user->phone.work = (number == NULL ? NULL : g_strdup(number));
+    user->phone.work = (!number ? NULL : g_strdup (number));
 }
 
 void
@@ -366,7 +366,7 @@ msn_user_set_mobile_phone (MsnUser *user,
 
     g_free (user->phone.mobile);
 
-    user->phone.mobile = (number == NULL ? NULL : g_strdup(number));
+    user->phone.mobile = (!number ? NULL : g_strdup (number));
 }
 
 void
@@ -422,7 +422,7 @@ msn_user_get_store_name (const MsnUser *user)
 }
 
 const gchar *
-msn_user_get_home_phone(const MsnUser *user)
+msn_user_get_home_phone (const MsnUser *user)
 {
     g_return_val_if_fail (user, NULL);
 
@@ -440,7 +440,7 @@ msn_user_get_work_phone (const MsnUser *user)
 const gchar *
 msn_user_get_mobile_phone (const MsnUser *user)
 {
-    g_return_val_if_fail( user, NULL);
+    g_return_val_if_fail (user, NULL);
 
     return user->phone.mobile;
 }
@@ -456,7 +456,7 @@ msn_user_get_object (const MsnUser *user)
 GHashTable *
 msn_user_get_client_caps (const MsnUser *user)
 {
-    g_return_val_if_fail(user, NULL);
+    g_return_val_if_fail (user, NULL);
 
     return user->clientcaps;
 }

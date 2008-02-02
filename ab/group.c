@@ -21,7 +21,7 @@
  */
 
 #include "group.h"
-#include "group_private.h"
+#include "group_priv.h"
 
 MsnGroup *
 msn_group_new (MsnUserList *userlist,

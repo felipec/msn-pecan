@@ -20,8 +20,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#ifndef MSN_GROUP_PRIVATE_H
-#define MSN_GROUP_PRIVATE_H
+#ifndef MSN_GROUP_PRIV_H
+#define MSN_GROUP_PRIV_H
 
 #include <glib.h>
 
@@ -34,4 +34,4 @@ struct MsnGroup
     gchar *name; /**< The name. */
 };
 
-#endif /* MSN_GROUP_PRIVATE_H */
+#endif /* MSN_GROUP_PRIV_H */

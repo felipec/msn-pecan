@@ -33,8 +33,8 @@
 #include "cmd/msg_private.h"
 
 #include "ab/user.h"
-#include "ab/userlist_private.h"
-#include "ab/user_private.h"
+#include "ab/userlist_priv.h"
+#include "ab/user_priv.h"
 
 #include "object.h"
 #include "switchboard.h"

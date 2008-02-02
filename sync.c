@@ -29,7 +29,7 @@
 #include "cmd/command_private.h"
 #include "cmd/cmdproc_private.h"
 
-#include "ab/user_private.h"
+#include "ab/user_priv.h"
 
 #include <string.h>
 
