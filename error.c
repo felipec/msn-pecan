@@ -204,7 +204,7 @@ msn_error_get_text(unsigned int type)
 			g_snprintf(msg, sizeof(msg), _("Authentication failed"));
 			break;
 		case 913:
-			g_snprintf(msg, sizeof(msg), _("Not allowed when offline"));
+			g_snprintf(msg, sizeof(msg), _("Not allowed when hiding"));
 			break;
 		case 914:
 		case 915:
