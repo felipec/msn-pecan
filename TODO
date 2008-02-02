@@ -2,3 +2,5 @@
  * Add testing framework
  * GObjectify AdressBook
  * Use hashetables in AB stuff (user/group/userlist)
+ * Allow cancel in authorization dialog
+ * Allow alias from the add buddy dialog

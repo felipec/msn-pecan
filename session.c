@@ -372,11 +372,12 @@ msn_session_finish_login(MsnSession *session)
 
 	purple_connection_set_state(gc, PURPLE_CONNECTED);
 
+        msn_userlist_check_pending (session->userlist);
+
 	/* It seems that some accounts that haven't accessed hotmail for a while
 	 * and @msn.com accounts don't automatically get the initial email
 	 * notification so we always request it on login
 	 */
-
 	passport = purple_normalize(account, purple_account_get_username(account));
 
 	if ((strstr(passport, "@hotmail.") != NULL) ||

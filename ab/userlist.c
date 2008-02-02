@@ -39,12 +39,12 @@
 /* libpurple stuff. */
 #include <privacy.h>
 
-const char *lists[] = { "FL", "AL", "BL", "RL" };
+const char *lists[] = { "FL", "AL", "BL", "RL", "PL" };
 
 typedef struct
 {
     MsnSession *session;
-    gchar *who;
+    MsnUser *user;
 } MsnPermitAdd;
 
 gboolean
@@ -78,10 +78,14 @@ static void
 msn_accept_add_cb (gpointer data)
 {
     MsnPermitAdd *pa = data;
+    const gchar *passport;
+    MsnUser *user;
 
-    msn_userlist_add_buddy (pa->session->userlist, pa->who, MSN_LIST_AL, NULL);
+    user = pa->user;
+    passport = msn_user_get_passport (user);
 
-    g_free (pa->who);
+    msn_userlist_add_buddy (pa->session->userlist, passport, MSN_LIST_AL, NULL);
+
     g_free (pa);
 }
 
@@ -89,23 +93,30 @@ static void
 msn_cancel_add_cb (gpointer data)
 {
     MsnPermitAdd *pa = data;
+    MsnUser *user;
+    const gchar *passport;
 
-    msn_userlist_add_buddy (pa->session->userlist, pa->who, MSN_LIST_BL, NULL);
+    user = pa->user;
+    passport = msn_user_get_passport (user);
 
-    g_free (pa->who);
+    msn_userlist_add_buddy (pa->session->userlist, passport, MSN_LIST_BL, NULL);
+
     g_free (pa);
 }
 
 static void
 got_new_entry (PurpleConnection *gc,
-               const gchar *passport,
+               MsnUser *user,
                const gchar *friendly)
 {
     MsnPermitAdd *pa;
+    const gchar *passport;
+
+    passport = msn_user_get_passport (user);
 
     pa = g_new0 (MsnPermitAdd, 1);
-    pa->who = g_strdup (passport);
     pa->session = gc->proto_data;
+    pa->user = user;
 
     purple_account_request_authorization (purple_connection_get_account (gc), passport, NULL, NULL, NULL,
                                           purple_find_buddy (purple_connection_get_account (gc), passport) != NULL,
@@ -220,6 +231,8 @@ msn_get_list_id (const gchar *list)
         return MSN_LIST_BL;
     else if (list[0] == 'R')
         return MSN_LIST_RL;
+    else if (list[0] == 'P')
+        return MSN_LIST_PL;
 
     return -1;
 }
@@ -259,13 +272,15 @@ msn_got_add_user (MsnSession *session,
     else if (list_id == MSN_LIST_RL)
     {
         PurpleConnection *gc;
-        PurpleConversation *convo;
 
         gc = purple_account_get_connection (account);
 
         msn_info ("rever list add: [%s]",
                   passport);
 
+        /** @todo display a non-intrusive message */
+#if 0
+        PurpleConversation *convo;
         convo = purple_find_conversation_with_account (PURPLE_CONV_TYPE_IM, passport, account);
         if (convo)
         {
@@ -279,10 +294,11 @@ msn_got_add_user (MsnSession *session,
                                   PURPLE_MESSAGE_SYSTEM, time (NULL));
             g_free (msg);
         }
+#endif
 
         if (!(user->list_op & (MSN_LIST_AL_OP | MSN_LIST_BL_OP)))
         {
-            got_new_entry (gc, passport,
+            got_new_entry (gc, user,
                            msn_user_get_friendly_name (user));
         }
     }
@@ -360,14 +376,14 @@ msn_got_lst_user (MsnSession *session,
                   gint list_op,
                   GSList *group_ids)
 {
-    PurpleConnection *gc;
     PurpleAccount *account;
     const gchar *passport;
 
     account = session->account;
-    gc = purple_account_get_connection (account);
 
     passport = msn_user_get_passport (user);
+
+    msn_debug ("user_name=%s,extra=%s,list_op=%d", user->passport, extra, list_op);
 
     if (list_op & MSN_LIST_FL_OP)
     {
@@ -403,14 +419,17 @@ msn_got_lst_user (MsnSession *session,
         purple_privacy_deny_add (account, passport, TRUE);
     }
 
-    if (list_op & MSN_LIST_RL_OP)
+    /* Somebody wants to be our friend :) */
+    if (list_op & (MSN_LIST_RL_OP | MSN_LIST_PL_OP))
     {
-        /* These are users who have us on their buddy list. */
-
+        /* Users must be either allowed or blocked, right? */
         if (!(list_op & (MSN_LIST_AL_OP | MSN_LIST_BL_OP)))
         {
-            got_new_entry (gc, passport, extra);
-            /* msn_user_set_friendly_name(user, extra); */
+            PurpleConnection *gc;
+
+            gc = purple_account_get_connection (account);
+
+            got_new_entry (gc, user, extra);
         }
     }
 
@@ -627,6 +646,8 @@ msn_userlist_rem_buddy (MsnUserList *userlist,
     user = msn_userlist_find_user (userlist, who);
     group_guid = NULL;
 
+    msn_debug ("who=[%s],list_id=%d,group_name=[%s]", who, list_id, group_name);
+
     if (group_name)
     {
         MsnGroup *group;
@@ -679,6 +700,8 @@ msn_userlist_add_buddy (MsnUserList *userlist,
 
     group_guid = NULL;
 
+    msn_debug ("who=[%s],list_id=%d,group_name=[%s]", who, list_id, group_name);
+
     if (group_name)
     {
         MsnGroup *group;
@@ -710,6 +733,34 @@ msn_userlist_add_buddy (MsnUserList *userlist,
     list = lists[list_id];
 
     msn_notification_add_buddy (userlist->session->notification, list, who, user_guid, store_name, group_guid);
+}
+
+static void
+user_check_pending (gpointer key,
+                    gpointer value,
+                    gpointer user_data)
+{
+    const gchar *passport;
+    MsnUser *user;
+    MsnUserList *userlist;
+
+    passport = key;
+    user = value;
+    userlist = user_data;
+
+    if (user->list_op & MSN_LIST_PL_OP)
+    {
+        /* These are users who are pending for... something. */
+
+        msn_userlist_add_buddy (userlist, passport, MSN_LIST_RL, NULL);
+        msn_userlist_rem_buddy (userlist, passport, MSN_LIST_PL, NULL);
+    }
+}
+
+void
+msn_userlist_check_pending (MsnUserList *userlist)
+{
+    g_hash_table_foreach (userlist->user_names, user_check_pending, userlist);
 }
 
 void
@@ -755,8 +806,6 @@ msn_userlist_add_buddy_helper (MsnUserList *userlist,
         list_id = MSN_LIST_FL;
         user = msn_userlist_find_user (userlist, who);
 
-        g_return_if_fail (user);
-
         if (group_name)
         {
             MsnGroup *group;
@@ -780,7 +829,7 @@ msn_userlist_add_buddy_helper (MsnUserList *userlist,
         }
 
         /* First we're going to check if he's already there. */
-        if (user_is_there (user, list_id, group_guid))
+        if (user && user_is_there (user, list_id, group_guid))
         {
             const gchar *list;
 
