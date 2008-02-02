@@ -26,11 +26,12 @@
 #include "msn_log.h"
 
 #include "cvr/slp.h"
-#include "fix_purple.h"
 
 #include <string.h>
 
 #ifdef HAVE_LIBPURPLE
+#include "fix_purple.h"
+
 /* libpurple stuff. */
 #include <cipher.h>
 #include <account.h>

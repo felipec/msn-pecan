@@ -813,7 +813,9 @@ pecan_contactlist_add_buddy_helper (PecanContactList *contactlist,
                 return;
             }
 
-            if (!pecan_group_get_id (group))
+            group_guid = pecan_group_get_id (group);
+
+            if (!group_guid)
             {
                 msn_error ("trying to add contact to a virtual group: who=[%s]",
                            who);
