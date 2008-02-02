@@ -25,7 +25,7 @@
 #include "session.h"
 #include "notification.h"
 
-#include "ab/user.h"
+#include "ab/pecan_contact.h"
 
 #include "session_private.h"
 
@@ -56,7 +56,7 @@ msn_change_status(MsnSession *session)
 {
 	PurpleAccount *account;
 	MsnCmdProc *cmdproc;
-	MsnUser *user;
+	PecanContact *user;
 	MsnObject *msnobj;
 	const char *state_text;
 
@@ -74,7 +74,7 @@ msn_change_status(MsnSession *session)
 	if (!session->logged_in)
 		return;
 
-	msnobj = msn_user_get_object(user);
+	msnobj = pecan_contact_get_object(user);
 
 	if (msnobj == NULL)
 	{

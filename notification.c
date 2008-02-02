@@ -33,9 +33,9 @@
 #include "cmd/transaction_private.h"
 #include "cmd/msg_private.h"
 
-#include "ab/userlist.h"
-#include "ab/userlist_priv.h"
-#include "ab/user_priv.h"
+#include "ab/pecan_contactlist.h"
+#include "ab/pecan_contactlist_priv.h"
+#include "ab/pecan_contact_priv.h"
 
 #include "io/pecan_cmd_server.h"
 #include "io/pecan_http_server.h"
@@ -45,7 +45,7 @@
 #include "cvr/slplink.h" /* for slplink_destroy */
 
 #include "error.h" /* for error_get_text */
-#include "msn_util.h" /* for parse_socket */
+#include "pecan_util.h" /* for parse_socket */
 
 #include "msn_intl.h"
 
@@ -252,7 +252,7 @@ group_error_helper(MsnSession *session, const char *msg, const gchar *group_guid
     if (error == 224)
     {
         const char *group_name;
-        group_name = msn_userlist_find_group_name(session->userlist, group_guid);
+        group_name = pecan_contactlist_find_group_name(session->contactlist, group_guid);
         reason = g_strdup_printf(_("%s is not a valid group."),
                                  group_name);
     }
@@ -513,7 +513,7 @@ static void
 adc_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSession *session;
-    MsnUser *user;
+    PecanContact *user;
     const char *list;
     const char *passport;
     const char *friendly;
@@ -528,15 +528,15 @@ adc_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     session = cmdproc->session;
 
-    user = msn_userlist_find_user(session->userlist, passport);
+    user = pecan_contactlist_find_contact(session->contactlist, passport);
 
     if (user == NULL)
     {
-        user = msn_user_new(session->userlist, passport, user_guid);
-        msn_userlist_add_user(session->userlist, user);
+        user = pecan_contact_new(session->contactlist, passport, user_guid);
+        pecan_contactlist_add_contact(session->contactlist, user);
     }
 
-    msn_user_set_friendly_name(user, friendly);
+    pecan_contact_set_friendly_name(user, friendly);
 
     list_id = msn_get_list_id(list);
 
@@ -545,8 +545,8 @@ adc_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     else
         group_guid = NULL;
 
-    msn_got_add_user(session, user, list_id, group_guid);
-    msn_user_update(user);
+    msn_got_add_contact(session, user, list_id, group_guid);
+    pecan_contact_update(user);
 }
 
 static void
@@ -615,22 +615,22 @@ adg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     group_name = purple_url_decode(cmd->params[1]);
 
-    msn_group_new(session->userlist, group_guid, group_name);
+    pecan_group_new(session->contactlist, group_guid, group_name);
 
     /* There is a user that must me moved to this group */
     if (cmd->trans->data)
     {
-        /* msn_userlist_move_buddy(); */
-        MsnUserList *userlist = cmdproc->session->userlist;
+        /* pecan_contactlist_move_buddy(); */
+        PecanContactList *contactlist = cmdproc->session->contactlist;
         MsnMoveBuddy *data = cmd->trans->data;
 
         if (data->old_group_name != NULL)
         {
-            msn_userlist_rem_buddy(userlist, data->who, MSN_LIST_FL, data->old_group_name);
+            pecan_contactlist_rem_buddy(contactlist, data->who, MSN_LIST_FL, data->old_group_name);
             g_free(data->old_group_name);
         }
 
-        msn_userlist_add_buddy(userlist, data->who, MSN_LIST_FL, group_name);
+        pecan_contactlist_add_buddy(contactlist, data->who, MSN_LIST_FL, group_name);
         g_free(data->who);
 
     }
@@ -668,12 +668,12 @@ static void
 fln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSlpLink *slplink;
-    MsnUser *user;
+    PecanContact *user;
 
-    user = msn_userlist_find_user(cmdproc->session->userlist, cmd->params[0]);
+    user = pecan_contactlist_find_contact(cmdproc->session->contactlist, cmd->params[0]);
 
     user->status = "offline";
-    msn_user_update(user);
+    pecan_contact_update(user);
 
     slplink = msn_session_find_slplink(cmdproc->session, cmd->params[0]);
 
@@ -688,7 +688,7 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     MsnSession *session;
     PurpleAccount *account;
     PurpleConnection *gc;
-    MsnUser *user;
+    PecanContact *user;
     MsnObject *msnobj;
     const char *state, *passport, *friendly;
 
@@ -700,18 +700,18 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     passport = cmd->params[2];
     friendly = purple_url_decode(cmd->params[3]);
 
-    user = msn_userlist_find_user(session->userlist, passport);
+    user = pecan_contactlist_find_contact(session->contactlist, passport);
 
-    msn_user_set_friendly_name(user, friendly);
+    pecan_contact_set_friendly_name(user, friendly);
 
     if (session->protocol_ver >= 9 && cmd->param_count == 6)
     {
         msnobj = msn_object_new_from_string(purple_url_decode(cmd->params[5]));
-        msn_user_set_object(user, msnobj);
+        pecan_contact_set_object(user, msnobj);
     }
 
-    msn_user_set_state(user, state);
-    msn_user_update(user);
+    pecan_contact_set_state(user, state);
+    pecan_contact_update(user);
 }
 
 static void
@@ -733,7 +733,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     MsnSession *session;
     PurpleAccount *account;
     PurpleConnection *gc;
-    MsnUser *user;
+    PecanContact *user;
     MsnObject *msnobj;
     int clientid;
     const char *state, *passport, *friendly;
@@ -746,7 +746,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     passport = cmd->params[1];
     friendly = purple_url_decode(cmd->params[2]);
 
-    user = msn_userlist_find_user(session->userlist, passport);
+    user = pecan_contactlist_find_contact(session->contactlist, passport);
 
     if (!user)
     {
@@ -754,23 +754,23 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         return;
     }
 
-    msn_user_set_friendly_name(user, friendly);
+    pecan_contact_set_friendly_name(user, friendly);
 
     if (cmd->param_count == 5)
     {
         msnobj = msn_object_new_from_string(purple_url_decode(cmd->params[4]));
-        msn_user_set_object(user, msnobj);
+        pecan_contact_set_object(user, msnobj);
     }
     else
     {
-        msn_user_set_object(user, NULL);
+        pecan_contact_set_object(user, NULL);
     }
 
     clientid = atoi(cmd->params[3]);
     user->mobile = (clientid & MSN_CLIENT_CAP_MSNMOBILE);
 
-    msn_user_set_state(user, state);
-    msn_user_update(user);
+    pecan_contact_set_state(user, state);
+    pecan_contact_update(user);
 }
 
 #if 0
@@ -836,11 +836,11 @@ rea_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     else
     {
         /* This is for a buddy. */
-        MsnUser *user;
-        user = msn_userlist_find_user(session->userlist, who);
+        PecanContact *user;
+        user = pecan_contactlist_find_contact(session->contactlist, who);
         if (user)
         {
-            msn_user_set_store_name(user, alias);
+            pecan_contact_set_store_name(user, alias);
         }
         else
         {
@@ -866,22 +866,22 @@ prp_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     {
         value = cmd->params[2];
         if (!strcmp(type, "PHH"))
-            msn_user_set_home_phone(session->user, purple_url_decode(value));
+            pecan_contact_set_home_phone(session->user, purple_url_decode(value));
         else if (!strcmp(type, "PHW"))
-            msn_user_set_work_phone(session->user, purple_url_decode(value));
+            pecan_contact_set_work_phone(session->user, purple_url_decode(value));
         else if (!strcmp(type, "PHM"))
-            msn_user_set_mobile_phone(session->user, purple_url_decode(value));
+            pecan_contact_set_mobile_phone(session->user, purple_url_decode(value));
         else if (!strcmp(type, "MFN"))
             purple_connection_set_display_name(gc, purple_url_decode(value));
     }
     else
     {
         if (!strcmp(type, "PHH"))
-            msn_user_set_home_phone(session->user, NULL);
+            pecan_contact_set_home_phone(session->user, NULL);
         else if (!strcmp(type, "PHW"))
-            msn_user_set_work_phone(session->user, NULL);
+            pecan_contact_set_work_phone(session->user, NULL);
         else if (!strcmp(type, "PHM"))
-            msn_user_set_mobile_phone(session->user, NULL);
+            pecan_contact_set_mobile_phone(session->user, NULL);
     }
 }
 
@@ -896,7 +896,7 @@ reg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     group_guid = cmd->params[1];
     group_name = purple_url_decode(cmd->params[2]);
 
-    msn_userlist_rename_group_id(session->userlist, group_guid, group_name);
+    pecan_contactlist_rename_group_id(session->contactlist, group_guid, group_name);
 }
 
 static void
@@ -918,7 +918,7 @@ static void
 rem_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSession *session;
-    MsnUser *user;
+    PecanContact *user;
     const char *list;
     const gchar *user_id; /* passport or guid */
     MsnListId list_id;
@@ -929,9 +929,9 @@ rem_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     user_id = cmd->params[2];
 
     if (strcmp (list, "FL") == 0)
-        user = msn_userlist_find_user_by_guid (session->userlist, user_id);
+        user = pecan_contactlist_find_contact_by_guid (session->contactlist, user_id);
     else
-        user = msn_userlist_find_user (session->userlist, user_id);
+        user = pecan_contactlist_find_contact (session->contactlist, user_id);
 
     g_return_if_fail(user != NULL);
 
@@ -942,8 +942,8 @@ rem_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     else
         group_guid = NULL;
 
-    msn_got_rem_user(session, user, list_id, group_guid);
-    msn_user_update(user);
+    msn_got_rem_contact(session, user, list_id, group_guid);
+    pecan_contact_update(user);
 }
 
 static void
@@ -955,7 +955,7 @@ rmg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     session = cmdproc->session;
     group_guid = cmd->params[1];
 
-    msn_userlist_remove_group_id(session->userlist, group_guid);
+    pecan_contactlist_remove_group_id(session->contactlist, group_guid);
 }
 
 static void
@@ -1275,7 +1275,7 @@ initial_email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
             const char *passport;
             const char *url;
 
-            passport = msn_user_get_passport(session->user);
+            passport = pecan_contact_get_passport(session->user);
             url = session->passport_info.file;
 
             purple_notify_emails(gc, atoi(unread), FALSE, NULL, NULL,
@@ -1330,7 +1330,7 @@ email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     purple_notify_email(gc,
                         (subject != NULL ? subject : ""),
                         (from != NULL ?  from : ""),
-                        msn_user_get_passport(session->user),
+                        pecan_contact_get_passport(session->user),
                         session->passport_info.file, NULL, NULL);
 
     g_free(from);

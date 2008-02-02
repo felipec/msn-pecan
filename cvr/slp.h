@@ -28,7 +28,7 @@
 struct MsnSession;
 struct MsnSlpCall;
 struct MsnSlpLink;
-struct MsnUser;
+struct PecanContact;
 
 struct _PurpleXfer;
 
@@ -46,6 +46,6 @@ void msn_xfer_completed_cb(struct MsnSlpCall *slpcall,
 void msn_xfer_cancel(struct _PurpleXfer *xfer);
 void msn_xfer_end_cb(struct MsnSlpCall *slpcall, struct MsnSession *session);
 
-void msn_queue_buddy_icon_request (struct MsnUser *user);
+void msn_queue_buddy_icon_request (struct PecanContact *user);
 
 #endif /* MSN_SLP_H */

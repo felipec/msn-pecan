@@ -61,9 +61,9 @@ msn_session_new(PurpleAccount *account)
 
 	session->account = account;
 	session->notification = msn_notification_new(session);
-	session->userlist = msn_userlist_new(session);
+	session->contactlist = pecan_contactlist_new(session);
 
-	session->user = msn_user_new(session->userlist, purple_account_get_username(account), NULL);
+	session->user = pecan_contact_new(session->contactlist, purple_account_get_username(account), NULL);
 
 	session->protocol_ver = 9;
 	session->conv_seq = 1;
@@ -90,7 +90,7 @@ msn_session_destroy(MsnSession *session)
 	while (session->slplinks != NULL)
 		msn_slplink_destroy(session->slplinks->data);
 
-	msn_userlist_destroy(session->userlist);
+	pecan_contactlist_destroy(session->contactlist);
 
 	g_free(session->passport_info.kv);
 	g_free(session->passport_info.sid);
@@ -110,7 +110,7 @@ msn_session_destroy(MsnSession *session)
 		msn_nexus_destroy(session->nexus);
 
 	if (session->user != NULL)
-		msn_user_destroy(session->user);
+		pecan_contact_destroy(session->user);
 
 	g_free(session);
 }
@@ -363,7 +363,7 @@ msn_session_finish_login(MsnSession *session)
 	gc = purple_account_get_connection(account);
 
 	img = purple_buddy_icons_find_account_icon(session->account);
-	msn_user_set_buddy_icon(session->user, img);
+	pecan_contact_set_buddy_icon(session->user, img);
 	purple_imgstore_unref(img);
 
 	session->logged_in = TRUE;
@@ -372,7 +372,7 @@ msn_session_finish_login(MsnSession *session)
 
 	purple_connection_set_state(gc, PURPLE_CONNECTED);
 
-        msn_userlist_check_pending (session->userlist);
+        pecan_contactlist_check_pending (session->contactlist);
 
 	/* It seems that some accounts that haven't accessed hotmail for a while
 	 * and @msn.com accounts don't automatically get the initial email

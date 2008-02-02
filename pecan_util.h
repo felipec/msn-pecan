@@ -20,8 +20,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#ifndef MSN_UTIL_H
-#define MSN_UTIL_H
+#ifndef PECAN_UTIL_H
+#define PECAN_UTIL_H
 
 #include <glib.h>
 
@@ -51,5 +51,7 @@ void msn_parse_socket(const char *str, char **ret_host, int *ret_port);
 char *msn_rand_guid(void);
 
 gpointer g_hash_table_peek_first (GHashTable *hash_table);
+gboolean g_ascii_strcase_equal (gconstpointer v1, gconstpointer v2);
+guint g_ascii_strcase_hash (gconstpointer v);
 
-#endif /* MSN_UTIL_H */
+#endif /* PECAN_UTIL_H */

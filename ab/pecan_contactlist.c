@@ -21,13 +21,14 @@
  */
 
 #include "session.h"
-#include "userlist.h"
-#include "userlist_priv.h"
-#include "user_priv.h"
+#include "pecan_contactlist.h"
+#include "pecan_contactlist_priv.h"
+#include "pecan_contact_priv.h"
 #include "msn_log.h"
 
 #include "session_private.h"
 #include "notification.h"
+#include "pecan_util.h"
 
 #include <string.h>
 
@@ -44,32 +45,8 @@ const char *lists[] = { "FL", "AL", "BL", "RL", "PL" };
 typedef struct
 {
     MsnSession *session;
-    MsnUser *user;
+    PecanContact *contact;
 } MsnPermitAdd;
-
-gboolean
-g_ascii_strcase_equal (gconstpointer v1,
-                       gconstpointer v2)
-{
-  const gchar *string1 = v1;
-  const gchar *string2 = v2;
-  
-  return g_ascii_strcasecmp (string1, string2) == 0;
-}
-
-guint
-g_ascii_strcase_hash (gconstpointer v)
-{
-  /* 31 bit hash function */
-  const signed char *p = v;
-  guint32 h = *p;
-
-  if (h)
-    for (p += 1; *p != '\0'; p++)
-      h = (h << 5) - h + g_ascii_tolower (*p);
-
-  return h;
-}
 
 /**************************************************************************
  * Callbacks
@@ -79,12 +56,12 @@ msn_accept_add_cb (gpointer data)
 {
     MsnPermitAdd *pa = data;
     const gchar *passport;
-    MsnUser *user;
+    PecanContact *contact;
 
-    user = pa->user;
-    passport = msn_user_get_passport (user);
+    contact = pa->contact;
+    passport = pecan_contact_get_passport (contact);
 
-    msn_userlist_add_buddy (pa->session->userlist, passport, MSN_LIST_AL, NULL);
+    pecan_contactlist_add_buddy (pa->session->contactlist, passport, MSN_LIST_AL, NULL);
 
     g_free (pa);
 }
@@ -93,30 +70,30 @@ static void
 msn_cancel_add_cb (gpointer data)
 {
     MsnPermitAdd *pa = data;
-    MsnUser *user;
+    PecanContact *contact;
     const gchar *passport;
 
-    user = pa->user;
-    passport = msn_user_get_passport (user);
+    contact = pa->contact;
+    passport = pecan_contact_get_passport (contact);
 
-    msn_userlist_add_buddy (pa->session->userlist, passport, MSN_LIST_BL, NULL);
+    pecan_contactlist_add_buddy (pa->session->contactlist, passport, MSN_LIST_BL, NULL);
 
     g_free (pa);
 }
 
 static void
 got_new_entry (PurpleConnection *gc,
-               MsnUser *user,
+               PecanContact *contact,
                const gchar *friendly)
 {
     MsnPermitAdd *pa;
     const gchar *passport;
 
-    passport = msn_user_get_passport (user);
+    passport = pecan_contact_get_passport (contact);
 
     pa = g_new0 (MsnPermitAdd, 1);
     pa->session = gc->proto_data;
-    pa->user = user;
+    pa->contact = contact;
 
     purple_account_request_authorization (purple_connection_get_account (gc), passport, NULL, NULL, NULL,
                                           purple_find_buddy (purple_connection_get_account (gc), passport) != NULL,
@@ -128,69 +105,69 @@ got_new_entry (PurpleConnection *gc,
  **************************************************************************/
 
 static gboolean
-user_is_in_group (MsnUser *user,
+contact_is_in_group (PecanContact *contact,
                   const gchar *group_guid)
 {
-    if (!user)
+    if (!contact)
         return FALSE;
 
     if (!group_guid)
     {
         /* User is in the no-group only when he isn't in any group. */
-        if (g_hash_table_size (user->groups) == 0)
+        if (g_hash_table_size (contact->groups) == 0)
             return TRUE;
 
         return FALSE;
     }
 
-    if (g_hash_table_lookup (user->groups, group_guid))
+    if (g_hash_table_lookup (contact->groups, group_guid))
         return TRUE;
 
     return FALSE;
 }
 
 static gboolean
-user_is_there (MsnUser *user,
+contact_is_there (PecanContact *contact,
                gint list_id,
                const gchar *group_guid)
 {
     int list_op;
 
-    if (!user)
+    if (!contact)
         return FALSE;
 
     list_op = 1 << list_id;
 
-    if (!(user->list_op & list_op))
+    if (!(contact->list_op & list_op))
         return FALSE;
 
     if (list_id == MSN_LIST_FL)
     {
-        return user_is_in_group (user, group_guid);
+        return contact_is_in_group (contact, group_guid);
     }
 
     return TRUE;
 }
 
 static const gchar*
-get_store_name (MsnUser *user)
+get_store_name (PecanContact *contact)
 {
     const gchar *store_name;
 
-    g_return_val_if_fail (user, NULL);
+    g_return_val_if_fail (contact, NULL);
 
-    store_name = msn_user_get_store_name (user);
+    store_name = pecan_contact_get_store_name (contact);
 
     if (store_name)
         store_name = purple_url_encode (store_name);
     else
-        store_name = msn_user_get_passport (user);
+        store_name = pecan_contact_get_passport (contact);
 
     return store_name;
 }
 
 static void
-msn_request_add_group (MsnUserList *userlist,
+msn_request_add_group (PecanContactList *contactlist,
                        const gchar *who,
                        const gchar *old_group_name,
                        const gchar *new_group_name)
@@ -199,7 +176,7 @@ msn_request_add_group (MsnUserList *userlist,
     MsnTransaction *trans;
     MsnMoveBuddy *data;
 
-    cmdproc = userlist->session->notification->cmdproc;
+    cmdproc = contactlist->session->notification->cmdproc;
     data = g_new0 (MsnMoveBuddy, 1);
 
     data->who = g_strdup (who);
@@ -238,17 +215,17 @@ msn_get_list_id (const gchar *list)
 }
 
 void
-msn_got_add_user (MsnSession *session,
-                  MsnUser *user,
-                  MsnListId list_id,
-                  const gchar *group_guid)
+msn_got_add_contact (MsnSession *session,
+                     PecanContact *contact,
+                     MsnListId list_id,
+                     const gchar *group_guid)
 {
     PurpleAccount *account;
     const gchar *passport;
 
     account = session->account;
 
-    passport = msn_user_get_passport (user);
+    passport = pecan_contact_get_passport (contact);
 
     if (list_id == MSN_LIST_FL)
     {
@@ -258,7 +235,7 @@ msn_got_add_user (MsnSession *session,
 
         if (group_guid)
         {
-            msn_user_add_group_id (user, group_guid);
+            pecan_contact_add_group_id (contact, group_guid);
         }
     }
     else if (list_id == MSN_LIST_AL)
@@ -296,20 +273,20 @@ msn_got_add_user (MsnSession *session,
         }
 #endif
 
-        if (!(user->list_op & (MSN_LIST_AL_OP | MSN_LIST_BL_OP)))
+        if (!(contact->list_op & (MSN_LIST_AL_OP | MSN_LIST_BL_OP)))
         {
-            got_new_entry (gc, user,
-                           msn_user_get_friendly_name (user));
+            got_new_entry (gc, contact,
+                           pecan_contact_get_friendly_name (contact));
         }
     }
 
-    user->list_op |= (1 << list_id);
-    /* purple_user_add_list_id (user, list_id); */
+    contact->list_op |= (1 << list_id);
+    /* purple_contact_add_list_id (contact, list_id); */
 }
 
 void
-msn_got_rem_user (MsnSession *session,
-                  MsnUser *user,
+msn_got_rem_contact (MsnSession *session,
+                  PecanContact *contact,
                   MsnListId list_id,
                   const gchar *group_guid)
 {
@@ -318,14 +295,14 @@ msn_got_rem_user (MsnSession *session,
 
     account = session->account;
 
-    passport = msn_user_get_passport (user);
+    passport = pecan_contact_get_passport (contact);
 
     if (list_id == MSN_LIST_FL)
     {
-        /** @todo when is the user totally removed? */
+        /** @todo when is the contact totally removed? */
         if (group_guid)
         {
-            msn_user_remove_group_id (user, group_guid);
+            pecan_contact_remove_group_id (contact, group_guid);
             return;
         }
     }
@@ -359,10 +336,10 @@ msn_got_rem_user (MsnSession *session,
         }
     }
 
-    user->list_op &= ~(1 << list_id);
-    /* purple_user_remove_list_id (user, list_id); */
+    contact->list_op &= ~(1 << list_id);
+    /* purple_contact_remove_list_id (contact, list_id); */
 
-    if (user->list_op == 0)
+    if (contact->list_op == 0)
     {
         msn_debug ("no list op: [%s]",
                    passport);
@@ -370,20 +347,20 @@ msn_got_rem_user (MsnSession *session,
 }
 
 void
-msn_got_lst_user (MsnSession *session,
-                  MsnUser *user,
-                  const gchar *extra,
-                  gint list_op,
-                  GSList *group_ids)
+msn_got_lst_contact (MsnSession *session,
+                     PecanContact *contact,
+                     const gchar *extra,
+                     gint list_op,
+                     GSList *group_ids)
 {
     PurpleAccount *account;
     const gchar *passport;
 
     account = session->account;
 
-    passport = msn_user_get_passport (user);
+    passport = pecan_contact_get_passport (contact);
 
-    msn_debug ("user_name=%s,extra=%s,list_op=%d", user->passport, extra, list_op);
+    msn_debug ("passport=%s,extra=%s,list_op=%d", contact->passport, extra, list_op);
 
     if (list_op & MSN_LIST_FL_OP)
     {
@@ -394,27 +371,27 @@ msn_got_lst_user (MsnSession *session,
             {
                 const gchar *group_guid;
                 group_guid = (const gchar *) c->data;
-                msn_user_add_group_id (user, group_guid);
+                pecan_contact_add_group_id (contact, group_guid);
             }
         }
         else
         {
-            msn_user_add_group_id (user, NULL);
+            pecan_contact_add_group_id (contact, NULL);
         }
 
-        msn_user_set_store_name (user, extra);
+        pecan_contact_set_store_name (contact, extra);
     }
 
     if (list_op & MSN_LIST_AL_OP)
     {
-        /* These are users who are allowed to see our status. */
+        /* These are contacts who are allowed to see our status. */
         purple_privacy_deny_remove (account, passport, TRUE);
         purple_privacy_permit_add (account, passport, TRUE);
     }
 
     if (list_op & MSN_LIST_BL_OP)
     {
-        /* These are users who are not allowed to see our status. */
+        /* These are contacts who are not allowed to see our status. */
         purple_privacy_permit_remove (account, passport, TRUE);
         purple_privacy_deny_add (account, passport, TRUE);
     }
@@ -429,230 +406,232 @@ msn_got_lst_user (MsnSession *session,
 
             gc = purple_account_get_connection (account);
 
-            got_new_entry (gc, user, extra);
+            got_new_entry (gc, contact, extra);
         }
     }
 
-    user->list_op = list_op;
+    contact->list_op = list_op;
 }
 
 /**************************************************************************
  * UserList functions
  **************************************************************************/
 
-MsnUserList *
-msn_userlist_new (MsnSession *session)
+PecanContactList *
+pecan_contactlist_new (MsnSession *session)
 {
-    MsnUserList *userlist;
+    PecanContactList *contactlist;
 
-    userlist = g_new0 (MsnUserList, 1);
+    contactlist = g_new0 (PecanContactList, 1);
 
-    userlist->session = session;
+    contactlist->session = session;
 
-    userlist->user_names = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
-    userlist->user_guids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+    contactlist->contact_names = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+    contactlist->contact_guids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 
-    userlist->group_names = g_hash_table_new_full (g_ascii_strcase_hash, g_ascii_strcase_equal, g_free, NULL);
-    userlist->group_guids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
-    userlist->null_group = msn_group_new (userlist, NULL, MSN_NULL_GROUP_NAME);
+    contactlist->group_names = g_hash_table_new_full (g_ascii_strcase_hash, g_ascii_strcase_equal, g_free, NULL);
+    contactlist->group_guids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+    contactlist->null_group = pecan_group_new (contactlist, NULL, MSN_NULL_GROUP_NAME);
 
-    userlist->buddy_icon_requests = g_queue_new ();
+    contactlist->buddy_icon_requests = g_queue_new ();
 
     /* buddy_icon_window is the number of allowed simultaneous buddy icon requests.
      * XXX With smarter rate limiting code, we could allow more at once... 5 was the limit set when
      * we weren't retrieiving any more than 5 per MSN session. */
-    userlist->buddy_icon_window = 1;
+    contactlist->buddy_icon_window = 1;
 
-    return userlist;
+    return contactlist;
 }
 
 void
-msn_userlist_destroy (MsnUserList *userlist)
+pecan_contactlist_destroy (PecanContactList *contactlist)
 {
-    g_hash_table_destroy (userlist->user_guids);
-    g_hash_table_destroy (userlist->user_names);
-    g_hash_table_destroy (userlist->group_guids);
-    g_hash_table_destroy (userlist->group_names);
+    g_hash_table_destroy (contactlist->contact_guids);
+    g_hash_table_destroy (contactlist->contact_names);
+    g_hash_table_destroy (contactlist->group_guids);
+    g_hash_table_destroy (contactlist->group_names);
 
-    g_queue_free (userlist->buddy_icon_requests);
+    g_queue_free (contactlist->buddy_icon_requests);
 
-    if (userlist->buddy_icon_request_timer)
-        purple_timeout_remove (userlist->buddy_icon_request_timer);
+    if (contactlist->buddy_icon_request_timer)
+        purple_timeout_remove (contactlist->buddy_icon_request_timer);
 
-    g_free (userlist);
+    g_free (contactlist);
 }
 
 void
-msn_userlist_add_user (MsnUserList *userlist,
-                       MsnUser *user)
+pecan_contactlist_add_contact (PecanContactList *contactlist,
+                               PecanContact *contact)
 {
-    g_hash_table_insert (userlist->user_names, g_strdup (msn_user_get_passport (user)), user);
+    g_hash_table_insert (contactlist->contact_names,
+                         g_strdup (pecan_contact_get_passport (contact)), contact);
     {
         const gchar *guid;
-        guid = msn_user_get_guid (user);
+        guid = pecan_contact_get_guid (contact);
         if (guid)
-            g_hash_table_insert (userlist->user_guids, g_strdup (guid), user);
+            g_hash_table_insert (contactlist->contact_guids, g_strdup (guid), contact);
     }
 }
 
 void
-msn_userlist_remove_user (MsnUserList *userlist,
-                          MsnUser *user)
+pecan_contactlist_remove_contact (PecanContactList *contactlist,
+                                  PecanContact *contact)
 {
-    g_hash_table_remove (userlist->user_names, msn_user_get_passport (user));
+    g_hash_table_remove (contactlist->contact_names,
+                         pecan_contact_get_passport (contact));
     {
         const gchar *guid;
-        guid = msn_user_get_guid (user);
+        guid = pecan_contact_get_guid (contact);
         if (guid)
-            g_hash_table_remove (userlist->user_guids, guid);
+            g_hash_table_remove (contactlist->contact_guids, guid);
     }
 }
 
-MsnUser *
-msn_userlist_find_user (MsnUserList *userlist,
-                        const gchar *passport)
+PecanContact *
+pecan_contactlist_find_contact (PecanContactList *contactlist,
+                                const gchar *passport)
 {
     g_return_val_if_fail (passport, NULL);
 
-    return g_hash_table_lookup (userlist->user_names, passport);
+    return g_hash_table_lookup (contactlist->contact_names, passport);
 }
 
-MsnUser *
-msn_userlist_find_user_by_guid (MsnUserList *userlist,
-                                const gchar *guid)
+PecanContact *
+pecan_contactlist_find_contact_by_guid (PecanContactList *contactlist,
+                                        const gchar *guid)
 {
     g_return_val_if_fail (guid, NULL);
 
-    return g_hash_table_lookup (userlist->user_guids, guid);
+    return g_hash_table_lookup (contactlist->contact_guids, guid);
 }
 
 void
-msn_userlist_add_group (MsnUserList *userlist,
-                        MsnGroup *group)
+pecan_contactlist_add_group (PecanContactList *contactlist,
+                             PecanGroup *group)
 {
-    g_hash_table_insert (userlist->group_names, g_strdup (msn_group_get_name (group)), group);
+    g_hash_table_insert (contactlist->group_names, g_strdup (pecan_group_get_name (group)), group);
     {
         const gchar *guid;
-        guid = msn_group_get_id (group);
+        guid = pecan_group_get_id (group);
         if (guid)
-            g_hash_table_insert (userlist->group_guids, g_strdup (guid), group);
+            g_hash_table_insert (contactlist->group_guids, g_strdup (guid), group);
     }
 }
 
 void
-msn_userlist_remove_group (MsnUserList *userlist,
-                           MsnGroup *group)
+pecan_contactlist_remove_group (PecanContactList *contactlist,
+                                PecanGroup *group)
 {
-    g_hash_table_remove (userlist->group_names, msn_group_get_name (group));
+    g_hash_table_remove (contactlist->group_names, pecan_group_get_name (group));
     {
         const gchar *guid;
-        guid = msn_group_get_id (group);
+        guid = pecan_group_get_id (group);
         if (guid)
-            g_hash_table_remove (userlist->group_guids, guid);
+            g_hash_table_remove (contactlist->group_guids, guid);
     }
 }
 
-MsnGroup *
-msn_userlist_find_group_with_id (MsnUserList *userlist,
-                                 const gchar *guid)
+PecanGroup *
+pecan_contactlist_find_group_with_id (PecanContactList *contactlist,
+                                      const gchar *guid)
 {
-    g_return_val_if_fail (userlist, NULL);
+    g_return_val_if_fail (contactlist, NULL);
 
     if (!guid)
-        return userlist->null_group;
+        return contactlist->null_group;
 
-    return g_hash_table_lookup (userlist->group_guids, guid);
+    return g_hash_table_lookup (contactlist->group_guids, guid);
 }
 
-MsnGroup *
-msn_userlist_find_group_with_name (MsnUserList *userlist,
-                                   const gchar *name)
+PecanGroup *
+pecan_contactlist_find_group_with_name (PecanContactList *contactlist,
+                                        const gchar *name)
 {
-    g_return_val_if_fail (userlist, NULL);
+    g_return_val_if_fail (contactlist, NULL);
     g_return_val_if_fail (name, NULL);
 
-    if (g_ascii_strcasecmp (msn_group_get_name (userlist->null_group), name) == 0)
-        return userlist->null_group;
+    if (g_ascii_strcasecmp (pecan_group_get_name (contactlist->null_group), name) == 0)
+        return contactlist->null_group;
 
-    return g_hash_table_lookup (userlist->group_names, name);
+    return g_hash_table_lookup (contactlist->group_names, name);
 }
 
 const gchar *
-msn_userlist_find_group_id (MsnUserList *userlist,
-                            const gchar *group_name)
+pecan_contactlist_find_group_id (PecanContactList *contactlist,
+                                 const gchar *group_name)
 {
-    MsnGroup *group;
+    PecanGroup *group;
 
-    group = msn_userlist_find_group_with_name (userlist, group_name);
+    group = pecan_contactlist_find_group_with_name (contactlist, group_name);
 
     if (group)
-        return msn_group_get_id (group);
+        return pecan_group_get_id (group);
     else
         return NULL;
 }
 
 const gchar *
-msn_userlist_find_group_name (MsnUserList *userlist,
-                              const gchar *group_guid)
+pecan_contactlist_find_group_name (PecanContactList *contactlist,
+                                   const gchar *group_guid)
 {
-    MsnGroup *group;
+    PecanGroup *group;
 
-    group = msn_userlist_find_group_with_id (userlist, group_guid);
+    group = pecan_contactlist_find_group_with_id (contactlist, group_guid);
 
     if (group)
-        return msn_group_get_name (group);
+        return pecan_group_get_name (group);
     else
         return NULL;
 }
 
 void
-msn_userlist_rename_group_id (MsnUserList *userlist,
-                              const gchar *group_guid,
-                              const gchar *new_name)
+pecan_contactlist_rename_group_id (PecanContactList *contactlist,
+                                   const gchar *group_guid,
+                                   const gchar *new_name)
 {
-    MsnGroup *group;
+    PecanGroup *group;
 
-    group = msn_userlist_find_group_with_id (userlist, group_guid);
+    group = pecan_contactlist_find_group_with_id (contactlist, group_guid);
 
     if (group)
-        msn_group_set_name (group, new_name);
+        pecan_group_set_name (group, new_name);
 }
 
 void
-msn_userlist_remove_group_id (MsnUserList *userlist,
-                              const gchar *group_guid)
+pecan_contactlist_remove_group_id (PecanContactList *contactlist,
+                                   const gchar *group_guid)
 {
-    MsnGroup *group;
+    PecanGroup *group;
 
-    group = msn_userlist_find_group_with_id (userlist, group_guid);
+    group = pecan_contactlist_find_group_with_id (contactlist, group_guid);
 
     if (group)
     {
-        msn_userlist_remove_group (userlist, group);
-        msn_group_destroy (group);
+        pecan_contactlist_remove_group (contactlist, group);
+        pecan_group_destroy (group);
     }
 }
 
 void
-msn_userlist_rem_buddy (MsnUserList *userlist,
-                        const gchar *who,
-                        gint list_id,
-                        const gchar *group_name)
+pecan_contactlist_rem_buddy (PecanContactList *contactlist,
+                             const gchar *who,
+                             gint list_id,
+                             const gchar *group_name)
 {
-    MsnUser *user;
+    PecanContact *contact;
     const gchar *group_guid;
     const gchar *list;
 
-    user = msn_userlist_find_user (userlist, who);
+    contact = pecan_contactlist_find_contact (contactlist, who);
     group_guid = NULL;
 
     msn_debug ("who=[%s],list_id=%d,group_name=[%s]", who, list_id, group_name);
 
     if (group_name)
     {
-        MsnGroup *group;
+        PecanGroup *group;
 
-        group = msn_userlist_find_group_with_name (userlist, group_name);
+        group = pecan_contactlist_find_group_with_name (contactlist, group_name);
 
         if (!group)
         {
@@ -661,11 +640,11 @@ msn_userlist_rem_buddy (MsnUserList *userlist,
             return;
         }
 
-        group_guid = msn_group_get_id (group);
+        group_guid = pecan_group_get_id (group);
 
         if (!group_guid)
         {
-            /* There's no way to remove a user from the no-group. */
+            /* There's no way to remove a contact from the no-group. */
             /* Adding him to other groups does that. */
             msn_debug ("virtual group: group_name=[%s]", group_name);
             return;
@@ -675,26 +654,26 @@ msn_userlist_rem_buddy (MsnUserList *userlist,
     list = lists[list_id];
 
     /* First we're going to check if not there. */
-    if (!(user_is_there (user, list_id, group_guid)))
+    if (!(contact_is_there (contact, list_id, group_guid)))
     {
-        msn_error ("user not there: who=[%s],list=[%s]",
+        msn_error ("contact not there: who=[%s],list=[%s]",
                    who, list);
         return;
     }
 
     /* Then request the rem to the server. */
-    msn_notification_rem_buddy (userlist->session->notification, list, who, user->guid, group_guid);
+    msn_notification_rem_buddy (contactlist->session->notification, list, who, contact->guid, group_guid);
 }
 
 void
-msn_userlist_add_buddy (MsnUserList *userlist,
-                        const gchar *who,
-                        gint list_id,
-                        const gchar *group_name)
+pecan_contactlist_add_buddy (PecanContactList *contactlist,
+                             const gchar *who,
+                             gint list_id,
+                             const gchar *group_name)
 {
-    MsnUser *user;
+    PecanContact *contact;
     const gchar *group_guid;
-    const gchar *user_guid;
+    const gchar *contact_guid;
     const gchar *list;
     const gchar *store_name;
 
@@ -704,93 +683,93 @@ msn_userlist_add_buddy (MsnUserList *userlist,
 
     if (group_name)
     {
-        MsnGroup *group;
+        PecanGroup *group;
 
-        group = msn_userlist_find_group_with_name (userlist, group_name);
+        group = pecan_contactlist_find_group_with_name (contactlist, group_name);
 
         if (!group)
         {
             /* We must add that group first. */
-            msn_request_add_group (userlist, who, NULL, group_name);
+            msn_request_add_group (contactlist, who, NULL, group_name);
             return;
         }
 
-        group_guid = msn_group_get_id (group);
+        group_guid = pecan_group_get_id (group);
 
         if (!group_guid)
         {
-            /* There's no way to add a user to the no-group. */
+            /* There's no way to add a contact to the no-group. */
             /* Removing from other groups does that. */
             return;
         }
     }
 
-    user = msn_userlist_find_user (userlist, who);
+    contact = pecan_contactlist_find_contact (contactlist, who);
 
-    store_name = (user) ? get_store_name (user) : who;
-    user_guid = (user) ? user->guid : NULL;
+    store_name = (contact) ? get_store_name (contact) : who;
+    contact_guid = (contact) ? contact->guid : NULL;
 
     list = lists[list_id];
 
-    msn_notification_add_buddy (userlist->session->notification, list, who, user_guid, store_name, group_guid);
-}
-
-static void
-user_check_pending (gpointer key,
-                    gpointer value,
-                    gpointer user_data)
-{
-    const gchar *passport;
-    MsnUser *user;
-    MsnUserList *userlist;
-
-    passport = key;
-    user = value;
-    userlist = user_data;
-
-    if (user->list_op & MSN_LIST_PL_OP)
-    {
-        /* These are users who are pending for... something. */
-
-        msn_userlist_add_buddy (userlist, passport, MSN_LIST_RL, NULL);
-        msn_userlist_rem_buddy (userlist, passport, MSN_LIST_PL, NULL);
-    }
+    msn_notification_add_buddy (contactlist->session->notification, list, who, contact_guid, store_name, group_guid);
 }
 
 void
-msn_userlist_check_pending (MsnUserList *userlist)
+pecan_contactlist_move_buddy (PecanContactList *contactlist,
+                              const gchar *who,
+                              const gchar *old_group_name,
+                              const gchar *new_group_name)
 {
-    g_hash_table_foreach (userlist->user_names, user_check_pending, userlist);
-}
+    PecanGroup *new_group;
 
-void
-msn_userlist_move_buddy (MsnUserList *userlist,
-                         const gchar *who,
-                         const gchar *old_group_name,
-                         const gchar *new_group_name)
-{
-    MsnGroup *new_group;
-
-    new_group = msn_userlist_find_group_with_name (userlist, new_group_name);
+    new_group = pecan_contactlist_find_group_with_name (contactlist, new_group_name);
 
     if (!new_group)
     {
-        msn_request_add_group (userlist, who, old_group_name, new_group_name);
+        msn_request_add_group (contactlist, who, old_group_name, new_group_name);
         return;
     }
 
-    msn_userlist_add_buddy (userlist, who, MSN_LIST_FL, new_group_name);
+    pecan_contactlist_add_buddy (contactlist, who, MSN_LIST_FL, new_group_name);
     if (old_group_name)
-        msn_userlist_rem_buddy (userlist, who, MSN_LIST_FL, old_group_name);
+        pecan_contactlist_rem_buddy (contactlist, who, MSN_LIST_FL, old_group_name);
+}
+
+static void
+contact_check_pending (gpointer key,
+                       gpointer value,
+                       gpointer user_data)
+{
+    const gchar *passport;
+    PecanContact *contact;
+    PecanContactList *contactlist;
+
+    passport = key;
+    contact = value;
+    contactlist = user_data;
+
+    if (contact->list_op & MSN_LIST_PL_OP)
+    {
+        /* These are contacts who are pending for... something. */
+
+        pecan_contactlist_add_buddy (contactlist, passport, MSN_LIST_RL, NULL);
+        pecan_contactlist_rem_buddy (contactlist, passport, MSN_LIST_PL, NULL);
+    }
+}
+
+void
+pecan_contactlist_check_pending (PecanContactList *contactlist)
+{
+    g_hash_table_foreach (contactlist->contact_names, contact_check_pending, contactlist);
 }
 
 /**************************************************************************
  * Purple functions
  **************************************************************************/
 void
-msn_userlist_add_buddy_helper (MsnUserList *userlist,
-                               PurpleBuddy *buddy,
-                               PurpleGroup *purple_group)
+pecan_contactlist_add_buddy_helper (PecanContactList *contactlist,
+                                    PurpleBuddy *buddy,
+                                    PurpleGroup *purple_group)
 {
     const gchar *who;
     const gchar *group_name;
@@ -799,29 +778,29 @@ msn_userlist_add_buddy_helper (MsnUserList *userlist,
     group_name = purple_group_get_name (purple_group);
 
     {
-        MsnUser *user;
+        PecanContact *contact;
         int list_id;
         const gchar *group_guid = NULL;
 
         list_id = MSN_LIST_FL;
-        user = msn_userlist_find_user (userlist, who);
+        contact = pecan_contactlist_find_contact (contactlist, who);
 
         if (group_name)
         {
-            MsnGroup *group;
+            PecanGroup *group;
 
-            group = msn_userlist_find_group_with_name (userlist, group_name);
+            group = pecan_contactlist_find_group_with_name (contactlist, group_name);
 
             if (!group)
             {
                 /* We must add that group first. */
-                msn_request_add_group (userlist, who, NULL, group_name);
+                msn_request_add_group (contactlist, who, NULL, group_name);
                 return;
             }
 
-            if (!msn_group_get_id (group))
+            if (!pecan_group_get_id (group))
             {
-                msn_error ("trying to add user to a virtual group: who=[%s]",
+                msn_error ("trying to add contact to a virtual group: who=[%s]",
                            who);
                 purple_blist_remove_buddy (buddy);
                 return;
@@ -829,7 +808,7 @@ msn_userlist_add_buddy_helper (MsnUserList *userlist,
         }
 
         /* First we're going to check if he's already there. */
-        if (user && user_is_there (user, list_id, group_guid))
+        if (contact && contact_is_there (contact, list_id, group_guid))
         {
             const gchar *list;
 
@@ -845,12 +824,12 @@ msn_userlist_add_buddy_helper (MsnUserList *userlist,
                            who, list);
             }
 
-            /* MSN doesn't support the same user twice in the same group. */
+            /* MSN doesn't support the same contact twice in the same group. */
             purple_blist_remove_buddy (buddy);
 
             return;
         }
     }
 
-    msn_userlist_add_buddy (userlist, who, MSN_LIST_FL, group_name);
+    pecan_contactlist_add_buddy (contactlist, who, MSN_LIST_FL, group_name);
 }

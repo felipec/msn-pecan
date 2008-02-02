@@ -34,16 +34,16 @@ objects = \
 	sync.o \
 	msn_io.o \
 	msn_log.o \
-	msn_util.o \
+	pecan_util.o \
 	cmd/cmdproc.o \
 	cmd/command.o \
 	cmd/history.o \
 	cmd/msg.o \
 	cmd/table.o \
 	cmd/transaction.o \
-	ab/group.o \
-	ab/user.o \
-	ab/userlist.o \
+	ab/pecan_group.o \
+	ab/pecan_contact.o \
+	ab/pecan_contactlist.o \
 	io/pecan_node.o \
 	io/pecan_cmd_server.o \
 	io/pecan_http_server.o \

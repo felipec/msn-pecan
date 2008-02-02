@@ -20,18 +20,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#ifndef MSN_GROUP_H
-#define MSN_GROUP_H
+#ifndef PECAN_GROUP_H
+#define PECAN_GROUP_H
 
-typedef struct MsnGroup  MsnGroup;
+typedef struct PecanGroup  PecanGroup;
 
-#include "userlist.h"
+#include "pecan_contactlist.h"
 
-MsnGroup *msn_group_new (MsnUserList *userlist, const gchar *guid, const gchar *name);
-void msn_group_destroy (MsnGroup *group);
-void msn_group_set_id (MsnGroup *group, const gchar *guid);
-void msn_group_set_name (MsnGroup *group, const gchar *name);
-const gchar *msn_group_get_id (const MsnGroup *group);
-const gchar *msn_group_get_name (const MsnGroup *group);
+PecanGroup *pecan_group_new (PecanContactList *contactlist, const gchar *guid, const gchar *name);
+void pecan_group_destroy (PecanGroup *group);
+void pecan_group_set_id (PecanGroup *group, const gchar *guid);
+void pecan_group_set_name (PecanGroup *group, const gchar *name);
+const gchar *pecan_group_get_id (const PecanGroup *group);
+const gchar *pecan_group_get_name (const PecanGroup *group);
 
-#endif /* MSN_GROUP_H */
+#endif /* PECAN_GROUP_H */

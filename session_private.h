@@ -26,8 +26,8 @@
 #include "session.h"
 #include "io/pecan_node.h"
 
-#include "ab/user.h"
-#include "ab/userlist.h"
+#include "ab/pecan_contact.h"
+#include "ab/pecan_contactlist.h"
 
 #include "io/pecan_node.h"
 
@@ -41,7 +41,7 @@ struct _PurpleConversation;
 struct MsnSession
 {
     struct _PurpleAccount *account;
-    MsnUser *user;
+    PecanContact *user;
 
     guint protocol_ver;
 
@@ -57,7 +57,7 @@ struct MsnSession
     struct MsnNexus *nexus;
     struct MsnSync *sync;
 
-    MsnUserList *userlist;
+    PecanContactList *contactlist;
 
     int servconns_count; /**< The count of server connections. */
     GList *switches; /**< The list of all the switchboards. */

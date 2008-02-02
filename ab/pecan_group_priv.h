@@ -20,18 +20,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#ifndef MSN_GROUP_PRIV_H
-#define MSN_GROUP_PRIV_H
+#ifndef PECAN_GROUP_PRIV_H
+#define PECAN_GROUP_PRIV_H
 
 #include <glib.h>
 
 /**
  * A group.
  */
-struct MsnGroup
+struct PecanGroup
 {
     gchar *guid; /**< The GUID. */
     gchar *name; /**< The name. */
 };
 
-#endif /* MSN_GROUP_PRIV_H */
+#endif /* PECAN_GROUP_PRIV_H */

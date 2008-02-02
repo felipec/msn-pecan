@@ -22,7 +22,7 @@
 #include "slplink.h"
 #include "slpcall.h"
 
-#include "ab/user.h"
+#include "ab/pecan_contact.h"
 
 /**************************************************************************
  * SLP Session

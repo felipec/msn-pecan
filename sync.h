@@ -29,7 +29,7 @@ typedef struct MsnSync MsnSync;
 
 #include "cmd/table.h"
 
-#include "ab/user.h"
+#include "ab/pecan_contact.h"
 
 struct MsnSync
 {
@@ -41,7 +41,7 @@ struct MsnSync
     gint total_users;
     gint num_groups;
     gint total_groups;
-    MsnUser *last_user;
+    PecanContact *last_user;
 };
 
 void msn_sync_init (void);

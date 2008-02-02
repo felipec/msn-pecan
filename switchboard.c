@@ -38,7 +38,7 @@
 #include "io/pecan_cmd_server_priv.h"
 #include "io/pecan_http_server.h"
 
-#include "msn_util.h"
+#include "pecan_util.h"
 #include "msn_log.h"
 
 #include "error.h"
@@ -1077,7 +1077,7 @@ clientcaps_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 #if 0
     MsnSession *session;
     MsnSwitchBoard *swboard;
-    MsnUser *user;
+    PecanContact *user;
     GHashTable *clientcaps;
     const char *value;
 

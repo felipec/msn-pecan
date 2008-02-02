@@ -58,7 +58,6 @@ typedef enum
 
 struct MsnSession;
 struct MsnMessage;
-struct MsnUser;
 struct MsnCmdProc;
 
 struct _PurpleConversation;

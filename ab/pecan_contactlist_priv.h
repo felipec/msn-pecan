@@ -20,12 +20,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#ifndef MSN_USERLIST_PRIV_H
-#define MSN_USERLIST_PRIV_H
+#ifndef PECAN_CONTACTLIST_PRIV_H
+#define PECAN_CONTACTLIST_PRIV_H
 
 #include <glib.h>
 
-#include "group.h"
+#include "pecan_group.h"
 
 typedef struct
 {
@@ -35,19 +35,19 @@ typedef struct
 
 struct MsnSesion;
 
-struct MsnUserList
+struct PecanContactList
 {
     struct MsnSession *session;
 
-    GHashTable *user_names;
-    GHashTable *user_guids;
+    GHashTable *contact_names;
+    GHashTable *contact_guids;
     GHashTable *group_names;
     GHashTable *group_guids;
-    MsnGroup *null_group;
+    PecanGroup *null_group;
 
     GQueue *buddy_icon_requests;
     gint buddy_icon_window;
     guint buddy_icon_request_timer;
 };
 
-#endif /* MSN_USERLIST_PRIV_H */
+#endif /* PECAN_CONTACTLIST_PRIV_H */

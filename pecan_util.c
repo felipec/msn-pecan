@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#include "msn_util.h"
+#include "pecan_util.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -487,4 +487,28 @@ g_hash_table_peek_first (GHashTable *hash_table)
         return foo->nodes[0]->value;
 
     return NULL;
+}
+
+gboolean
+g_ascii_strcase_equal (gconstpointer v1,
+                       gconstpointer v2)
+{
+  const gchar *string1 = v1;
+  const gchar *string2 = v2;
+  
+  return g_ascii_strcasecmp (string1, string2) == 0;
+}
+
+guint
+g_ascii_strcase_hash (gconstpointer v)
+{
+  /* 31 bit hash function */
+  const signed char *p = v;
+  guint32 h = *p;
+
+  if (h)
+    for (p += 1; *p != '\0'; p++)
+      h = (h << 5) - h + g_ascii_tolower (*p);
+
+  return h;
 }

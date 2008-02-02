@@ -20,32 +20,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#include "group.h"
-#include "group_priv.h"
+#include "pecan_group.h"
+#include "pecan_group_priv.h"
 
-MsnGroup *
-msn_group_new (MsnUserList *userlist,
-               const gchar *guid,
-               const gchar *name)
+PecanGroup *
+pecan_group_new (PecanContactList *contactlist,
+                 const gchar *guid,
+                 const gchar *name)
 {
-    MsnGroup *group;
+    PecanGroup *group;
 
-    g_return_val_if_fail (userlist, NULL);
+    g_return_val_if_fail (contactlist, NULL);
 
-    group = g_new0 (MsnGroup, 1);
+    group = g_new0 (PecanGroup, 1);
 
     if (guid)
         group->guid = g_strdup (guid);
 
     group->name = g_strdup (name);
 
-    msn_userlist_add_group (userlist, group);
+    pecan_contactlist_add_group (contactlist, group);
 
     return group;
 }
 
 void
-msn_group_destroy (MsnGroup *group)
+pecan_group_destroy (PecanGroup *group)
 {
     g_return_if_fail (group);
 
@@ -55,8 +55,8 @@ msn_group_destroy (MsnGroup *group)
 }
 
 void
-msn_group_set_id (MsnGroup *group,
-                  const gchar *guid)
+pecan_group_set_id (PecanGroup *group,
+                    const gchar *guid)
 {
     g_return_if_fail (group);
 
@@ -67,8 +67,8 @@ msn_group_set_id (MsnGroup *group,
 }
 
 void
-msn_group_set_name (MsnGroup *group,
-                    const gchar *name)
+pecan_group_set_name (PecanGroup *group,
+                      const gchar *name)
 {
     g_return_if_fail (group);
     g_return_if_fail (name);
@@ -78,7 +78,7 @@ msn_group_set_name (MsnGroup *group,
 }
 
 const gchar *
-msn_group_get_id (const MsnGroup *group)
+pecan_group_get_id (const PecanGroup *group)
 {
     g_return_val_if_fail (group, NULL);
 
@@ -86,7 +86,7 @@ msn_group_get_id (const MsnGroup *group)
 }
 
 const gchar *
-msn_group_get_name (const MsnGroup *group)
+pecan_group_get_name (const PecanGroup *group)
 {
     g_return_val_if_fail (group, NULL);
 

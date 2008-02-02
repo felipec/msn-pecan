@@ -32,9 +32,9 @@
 #include "cmd/cmdproc_private.h"
 #include "cmd/msg_private.h"
 
-#include "ab/user.h"
-#include "ab/userlist_priv.h"
-#include "ab/user_priv.h"
+#include "ab/pecan_contact.h"
+#include "ab/pecan_contact_priv.h"
+#include "ab/pecan_contactlist_priv.h"
 
 #include "object.h"
 #include "switchboard.h"
@@ -43,7 +43,7 @@
 #include "directconn.h"
 #endif /* MSN_DIRECTCONN */
 
-#include "msn_util.h"
+#include "pecan_util.h"
 
 #include <string.h>
 
@@ -59,7 +59,7 @@ static void send_ok(MsnSlpCall *slpcall, const char *branch,
 static void send_decline(MsnSlpCall *slpcall, const char *branch,
 						 const char *type, const char *content);
 
-void msn_request_user_display(MsnUser *user);
+void msn_request_user_display(PecanContact *user);
 
 /**************************************************************************
  * Util
@@ -916,38 +916,38 @@ buddy_icon_cached(PurpleConnection *gc, MsnObject *obj)
 }
 
 static void
-msn_release_buddy_icon_request(MsnUserList *userlist)
+msn_release_buddy_icon_request(PecanContactList *contactlist)
 {
-	MsnUser *user;
+	PecanContact *user;
 
-	g_return_if_fail(userlist != NULL);
+	g_return_if_fail(contactlist != NULL);
 
 #ifdef MSN_DEBUG_UD
 	msn_info ("releasing buddy icon request");
 #endif
 
-	if (userlist->buddy_icon_window > 0)
+	if (contactlist->buddy_icon_window > 0)
 	{
 		GQueue *queue;
 		PurpleAccount *account;
 		const char *username;
 
-		queue = userlist->buddy_icon_requests;
+		queue = contactlist->buddy_icon_requests;
 
-		if (g_queue_is_empty(userlist->buddy_icon_requests))
+		if (g_queue_is_empty(contactlist->buddy_icon_requests))
 			return;
 
 		user = g_queue_pop_head(queue);
 
-		account  = userlist->session->account;
+		account  = contactlist->session->account;
 		username = user->passport;
 
-		userlist->buddy_icon_window--;
+		contactlist->buddy_icon_window--;
 		msn_request_user_display(user);
 
 #ifdef MSN_DEBUG_UD
                 msn_info ("msn_release_buddy_icon_request(): buddy_icon_window-- yields =%d",
-                          userlist->buddy_icon_window);
+                          contactlist->buddy_icon_window);
 #endif
 	}
 }
@@ -959,21 +959,21 @@ msn_release_buddy_icon_request(MsnUserList *userlist)
 static gboolean
 msn_release_buddy_icon_request_timeout(gpointer data)
 {
-	MsnUserList *userlist = (MsnUserList *)data;
+	PecanContactList *contactlist = (PecanContactList *)data;
 
 	/* Free one window slot */
-	userlist->buddy_icon_window++;
+	contactlist->buddy_icon_window++;
 
 	/* Clear the tag for our former request timer */
-	userlist->buddy_icon_request_timer = 0;
+	contactlist->buddy_icon_request_timer = 0;
 
-	msn_release_buddy_icon_request(userlist);
+	msn_release_buddy_icon_request(contactlist);
 
 	return FALSE;
 }
 
 void
-msn_queue_buddy_icon_request(MsnUser *user)
+msn_queue_buddy_icon_request(PecanContact *user)
 {
 	PurpleAccount *account;
 	MsnObject *obj;
@@ -981,9 +981,9 @@ msn_queue_buddy_icon_request(MsnUser *user)
 
 	g_return_if_fail(user != NULL);
 
-	account = user->userlist->session->account;
+	account = user->contactlist->session->account;
 
-	obj = msn_user_get_object(user);
+	obj = pecan_contact_get_object(user);
 
 	if (obj == NULL)
 	{
@@ -993,20 +993,20 @@ msn_queue_buddy_icon_request(MsnUser *user)
 
 	if (!buddy_icon_cached(account->gc, obj))
 	{
-		MsnUserList *userlist;
+		PecanContactList *contactlist;
 
-		userlist = user->userlist;
-		queue = userlist->buddy_icon_requests;
+		contactlist = user->contactlist;
+		queue = contactlist->buddy_icon_requests;
 
 #ifdef MSN_DEBUG_UD
                 msn_info ("queueing buddy icon request for %s (buddy_icon_window = %i)",
-                          user->passport, userlist->buddy_icon_window);
+                          user->passport, contactlist->buddy_icon_window);
 #endif
 
 		g_queue_push_tail(queue, user);
 
-		if (userlist->buddy_icon_window > 0)
-			msn_release_buddy_icon_request(userlist);
+		if (contactlist->buddy_icon_window > 0)
+			msn_release_buddy_icon_request(contactlist);
 	}
 }
 
@@ -1014,7 +1014,7 @@ static void
 got_user_display(MsnSlpCall *slpcall,
 				 const guchar *data, gsize size)
 {
-	MsnUserList *userlist;
+	PecanContactList *contactlist;
 	const char *info;
 	PurpleAccount *account;
 
@@ -1025,7 +1025,7 @@ got_user_display(MsnSlpCall *slpcall,
 	msn_info ("got User Display: %s", slpcall->slplink->remote_user);
 #endif
 
-	userlist = slpcall->slplink->session->userlist;
+	contactlist = slpcall->slplink->session->contactlist;
 	account = slpcall->slplink->session->account;
 
 	purple_buddy_icons_set_for_user(account, slpcall->slplink->remote_user,
@@ -1033,19 +1033,19 @@ got_user_display(MsnSlpCall *slpcall,
 
 #if 0
 	/* Free one window slot */
-	userlist->buddy_icon_window++;
+	contactlist->buddy_icon_window++;
 
         msn_info ("got_user_display(): buddy_icon_window++ yields =%d",
-                  userlist->buddy_icon_window);
+                  contactlist->buddy_icon_window);
 
-	msn_release_buddy_icon_request(userlist);
+	msn_release_buddy_icon_request(contactlist);
 #endif
 }
 
 static void
 end_user_display(MsnSlpCall *slpcall, MsnSession *session)
 {
-	MsnUserList *userlist;
+	PecanContactList *contactlist;
 
 	g_return_if_fail(session != NULL);
 
@@ -1053,7 +1053,7 @@ end_user_display(MsnSlpCall *slpcall, MsnSession *session)
 	msn_info ("End User Display");
 #endif
 
-	userlist = session->userlist;
+	contactlist = session->contactlist;
 
 	/* If the session is being destroyed we better stop doing anything. */
 	if (session->destroying)
@@ -1066,21 +1066,21 @@ end_user_display(MsnSlpCall *slpcall, MsnSession *session)
 	 * C: NS 000: XFR 21 SB
 	 * S: NS 000: 800 21
 	 */
-	if (userlist->buddy_icon_request_timer) {
+	if (contactlist->buddy_icon_request_timer) {
 		/* Free the window slot used by this previous request */
-		userlist->buddy_icon_window++;
+		contactlist->buddy_icon_window++;
 
 		/* Clear our pending timeout */
-		purple_timeout_remove(userlist->buddy_icon_request_timer);
+		purple_timeout_remove(contactlist->buddy_icon_request_timer);
 	}
 
 	/* Wait BUDDY_ICON_DELAY ms before freeing our window slot and requesting the next icon. */
-	userlist->buddy_icon_request_timer = purple_timeout_add(BUDDY_ICON_DELAY,
-															msn_release_buddy_icon_request_timeout, userlist);
+	contactlist->buddy_icon_request_timer = purple_timeout_add(BUDDY_ICON_DELAY,
+															msn_release_buddy_icon_request_timeout, contactlist);
 }
 
 void
-msn_request_user_display(MsnUser *user)
+msn_request_user_display(PecanContact *user)
 {
 	PurpleAccount *account;
 	MsnSession *session;
@@ -1088,12 +1088,12 @@ msn_request_user_display(MsnUser *user)
 	MsnObject *obj;
 	const char *info;
 
-	session = user->userlist->session;
+	session = user->contactlist->session;
 	account = session->account;
 
 	slplink = msn_session_get_slplink(session, user->passport);
 
-	obj = msn_user_get_object(user);
+	obj = pecan_contact_get_object(user);
 
 	info = msn_object_get_sha1(obj);
 
@@ -1113,7 +1113,7 @@ msn_request_user_display(MsnUser *user)
 		msn_info ("requesting our own user display");
 #endif
 
-		my_obj = msn_user_get_object(session->user);
+		my_obj = pecan_contact_get_object(session->user);
 
 		if (my_obj != NULL)
 		{
@@ -1125,13 +1125,13 @@ msn_request_user_display(MsnUser *user)
 		purple_buddy_icons_set_for_user(account, user->passport, g_memdup(data, len), len, info);
 
 		/* Free one window slot */
-		session->userlist->buddy_icon_window++;
+		session->contactlist->buddy_icon_window++;
 
 #ifdef MSN_DEBUG_UD
                 msn_info ("msn_request_user_display(): buddy_icon_window++ yields =%d",
-                          session->userlist->buddy_icon_window);
+                          session->contactlist->buddy_icon_window);
 #endif
 
-		msn_release_buddy_icon_request(session->userlist);
+		msn_release_buddy_icon_request(session->contactlist);
 	}
 }

@@ -28,12 +28,12 @@
 #include <glib.h>
 #include <string.h>
 
-#include <proxy.h> /* libpurple */
+#include "pecan_util.h"
 #include "session.h"
 
+/* libpurple stuff. */
+#include <proxy.h>
 #include "fix-purple.h"
-#include "msn_util.h"
-
 #include "fix-purple-win32.h"
 
 static PecanNodeClass *parent_class = NULL;
