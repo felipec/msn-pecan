@@ -23,7 +23,6 @@
 #include "session_private.h"
 #include "msn_log.h"
 #include "notification.h"
-#include "fix-purple.h"
 
 #include "cvr/slplink.h"
 

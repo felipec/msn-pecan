@@ -33,8 +33,7 @@
 
 /* libpurple stuff. */
 #include <proxy.h>
-#include "fix-purple.h"
-#include "fix-purple-win32.h"
+#include "fix_purple_win32.h"
 
 static PecanNodeClass *parent_class = NULL;
 

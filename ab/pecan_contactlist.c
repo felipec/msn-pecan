@@ -35,7 +35,6 @@
 
 #include <string.h>
 
-#include "fix-purple.h"
 #include "msn_intl.h"
 
 #define MSN_NULL_GROUP_NAME "Non-Grouped"

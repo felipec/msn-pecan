@@ -26,7 +26,7 @@
 #include "msn_log.h"
 
 #include "cvr/slp.h"
-#include "fix-purple.h"
+#include "fix_purple.h"
 
 #include <string.h>
 
@@ -180,7 +180,7 @@ pecan_contact_set_friendly_name (PecanContact *contact,
         account = msn_session_get_account (session);
         gc = purple_account_get_connection (account);
 
-        fix_purple_buddy_set_friendly (gc, contact->passport, contact->friendly_name);
+        purple_buddy_set_nickname (gc, contact->passport, contact->friendly_name);
     }
 #endif /* HAVE_LIBPURPLE */
 
@@ -226,7 +226,7 @@ pecan_contact_set_store_name (PecanContact *contact,
         account = msn_session_get_account (session);
         gc = purple_account_get_connection (account);
 
-        fix_purple_buddy_set_alias (gc, contact->passport, contact->store_name);
+        purple_buddy_set_displayname (gc, contact->passport, contact->store_name);
     }
 #endif /* HAVE_LIBPURPLE */
 

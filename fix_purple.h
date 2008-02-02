@@ -23,7 +23,7 @@ struct _PurpleConnection;
 
 #include <glib.h>
 
-void fix_purple_buddy_set_alias (struct _PurpleConnection *gc, const gchar *who, const gchar *alias);
-void fix_purple_buddy_set_friendly (struct _PurpleConnection *gc, const gchar *who, const gchar *friendly);
+void purple_buddy_set_displayname (struct _PurpleConnection *gc, const gchar *who, const gchar *value);
+void purple_buddy_set_nickname (struct _PurpleConnection *gc, const gchar *who, const gchar *value);
 
 #endif /* FIX_PURPLE_H */

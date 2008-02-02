@@ -17,7 +17,7 @@
  */
 
 #include "msn.h"
-#include "fix-purple.h"
+#include "fix_purple.h"
 
 #include <string.h> /* for strcmp. */
 
@@ -25,9 +25,9 @@
 #include <connection.h>
 
 void
-fix_purple_buddy_set_alias (PurpleConnection *gc,
-                            const char *who,
-                            const char *alias)
+purple_buddy_set_displayname (PurpleConnection *gc,
+                              const gchar *who,
+                              const gchar *value)
 {
     PurpleAccount *account = purple_connection_get_account (gc);
     GSList *buddies = purple_find_buddies (account, who);
@@ -38,20 +38,20 @@ fix_purple_buddy_set_alias (PurpleConnection *gc,
         b = buddies->data;
         buddies = g_slist_delete_link (buddies, buddies);
 
-        if ((b->alias == NULL && alias == NULL) ||
-            (b->alias && alias && !strcmp (b->alias, alias)))
+        if ((b->alias == NULL && value == NULL) ||
+            (b->alias && value && !strcmp (b->alias, value)))
         {
             continue;
         }
 
-        purple_blist_alias_buddy (b, alias);
+        purple_blist_alias_buddy (b, value);
     }
 }
 
 void
-fix_purple_buddy_set_friendly (PurpleConnection *gc,
-                               const char *who,
-                               const char *friendly)
+purple_buddy_set_nickname (PurpleConnection *gc,
+                           const gchar *who,
+                           const gchar *value)
 {
     PurpleAccount *account = purple_connection_get_account (gc);
     GSList *buddies = purple_find_buddies (account, who);
@@ -62,12 +62,12 @@ fix_purple_buddy_set_friendly (PurpleConnection *gc,
         b = buddies->data;
         buddies = g_slist_delete_link (buddies, buddies);
 
-        if ((b->server_alias == NULL && friendly == NULL) ||
-            (b->server_alias && friendly && !strcmp (b->server_alias, friendly)))
+        if ((b->server_alias == NULL && value == NULL) ||
+            (b->server_alias && value && !strcmp (b->server_alias, value)))
         {
             continue;
         }
 
-        purple_blist_server_alias_buddy (b, friendly);
+        purple_blist_server_alias_buddy (b, value);
     }
 }
