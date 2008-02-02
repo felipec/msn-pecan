@@ -140,7 +140,7 @@ lst_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 	MsnSession *session = cmdproc->session;
 	const gchar *passport = NULL;
 	MsnUser *user;
-	const gchar *friendly;
+	const gchar *friendly = NULL;
         const gchar *user_guid = NULL;
 	int list_op = -1;
         guint i;
@@ -152,13 +152,13 @@ lst_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
             chopped_str = cmd->params[i] + 2;
 
             /* Check for Name/email. */
-            if (!strncmp (cmd->params[i], "N=", 2))
+            if (strncmp (cmd->params[i], "N=", 2) == 0)
                 passport = chopped_str;
             /* Check for Friendlyname. */
-            else if (!strncmp (cmd->params[i], "F=", 2))
+            else if (strncmp (cmd->params[i], "F=", 2) == 0)
                 friendly = purple_url_decode (chopped_str);
             /* Check for Contact GUID. */
-            else if (!strncmp (cmd->params[i], "C=", 2))
+            else if (strncmp (cmd->params[i], "C=", 2) == 0)
                 user_guid = chopped_str;
             else
                 break;
@@ -205,6 +205,10 @@ lst_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
             {
                 msn_got_lst_user (session, user, friendly, list_op, NULL);
             }
+        }
+        else
+        {
+            msn_got_lst_user (session, user, friendly, list_op, NULL);
         }
 
 	session->sync->num_users++;

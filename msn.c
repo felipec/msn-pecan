@@ -964,15 +964,27 @@ msn_rem_buddy(PurpleConnection *gc, PurpleBuddy *buddy, PurpleGroup *group)
 {
 	MsnSession *session;
 	MsnUserList *userlist;
+	const gchar *group_name;
 
 	session = gc->proto_data;
 	userlist = session->userlist;
+	group_name = group->name;
 
 	if (!session->logged_in)
 		return;
 
-	/* XXX - Does buddy->name need to be msn_normalize'd here?  --KingAnt */
-	msn_userlist_rem_buddy(userlist, buddy->name, MSN_LIST_FL, group->name);
+	/* Are we going to remove him completely? */
+	if (group_name)
+	{
+	    MsnUser *user;
+
+	    user = msn_userlist_find_user (userlist, buddy->name);
+
+	    if (msn_user_get_group_count (user) <= 1)
+		group_name = NULL;
+	}
+
+	msn_userlist_rem_buddy(userlist, buddy->name, MSN_LIST_FL, group_name);
 }
 
 static void
@@ -1198,17 +1210,19 @@ msn_alias_buddy (PurpleConnection *gc, const char *name, const char *alias)
 {
 	MsnSession *session;
 	MsnCmdProc *cmdproc;
-	const char *tmp;
+	const gchar *tmp;
+	MsnUser *user;
 
 	session = gc->proto_data;
 	cmdproc = session->notification->cmdproc;
+	user = msn_userlist_find_user (session->userlist, name);
 
 	if(alias && strlen(alias))
 		tmp = purple_url_encode(alias);
 	else
 		tmp = "";
 
-	msn_cmdproc_send(cmdproc, "REA", "%s %s", name, tmp);
+	msn_cmdproc_send(cmdproc, "SBP", "%s %s %s", msn_user_get_guid (user), "MFN", tmp);
 }
 
 static void

@@ -38,7 +38,7 @@ struct MsnUser
     gchar *passport;         /**< The passport account.          */
     gchar *store_name;       /**< The name stored in the server. */
     gchar *friendly_name;    /**< The friendly name.             */
-    gchar *guid;             /**< The GUID */   
+    gchar *guid;             /**< The GUID. Only present for users in our FL. */
 
     const gchar *status;     /**< The state of the user.         */
     gboolean idle;          /**< The idle state of the user.    */

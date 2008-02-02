@@ -329,6 +329,14 @@ msn_user_remove_group_id (MsnUser *user,
     g_hash_table_remove (user->groups, group_guid);
 }
 
+guint
+msn_user_get_group_count (MsnUser *user)
+{
+    g_return_if_fail (user);
+
+    return g_hash_table_size (user->groups);
+}
+
 void
 msn_user_set_home_phone (MsnUser *user,
                          const gchar *number)

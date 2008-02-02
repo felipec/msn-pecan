@@ -34,6 +34,8 @@
 #include "fix-purple.h"
 #include "msn_intl.h"
 
+#define MSN_NULL_GROUP_NAME "Non-Grouped"
+
 /* libpurple stuff. */
 #include <privacy.h>
 
@@ -433,7 +435,7 @@ msn_userlist_new (MsnSession *session)
 
     userlist->group_names = g_hash_table_new_full (g_ascii_strcase_hash, g_ascii_strcase_equal, g_free, NULL);
     userlist->group_guids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
-    userlist->null_group = msn_group_new (userlist, NULL, "NULL 2");
+    userlist->null_group = msn_group_new (userlist, NULL, MSN_NULL_GROUP_NAME);
 
     userlist->buddy_icon_requests = g_queue_new ();
 
@@ -634,7 +636,7 @@ msn_userlist_rem_buddy (MsnUserList *userlist,
         if (!group)
         {
             /* Whoa, there is no such group. */
-            msn_error ("group doesn't exist: [%s]", group_name);
+            msn_error ("group doesn't exist: group_name=[%s]", group_name);
             return;
         }
 
@@ -644,6 +646,7 @@ msn_userlist_rem_buddy (MsnUserList *userlist,
         {
             /* There's no way to remove a user from the no-group. */
             /* Adding him to other groups does that. */
+            msn_debug ("virtual group: group_name=[%s]", group_name);
             return;
         }
     }
@@ -762,7 +765,7 @@ msn_userlist_add_buddy_helper (MsnUserList *userlist,
 
             if (!group)
             {
-                /* Whoa, we must add that group first. */
+                /* We must add that group first. */
                 msn_request_add_group (userlist, who, NULL, group_name);
                 return;
             }
@@ -776,7 +779,7 @@ msn_userlist_add_buddy_helper (MsnUserList *userlist,
             }
         }
 
-        /* First we're going to check if ge's already there. */
+        /* First we're going to check if he's already there. */
         if (user_is_there (user, list_id, group_guid))
         {
             const gchar *list;

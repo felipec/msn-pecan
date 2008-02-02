@@ -125,6 +125,13 @@ void msn_user_add_group_id (MsnUser *user, const gchar *group_guid);
 void msn_user_remove_group_id (MsnUser *user, const gchar *group_guid);
 
 /**
+ * Returns the number of groups this user is in.
+ *
+ * @return The group count.
+ */
+guint msn_user_get_group_count (MsnUser *user);
+
+/**
  * Sets the home phone number for a user.
  *
  * @param user   The user.
