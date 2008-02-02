@@ -48,7 +48,7 @@ PecanContact *pecan_contact_new (PecanContactList *contactlist, const gchar *pas
  *
  * @param contact The contact to destroy.
  */
-void pecan_contact_destroy (PecanContact *contact);
+void pecan_contact_free (PecanContact *contact);
 
 
 /**

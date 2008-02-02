@@ -26,7 +26,10 @@
 #include "pecan_contact_priv.h"
 #include "msn_log.h"
 
+/** @todo this is disabled for testing only */
+#ifdef HAVE_LIBPURPLE
 #include "session_private.h"
+#endif /* HAVE_LIBPURPLE */
 #include "notification.h"
 #include "pecan_util.h"
 
@@ -37,8 +40,10 @@
 
 #define MSN_NULL_GROUP_NAME "Non-Grouped"
 
+#ifdef HAVE_LIBPURPLE
 /* libpurple stuff. */
 #include <privacy.h>
+#endif /* HAVE_LIBPURPLE */
 
 const char *lists[] = { "FL", "AL", "BL", "RL", "PL" };
 
@@ -48,6 +53,7 @@ typedef struct
     PecanContact *contact;
 } MsnPermitAdd;
 
+#ifdef HAVE_LIBPURPLE
 /**************************************************************************
  * Callbacks
  **************************************************************************/
@@ -99,6 +105,7 @@ got_new_entry (PurpleConnection *gc,
                                           purple_find_buddy (purple_connection_get_account (gc), passport) != NULL,
                                           msn_accept_add_cb, msn_cancel_add_cb, pa);
 }
+#endif /* HAVE_LIBPURPLE */
 
 /**************************************************************************
  * Utility functions
@@ -158,9 +165,7 @@ get_store_name (PecanContact *contact)
 
     store_name = pecan_contact_get_store_name (contact);
 
-    if (store_name)
-        store_name = purple_url_encode (store_name);
-    else
+    if (!store_name)
         store_name = pecan_contact_get_passport (contact);
 
     return store_name;
@@ -172,6 +177,7 @@ msn_request_add_group (PecanContactList *contactlist,
                        const gchar *old_group_name,
                        const gchar *new_group_name)
 {
+#ifdef HAVE_LIBPURPLE
     MsnCmdProc *cmdproc;
     MsnTransaction *trans;
     MsnMoveBuddy *data;
@@ -191,6 +197,7 @@ msn_request_add_group (PecanContactList *contactlist,
     msn_transaction_set_data (trans, data);
 
     msn_cmdproc_send_trans (cmdproc, trans);
+#endif /* HAVE_LIBPURPLE */
 }
 
 /**************************************************************************
@@ -220,6 +227,7 @@ msn_got_add_contact (MsnSession *session,
                      MsnListId list_id,
                      const gchar *group_guid)
 {
+#ifdef HAVE_LIBPURPLE
     PurpleAccount *account;
     const gchar *passport;
 
@@ -282,14 +290,16 @@ msn_got_add_contact (MsnSession *session,
 
     contact->list_op |= (1 << list_id);
     /* purple_contact_add_list_id (contact, list_id); */
+#endif /* HAVE_LIBPURPLE */
 }
 
 void
 msn_got_rem_contact (MsnSession *session,
-                  PecanContact *contact,
-                  MsnListId list_id,
-                  const gchar *group_guid)
+                     PecanContact *contact,
+                     MsnListId list_id,
+                     const gchar *group_guid)
 {
+#ifdef HAVE_LIBPURPLE
     PurpleAccount *account;
     const gchar *passport;
 
@@ -344,6 +354,7 @@ msn_got_rem_contact (MsnSession *session,
         msn_debug ("no list op: [%s]",
                    passport);
     }
+#endif /* HAVE_LIBPURPLE */
 }
 
 void
@@ -353,6 +364,7 @@ msn_got_lst_contact (MsnSession *session,
                      gint list_op,
                      GSList *group_ids)
 {
+#ifdef HAVE_LIBPURPLE
     PurpleAccount *account;
     const gchar *passport;
 
@@ -411,6 +423,7 @@ msn_got_lst_contact (MsnSession *session,
     }
 
     contact->list_op = list_op;
+#endif /* HAVE_LIBPURPLE */
 }
 
 /**************************************************************************
@@ -426,12 +439,12 @@ pecan_contactlist_new (MsnSession *session)
 
     contactlist->session = session;
 
-    contactlist->contact_names = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+    contactlist->contact_names = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, pecan_contact_free);
     contactlist->contact_guids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 
-    contactlist->group_names = g_hash_table_new_full (g_ascii_strcase_hash, g_ascii_strcase_equal, g_free, NULL);
+    contactlist->group_names = g_hash_table_new_full (g_ascii_strcase_hash, g_ascii_strcase_equal, g_free, pecan_group_free);
     contactlist->group_guids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
-    contactlist->null_group = pecan_group_new (contactlist, NULL, MSN_NULL_GROUP_NAME);
+    contactlist->null_group = pecan_group_new (contactlist, MSN_NULL_GROUP_NAME, NULL);
 
     contactlist->buddy_icon_requests = g_queue_new ();
 
@@ -453,8 +466,10 @@ pecan_contactlist_destroy (PecanContactList *contactlist)
 
     g_queue_free (contactlist->buddy_icon_requests);
 
+#ifdef HAVE_LIBPURPLE
     if (contactlist->buddy_icon_request_timer)
         purple_timeout_remove (contactlist->buddy_icon_request_timer);
+#endif /* HAVE_LIBPURPLE */
 
     g_free (contactlist);
 }
@@ -477,14 +492,14 @@ void
 pecan_contactlist_remove_contact (PecanContactList *contactlist,
                                   PecanContact *contact)
 {
-    g_hash_table_remove (contactlist->contact_names,
-                         pecan_contact_get_passport (contact));
     {
         const gchar *guid;
         guid = pecan_contact_get_guid (contact);
         if (guid)
             g_hash_table_remove (contactlist->contact_guids, guid);
     }
+    g_hash_table_remove (contactlist->contact_names,
+                         pecan_contact_get_passport (contact));
 }
 
 PecanContact *
@@ -522,13 +537,13 @@ void
 pecan_contactlist_remove_group (PecanContactList *contactlist,
                                 PecanGroup *group)
 {
-    g_hash_table_remove (contactlist->group_names, pecan_group_get_name (group));
     {
         const gchar *guid;
         guid = pecan_group_get_id (group);
         if (guid)
             g_hash_table_remove (contactlist->group_guids, guid);
     }
+    g_hash_table_remove (contactlist->group_names, pecan_group_get_name (group));
 }
 
 PecanGroup *
@@ -608,7 +623,7 @@ pecan_contactlist_remove_group_id (PecanContactList *contactlist,
     if (group)
     {
         pecan_contactlist_remove_group (contactlist, group);
-        pecan_group_destroy (group);
+        pecan_group_free (group);
     }
 }
 
@@ -661,8 +676,10 @@ pecan_contactlist_rem_buddy (PecanContactList *contactlist,
         return;
     }
 
+#ifdef HAVE_LIBPURPLE
     /* Then request the rem to the server. */
     msn_notification_rem_buddy (contactlist->session->notification, list, who, contact->guid, group_guid);
+#endif /* HAVE_LIBPURPLE */
 }
 
 void
@@ -711,7 +728,9 @@ pecan_contactlist_add_buddy (PecanContactList *contactlist,
 
     list = lists[list_id];
 
+#ifdef HAVE_LIBPURPLE
     msn_notification_add_buddy (contactlist->session->notification, list, who, contact_guid, store_name, group_guid);
+#endif /* HAVE_LIBPURPLE */
 }
 
 void
@@ -763,6 +782,7 @@ pecan_contactlist_check_pending (PecanContactList *contactlist)
     g_hash_table_foreach (contactlist->contact_names, contact_check_pending, contactlist);
 }
 
+#ifdef HAVE_LIBPURPLE
 /**************************************************************************
  * Purple functions
  **************************************************************************/
@@ -833,3 +853,4 @@ pecan_contactlist_add_buddy_helper (PecanContactList *contactlist,
 
     pecan_contactlist_add_buddy (contactlist, who, MSN_LIST_FL, group_name);
 }
+#endif /* HAVE_LIBPURPLE */

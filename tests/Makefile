@@ -19,7 +19,13 @@ parse_test_objects=parse.o \
 buffer_test_objects=buffer.o \
 		   ../io/pecan_buffer.o
 
-all: parse_test buffer_test
+ab_test_objects=ab.o \
+		../ab/pecan_contact.o \
+		../ab/pecan_group.o \
+		../ab/pecan_contactlist.o \
+		../pecan_util.o
+
+all: parse_test buffer_test ab_test
 
 parse_test: $(parse_test_objects)
 	$(CC) $(GOBJECT_LIBS) $+ -o $@
@@ -27,9 +33,13 @@ parse_test: $(parse_test_objects)
 buffer_test: $(buffer_test_objects)
 	$(CC) $(GOBJECT_LIBS) $+ -o $@
 
+ab_test: $(ab_test_objects)
+	$(CC) $(GOBJECT_LIBS) $+ -o $@
+
 %.o: %.c
 	$(CC) $(CFLAGS) $(GOBJECT_CFLAGS) $< -c -o $@
 
 clean:
+	rm -f ab_test $(ab_test_objects)
 	rm -f parse_test $(parse_test_objects)
 	rm -f buffer_test $(buffer_test_objects)

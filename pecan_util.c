@@ -28,9 +28,12 @@
 #include <glib.h>
 #include "msn.h"
 
+#ifdef HAVE_LIBPURPLE
 /* libpurple stuff. */
 #include <util.h>
+#endif /* HAVE_LIBPURPLE */
 
+#ifdef HAVE_LIBPURPLE
 void
 msn_parse_format(const char *mime, char **pre_ret, char **post_ret)
 {
@@ -423,6 +426,7 @@ msn_import_html(const char *html, char **attributes, char **message)
 
     g_free(fontface);
 }
+#endif /* HAVE_LIBPURPLE */
 
 void
 msn_parse_socket(const char *str, char **ret_host, int *ret_port)

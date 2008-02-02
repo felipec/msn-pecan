@@ -138,6 +138,7 @@ error_handler (MsnCmdProc *cmdproc,
     switch (error)
     {
         case 913:
+        case 208:
             /* non-fatal */
             break;
         default:
@@ -615,7 +616,7 @@ adg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     group_name = purple_url_decode(cmd->params[1]);
 
-    pecan_group_new(session->contactlist, group_guid, group_name);
+    pecan_group_new(session->contactlist, group_name, group_guid);
 
     /* There is a user that must me moved to this group */
     if (cmd->trans->data)
@@ -1406,6 +1407,7 @@ msn_notification_add_buddy(MsnNotification *notification, const char *list,
     else if (strcmp(list, "FL") == 0)
     {
         /* Add buddy to our FL. */
+        store_name = purple_url_encode (store_name);
         msn_cmdproc_send (cmdproc, "ADC", "%s N=%s F=%s", list, who, store_name);
     }
     else

@@ -171,25 +171,12 @@ msn_act_id(PurpleConnection *gc, const char *entry)
 	MsnCmdProc *cmdproc;
 	MsnSession *session;
 	PurpleAccount *account;
-	const char *alias;
 
 	session = gc->proto_data;
 	cmdproc = session->notification->cmdproc;
 	account = purple_connection_get_account(gc);
 
-	if(entry && strlen(entry))
-		alias = purple_url_encode(entry);
-	else
-		alias = "";
-
-	if (strlen(alias) > BUDDY_ALIAS_MAXLEN)
-	{
-		purple_notify_error(gc, NULL,
-						  _("Your new MSN friendly name is too long."), NULL);
-		return;
-	}
-
-        msn_set_prp(gc, "MFN", alias);
+        msn_set_prp(gc, "MFN", entry ? entry : "");
 }
 
 static void

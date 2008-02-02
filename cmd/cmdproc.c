@@ -295,7 +295,8 @@ msn_cmdproc_process_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
             if (error_cb == NULL && cmdproc->cbs_table->errors != NULL)
                 error_cb = g_hash_table_lookup(cmdproc->cbs_table->errors, trans->command);
 
-            error_cb = cmdproc->error_handler;
+            if (!error_cb)
+                error_cb = cmdproc->error_handler;
 
             if (error_cb != NULL)
             {

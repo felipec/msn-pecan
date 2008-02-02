@@ -29,9 +29,11 @@
 
 #include <string.h>
 
+#ifdef HAVE_LIBPURPLE
 /* libpurple stuff. */
 #include <cipher.h>
 #include <account.h>
+#endif /* HAVE_LIBPURPLE */
 
 PecanContact *
 pecan_contact_new (PecanContactList *contactlist,
@@ -53,7 +55,7 @@ pecan_contact_new (PecanContactList *contactlist,
 }
 
 void
-pecan_contact_destroy (PecanContact *contact)
+pecan_contact_free (PecanContact *contact)
 {
     g_return_if_fail (contact);
 
@@ -62,8 +64,10 @@ pecan_contact_destroy (PecanContact *contact)
 
     g_hash_table_destroy (contact->groups);
 
+#ifdef HAVE_LIBPURPLE
     if (contact->msnobj)
         msn_object_destroy (contact->msnobj);
+#endif /* HAVE_LIBPURPLE */
 
     g_free (contact->passport);
     g_free (contact->friendly_name);
@@ -79,6 +83,7 @@ pecan_contact_destroy (PecanContact *contact)
 void
 pecan_contact_update (PecanContact *contact)
 {
+#ifdef HAVE_LIBPURPLE
     PurpleAccount *account;
 
     account = msn_session_get_account (contact->contactlist->session);
@@ -101,6 +106,7 @@ pecan_contact_update (PecanContact *contact)
         purple_prpl_got_user_idle (account, contact->passport, TRUE, -1);
     else
         purple_prpl_got_user_idle (account, contact->passport, FALSE, 0);
+#endif /* HAVE_LIBPURPLE */
 }
 
 void
@@ -149,6 +155,7 @@ pecan_contact_set_friendly_name (PecanContact *contact,
     g_free (contact->friendly_name);
     contact->friendly_name = g_strdup (name);
 
+#ifdef HAVE_LIBPURPLE
     {
         PurpleAccount *account;
         PurpleConnection *gc;
@@ -156,6 +163,7 @@ pecan_contact_set_friendly_name (PecanContact *contact,
         gc = purple_account_get_connection (account);
         fix_purple_buddy_set_friendly (gc, contact->passport, contact->friendly_name);
     }
+#endif /* HAVE_LIBPURPLE */
 }
 
 void
@@ -167,6 +175,7 @@ pecan_contact_set_store_name (PecanContact *contact,
     g_free (contact->store_name);
     contact->store_name = g_strdup (name);
 
+#ifdef HAVE_LIBPURPLE
     {
         PurpleAccount *account;
         PurpleConnection *gc;
@@ -174,6 +183,7 @@ pecan_contact_set_store_name (PecanContact *contact,
         gc = purple_account_get_connection (account);
         fix_purple_buddy_set_alias (gc, contact->passport, contact->store_name);
     }
+#endif /* HAVE_LIBPURPLE */
 }
 
 void
@@ -188,8 +198,9 @@ pecan_contact_set_guid (PecanContact *contact,
 
 void
 pecan_contact_set_buddy_icon (PecanContact *contact,
-                              PurpleStoredImage *img)
+                              struct _PurpleStoredImage *img)
 {
+#ifdef HAVE_LIBPURPLE
     MsnObject *msnobj = pecan_contact_get_object (contact);
 
     g_return_if_fail (contact);
@@ -252,36 +263,39 @@ pecan_contact_set_buddy_icon (PecanContact *contact,
         msn_object_set_sha1c( msnobj, base64);
         g_free (base64);
     }
+#endif /* HAVE_LIBPURPLE */
 }
 
 void
 pecan_contact_add_group_id (PecanContact *contact,
                             const gchar *group_guid)
 {
-    PecanContactList *contactlist;
-    PurpleAccount *account;
-    PurpleBuddy *b = NULL;
-    PurpleGroup *g = NULL;
     const gchar *passport;
-    const gchar *group_name;
 
     g_return_if_fail (contact);
 
-    contactlist = contact->contactlist;
-    account = msn_session_get_account (contactlist->session);
     passport = pecan_contact_get_passport (contact);
-
-    group_name = pecan_contactlist_find_group_name (contactlist, group_guid);
-
-    if (group_name)
-        g = purple_find_group (group_name);
 
     if (group_guid)
     {
         g_hash_table_insert (contact->groups, g_strdup (group_guid), "foo");
+    }
+
+#ifdef HAVE_LIBPURPLE
+    {
+        PecanContactList *contactlist;
+        contactlist = contact->contactlist;
+        PurpleAccount *account;
+        PurpleBuddy *b = NULL;
+        PurpleGroup *g = NULL;
+        const gchar *group_name;
+
+        group_name = pecan_contactlist_find_group_name (contactlist, group_guid);
+        account = msn_session_get_account (contactlist->session);
 
         /* If this contact is in the no-group, remove him, since now he is in a
          * group. */
+        if (group_guid)
         {
             const gchar *t_group_name;
             PurpleGroup *t_g;
@@ -299,24 +313,28 @@ pecan_contact_add_group_id (PecanContact *contact,
                 }
             }
         }
+
+        if (group_name)
+            g = purple_find_group (group_name);
+
+        /* If the group is not there, add him */
+        if (!g)
+        {
+            g = purple_group_new (group_name);
+            purple_blist_add_group (g, NULL);
+        }
+
+        b = purple_find_buddy_in_group (account, passport, g);
+
+        if (!b)
+        {
+            b = purple_buddy_new (account, passport, NULL);
+            purple_blist_add_buddy (b, NULL, g, NULL);
+        }
+
+        b->proto_data = contact;
     }
-
-    /* If the group is not there, add him */
-    if (!g)
-    {
-        g = purple_group_new (group_name);
-        purple_blist_add_group (g, NULL);
-    }
-
-    b = purple_find_buddy_in_group (account, passport, g);
-
-    if (!b)
-    {
-        b = purple_buddy_new (account, passport, NULL);
-        purple_blist_add_buddy (b, NULL, g, NULL);
-    }
-
-    b->proto_data = contact;
+#endif /* HAVE_LIBPURPLE */
 }
 
 void
@@ -372,6 +390,7 @@ void
 pecan_contact_set_object (PecanContact *contact,
                           MsnObject *obj)
 {
+#ifdef HAVE_LIBPURPLE
     g_return_if_fail (contact);
 
     if (contact->msnobj)
@@ -381,6 +400,7 @@ pecan_contact_set_object (PecanContact *contact,
 
     if (contact->list_op & MSN_LIST_FL_OP)
         msn_queue_buddy_icon_request (contact);
+#endif /* HAVE_LIBPURPLE */
 }
 
 void

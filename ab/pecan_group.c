@@ -25,27 +25,24 @@
 
 PecanGroup *
 pecan_group_new (PecanContactList *contactlist,
-                 const gchar *guid,
-                 const gchar *name)
+                 const gchar *name,
+                 const gchar *guid)
 {
     PecanGroup *group;
 
-    g_return_val_if_fail (contactlist, NULL);
-
     group = g_new0 (PecanGroup, 1);
 
-    if (guid)
-        group->guid = g_strdup (guid);
-
+    group->guid = g_strdup (guid);
     group->name = g_strdup (name);
 
-    pecan_contactlist_add_group (contactlist, group);
+    if (contactlist)
+        pecan_contactlist_add_group (contactlist, group);
 
     return group;
 }
 
 void
-pecan_group_destroy (PecanGroup *group)
+pecan_group_free (PecanGroup *group)
 {
     g_return_if_fail (group);
 
@@ -55,15 +52,13 @@ pecan_group_destroy (PecanGroup *group)
 }
 
 void
-pecan_group_set_id (PecanGroup *group,
-                    const gchar *guid)
+pecan_group_set_guid (PecanGroup *group,
+                      const gchar *guid)
 {
     g_return_if_fail (group);
 
     g_free (group->guid);
-
-    if (guid)
-        group->guid = g_strdup (guid);
+    group->guid = g_strdup (guid);
 }
 
 void
@@ -71,7 +66,6 @@ pecan_group_set_name (PecanGroup *group,
                       const gchar *name)
 {
     g_return_if_fail (group);
-    g_return_if_fail (name);
 
     g_free (group->name);
     group->name = g_strdup (name);

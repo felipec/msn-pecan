@@ -110,7 +110,7 @@ msn_session_destroy(MsnSession *session)
 		msn_nexus_destroy(session->nexus);
 
 	if (session->user != NULL)
-		pecan_contact_destroy(session->user);
+		pecan_contact_free(session->user);
 
 	g_free(session);
 }
