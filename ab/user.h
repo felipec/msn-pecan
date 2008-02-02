@@ -109,14 +109,6 @@ void msn_user_set_guid (MsnUser *user, const gchar *guid);
 void msn_user_set_buddy_icon (MsnUser *user, struct _PurpleStoredImage *img);
 
 /**
- * Sets the group ID list for a user.
- *
- * @param user The user.
- * @param ids  The group ID list.
- */
-void msn_user_set_group_ids (MsnUser *user, GList *ids);
-
-/**
  * Adds the group ID for a user.
  *
  * @param user The user.
@@ -243,14 +235,5 @@ MsnObject *msn_user_get_object (const MsnUser *user);
  * @return The client information.
  */
 GHashTable *msn_user_get_client_caps (const MsnUser *user);
-
-/**
- * Gets the group ID list for a user.
- *
- * @param user The user.
- *
- * @return The group ID list.
- */
-GList *msn_user_get_group_ids (const MsnUser *user);
 
 #endif /* MSN_USER_H */

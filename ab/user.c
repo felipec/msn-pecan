@@ -47,6 +47,8 @@ msn_user_new (MsnUserList *userlist,
     msn_user_set_passport (user, passport);
     msn_user_set_guid (user, guid);
 
+    user->groups = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+
     return user;
 }
 
@@ -58,11 +60,7 @@ msn_user_destroy (MsnUser *user)
     if (user->clientcaps)
         g_hash_table_destroy (user->clientcaps);
 
-    if (user->group_ids)
-    {
-        g_list_foreach (user->group_ids, (GFunc) g_free, NULL);
-        g_list_free (user->group_ids);
-    }
+    g_hash_table_destroy (user->groups);
 
     if (user->msnobj)
         msn_object_destroy (user->msnobj);
@@ -280,7 +278,7 @@ msn_user_add_group_id (MsnUser *user,
 
     if (group_guid)
     {
-        user->group_ids = g_list_append (user->group_ids, g_strdup (group_guid));
+        g_hash_table_insert (user->groups, g_strdup (group_guid), "foo");
 
         /* If this user is in the no-group, remove him, since now he is in a
          * group. */
@@ -328,12 +326,7 @@ msn_user_remove_group_id (MsnUser *user,
     g_return_if_fail (user);
     g_return_if_fail (group_guid);
 
-    {
-        GList *l;
-        l = g_list_find_custom (user->group_ids, group_guid, (GCompareFunc) strcmp);
-        user->group_ids = g_list_remove (user->group_ids, l->data);
-        g_free (l->data);
-    }
+    g_hash_table_remove (user->groups, group_guid);
 }
 
 void
@@ -459,12 +452,4 @@ msn_user_get_client_caps (const MsnUser *user)
     g_return_val_if_fail (user, NULL);
 
     return user->clientcaps;
-}
-
-GList *
-msn_user_get_group_ids (const MsnUser *user)
-{
-    g_return_val_if_fail (user, NULL);
-
-    return user->group_ids;
 }

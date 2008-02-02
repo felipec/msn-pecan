@@ -928,10 +928,13 @@ rem_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     list = cmd->params[1];
     user_id = cmd->params[2];
 
+#if 0
+    /** @todo when do we get the passport instead? */
     if (strcmp (list, "FL") == 0)
         user = msn_userlist_find_user (session->userlist, user_id);
-    else
-        user = msn_userlist_find_user_by_guid (session->userlist, user_id);
+#else
+    user = msn_userlist_find_user_by_guid (session->userlist, user_id);
+#endif
 
     g_return_if_fail(user != NULL);
 

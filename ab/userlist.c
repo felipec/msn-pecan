@@ -99,13 +99,14 @@ user_is_in_group (MsnUser *user,
 
     if (!group_guid)
     {
-        if (g_list_length (user->group_ids) == 0)
+        /* User is in the no-group only when he isn't in any group. */
+        if (g_hash_table_size (user->groups) == 0)
             return TRUE;
 
         return FALSE;
     }
 
-    if (g_list_find_custom (user->group_ids, group_guid, (GCompareFunc) strcmp))
+    if (g_hash_table_lookup (user->groups, group_guid))
         return TRUE;
 
     return FALSE;
@@ -412,7 +413,7 @@ msn_userlist_new (MsnSession *session)
     userlist->session = session;
     userlist->buddy_icon_requests = g_queue_new ();
 
-    userlist->null_group = msn_group_new (userlist, NULL, "NULL");
+    userlist->null_group = msn_group_new (userlist, NULL, "NULL 2");
 
     /* buddy_icon_window is the number of allowed simultaneous buddy icon requests.
      * XXX With smarter rate limiting code, we could allow more at once... 5 was the limit set when
@@ -477,7 +478,7 @@ msn_userlist_find_user (MsnUserList *userlist,
 
         g_return_val_if_fail (user->passport, NULL);
 
-        if (!strcmp (passport, user->passport))
+        if (strcmp (passport, user->passport) == 0)
             return user;
     }
 
@@ -558,9 +559,12 @@ msn_userlist_find_group_with_name (MsnUserList *userlist,
         MsnGroup *group = l->data;
         const gchar *group_name = msn_group_get_name (group);
 
-        if ((group_name) && !g_ascii_strcasecmp (name, group_name))
+        if ((group_name) && g_ascii_strcasecmp (name, group_name) == 0)
             return group;
     }
+
+    if (g_ascii_strcasecmp (msn_group_get_name (userlist->null_group), name) == 0)
+        return userlist->null_group;
 
     return NULL;
 }
@@ -636,12 +640,23 @@ msn_userlist_rem_buddy (MsnUserList *userlist,
 
     if (group_name)
     {
-        group_guid = msn_userlist_find_group_id (userlist, group_name);
+        MsnGroup *group;
 
-        if (!group_guid)
+        group = msn_userlist_find_group_with_name (userlist, group_name);
+
+        if (!group)
         {
             /* Whoa, there is no such group. */
             msn_error ("group doesn't exist: [%s]", group_name);
+            return;
+        }
+
+        group_guid = msn_group_get_id (group);
+
+        if (!group_guid)
+        {
+            /* There's no way to remove a user from the no-group. */
+            /* Adding him to other groups does that. */
             return;
         }
     }
@@ -676,20 +691,31 @@ msn_userlist_add_buddy (MsnUserList *userlist,
 
     if (group_name)
     {
-        group_guid = msn_userlist_find_group_id (userlist, group_name);
+        MsnGroup *group;
+
+        group = msn_userlist_find_group_with_name (userlist, group_name);
+
+        if (!group)
+        {
+            /* We must add that group first. */
+            msn_request_add_group (userlist, who, NULL, group_name);
+            return;
+        }
+
+        group_guid = msn_group_get_id (group);
 
         if (!group_guid)
         {
-            /* Whoa, we must add that group first. */
-            msn_request_add_group (userlist, who, NULL, group_name);
+            /* There's no way to add a user to the no-group. */
+            /* Removing from other groups does that. */
             return;
         }
     }
 
     user = msn_userlist_find_user (userlist, who);
 
-    store_name = (user != NULL) ? get_store_name (user) : who;
-    user_guid = (user != NULL) ? user->guid : NULL;
+    store_name = (user) ? get_store_name (user) : who;
+    user_guid = (user) ? user->guid : NULL;
 
     list = lists[list_id];
 
@@ -702,11 +728,11 @@ msn_userlist_move_buddy (MsnUserList *userlist,
                          const gchar *old_group_name,
                          const gchar *new_group_name)
 {
-    const gchar *new_group_guid;
+    MsnGroup *new_group;
 
-    new_group_guid = msn_userlist_find_group_id (userlist, new_group_name);
+    new_group = msn_userlist_find_group_with_name (userlist, new_group_name);
 
-    if (!new_group_guid)
+    if (!new_group)
     {
         msn_request_add_group (userlist, who, old_group_name, new_group_name);
         return;
@@ -723,13 +749,13 @@ msn_userlist_move_buddy (MsnUserList *userlist,
 void
 msn_userlist_add_buddy_helper (MsnUserList *userlist,
                                PurpleBuddy *buddy,
-                               PurpleGroup *group)
+                               PurpleGroup *purple_group)
 {
     const gchar *who;
     const gchar *group_name;
 
     who = purple_buddy_get_name (buddy);
-    group_name = purple_group_get_name (group);
+    group_name = purple_group_get_name (purple_group);
 
     {
         MsnUser *user;
@@ -739,18 +765,22 @@ msn_userlist_add_buddy_helper (MsnUserList *userlist,
         list_id = MSN_LIST_FL;
         user = msn_userlist_find_user (userlist, who);
 
-        if (group_name != NULL)
-        {
-            group_guid = msn_userlist_find_group_id (userlist, group_name);
+        g_return_if_fail (user);
 
-            if (!group_guid)
+        if (group_name)
+        {
+            MsnGroup *group;
+
+            group = msn_userlist_find_group_with_name (userlist, group_name);
+
+            if (!group)
             {
                 /* Whoa, we must add that group first. */
                 msn_request_add_group (userlist, who, NULL, group_name);
                 return;
             }
 
-            if (user && msn_user_get_group_ids (user) && !group_guid)
+            if (!msn_group_get_id (group))
             {
                 msn_error ("trying to add user to a virtual group: who=[%s]",
                            who);
@@ -759,7 +789,7 @@ msn_userlist_add_buddy_helper (MsnUserList *userlist,
             }
         }
 
-        /* First we're going to check if it's already there. */
+        /* First we're going to check if ge's already there. */
         if (user_is_there (user, list_id, group_guid))
         {
             const gchar *list;
@@ -776,6 +806,7 @@ msn_userlist_add_buddy_helper (MsnUserList *userlist,
                            who, list);
             }
 
+            /* MSN doesn't support the same user twice in the same group. */
             purple_blist_remove_buddy (buddy);
 
             return;

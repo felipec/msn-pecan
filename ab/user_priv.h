@@ -54,7 +54,7 @@ struct MsnUser
     gboolean authorized;    /**< Authorized to add this user.   */
     gboolean mobile;        /**< Signed up with MSN Mobile.     */
 
-    GList *group_ids;       /**< The group IDs.                 */
+    GHashTable *groups;     /**< The groups this user is on. */
 
     MsnObject *msnobj;      /**< The user's MSN Object.         */
 
