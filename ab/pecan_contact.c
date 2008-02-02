@@ -27,6 +27,8 @@
 #include "cvr/slp.h"
 #include "fix-purple.h"
 
+#include "session_private.h"
+
 #include <string.h>
 
 #ifdef HAVE_LIBPURPLE
@@ -152,6 +154,9 @@ pecan_contact_set_friendly_name (PecanContact *contact,
 {
     g_return_if_fail (contact);
 
+    if (contact->friendly_name && strcmp (contact->friendly_name, name) == 0)
+        return;
+
     g_free (contact->friendly_name);
     contact->friendly_name = g_strdup (name);
 
@@ -159,9 +164,18 @@ pecan_contact_set_friendly_name (PecanContact *contact,
     {
         PurpleAccount *account;
         PurpleConnection *gc;
-        account = msn_session_get_account (contact->contactlist->session);
+        MsnSession *session;
+
+        session = contact->contactlist->session;
+        account = msn_session_get_account (session);
         gc = purple_account_get_connection (account);
+
         fix_purple_buddy_set_friendly (gc, contact->passport, contact->friendly_name);
+
+        if (strcmp (session->user->passport, contact->passport) == 0)
+        {
+            pecan_contact_set_store_name (contact, name);
+        }
     }
 #endif /* HAVE_LIBPURPLE */
 }
@@ -170,7 +184,10 @@ void
 pecan_contact_set_store_name (PecanContact *contact,
                               const gchar *name)
 {
-    g_return_if_fail (contact != NULL);
+    g_return_if_fail (contact);
+
+    if (contact->store_name && strcmp (contact->store_name, name) == 0)
+        return;
 
     g_free (contact->store_name);
     contact->store_name = g_strdup (name);
@@ -179,9 +196,18 @@ pecan_contact_set_store_name (PecanContact *contact,
     {
         PurpleAccount *account;
         PurpleConnection *gc;
-        account = msn_session_get_account (contact->contactlist->session);
+        MsnSession *session;
+
+        session = contact->contactlist->session;
+        account = msn_session_get_account (session);
         gc = purple_account_get_connection (account);
+
         fix_purple_buddy_set_alias (gc, contact->passport, contact->store_name);
+
+        if (strcmp (session->user->passport, contact->passport) == 0)
+        {
+            pecan_contact_set_friendly_name (contact, name);
+        }
     }
 #endif /* HAVE_LIBPURPLE */
 }
