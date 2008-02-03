@@ -27,7 +27,7 @@
 
 #include "io/pecan_node.h"
 
-#include "msn_log.h"
+#include "pecan_log.h"
 
 #include "history.h"
 
@@ -108,7 +108,7 @@ show_debug_cmd(MsnCmdProc *cmdproc, gboolean incoming, const char *command)
         show[len - 2] = '\0';
     }
 
-    msn_debug ("%c: %03d: %s", tmp,
+    pecan_debug ("%c: %03d: %s", tmp,
                cmdproc->cmd_count, show);
 
     g_free(show);
@@ -245,7 +245,7 @@ msn_cmdproc_process_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
     if (msn_message_get_content_type(msg) == NULL)
     {
-        msn_warning ("failed to find message content");
+        pecan_warning ("failed to find message content");
         return;
     }
 
@@ -254,7 +254,7 @@ msn_cmdproc_process_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
     if (cb == NULL)
     {
-        msn_warning ("unhandled content-type: [%s]",
+        pecan_warning ("unhandled content-type: [%s]",
                      msn_message_get_content_type (msg));
 
         return;
@@ -304,7 +304,7 @@ msn_cmdproc_process_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
             }
             else
             {
-                msn_error ("unhandled error: [%s]",
+                pecan_error ("unhandled error: [%s]",
                            cmd->command);
             }
 
@@ -332,7 +332,7 @@ msn_cmdproc_process_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     }
     else
     {
-        msn_warning ("unhandled command: [%s]",
+        pecan_warning ("unhandled command: [%s]",
                      cmd->command);
     }
 

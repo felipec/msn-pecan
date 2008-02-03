@@ -37,7 +37,7 @@
 #include <eventloop.h>
 #include <ft.h>
 
-/* #define MSN_DEBUG_SLPCALL */
+/* #define PECAN_DEBUG_SLPCALL */
 
 /**************************************************************************
  * Main
@@ -52,7 +52,7 @@ msn_slp_call_new(MsnSlpLink *slplink)
 
 	slpcall = g_new0(MsnSlpCall, 1);
 
-#ifdef MSN_DEBUG_SLPCALL
+#ifdef PECAN_DEBUG_SLPCALL
 	purple_debug_info("msn", "slpcall_new: slpcall(%p)\n", slpcall);
 #endif
 
@@ -72,7 +72,7 @@ msn_slp_call_destroy(MsnSlpCall *slpcall)
 	GList *e;
 	MsnSession *session;
 
-#ifdef MSN_DEBUG_SLPCALL
+#ifdef PECAN_DEBUG_SLPCALL
 	purple_debug_info("msn", "slpcall_destroy: slpcall(%p)\n", slpcall);
 #endif
 
@@ -95,7 +95,7 @@ msn_slp_call_destroy(MsnSlpCall *slpcall)
 		MsnSlpMessage *slpmsg = e->data;
 		e = e->next;
 
-#ifdef MSN_DEBUG_SLPCALL_VERBOSE
+#ifdef PECAN_DEBUG_SLPCALL_VERBOSE
 		purple_debug_info("msn", "slpcall_destroy: trying slpmsg(%p)\n",
 						slpmsg);
 #endif
@@ -171,7 +171,7 @@ msn_slp_call_invite(MsnSlpCall *slpcall, const char *euf_guid,
 	slpmsg = msn_slpmsg_sip_new(slpcall, 0, header, slpcall->branch,
 								"application/x-msnmsgr-sessionreqbody", content);
 
-#ifdef MSN_DEBUG_SLP
+#ifdef PECAN_DEBUG_SLP
 	slpmsg->info = "SLP INVITE";
 	slpmsg->text_body = TRUE;
 #endif
@@ -200,7 +200,7 @@ msn_slp_call_timeout(gpointer data)
 
 	slpcall = data;
 
-#ifdef MSN_DEBUG_SLPCALL
+#ifdef PECAN_DEBUG_SLPCALL
 	purple_debug_info("msn", "slpcall_timeout: slpcall(%p)\n", slpcall);
 #endif
 

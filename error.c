@@ -21,7 +21,7 @@
  */
 
 #include "error.h"
-#include "msn_log.h"
+#include "pecan_log.h"
 
 #include <glib.h>
 #include "msn_intl.h"
@@ -242,7 +242,7 @@ msn_error_handle(MsnSession *session, unsigned int type)
 	g_snprintf(buf, sizeof(buf), _("MSN Error: %s\n"),
 			   msn_error_get_text(type));
 
-	msn_error ("error %d: %s", type, buf);
+	pecan_error ("error %d: %s", type, buf);
 
 	purple_notify_error (msn_session_get_account (session)->gc, NULL, buf, NULL);
 }

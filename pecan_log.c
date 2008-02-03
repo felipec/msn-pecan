@@ -16,9 +16,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#include "msn_log.h"
+#include "pecan_log.h"
 
-#ifdef MSN_DEBUG
+#ifdef PECAN_DEBUG
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -30,12 +30,12 @@ log_level_to_string (enum MsnLogLevel level)
 {
     switch (level)
     {
-        case MSN_LOG_LEVEL_NONE: return "NONE"; break;
-        case MSN_LOG_LEVEL_ERROR: return "ERROR"; break;
-        case MSN_LOG_LEVEL_WARNING: return "WARNING"; break;
-        case MSN_LOG_LEVEL_INFO: return "INFO"; break;
-        case MSN_LOG_LEVEL_DEBUG: return "DEBUG"; break;
-        case MSN_LOG_LEVEL_LOG: return "LOG"; break;
+        case PECAN_LOG_LEVEL_NONE: return "NONE"; break;
+        case PECAN_LOG_LEVEL_ERROR: return "ERROR"; break;
+        case PECAN_LOG_LEVEL_WARNING: return "WARNING"; break;
+        case PECAN_LOG_LEVEL_INFO: return "INFO"; break;
+        case PECAN_LOG_LEVEL_DEBUG: return "DEBUG"; break;
+        case PECAN_LOG_LEVEL_LOG: return "LOG"; break;
         default: return "Unknown"; break;
     }
 }
@@ -78,7 +78,7 @@ msn_base_log_helper (guint level,
     va_start (args, fmt);
 
     tmp = g_strdup_vprintf (fmt, args);
-#ifdef MSN_DEBUG_FILE
+#ifdef PECAN_DEBUG_FILE
     {
         static FILE *logfile;
         if (!logfile)
@@ -93,7 +93,7 @@ msn_base_log_helper (guint level,
                    tmp);
     }
 #else
-    msn_print ("%s %s:%d:%s() %s\n",
+    pecan_print ("%s %s:%d:%s() %s\n",
                log_level_to_string (level),
                file, line, function,
                tmp);
@@ -103,4 +103,4 @@ msn_base_log_helper (guint level,
     va_end (args);
 }
 
-#endif /* MSN_DEBUG */
+#endif /* PECAN_DEBUG */

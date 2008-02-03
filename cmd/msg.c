@@ -22,7 +22,7 @@
 
 #include "msg_private.h"
 #include "command_private.h"
-#include "msn_log.h"
+#include "pecan_log.h"
 
 #include <string.h> /* for strlen. */
 
@@ -41,8 +41,8 @@ msn_message_new(MsnMsgType type)
 	msg = g_new0(MsnMessage, 1);
 	msg->type = type;
 
-#ifdef MSN_DEBUG_MSG
-	msn_log ("msg=%p,type=%d", msg, type);
+#ifdef PECAN_DEBUG_MSG
+	pecan_log ("msg=%p,type=%d", msg, type);
 #endif
 
 	msg->attr_table = g_hash_table_new_full(g_str_hash, g_str_equal,
@@ -65,8 +65,8 @@ msn_message_destroy(MsnMessage *msg)
 		return;
 	}
 
-#ifdef MSN_DEBUG_MSG
-	msn_log ("msg=%p", msg);
+#ifdef PECAN_DEBUG_MSG
+	pecan_log ("msg=%p", msg);
 #endif
 
 	if (msg->remote_user != NULL)
@@ -94,8 +94,8 @@ msn_message_ref(MsnMessage *msg)
 
 	msg->ref_count++;
 
-#ifdef MSN_DEBUG_MSG
-	msn_log ("msg=%p,ref_count=%d", msg, msg->ref_count);
+#ifdef PECAN_DEBUG_MSG
+	pecan_log ("msg=%p,ref_count=%d", msg, msg->ref_count);
 #endif
 
 	return msg;
@@ -109,8 +109,8 @@ msn_message_unref(MsnMessage *msg)
 
 	msg->ref_count--;
 
-#ifdef MSN_DEBUG_MSG
-	msn_log ("msg=%p,ref_count=%d", msg, msg->ref_count);
+#ifdef PECAN_DEBUG_MSG
+	pecan_log ("msg=%p,ref_count=%d", msg, msg->ref_count);
 #endif
 
 	if (msg->ref_count == 0)
@@ -754,7 +754,7 @@ msn_message_show_readable(MsnMessage *msg, const char *info,
 		g_string_append_printf(str, "SUB ID:     %u\r\n", msg->msnslp_header.ack_sub_id);
 		g_string_append_printf(str, "ACK Size:   %" G_GUINT64_FORMAT "\r\n", msg->msnslp_header.ack_size);
 
-#ifdef MSN_DEBUG_SLP_VERBOSE
+#ifdef PECAN_DEBUG_SLP_VERBOSE
 		if (body != NULL)
 		{
 			if (text_body)
@@ -792,7 +792,7 @@ msn_message_show_readable(MsnMessage *msg, const char *info,
 		}
 	}
 
-	msn_debug ("info=[%s],str=[%s]", info, str->str);
+	pecan_debug ("info=[%s],str=[%s]", info, str->str);
 
 	g_string_free(str, TRUE);
 }

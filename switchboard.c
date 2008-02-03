@@ -39,7 +39,7 @@
 #include "io/pecan_http_server.h"
 
 #include "pecan_util.h"
-#include "msn_log.h"
+#include "pecan_log.h"
 
 #include "error.h"
 
@@ -75,7 +75,7 @@ open_cb (PecanNode *conn)
     cmd_conn = CMD_PECAN_NODE (conn);
     cmdproc = cmd_conn->cmdproc;
 
-    msn_info ("foo");
+    pecan_info ("foo");
 
     swboard = cmdproc->data;
     g_return_if_fail (swboard != NULL);
@@ -122,14 +122,14 @@ close_cb (PecanNode *conn,
         {
             reason = conn->error->message;
 
-            msn_error ("connection error: (SB):reason=[%s]", reason);
+            pecan_error ("connection error: (SB):reason=[%s]", reason);
             tmp = g_strdup_printf (_("Error: %s"), reason);
 
             g_clear_error (&conn->error);
         }
         else
         {
-            msn_error ("connection error: (SB)");
+            pecan_error ("connection error: (SB)");
             tmp = g_strdup_printf (_("Error: Unknown"));
         }
 
@@ -213,10 +213,10 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
     MsnMessage *msg;
     GList *l;
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
-#ifdef MSN_DEBUG_SB
-    msn_log ("swboard=[%p]", swboard);
+#ifdef PECAN_DEBUG_SB
+    pecan_log ("swboard=[%p]", swboard);
 #endif
 
     g_return_if_fail(swboard != NULL);
@@ -272,7 +272,7 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
 
     g_free(swboard);
 
-    msn_log ("end");
+    pecan_log ("end");
 }
 
 void
@@ -362,15 +362,15 @@ msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
     swboard->current_users++;
     swboard->empty = FALSE;
 
-#ifdef MSN_DEBUG_CHAT
-    msn_info ("user=[%s],total=%d",
+#ifdef PECAN_DEBUG_CHAT
+    pecan_info ("user=[%s],total=%d",
               user, swboard->current_users);
 #endif
 
     if (!(swboard->flag & MSN_SB_FLAG_IM) && (swboard->conv != NULL))
     {
         /* This is a helper switchboard. */
-        msn_error ("conv != NULL");
+        pecan_error ("conv != NULL");
         return;
     }
 
@@ -387,8 +387,8 @@ msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
         {
             GList *l;
 
-#ifdef MSN_DEBUG_CHAT
-            msn_info ("switching to chat");
+#ifdef PECAN_DEBUG_CHAT
+            pecan_info ("switching to chat");
 #endif
 
 #if 0
@@ -410,16 +410,16 @@ msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
 
                 tmp_user = l->data;
 
-#ifdef MSN_DEBUG_CHAT
-                msn_info ("adding: tmp_user=[%s]", tmp_user);
+#ifdef PECAN_DEBUG_CHAT
+                pecan_info ("adding: tmp_user=[%s]", tmp_user);
 #endif
 
                 purple_conv_chat_add_user(PURPLE_CONV_CHAT(swboard->conv),
                                           tmp_user, NULL, PURPLE_CBFLAGS_NONE, TRUE);
             }
 
-#ifdef MSN_DEBUG_CHAT
-            msn_info ("add ourselves");
+#ifdef PECAN_DEBUG_CHAT
+            pecan_info ("add ourselves");
 #endif
 
             purple_conv_chat_add_user(PURPLE_CONV_CHAT(swboard->conv),
@@ -437,7 +437,7 @@ msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
     }
     else
     {
-        msn_warning ("this should not happen");
+        pecan_warning ("this should not happen");
     }
 }
 
@@ -451,7 +451,7 @@ msn_switchboard_get_conv(MsnSwitchBoard *swboard)
     if (swboard->conv != NULL)
         return swboard->conv;
 
-    msn_warning ("switchboard with unassigned conversation");
+    pecan_warning ("switchboard with unassigned conversation");
 
     account = swboard->session->account;
 
@@ -478,7 +478,7 @@ swboard_error_helper(MsnSwitchBoard *swboard, int reason, const char *passport)
 {
     g_return_if_fail(swboard != NULL);
 
-    msn_error ("unable to call the user: passport=[%s],reason[%i]",
+    pecan_error ("unable to call the user: passport=[%s],reason[%i]",
                passport ? passport : "(null)", reason);
 
     /* TODO: if current_users > 0, this is probably a chat and an invite failed,
@@ -503,7 +503,7 @@ cal_error_helper(MsnTransaction *trans, int reason)
 
     swboard = trans->data;
 
-    msn_warning ("failed: command=[%s],reason=%i",
+    pecan_warning ("failed: command=[%s],reason=%i",
                  trans->command, reason);
 
     swboard_error_helper(swboard, reason, passport);
@@ -680,7 +680,7 @@ release_msg(MsnSwitchBoard *swboard, MsnMessage *msg)
 
     payload = msn_message_gen_payload(msg, &payload_len);
 
-#ifdef MSN_DEBUG_SB
+#ifdef PECAN_DEBUG_SB
     msn_message_show_readable(msg, "SB SEND", FALSE);
 #endif
 
@@ -726,7 +726,7 @@ queue_msg(MsnSwitchBoard *swboard, MsnMessage *msg)
     g_return_if_fail(swboard != NULL);
     g_return_if_fail(msg     != NULL);
 
-    msn_info ("appending message to queue");
+    pecan_info ("appending message to queue");
 
     g_queue_push_tail(swboard->msg_queue, msg);
 
@@ -740,11 +740,11 @@ process_queue(MsnSwitchBoard *swboard)
 
     g_return_if_fail(swboard != NULL);
 
-    msn_info ("processing queue");
+    pecan_info ("processing queue");
 
     while ((msg = g_queue_pop_head(swboard->msg_queue)) != NULL)
     {
-        msn_info ("sending message");
+        pecan_info ("sending message");
         release_msg(swboard, msg);
         msn_message_unref(msg);
     }
@@ -801,7 +801,7 @@ bye_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     g_return_if_fail(swboard != NULL);
 
     if (!(swboard->flag & MSN_SB_FLAG_IM) && (swboard->conv != NULL))
-        msn_error ("bye_cmd: helper bug");
+        pecan_error ("bye_cmd: helper bug");
 
     if (swboard->conv == NULL)
     {
@@ -875,7 +875,7 @@ msg_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload, size_t len)
     msg = msn_message_new_from_cmd(cmd);
 
     msn_message_parse_payload(msg, payload, len);
-#ifdef MSN_DEBUG_SB
+#ifdef PECAN_DEBUG_SB
     msn_message_show_readable(msg, "SB RECV", FALSE);
 #endif
 
@@ -996,7 +996,7 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 #if 0
     if ((value = msn_message_get_attr(msg, "User-Agent")) != NULL)
     {
-        msn_debug ("user-agent=[%s]", value);
+        pecan_debug ("user-agent=[%s]", value);
     }
 #endif
 
@@ -1027,7 +1027,7 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
         /* If current_users is always ok as it should then there is no need to
          * check if this is a chat. */
         if (swboard->current_users <= 1)
-            msn_info ("plain_msg: current_users=[%d]",
+            pecan_info ("plain_msg: current_users=[%d]",
                       swboard->current_users);
 
         serv_got_chat_in(gc, swboard->chat_id, passport, 0, body_final,
@@ -1120,7 +1120,7 @@ ans_usr_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
         reason = MSN_SB_ERROR_AUTHFAILED;
     }
 
-    msn_warning ("command=[%s],error=%i",
+    pecan_warning ("command=[%s],error=%i",
                  trans->command, error);
 
     params = g_strsplit(trans->params, " ", 0);
@@ -1169,7 +1169,7 @@ got_cal(MsnCmdProc *cmdproc, MsnCommand *cmd)
 static void
 cal_timeout(MsnCmdProc *cmdproc, MsnTransaction *trans)
 {
-    msn_warning ("command=[%s]", trans->command);
+    pecan_warning ("command=[%s]", trans->command);
 
     cal_error_helper(trans, MSN_SB_ERROR_UNKNOWN);
 }
@@ -1181,7 +1181,7 @@ cal_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
 
     if (error == 215)
     {
-        msn_info ("already in switchboard");
+        pecan_info ("already in switchboard");
         return;
     }
     else if (error == 217)
@@ -1189,7 +1189,7 @@ cal_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
         reason = MSN_SB_ERROR_USER_OFFLINE;
     }
 
-    msn_warning ("command=[%s],error=%i",
+    pecan_warning ("command=[%s],error=%i",
                  trans->command, error);
 
     cal_error_helper(trans, reason);
@@ -1258,7 +1258,7 @@ xfr_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
 
     swboard = trans->data;
 
-    msn_info ("error=%i,user=[%s],trans=%p,command=[%s],reason=%i",
+    pecan_info ("error=%i,user=[%s],trans=%p,command=[%s],reason=%i",
               error, swboard->im_user, trans,
               trans->command, reason);
 

@@ -21,7 +21,7 @@
  */
 
 #include "session_private.h"
-#include "msn_log.h"
+#include "pecan_log.h"
 #include "notification.h"
 
 #include "cvr/slplink.h"
@@ -139,7 +139,7 @@ msn_session_connect(MsnSession *session, const char *host, int port)
 
 	if (session->notification == NULL)
 	{
-		msn_error ("this shouldn't happen");
+		pecan_error ("this shouldn't happen");
 		g_return_val_if_reached(FALSE);
 	}
 
@@ -374,7 +374,7 @@ msn_session_set_login_step(MsnSession *session, MsnLoginStep step)
 	session->login_step = step;
 
 	purple_connection_update_progress(gc, get_login_step_text(session), step,
-									MSN_LOGIN_STEPS);
+									PECAN_LOGIN_STEPS);
 }
 
 void

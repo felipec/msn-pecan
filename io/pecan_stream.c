@@ -17,7 +17,7 @@
  */
 
 #include "pecan_stream.h"
-#include "msn_log.h"
+#include "pecan_log.h"
 
 PecanStream *
 pecan_stream_new (gint fd)
@@ -62,7 +62,7 @@ pecan_stream_read (PecanStream *stream,
 
     if (tmp_error)
     {
-        msn_error ("error reading: %s", tmp_error->message);
+        pecan_error ("error reading: %s", tmp_error->message);
         g_propagate_error (error, tmp_error);
     }
 
@@ -93,7 +93,7 @@ pecan_stream_write (PecanStream *stream,
 
     if (tmp_error)
     {
-        msn_error ("error writing: %s", tmp_error->message);
+        pecan_error ("error writing: %s", tmp_error->message);
         g_propagate_error (error, tmp_error);
     }
 
@@ -130,7 +130,7 @@ pecan_stream_read_full (PecanStream *stream,
 
         if (tmp_error)
         {
-            msn_error ("error reading: %s", tmp_error->message);
+            pecan_error ("error reading: %s", tmp_error->message);
             g_propagate_error (error, tmp_error);
         }
 
@@ -170,7 +170,7 @@ pecan_stream_write_full (PecanStream *stream,
 
         if (tmp_error)
         {
-            msn_error ("error writing: %s", tmp_error->message);
+            pecan_error ("error writing: %s", tmp_error->message);
             g_propagate_error (error, tmp_error);
         }
 
@@ -196,7 +196,7 @@ pecan_stream_flush (PecanStream *stream,
 
     if (tmp_error)
     {
-        msn_error ("error flushing: %s", tmp_error->message);
+        pecan_error ("error flushing: %s", tmp_error->message);
         g_propagate_error (error, tmp_error);
     }
 
@@ -222,7 +222,7 @@ pecan_stream_read_line (PecanStream *stream,
 
     if (tmp_error)
     {
-        msn_error ("error flushing: %s", tmp_error->message);
+        pecan_error ("error flushing: %s", tmp_error->message);
         g_propagate_error (error, tmp_error);
     }
 

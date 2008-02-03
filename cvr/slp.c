@@ -25,7 +25,7 @@
 #include "slpcall.h"
 #include "slpmsg.h"
 #include "slpsession.h"
-#include "msn_log.h"
+#include "pecan_log.h"
 
 #include "session_private.h"
 
@@ -101,7 +101,7 @@ msn_xfer_init(PurpleXfer *xfer)
 	/* MsnSlpLink *slplink; */
 	char *content;
 
-	msn_info ("xfer_init");
+	pecan_info ("xfer_init");
 
 	slpcall = xfer->data;
 
@@ -205,7 +205,7 @@ got_transresp(MsnSlpCall *slpcall, const char *nonce,
 
 	for (c = ip_addrs; *c != NULL; c++)
 	{
-		msn_info ("ip_addr = %s", *c);
+		pecan_info ("ip_addr = %s", *c);
 		if (msn_directconn_connect(directconn, *c, port))
 			break;
 	}
@@ -228,7 +228,7 @@ send_ok(MsnSlpCall *slpcall, const char *branch,
 								"MSNSLP/1.0 200 OK",
 								branch, type, content);
 
-#ifdef MSN_DEBUG_SLP
+#ifdef PECAN_DEBUG_SLP
 	slpmsg->info = "SLP 200 OK";
 	slpmsg->text_body = TRUE;
 #endif
@@ -252,7 +252,7 @@ send_decline(MsnSlpCall *slpcall, const char *branch,
 								"MSNSLP/1.0 603 Decline",
 								branch, type, content);
 
-#ifdef MSN_DEBUG_SLP
+#ifdef PECAN_DEBUG_SLP
 	slpmsg->info = "SLP 603 Decline";
 	slpmsg->text_body = TRUE;
 #endif
@@ -297,7 +297,7 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 
 		if (!(type == MSN_OBJECT_USERTILE))
 		{
-			msn_error ("Wrong object?");
+			pecan_error ("Wrong object?");
 			msn_object_destroy(obj);
 			g_return_if_reached();
 		}
@@ -305,7 +305,7 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 		img = msn_object_get_image(obj);
 		if (img == NULL)
 		{
-			msn_error ("Wrong object");
+			pecan_error ("Wrong object");
 			msn_object_destroy(obj);
 			g_return_if_reached();
 		}
@@ -321,7 +321,7 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 		slpmsg->slpsession = slpsession;
 		slpmsg->session_id = slpsession->id;
 		msn_slpmsg_set_body(slpmsg, NULL, 4);
-#ifdef MSN_DEBUG_SLP
+#ifdef PECAN_DEBUG_SLP
 		slpmsg->info = "SLP DATA PREP";
 #endif
 		msn_slplink_queue_slpmsg(slplink, slpmsg);
@@ -331,7 +331,7 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 		slpmsg->slpcall = slpcall;
 		slpmsg->slpsession = slpsession;
 		slpmsg->flags = 0x20;
-#ifdef MSN_DEBUG_SLP
+#ifdef PECAN_DEBUG_SLP
 		slpmsg->info = "SLP DATA";
 #endif
 		msn_slpmsg_set_image(slpmsg, img);
@@ -411,7 +411,7 @@ send_bye(MsnSlpCall *slpcall, const char *type)
 								"\r\n");
 	g_free(header);
 
-#ifdef MSN_DEBUG_SLP
+#ifdef PECAN_DEBUG_SLP
 	slpmsg->info = "SLP BYE";
 	slpmsg->text_body = TRUE;
 #endif
@@ -581,7 +581,7 @@ got_ok(MsnSlpCall *slpcall,
 										"application/x-msnmsgr-transreqbody",
 										new_content);
 
-#ifdef MSN_DEBUG_SLP
+#ifdef PECAN_DEBUG_SLP
 			slpmsg->info = "SLP INVITE";
 			slpmsg->text_body = TRUE;
 #endif
@@ -600,7 +600,7 @@ got_ok(MsnSlpCall *slpcall,
 	else if (!strcmp(type, "application/x-msnmsgr-transreqbody"))
 	{
 		/* Do we get this? */
-		msn_info ("OK with transreqbody");
+		pecan_info ("OK with transreqbody");
 	}
 #ifdef MSN_DIRECTCONN
 	else if (!strcmp(type, "application/x-msnmsgr-transrespbody"))
@@ -652,7 +652,7 @@ msn_slp_sip_recv(MsnSlpLink *slplink, const char *body)
 
 	if (body == NULL)
 	{
-		msn_info ("received bogus message");
+		pecan_info ("received bogus message");
 		return NULL;
 	}
 
@@ -723,7 +723,7 @@ msn_slp_sip_recv(MsnSlpLink *slplink, const char *body)
 				temp[offset] = '\0';
 			}
 
-			msn_error ("received non-OK result: %s", temp);
+			pecan_error ("received non-OK result: %s", temp);
 
 			slpcall->wasted = TRUE;
 
@@ -784,7 +784,7 @@ msn_p2p_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 		if (slplink->swboard != NULL)
 			slplink->swboard->slplinks = g_list_prepend(slplink->swboard->slplinks, slplink);
 		else
-			msn_error ("msn_p2p_msg, swboard is NULL, ouch!");
+			pecan_error ("msn_p2p_msg, swboard is NULL, ouch!");
 	}
 
 	msn_slplink_process_msg(slplink, msg);
@@ -811,8 +811,8 @@ got_emoticon(MsnSlpCall *slpcall,
 		purple_conv_custom_smiley_write(conv, slpcall->data_info, data, size);
 		purple_conv_custom_smiley_close(conv, slpcall->data_info);
 	}
-#ifdef MSN_DEBUG_UD
-	msn_info ("got smiley: %s", slpcall->data_info);
+#ifdef PECAN_DEBUG_UD
+	pecan_info ("got smiley: %s", slpcall->data_info);
 #endif
 }
 
@@ -922,8 +922,8 @@ msn_release_buddy_icon_request(PecanContactList *contactlist)
 
 	g_return_if_fail(contactlist != NULL);
 
-#ifdef MSN_DEBUG_UD
-	msn_info ("releasing buddy icon request");
+#ifdef PECAN_DEBUG_UD
+	pecan_info ("releasing buddy icon request");
 #endif
 
 	if (contactlist->buddy_icon_window > 0)
@@ -945,8 +945,8 @@ msn_release_buddy_icon_request(PecanContactList *contactlist)
 		contactlist->buddy_icon_window--;
 		msn_request_user_display(user);
 
-#ifdef MSN_DEBUG_UD
-                msn_info ("msn_release_buddy_icon_request(): buddy_icon_window-- yields =%d",
+#ifdef PECAN_DEBUG_UD
+                pecan_info ("msn_release_buddy_icon_request(): buddy_icon_window-- yields =%d",
                           contactlist->buddy_icon_window);
 #endif
 	}
@@ -998,8 +998,8 @@ msn_queue_buddy_icon_request(PecanContact *user)
 		contactlist = user->contactlist;
 		queue = contactlist->buddy_icon_requests;
 
-#ifdef MSN_DEBUG_UD
-                msn_info ("queueing buddy icon request for %s (buddy_icon_window = %i)",
+#ifdef PECAN_DEBUG_UD
+                pecan_info ("queueing buddy icon request for %s (buddy_icon_window = %i)",
                           user->passport, contactlist->buddy_icon_window);
 #endif
 
@@ -1021,8 +1021,8 @@ got_user_display(MsnSlpCall *slpcall,
 	g_return_if_fail(slpcall != NULL);
 
 	info = slpcall->data_info;
-#ifdef MSN_DEBUG_UD
-	msn_info ("got User Display: %s", slpcall->slplink->remote_user);
+#ifdef PECAN_DEBUG_UD
+	pecan_info ("got User Display: %s", slpcall->slplink->remote_user);
 #endif
 
 	contactlist = slpcall->slplink->session->contactlist;
@@ -1035,7 +1035,7 @@ got_user_display(MsnSlpCall *slpcall,
 	/* Free one window slot */
 	contactlist->buddy_icon_window++;
 
-        msn_info ("got_user_display(): buddy_icon_window++ yields =%d",
+        pecan_info ("got_user_display(): buddy_icon_window++ yields =%d",
                   contactlist->buddy_icon_window);
 
 	msn_release_buddy_icon_request(contactlist);
@@ -1049,8 +1049,8 @@ end_user_display(MsnSlpCall *slpcall, MsnSession *session)
 
 	g_return_if_fail(session != NULL);
 
-#ifdef MSN_DEBUG_UD
-	msn_info ("End User Display");
+#ifdef PECAN_DEBUG_UD
+	pecan_info ("End User Display");
 #endif
 
 	contactlist = session->contactlist;
@@ -1109,8 +1109,8 @@ msn_request_user_display(PecanContact *user)
 		gconstpointer data = NULL;
 		size_t len = 0;
 
-#ifdef MSN_DEBUG_UD
-		msn_info ("requesting our own user display");
+#ifdef PECAN_DEBUG_UD
+		pecan_info ("requesting our own user display");
 #endif
 
 		my_obj = pecan_contact_get_object(session->user);
@@ -1127,8 +1127,8 @@ msn_request_user_display(PecanContact *user)
 		/* Free one window slot */
 		session->contactlist->buddy_icon_window++;
 
-#ifdef MSN_DEBUG_UD
-                msn_info ("msn_request_user_display(): buddy_icon_window++ yields =%d",
+#ifdef PECAN_DEBUG_UD
+                pecan_info ("msn_request_user_display(): buddy_icon_window++ yields =%d",
                           session->contactlist->buddy_icon_window);
 #endif
 

@@ -749,7 +749,7 @@ msn_login(PurpleAccount *account)
 	gc->proto_data = session;
 	gc->flags |= PURPLE_CONNECTION_HTML | PURPLE_CONNECTION_FORMATTING_WBFO | PURPLE_CONNECTION_NO_BGCOLOR | PURPLE_CONNECTION_NO_FONTSIZE | PURPLE_CONNECTION_NO_URLDESC;
 
-	msn_session_set_login_step(session, MSN_LOGIN_STEP_START);
+	msn_session_set_login_step(session, PECAN_LOGIN_STEP_START);
 
 	/* Hmm, I don't like this. */
 	/* XXX shx: Me neither */

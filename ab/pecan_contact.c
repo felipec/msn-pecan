@@ -23,7 +23,7 @@
 #include "pecan_contact.h"
 #include "pecan_contact_priv.h"
 #include "pecan_contactlist_priv.h"
-#include "msn_log.h"
+#include "pecan_log.h"
 
 #include "cvr/slp.h"
 
@@ -164,7 +164,7 @@ pecan_contact_set_friendly_name (PecanContact *contact,
 {
     g_return_if_fail (contact);
 
-    msn_debug ("passport=[%s],name=[%s]", contact->passport, name);
+    pecan_debug ("passport=[%s],name=[%s]", contact->passport, name);
 
     if (contact->friendly_name && strcmp (contact->friendly_name, name) == 0)
         return;
@@ -189,7 +189,7 @@ pecan_contact_set_friendly_name (PecanContact *contact,
     /* If contact == account; display and friendly are the same thing. */
     if (contact_is_account (contact))
     {
-        msn_debug ("contact is account");
+        pecan_debug ("contact is account");
         pecan_contact_set_store_name (contact, name);
     }
 }
@@ -200,7 +200,7 @@ pecan_contact_set_personal_message (PecanContact *contact,
 {
     g_return_if_fail (contact);
 
-    msn_debug ("passport=[%s],value=[%s]", contact->passport, value);
+    pecan_debug ("passport=[%s],value=[%s]", contact->passport, value);
 
     if (contact->personal_message && strcmp (contact->personal_message, value) == 0)
         return;
@@ -216,7 +216,7 @@ pecan_contact_set_store_name (PecanContact *contact,
     const gchar *tmp_name;
     g_return_if_fail (contact);
 
-    msn_debug ("passport=[%s],name=[%s]", contact->passport, name);
+    pecan_debug ("passport=[%s],name=[%s]", contact->passport, name);
 
     /** @todo this is a hack to disable display names. */
     if (strcmp (contact->passport, name) == 0)
@@ -250,7 +250,7 @@ pecan_contact_set_store_name (PecanContact *contact,
     /* If contact == account; display and friendly are the same thing. */
     if (contact_is_account (contact))
     {
-        msn_debug ("contact is account");
+        pecan_debug ("contact is account");
         pecan_contact_set_friendly_name (contact, name);
     }
 }
@@ -345,7 +345,7 @@ pecan_contact_add_group_id (PecanContact *contact,
 
     passport = pecan_contact_get_passport (contact);
 
-    msn_debug ("passport=[%s],group_guid=[%s]", contact->passport, group_guid);
+    pecan_debug ("passport=[%s],group_guid=[%s]", contact->passport, group_guid);
 
     if (group_guid)
     {
@@ -415,7 +415,7 @@ pecan_contact_remove_group_id (PecanContact *contact,
     g_return_if_fail (contact);
     g_return_if_fail (group_guid);
 
-    msn_debug ("passport=[%s],group_guid=[%s]", contact->passport, group_guid);
+    pecan_debug ("passport=[%s],group_guid=[%s]", contact->passport, group_guid);
 
     g_hash_table_remove (contact->groups, group_guid);
 }

@@ -22,7 +22,7 @@
 
 #include "object.h"
 #include "object_private.h"
-#include "msn_log.h"
+#include "pecan_log.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -102,7 +102,7 @@ msn_object_new_from_string(const gchar *str)
     if (obj->creator == NULL || obj->size == 0 || obj->type == 0
         || obj->location == NULL || obj->friendly == NULL
         || obj->sha1d == NULL /*|| obj->sha1c == NULL*/) {
-        msn_error ("discarding: str=[%s]", str);
+        pecan_error ("discarding: str=[%s]", str);
         msn_object_destroy(obj);
         obj = NULL;
     }

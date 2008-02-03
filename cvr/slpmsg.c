@@ -44,7 +44,7 @@ msn_slpmsg_new(MsnSlpLink *slplink)
 
 	slpmsg = g_new0(MsnSlpMessage, 1);
 
-#ifdef MSN_DEBUG_SLPMSG
+#ifdef PECAN_DEBUG_SLPMSG
 	purple_debug_info("msn", "slpmsg new (%p)\n", slpmsg);
 #endif
 
@@ -64,7 +64,7 @@ msn_slpmsg_destroy(MsnSlpMessage *slpmsg)
 
 	g_return_if_fail(slpmsg != NULL);
 
-#ifdef MSN_DEBUG_SLPMSG
+#ifdef PECAN_DEBUG_SLPMSG
 	purple_debug_info("msn", "slpmsg destroy (%p)\n", slpmsg);
 #endif
 
@@ -78,7 +78,7 @@ msn_slpmsg_destroy(MsnSlpMessage *slpmsg)
 	if (slpmsg->buffer)
 		g_free(slpmsg->buffer);
 
-#ifdef MSN_DEBUG_SLP
+#ifdef PECAN_DEBUG_SLP
 	/*
 	if (slpmsg->info != NULL)
 		g_free(slpmsg->info);
@@ -93,7 +93,7 @@ msn_slpmsg_destroy(MsnSlpMessage *slpmsg)
 
 		MsnMessage *msg = cur->data;
 
-#ifdef MSN_DEBUG_SLPMSG
+#ifdef PECAN_DEBUG_SLPMSG
 		purple_debug_info("msn", "Unlink slpmsg callbacks.\n");
 #endif
 
@@ -154,7 +154,7 @@ msn_slpmsg_open_file(MsnSlpMessage *slpmsg, const char *file_name)
 		slpmsg->size = st.st_size;
 }
 
-#ifdef MSN_DEBUG_SLP
+#ifdef PECAN_DEBUG_SLP
 void
 msn_slpmsg_show(MsnMessage *msg)
 {

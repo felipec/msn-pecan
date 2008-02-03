@@ -20,7 +20,7 @@
 #include "cmd/cmdproc_private.h"
 #include "cmd/command_private.h"
 
-#include "msn_log.h"
+#include "pecan_log.h"
 
 #include <string.h>
 
@@ -36,7 +36,7 @@ pecan_cmd_server_new (const gchar *name,
 {
     PecanCmdServer *conn;
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
     conn = CMD_PECAN_NODE (g_type_create_instance (CMD_PECAN_NODE_TYPE));
 
@@ -46,7 +46,7 @@ pecan_cmd_server_new (const gchar *name,
         tmp->type = type;
     }
 
-    msn_log ("end");
+    pecan_log ("end");
 
     return conn;
 }
@@ -54,9 +54,9 @@ pecan_cmd_server_new (const gchar *name,
 void
 pecan_cmd_server_free (PecanCmdServer *conn)
 {
-    msn_log ("begin");
+    pecan_log ("begin");
     g_object_unref (G_OBJECT (conn));
-    msn_log ("end");
+    pecan_log ("end");
 }
 
 #if 0
@@ -92,9 +92,9 @@ parse_impl (PecanNode *base_conn,
     gchar *cur, *end, *old_rx_buf;
     gint cur_len;
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
-    msn_debug ("conn=%p,name=%s", base_conn, base_conn->name);
+    pecan_debug ("conn=%p,name=%s", base_conn, base_conn->name);
 
     cmd_conn = CMD_PECAN_NODE (base_conn);
 
@@ -157,7 +157,7 @@ parse_impl (PecanNode *base_conn,
 
     g_free (old_rx_buf);
 
-    msn_log ("end");
+    pecan_log ("end");
 }
 
 static void
@@ -165,7 +165,7 @@ close_impl (PecanNode *conn)
 {
     PecanCmdServer *cmd_conn;
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
     cmd_conn = CMD_PECAN_NODE (conn);
 
@@ -176,7 +176,7 @@ close_impl (PecanNode *conn)
 
     PECAN_NODE_CLASS (parent_class)->close (conn);
 
-    msn_log ("end");
+    pecan_log ("end");
 }
 
 #if 0
@@ -218,7 +218,7 @@ read_impl (PecanNode *conn)
     }
 
     read_buffer->filled = r;
-    /* msn_print ("read [%b]\n", read_buffer); */
+    /* pecan_print ("read [%b]\n", read_buffer); */
 
     conn->buffer->filled += read_buffer->filled;
 

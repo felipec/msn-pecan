@@ -28,7 +28,7 @@
 #include "slpcall.h"
 #include "slpmsg.h"
 #include "slp.h"
-#include "msn_log.h"
+#include "pecan_log.h"
 
 #include "ab/pecan_contact.h"
 
@@ -48,7 +48,7 @@
 
 void msn_slplink_send_msgpart(MsnSlpLink *slplink, MsnSlpMessage *slpmsg);
 
-#ifdef MSN_DEBUG_SLP_FILES
+#ifdef PECAN_DEBUG_SLP_FILES
 static int m_sc = 0;
 static int m_rc = 0;
 
@@ -68,7 +68,7 @@ debug_msg_to_file(MsnMessage *msg, gboolean send)
 	tf = g_fopen(tmp, "wb");
 	if (tf == NULL)
 	{
-		msn_error ("could not open debug file");
+		pecan_error ("could not open debug file");
 		return;
 	}
 	pload = msn_message_gen_payload(msg, &pload_size);
@@ -91,8 +91,8 @@ msn_slplink_new(MsnSession *session, const char *username)
 
 	slplink = g_new0(MsnSlpLink, 1);
 
-#ifdef MSN_DEBUG_SLPLINK
-	msn_info ("slplink_new: slplink(%p)", slplink);
+#ifdef PECAN_DEBUG_SLPLINK
+	pecan_info ("slplink_new: slplink(%p)", slplink);
 #endif
 
 	slplink->session = session;
@@ -115,8 +115,8 @@ msn_slplink_destroy(MsnSlpLink *slplink)
 {
 	MsnSession *session;
 
-#ifdef MSN_DEBUG_SLPLINK
-	msn_info ("slplink_destroy: slplink(%p)", slplink);
+#ifdef PECAN_DEBUG_SLPLINK
+	pecan_info ("slplink_destroy: slplink(%p)", slplink);
 #endif
 
 	g_return_if_fail(slplink != NULL);
@@ -363,11 +363,11 @@ msn_slplink_send_msgpart(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
 		msg->msnslp_header.length = len;
 	}
 
-#ifdef MSN_DEBUG_SLP
+#ifdef PECAN_DEBUG_SLP
 	msn_message_show_readable(msg, slpmsg->info, slpmsg->text_body);
 #endif
 
-#ifdef MSN_DEBUG_SLP_FILES
+#ifdef PECAN_DEBUG_SLP_FILES
 	debug_msg_to_file(msg, TRUE);
 #endif
 
@@ -499,7 +499,7 @@ msn_slplink_send_ack(MsnSlpLink *slplink, MsnMessage *msg)
 	slpmsg->ack_sub_id = msg->msnslp_header.ack_id;
 	slpmsg->ack_size   = msg->msnslp_header.total_size;
 
-#ifdef MSN_DEBUG_SLP
+#ifdef PECAN_DEBUG_SLP
 	slpmsg->info = "SLP ACK";
 #endif
 
@@ -519,7 +519,7 @@ send_file_cb(MsnSlpSession *slpsession)
 	slpmsg->slpcall = slpcall;
 	slpmsg->flags = 0x1000030;
 	slpmsg->slpsession = slpsession;
-#ifdef MSN_DEBUG_SLP
+#ifdef PECAN_DEBUG_SLP
 	slpmsg->info = "SLP FILE";
 #endif
 	xfer = (PurpleXfer *)slpcall->xfer;
@@ -540,17 +540,17 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 	gsize offset;
 	gsize len;
 
-#ifdef MSN_DEBUG_SLP
+#ifdef PECAN_DEBUG_SLP
 	msn_slpmsg_show(msg);
 #endif
 
-#ifdef MSN_DEBUG_SLP_FILES
+#ifdef PECAN_DEBUG_SLP_FILES
 	debug_msg_to_file(msg, FALSE);
 #endif
 
 	if (msg->msnslp_header.total_size < msg->msnslp_header.length)
 	{
-		msn_error ("This can't be good");
+		pecan_error ("This can't be good");
 		g_return_if_reached();
 	}
 
@@ -600,7 +600,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 			slpmsg->buffer = g_try_malloc(slpmsg->size);
 			if (slpmsg->buffer == NULL)
 			{
-				msn_error ("failed to allocate buffer for slpmsg");
+				pecan_error ("failed to allocate buffer for slpmsg");
 				return;
 			}
 		}
@@ -613,7 +613,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 	if (slpmsg == NULL)
 	{
 		/* Probably the transfer was canceled */
-		msn_error ("couldn't find slpmsg");
+		pecan_error ("couldn't find slpmsg");
 		return;
 	}
 
@@ -626,7 +626,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 	{
 		if ((offset + len) > slpmsg->size)
 		{
-			msn_error ("oversized slpmsg");
+			pecan_error ("oversized slpmsg");
 			g_return_if_reached();
 		}
 		else
@@ -669,7 +669,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 
 			if (!directconn->ack_sent)
 			{
-				msn_warning ("bad ACK");
+				pecan_warning ("bad ACK");
 				msn_directconn_send_handshake(directconn);
 			}
 		}

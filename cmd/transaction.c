@@ -21,7 +21,7 @@
  */
 
 #include "transaction_private.h"
-#include "msn_log.h"
+#include "pecan_log.h"
 
 #include <string.h>
 
@@ -110,7 +110,7 @@ msn_transaction_to_string(MsnTransaction *trans)
 void
 msn_transaction_queue_cmd(MsnTransaction *trans, MsnCommand *cmd)
 {
-	msn_log ("cmd=%p", cmd);
+	pecan_log ("cmd=%p", cmd);
 	trans->pendent_cmd = cmd;
 	msn_command_ref(cmd);
 }
@@ -121,7 +121,7 @@ msn_transaction_unqueue_cmd(MsnTransaction *trans, MsnCmdProc *cmdproc)
 	MsnCommand *cmd;
 
 	cmd = trans->pendent_cmd;
-	msn_log ("cmd=%p", cmd);
+	pecan_log ("cmd=%p", cmd);
 
 	g_return_if_fail(cmd != NULL);
 
@@ -201,7 +201,7 @@ transaction_timeout(gpointer data)
 	trans = data;
 	g_return_val_if_fail(trans != NULL, FALSE);
 
-        msn_log ("cmd=[%s],trid=[%d],params=[%s]",
+        pecan_log ("cmd=[%s],trid=[%d],params=[%s]",
                  trans->command, trans->trId, trans->params);
 
 	if (trans->timeout_cb != NULL)
@@ -216,7 +216,7 @@ msn_transaction_set_timeout_cb(MsnTransaction *trans, MsnTimeoutCb cb)
 #ifdef HAVE_LIBPURPLE
 	if (trans->timer)
 	{
-		msn_error ("this shouldn't be happening");
+		pecan_error ("this shouldn't be happening");
 		purple_timeout_remove(trans->timer);
 	}
 	trans->timeout_cb = cb;

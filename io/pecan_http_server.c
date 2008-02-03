@@ -27,7 +27,7 @@
 
 #include "pecan_http_server_priv.h"
 #include "pecan_stream.h"
-#include "msn_log.h"
+#include "pecan_log.h"
 
 #include <glib.h>
 #include <string.h>
@@ -87,11 +87,11 @@ read_cb (GIOChannel *source,
     gchar buf[MSN_BUF_LEN];
     gsize bytes_read;
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
     conn = PECAN_NODE (data);
 
-    msn_debug ("conn=%p,source=%p", conn, source);
+    pecan_debug ("conn=%p,source=%p", conn, source);
 
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
@@ -109,7 +109,7 @@ read_cb (GIOChannel *source,
 
         if (status != G_IO_STATUS_NORMAL)
         {
-            msn_warning ("not normal, status=%d", status);
+            pecan_warning ("not normal, status=%d", status);
             return TRUE;
         }
     }
@@ -141,7 +141,7 @@ read_cb (GIOChannel *source,
         g_object_unref (http_conn);
     }
 
-    msn_log ("end");
+    pecan_log ("end");
 
     return TRUE;
 }
@@ -151,7 +151,7 @@ pecan_http_server_new (const gchar *name)
 {
     PecanHttpServer *http_conn;
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
     http_conn = PECAN_HTTP_SERVER (g_type_create_instance (PECAN_HTTP_SERVER_TYPE));
 
@@ -161,7 +161,7 @@ pecan_http_server_new (const gchar *name)
         tmp->type = PECAN_NODE_HTTP;
     }
 
-    msn_log ("end");
+    pecan_log ("end");
 
     return http_conn;
 }
@@ -169,9 +169,9 @@ pecan_http_server_new (const gchar *name)
 void
 pecan_http_server_free (PecanHttpServer *http_conn)
 {
-    msn_log ("begin");
+    pecan_log ("begin");
     g_object_unref (G_OBJECT (http_conn));
-    msn_log ("end");
+    pecan_log ("end");
 }
 
 static gboolean
@@ -192,7 +192,7 @@ http_poll (gpointer data)
     conn = PECAN_NODE (data);
     http_conn = PECAN_HTTP_SERVER (data);
 
-    msn_debug ("stream=%p", conn->stream);
+    pecan_debug ("stream=%p", conn->stream);
 
     if (!http_conn->cur)
         return TRUE;
@@ -202,7 +202,7 @@ http_poll (gpointer data)
     if (http_conn->waiting_response)
     {
         /* There's no need to poll if we're already waiting for a response */
-        msn_debug ("waiting for response");
+        pecan_debug ("waiting for response");
         return TRUE;
     }
 
@@ -225,8 +225,8 @@ http_poll (gpointer data)
                               http_conn->gateway,
                               auth ? auth : "");
 
-#ifdef MSN_DEBUG_HTTP
-    msn_debug ("header=[%s]", header);
+#ifdef PECAN_DEBUG_HTTP
+    pecan_debug ("header=[%s]", header);
 #endif
 
     g_free (params);
@@ -241,14 +241,14 @@ http_poll (gpointer data)
 
         if (status == G_IO_STATUS_NORMAL)
         {
-            msn_log ("bytes_written=%d", bytes_written);
+            pecan_log ("bytes_written=%d", bytes_written);
             http_conn->waiting_response = TRUE;
         }
     }
 
     if (status != G_IO_STATUS_NORMAL)
     {
-        msn_error ("not normal: status=%d", status);
+        pecan_error ("not normal: status=%d", status);
     }
 
     return TRUE;
@@ -262,7 +262,7 @@ connect_cb (gpointer data,
     PecanNode *conn;
     PecanHttpServer *http_conn;
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
     conn = PECAN_NODE (data);
     http_conn = PECAN_HTTP_SERVER (data);
@@ -295,7 +295,7 @@ connect_cb (gpointer data,
         g_signal_emit (G_OBJECT (conn), class->error_sig, 0, conn);
     }
 
-    msn_log ("end");
+    pecan_log ("end");
 }
 
 static void
@@ -314,7 +314,7 @@ connect_impl (PecanNode *conn,
         if (conn->prev->type == PECAN_NODE_NS)
             hostname = http_conn->gateway;
         port = 80;
-        msn_debug ("conn=%p,hostname=%s,port=%d", conn, hostname, port);
+        pecan_debug ("conn=%p,hostname=%s,port=%d", conn, hostname, port);
         conn->connect_data = purple_proxy_connect (NULL, msn_session_get_account (conn->session),
                                                    hostname, port, connect_cb, conn);
         return;
@@ -336,7 +336,7 @@ close_impl (PecanNode *conn)
 {
     PecanHttpServer *http_conn;
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
     http_conn = PECAN_HTTP_SERVER (conn);
 
@@ -367,7 +367,7 @@ close_impl (PecanNode *conn)
 
     PECAN_NODE_CLASS (parent_class)->close (conn);
 
-    msn_log ("end");
+    pecan_log ("end");
 }
 
 static GIOStatus
@@ -382,11 +382,11 @@ read_impl (PecanNode *conn,
     GError *tmp_error = NULL;
     gsize bytes_read = 0;
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
     http_conn = PECAN_HTTP_SERVER (conn);
 
-    msn_debug ("stream=%p", conn->stream);
+    pecan_debug ("stream=%p", conn->stream);
 
     {
         gchar *str = NULL;
@@ -406,22 +406,22 @@ read_impl (PecanNode *conn,
 
             if (tmp_error)
             {
-                msn_debug ("error reading: %s", tmp_error->message);
+                pecan_debug ("error reading: %s", tmp_error->message);
                 goto leave;
             }
 
             if (status == G_IO_STATUS_AGAIN)
                 return status;
 
-#ifdef MSN_DEBUG_HTTP
-            msn_debug ("str=[%s]", str);
+#ifdef PECAN_DEBUG_HTTP
+            pecan_debug ("str=[%s]", str);
 #endif
 
             tokens = g_strsplit (str, " ", 3);
 
             if (!(tokens[0] && (strcmp (tokens[0], "HTTP/1.1") == 0)))
             {
-                msn_debug ("error reading: parse error");
+                pecan_debug ("error reading: parse error");
                 tmp_error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
                                                  "Parse error");
                 goto leave;
@@ -429,7 +429,7 @@ read_impl (PecanNode *conn,
 
             if (!(tokens[1]))
             {
-                msn_debug ("error reading: parse error");
+                pecan_debug ("error reading: parse error");
                 tmp_error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
                                                  "Parse error");
                 goto leave;
@@ -439,7 +439,7 @@ read_impl (PecanNode *conn,
 
             if (code != 200 && code != 100)
             {
-                msn_debug ("error reading: %d %s", code, tokens[2]);
+                pecan_debug ("error reading: %d %s", code, tokens[2]);
                 tmp_error = g_error_new (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
                                          "%s",  tokens[2]);
                 goto leave;
@@ -467,7 +467,7 @@ read_impl (PecanNode *conn,
 
                 if (tmp_error)
                 {
-                    msn_debug ("error reading: %s", tmp_error->message);
+                    pecan_debug ("error reading: %s", tmp_error->message);
                     goto leave;
                 }
 
@@ -477,15 +477,15 @@ read_impl (PecanNode *conn,
                 if (str[0] == '\0')
                     break;
 
-#ifdef MSN_DEBUG_HTTP
-                msn_debug ("str=[%s]", str);
+#ifdef PECAN_DEBUG_HTTP
+                pecan_debug ("str=[%s]", str);
 #endif
 
                 tokens = g_strsplit (str, ": ", 2);
 
                 if (!(tokens[0] && tokens[1]))
                 {
-                    msn_debug ("error reading: parse error");
+                    pecan_debug ("error reading: parse error");
                     tmp_error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
                                                      "Parse error");
                     goto leave;
@@ -514,8 +514,8 @@ read_impl (PecanNode *conn,
                         if (*token == ' ')
                             token++;
 
-#ifdef MSN_DEBUG_HTTP
-                        msn_debug ("token=[%s]", token);
+#ifdef PECAN_DEBUG_HTTP
+                        pecan_debug ("token=[%s]", token);
 #endif
 
                         if (strcmp (token, "SessionID") == 0)
@@ -559,8 +559,8 @@ read_impl (PecanNode *conn,
 		session_id = g_strndup (http_conn->last_session_id, t - http_conn->last_session_id);
 
                 child = g_hash_table_lookup (http_conn->childs, session_id);
-                msn_info ("child=%p", child);
-                msn_info ("sesison_id=[%s]", session_id);
+                pecan_info ("child=%p", child);
+                pecan_info ("sesison_id=[%s]", session_id);
 
                 if (http_conn->session && (strcmp (http_conn->session, "close") == 0))
                 {
@@ -568,7 +568,7 @@ read_impl (PecanNode *conn,
                     {
                         PecanNode *foo;
 
-                        msn_info ("removing child");
+                        pecan_info ("removing child");
                         pecan_node_close (child);
                         g_hash_table_remove (http_conn->childs, session_id);
 
@@ -583,7 +583,7 @@ read_impl (PecanNode *conn,
                         }
                         else
                         {
-                            msn_info ("no more childs");
+                            pecan_info ("no more childs");
                             http_conn->cur = NULL;
                             http_conn->gateway = NULL;
                             http_conn->last_session_id = NULL;
@@ -595,7 +595,7 @@ read_impl (PecanNode *conn,
                     if (!child)
                     {
                         child = http_conn->cur;
-                        msn_info ("adding child: %p", child);
+                        pecan_info ("adding child: %p", child);
                         g_hash_table_insert (http_conn->childs, g_strdup (session_id), g_object_ref (child));
                     }
 
@@ -604,7 +604,7 @@ read_impl (PecanNode *conn,
                         child->foo_data = g_strdup (http_conn->last_session_id);
                     }
 
-                    msn_info ("session=%s", http_conn->session);
+                    pecan_info ("session=%s", http_conn->session);
                 }
 
                 g_free (session_id);
@@ -612,15 +612,15 @@ read_impl (PecanNode *conn,
 
             status = pecan_stream_read (conn->stream, buf, MIN (http_conn->content_length, count), &bytes_read, &tmp_error);
 
-            msn_log ("status=%d", status);
-            msn_log ("bytes_read=%d", bytes_read);
+            pecan_log ("status=%d", status);
+            pecan_log ("bytes_read=%d", bytes_read);
 
             if (ret_bytes_read)
                 *ret_bytes_read = bytes_read;
 
             http_conn->content_length -= bytes_read;
 
-            msn_log ("con_len=%d,read=%d", http_conn->content_length, bytes_read);
+            pecan_log ("con_len=%d,read=%d", http_conn->content_length, bytes_read);
 
             if (http_conn->content_length == 0)
                 http_conn->parser_state = 0;
@@ -634,7 +634,7 @@ leave:
     if (tmp_error)
         g_propagate_error (error, tmp_error);
 
-    msn_log ("end");
+    pecan_log ("end");
 
     return status;
 }
@@ -654,7 +654,7 @@ foo_write (PecanNode *conn,
 
     http_conn = PECAN_HTTP_SERVER (conn);
 
-    msn_debug ("stream=%p", conn->stream);
+    pecan_debug ("stream=%p", conn->stream);
 
     {
         gchar *params;
@@ -693,8 +693,8 @@ foo_write (PecanNode *conn,
                                   auth ? auth : "",
                                   count);
 
-#ifdef MSN_DEBUG_HTTP
-        msn_debug ("header=[%s]", header);
+#ifdef PECAN_DEBUG_HTTP
+        pecan_debug ("header=[%s]", header);
 #endif
 
         g_free (params);
@@ -712,7 +712,7 @@ foo_write (PecanNode *conn,
 
     if (status == G_IO_STATUS_NORMAL)
     {
-        msn_log ("bytes_written=%d", bytes_written);
+        pecan_log ("bytes_written=%d", bytes_written);
         http_conn->waiting_response = TRUE;
         if (http_conn->cur)
             g_object_unref (http_conn->cur);
@@ -722,7 +722,7 @@ foo_write (PecanNode *conn,
     }
     else
     {
-        msn_error ("not normal");
+        pecan_error ("not normal");
     }
 
     if (ret_bytes_written)
@@ -748,8 +748,8 @@ write_impl (PecanNode *conn,
     http_conn = PECAN_HTTP_SERVER (conn);
     prev = PECAN_NODE (conn->prev);
 
-    msn_debug ("stream=%p", conn->stream);
-    msn_debug ("conn=%p,prev=%p", conn, prev);
+    pecan_debug ("stream=%p", conn->stream);
+    pecan_debug ("conn=%p,prev=%p", conn, prev);
 
     g_return_val_if_fail (prev, G_IO_STATUS_ERROR);
 

@@ -18,7 +18,7 @@
 
 #include "pecan_node_priv.h"
 #include "pecan_stream.h"
-#include "msn_log.h"
+#include "pecan_log.h"
 
 #include "session.h" /* for libpurple account */
 
@@ -65,11 +65,11 @@ read_cb (GIOChannel *source,
     gchar buf[MSN_BUF_LEN + 1];
     gsize bytes_read;
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
     conn = PECAN_NODE (data);
 
-    msn_debug ("conn=%p,name=%s", conn, conn->name);
+    pecan_debug ("conn=%p,name=%s", conn, conn->name);
 
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
@@ -99,7 +99,7 @@ read_cb (GIOChannel *source,
 
     g_object_unref (conn);
 
-    msn_log ("end");
+    pecan_log ("end");
 
     return TRUE;
 }
@@ -112,7 +112,7 @@ open_cb (PecanNode *next,
 
     conn = PECAN_NODE (data);
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
     {
         PecanNodeClass *class;
@@ -123,7 +123,7 @@ open_cb (PecanNode *next,
     g_signal_handler_disconnect (conn->next, conn->open_sig_handler);
     conn->open_sig_handler = 0;
 
-    msn_log ("end");
+    pecan_log ("end");
 }
 
 static void
@@ -134,7 +134,7 @@ close_cb (PecanNode *next,
 
     conn = PECAN_NODE (data);
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
     pecan_node_close (conn);
 
@@ -144,7 +144,7 @@ close_cb (PecanNode *next,
         g_signal_emit (G_OBJECT (conn), class->close_sig, 0, conn);
     }
 
-    msn_log ("begin");
+    pecan_log ("begin");
 }
 
 static void
@@ -155,7 +155,7 @@ error_cb (PecanNode *next,
 
     conn = PECAN_NODE (data);
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
     if (next->error)
     {
@@ -169,7 +169,7 @@ error_cb (PecanNode *next,
         g_signal_emit (G_OBJECT (conn), class->error_sig, 0, conn);
     }
 
-    msn_log ("begin");
+    pecan_log ("begin");
 }
 
 PecanNode *
@@ -177,14 +177,14 @@ pecan_node_new (gchar *name, PecanNodeType type)
 {
     PecanNode *conn;
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
     conn = PECAN_NODE (g_type_create_instance (PECAN_NODE_TYPE));
 
     conn->name = g_strdup (name);
     conn->type = type;
 
-    msn_log ("end");
+    pecan_log ("end");
 
     return conn;
 }
@@ -193,9 +193,9 @@ void
 pecan_node_free (PecanNode *conn)
 {
     g_return_if_fail (conn != NULL);
-    msn_log ("begin");
+    pecan_log ("begin");
     g_object_unref (G_OBJECT (conn));
-    msn_log ("end");
+    pecan_log ("end");
 }
 
 void
@@ -203,7 +203,7 @@ pecan_node_error (PecanNode *conn)
 {
     g_return_if_fail (conn != NULL);
 
-    msn_debug ("conn=%p", conn);
+    pecan_debug ("conn=%p", conn);
 
     {
         PecanNodeClass *class;
@@ -213,7 +213,7 @@ pecan_node_error (PecanNode *conn)
 
     if (conn->error)
     {
-        msn_warning ("unhandled error: %s", conn->error->message);
+        pecan_warning ("unhandled error: %s", conn->error->message);
         g_clear_error (&conn->error);
     }
 }
@@ -279,7 +279,7 @@ connect_cb (gpointer data,
 {
     PecanNode *conn;
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
     conn = PECAN_NODE (data);
     conn->connect_data = NULL;
@@ -294,7 +294,7 @@ connect_cb (gpointer data,
         g_io_channel_set_encoding (channel, NULL, NULL);
         g_io_channel_set_buffered (channel, FALSE);
 
-        msn_info ("connected: conn=%p,channel=%p", conn, channel);
+        pecan_info ("connected: conn=%p,channel=%p", conn, channel);
         conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, conn);
 #if 0
         g_io_add_watch (channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, close_cb, conn);
@@ -302,7 +302,7 @@ connect_cb (gpointer data,
     }
     else
     {
-        /* msn_error ("connection error: conn=%p,msg=[%s]", conn, error_message); */
+        /* pecan_error ("connection error: conn=%p,msg=[%s]", conn, error_message); */
         conn->error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
                                            "Unable to connect");
         pecan_node_error (conn);
@@ -314,7 +314,7 @@ connect_cb (gpointer data,
         g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
     }
 
-    msn_log ("end");
+    pecan_log ("end");
 }
 
 static void
@@ -324,11 +324,11 @@ connect_impl (PecanNode *conn,
 {
     g_return_if_fail (conn);
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
-    msn_debug ("conn=%p,name=%s", conn, conn->name);
-    msn_debug ("hostname=%s,port=%d", hostname, port);
-    msn_debug ("next=%p", conn->next);
+    pecan_debug ("conn=%p,name=%s", conn, conn->name);
+    pecan_debug ("hostname=%s,port=%d", hostname, port);
+    pecan_debug ("next=%p", conn->next);
 
     g_free (conn->hostname);
     conn->hostname = g_strdup (hostname);
@@ -350,7 +350,7 @@ connect_impl (PecanNode *conn,
 #endif /* HAVE_LIBPURPLE */
     }
 
-    msn_log ("end");
+    pecan_log ("end");
 }
 
 static void
@@ -358,16 +358,16 @@ close_impl (PecanNode *conn)
 {
     g_return_if_fail (conn);
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
-    msn_log ("conn=%p,name=%s", conn, conn->name);
+    pecan_log ("conn=%p,name=%s", conn, conn->name);
 
     g_free (conn->hostname);
     conn->hostname = NULL;
 
     if (!conn->stream)
     {
-        msn_warning ("not connected: conn=%p", conn);
+        pecan_warning ("not connected: conn=%p", conn);
     }
 
 #ifdef HAVE_LIBPURPLE
@@ -386,18 +386,18 @@ close_impl (PecanNode *conn)
 
     if (conn->stream)
     {
-        msn_info ("stream shutdown: %p", conn->stream);
+        pecan_info ("stream shutdown: %p", conn->stream);
         pecan_stream_free (conn->stream);
         conn->stream = NULL;
     }
 
-    msn_log ("end");
+    pecan_log ("end");
 }
 
 static void
 error_impl (PecanNode *conn)
 {
-    msn_info ("foo");
+    pecan_info ("foo");
 }
 
 static GIOStatus
@@ -409,7 +409,7 @@ write_impl (PecanNode *conn,
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
 
-    msn_debug ("name=%s", conn->name);
+    pecan_debug ("name=%s", conn->name);
 
     if (conn->next)
     {
@@ -422,23 +422,23 @@ write_impl (PecanNode *conn,
         GError *tmp_error = NULL;
         gsize bytes_written = 0;
 
-        msn_debug ("stream=%p", conn->stream);
+        pecan_debug ("stream=%p", conn->stream);
 
         status = pecan_stream_write_full (conn->stream, buf, count, &bytes_written, &tmp_error);
 
-        msn_log ("bytes_written=%d", bytes_written);
+        pecan_log ("bytes_written=%d", bytes_written);
 
         if (status == G_IO_STATUS_NORMAL)
         {
             if (bytes_written < count)
             {
                 /* This shouldn't happen, right? */
-                msn_error ("write check: %d < %d", bytes_written, count);
+                pecan_error ("write check: %d < %d", bytes_written, count);
             }
         }
         else
         {
-            msn_warning ("not normal: status=%d (%s)",
+            pecan_warning ("not normal: status=%d (%s)",
                          status, status_to_str (status));
         }
 
@@ -461,11 +461,11 @@ read_impl (PecanNode *conn,
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
 
-    msn_debug ("name=%s", conn->name);
+    pecan_debug ("name=%s", conn->name);
 
     if (conn->next)
     {
-        msn_error ("whaaat");
+        pecan_error ("whaaat");
         conn->next->prev = conn;
         status = pecan_node_read (conn->next, buf, count, ret_bytes_read, error);
         conn->next->prev = NULL;
@@ -475,17 +475,17 @@ read_impl (PecanNode *conn,
         GError *tmp_error = NULL;
         gsize bytes_read = 0;
 
-        msn_debug ("stream=%p", conn->stream);
+        pecan_debug ("stream=%p", conn->stream);
 
         status = pecan_stream_read (conn->stream, buf, count, &bytes_read, &tmp_error);
 
         if (status != G_IO_STATUS_NORMAL)
         {
-            msn_info ("not normal: status=%d (%s)",
+            pecan_info ("not normal: status=%d (%s)",
                       status, status_to_str (status));
         }
 
-        msn_log ("bytes_read=%d", bytes_read);
+        pecan_log ("bytes_read=%d", bytes_read);
 
         if (ret_bytes_read)
             *ret_bytes_read = bytes_read;
@@ -502,7 +502,7 @@ parse_impl (PecanNode *conn,
             gchar *buf,
             gsize bytes_read)
 {
-    msn_debug ("name=%s", conn->name);
+    pecan_debug ("name=%s", conn->name);
 }
 
 /* GObject stuff. */

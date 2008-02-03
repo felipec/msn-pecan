@@ -32,7 +32,7 @@ objects = \
 	state.o \
 	switchboard.o \
 	sync.o \
-	msn_log.o \
+	pecan_log.o \
 	pecan_util.o \
 	cmd/cmdproc.o \
 	cmd/command.o \

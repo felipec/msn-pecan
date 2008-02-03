@@ -21,7 +21,7 @@
  */
 
 #include "notification.h"
-#include "msn_log.h"
+#include "pecan_log.h"
 #include "sync.h"
 #include "nexus.h"
 
@@ -76,16 +76,16 @@ open_cb (PecanNode *conn)
     session = conn->session;
     cmd_conn = CMD_PECAN_NODE (conn);
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
-    if (session->login_step == MSN_LOGIN_STEP_START)
-        msn_session_set_login_step (session, MSN_LOGIN_STEP_HANDSHAKE);
+    if (session->login_step == PECAN_LOGIN_STEP_START)
+        msn_session_set_login_step (session, PECAN_LOGIN_STEP_HANDSHAKE);
     else
-        msn_session_set_login_step (session, MSN_LOGIN_STEP_HANDSHAKE2);
+        msn_session_set_login_step (session, PECAN_LOGIN_STEP_HANDSHAKE2);
 
     msn_cmdproc_send (cmd_conn->cmdproc, "VER", "MSNP12 CVR0");
 
-    msn_log ("end");
+    pecan_log ("end");
 }
 
 static void
@@ -101,14 +101,14 @@ close_cb (PecanNode *conn,
         {
             reason = conn->error->message;
 
-            msn_error ("connection error: (NS):reason=[%s]", reason);
+            pecan_error ("connection error: (NS):reason=[%s]", reason);
             tmp = g_strdup_printf (_("Error on notification server:\n%s"), reason);
 
             g_clear_error (&conn->error);
         }
         else
         {
-            msn_error ("connection error: (NS)");
+            pecan_error ("connection error: (NS)");
             tmp = g_strdup_printf (_("Error on notification server:\nUnknown"));
         }
     }
@@ -137,7 +137,7 @@ error_handler (MsnCmdProc *cmdproc,
 
         reason = msn_error_get_text (error);
 
-        msn_error ("connection error: (NS):reason=[%s]", reason);
+        pecan_error ("connection error: (NS):reason=[%s]", reason);
         tmp = g_strdup_printf (_("Error on notification server:\n%s"), reason);
     }
 
@@ -287,7 +287,7 @@ msn_got_login_params(MsnSession *session, const char *login_params)
 
     cmdproc = session->notification->cmdproc;
 
-    msn_session_set_login_step(session, MSN_LOGIN_STEP_AUTH_END);
+    msn_session_set_login_step(session, PECAN_LOGIN_STEP_AUTH_END);
 
     msn_cmdproc_send(cmdproc, "USR", "TWN S %s", login_params);
 }
@@ -317,7 +317,7 @@ usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     if (!g_ascii_strcasecmp(cmd->params[1], "OK"))
     {
         /* OK */
-        msn_session_set_login_step(session, MSN_LOGIN_STEP_SYN);
+        msn_session_set_login_step(session, PECAN_LOGIN_STEP_SYN);
 
         msn_cmdproc_send(cmdproc, "SYN", "%s %s", "0", "0");
     }
@@ -342,7 +342,7 @@ usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
         g_strfreev(elems);
 
-        msn_session_set_login_step(session, MSN_LOGIN_STEP_AUTH_START);
+        msn_session_set_login_step(session, PECAN_LOGIN_STEP_AUTH_START);
 
         msn_nexus_connect(session->nexus);
     }
@@ -446,7 +446,7 @@ msg_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload,
     msg = msn_message_new_from_cmd(cmd);
 
     msn_message_parse_payload(msg, payload, len);
-#ifdef MSN_DEBUG_NS
+#ifdef PECAN_DEBUG_NS
     msn_message_show_readable(msg, "Notification", TRUE);
 #endif
 
@@ -758,7 +758,7 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 static void
 ipg_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload, size_t len)
 {
-    msn_info ("incoming page: [%s]", payload);
+    pecan_info ("incoming page: [%s]", payload);
 }
 
 static void
@@ -791,7 +791,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     if (!user)
     {
-        msn_error ("unknown user: passport=[%s]", passport);
+        pecan_error ("unknown user: passport=[%s]", passport);
         return;
     }
 
@@ -885,7 +885,7 @@ rea_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         }
         else
         {
-            msn_error ("unknown user: who=[%s]", who);
+            pecan_error ("unknown user: who=[%s]", who);
             return;
         }
     }
@@ -1221,7 +1221,7 @@ url_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     if (error)
     {
-        msn_error ("error opening temp passport file: [%s]",
+        pecan_error ("error opening temp passport file: [%s]",
                    error->message);
 
         g_error_free (error);
@@ -1268,7 +1268,7 @@ xfr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     if (strcmp(cmd->params[1], "SB") && strcmp(cmd->params[1], "NS"))
     {
         /* Maybe we can have a generic bad command error. */
-        msn_error ("bad XFR command: params=[%s]", cmd->params[1]);
+        pecan_error ("bad XFR command: params=[%s]", cmd->params[1]);
         return;
     }
 
@@ -1276,7 +1276,7 @@ xfr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     if (!strcmp(cmd->params[1], "SB"))
     {
-        msn_error ("this shouldn't be handled here");
+        pecan_error ("this shouldn't be handled here");
     }
     else if (!strcmp(cmd->params[1], "NS"))
     {
@@ -1284,7 +1284,7 @@ xfr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
         session = cmdproc->session;
 
-        msn_session_set_login_step(session, MSN_LOGIN_STEP_TRANSFER);
+        msn_session_set_login_step(session, PECAN_LOGIN_STEP_TRANSFER);
 
         msn_notification_connect(session->notification, host, port);
     }

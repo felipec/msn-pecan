@@ -37,7 +37,7 @@ struct MsnMessage;
 
 #include <glib/gstdio.h>
 
-#define MSN_DEBUG_SLP
+#define PECAN_DEBUG_SLP
 
 /**
  * A SLP Message  This contains everything that we will need to send a SLP
@@ -73,7 +73,7 @@ struct MsnSlpMessage
 	struct MsnMessage *msg; /**< The temporary real message that will be sent. */
 #endif
 
-#ifdef MSN_DEBUG_SLP
+#ifdef PECAN_DEBUG_SLP
 	const gchar *info;
 	gboolean text_body;
 #endif
@@ -106,7 +106,7 @@ MsnSlpMessage * msn_slpmsg_sip_new(struct MsnSlpCall *slpcall, int cseq,
 								   const char *content_type,
 								   const char *content);
 
-#ifdef MSN_DEBUG_SLP
+#ifdef PECAN_DEBUG_SLP
 void msn_slpmsg_show(struct MsnMessage *msg);
 #endif
 

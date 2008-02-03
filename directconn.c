@@ -22,7 +22,7 @@
 
 #include "directconn.h"
 #include "io/pecan_stream.h"
-#include "msn_log.h"
+#include "pecan_log.h"
 
 #include "session.h"
 #include "cvr/slp.h"
@@ -185,7 +185,7 @@ msn_directconn_write(MsnDirectConn *directconn,
 
     g_return_val_if_fail(directconn != NULL, 0);
 
-    msn_debug ("bytes_to_write=%d", len);
+    pecan_debug ("bytes_to_write=%d", len);
 
     body_len = GUINT32_TO_LE(len);
 
@@ -200,9 +200,9 @@ msn_directconn_write(MsnDirectConn *directconn,
 
     if (status == G_IO_STATUS_NORMAL)
     {
-        msn_debug ("bytes_written=%d", tmp);
+        pecan_debug ("bytes_written=%d", tmp);
 
-#ifdef MSN_DEBUG_DC_FILES
+#ifdef PECAN_DEBUG_DC_FILES
         char *str;
         str = g_strdup_printf("%s/msntest/%s/w%.4d.bin", g_get_home_dir(), "dc", directconn->c);
 
@@ -267,7 +267,7 @@ msn_directconn_send_msg(MsnDirectConn *directconn, MsnMessage *msg)
 static void
 msn_directconn_process_msg(MsnDirectConn *directconn, MsnMessage *msg)
 {
-    msn_debug ("process_msg");
+    pecan_debug ("process_msg");
 
     msn_slplink_process_msg(directconn->slplink, msg);
 }
@@ -280,7 +280,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     guint32 body_len;
     gsize len;
 
-    msn_debug ("source=%d", source);
+    pecan_debug ("source=%d", source);
 
     directconn = data;
 
@@ -293,13 +293,13 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
 
     body_len = GUINT32_FROM_LE(body_len);
 
-    msn_info ("body_len=%d", body_len);
+    pecan_info ("body_len=%d", body_len);
 
     body = g_try_malloc(body_len);
 
     if (!body)
     {
-        msn_error ("failed to allocate memory for read");
+        pecan_error ("failed to allocate memory for read");
 
         return FALSE;
     }
@@ -311,13 +311,13 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
         return FALSE;
     }
 
-    msn_info ("bytes_read=%d", len);
+    pecan_info ("bytes_read=%d", len);
 
     if (len > 0)
     {
         MsnMessage *msg;
 
-#ifdef MSN_DEBUG_DC_FILES
+#ifdef PECAN_DEBUG_DC_FILES
         {
             char *str;
             str = g_strdup_printf("%s/msntest/%s/r%04d.bin", g_get_home_dir(), "dc", directconn->c);
@@ -347,7 +347,7 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
     MsnDirectConn* directconn;
     int fd;
 
-    msn_debug ("source=%d", source);
+    pecan_debug ("source=%d", source);
 
     directconn = data;
     directconn->connect_data = NULL;
@@ -370,7 +370,7 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
         /* directconn->conn = pecan_node_new (channel); */
         directconn->connected = TRUE;
 
-        msn_info ("connected: %p", channel);
+        pecan_info ("connected: %p", channel);
         directconn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, directconn);
 
         /* Send foo. */
@@ -381,7 +381,7 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
     }
     else
     {
-        msn_error ("bad input");
+        pecan_error ("bad input");
     }
 }
 
@@ -389,7 +389,7 @@ static void
 directconn_connect_cb(gpointer data, gint source, const gchar *error_message)
 {
     if (error_message)
-        msn_error ("error establishing direct connection: %s", error_message);
+        pecan_error ("error establishing direct connection: %s", error_message);
 
     connect_cb(data, source, error_message);
 }
@@ -403,7 +403,7 @@ msn_directconn_connect(MsnDirectConn *directconn, const char *host, int port)
     g_return_val_if_fail(host       != NULL, TRUE);
     g_return_val_if_fail(port        > 0,    FALSE);
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
     session = directconn->slplink->session;
 
@@ -417,7 +417,7 @@ msn_directconn_connect(MsnDirectConn *directconn, const char *host, int port)
     directconn->connect_data = purple_proxy_connect(NULL, msn_session_get_account (session),
                                                     host, port, directconn_connect_cb, directconn);
 
-    msn_log ("end");
+    pecan_log ("end");
 
     return (directconn->connect_data != NULL);
 }
@@ -449,18 +449,18 @@ msn_directconn_new(MsnSlpLink *slplink)
 {
     MsnDirectConn *directconn;
 
-    msn_log ("begin");
+    pecan_log ("begin");
 
     directconn = g_new0(MsnDirectConn, 1);
 
     directconn->slplink = slplink;
 
     if (slplink->directconn != NULL)
-        msn_warning ("got_transresp: LEAK");
+        pecan_warning ("got_transresp: LEAK");
 
     slplink->directconn = directconn;
 
-    msn_log ("end");
+    pecan_log ("end");
 
     return directconn;
 }
@@ -468,7 +468,7 @@ msn_directconn_new(MsnSlpLink *slplink)
 void
 msn_directconn_destroy(MsnDirectConn *directconn)
 {
-    msn_log ("begin");
+    pecan_log ("begin");
 
     if (directconn->connect_data != NULL)
         purple_proxy_connect_cancel(directconn->connect_data);
@@ -488,5 +488,5 @@ msn_directconn_destroy(MsnDirectConn *directconn)
 
     g_free(directconn);
 
-    msn_log ("end");
+    pecan_log ("end");
 }
