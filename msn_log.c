@@ -20,6 +20,9 @@
 
 #ifdef MSN_DEBUG
 
+#include <fcntl.h>
+#include <unistd.h>
+
 #include <glib/gstdio.h>
 
 static const gchar *
@@ -34,6 +37,30 @@ log_level_to_string (enum MsnLogLevel level)
         case MSN_LOG_LEVEL_DEBUG: return "DEBUG"; break;
         case MSN_LOG_LEVEL_LOG: return "LOG"; break;
         default: return "Unknown"; break;
+    }
+}
+
+void
+msn_dump_file (const gchar *buffer,
+               gsize len)
+{
+    gint fd;
+    static guint c;
+    gchar *basename;
+    gchar *fullname;
+
+    basename = g_strdup_printf ("pecan-%.6u.bin", c++);
+
+    fullname = g_build_filename (g_get_tmp_dir (), basename, NULL);
+
+    g_free (basename);
+
+    fd = g_open (fullname, O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR);
+
+    if (fd)
+    {
+        write (fd, buffer, len);
+        close (fd);
     }
 }
 

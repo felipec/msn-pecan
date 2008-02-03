@@ -32,7 +32,6 @@
 void pecan_node_error (PecanNode *conn);
 
 static GObjectClass *parent_class = NULL;
-static guint error_sig;
 
 GQuark
 pecan_node_error_quark (void)
@@ -164,7 +163,11 @@ error_cb (PecanNode *next,
         next->error = NULL;
     }
 
-    g_signal_emit (G_OBJECT (conn), error_sig, 0, conn);
+    {
+        PecanNodeClass *class;
+        class = g_type_class_peek (PECAN_NODE_TYPE);
+        g_signal_emit (G_OBJECT (conn), class->error_sig, 0, conn);
+    }
 
     msn_log ("begin");
 }
@@ -202,7 +205,11 @@ pecan_node_error (PecanNode *conn)
 
     msn_debug ("conn=%p", conn);
 
-    g_signal_emit (G_OBJECT (conn), error_sig, 0, conn);
+    {
+        PecanNodeClass *class;
+        class = g_type_class_peek (PECAN_NODE_TYPE);
+        g_signal_emit (G_OBJECT (conn), class->error_sig, 0, conn);
+    }
 
     if (conn->error)
     {
@@ -561,10 +568,10 @@ class_init (gpointer g_class,
                                           g_cclosure_marshal_VOID__VOID,
                                           G_TYPE_NONE, 0);
 
-    error_sig = g_signal_new ("error", G_TYPE_FROM_CLASS (gobject_class),
-                              G_SIGNAL_RUN_FIRST, 0, NULL, NULL,
-                              g_cclosure_marshal_VOID__VOID,
-                              G_TYPE_NONE, 0);
+    conn_class->error_sig = g_signal_new ("error", G_TYPE_FROM_CLASS (gobject_class),
+                                          G_SIGNAL_RUN_FIRST, 0, NULL, NULL,
+                                          g_cclosure_marshal_VOID__VOID,
+                                          G_TYPE_NONE, 0);
 }
 
 static void

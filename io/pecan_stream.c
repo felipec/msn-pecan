@@ -50,14 +50,24 @@ pecan_stream_read (PecanStream *stream,
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
     GError *tmp_error = NULL;
+    gsize tmp_bytes_read = 0;
 
-    status = g_io_channel_read_chars (stream->channel, buf, count, bytes_read, &tmp_error);
+    g_return_val_if_fail (stream, G_IO_STATUS_ERROR);
+
+    status = g_io_channel_read_chars (stream->channel, buf, count,
+                                      &tmp_bytes_read, &tmp_error);
+
+    if (stream->dump)
+        msn_dump_file (buf, tmp_bytes_read);
 
     if (tmp_error)
     {
         msn_error ("error reading: %s", tmp_error->message);
         g_propagate_error (error, tmp_error);
     }
+
+    if (bytes_read)
+        *bytes_read = tmp_bytes_read;
 
     return status;
 }
@@ -71,14 +81,24 @@ pecan_stream_write (PecanStream *stream,
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
     GError *tmp_error = NULL;
+    gsize tmp_bytes_written = 0;
 
-    status = g_io_channel_write_chars (stream->channel, buf, count, bytes_written, &tmp_error);
+    g_return_val_if_fail (stream, G_IO_STATUS_ERROR);
+
+    status = g_io_channel_write_chars (stream->channel, buf, count,
+                                       &tmp_bytes_written, &tmp_error);
+
+    if (stream->dump)
+        msn_dump_file (buf, tmp_bytes_written);
 
     if (tmp_error)
     {
         msn_error ("error writing: %s", tmp_error->message);
         g_propagate_error (error, tmp_error);
     }
+
+    if (bytes_written)
+        *bytes_written = tmp_bytes_written;
 
     return status;
 }
@@ -91,15 +111,22 @@ pecan_stream_read_full (PecanStream *stream,
                         GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
+    gsize tmp_bytes_read = 0;
+
+    g_return_val_if_fail (stream, G_IO_STATUS_ERROR);
 
     while (TRUE)
     {
         GError *tmp_error = NULL;
 
-        status = g_io_channel_read_chars (stream->channel, buf, count, bytes_read, &tmp_error);
+        status = g_io_channel_read_chars (stream->channel, buf, count,
+                                          &tmp_bytes_read, &tmp_error);
 
         if (status == G_IO_STATUS_AGAIN)
             continue;
+
+        if (stream->dump)
+            msn_dump_file (buf, tmp_bytes_read);
 
         if (tmp_error)
         {
@@ -109,6 +136,9 @@ pecan_stream_read_full (PecanStream *stream,
 
         break;
     }
+
+    if (bytes_read)
+        *bytes_read = tmp_bytes_read;
 
     return status;
 }
@@ -121,15 +151,22 @@ pecan_stream_write_full (PecanStream *stream,
                          GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
+    gsize tmp_bytes_written = 0;
+
+    g_return_val_if_fail (stream, G_IO_STATUS_ERROR);
 
     while (TRUE)
     {
         GError *tmp_error = NULL;
 
-        status = g_io_channel_write_chars (stream->channel, buf, count, bytes_written, &tmp_error);
+        status = g_io_channel_write_chars (stream->channel, buf, count,
+                                           &tmp_bytes_written, &tmp_error);
 
         if (status == G_IO_STATUS_AGAIN)
             continue;
+
+        if (stream->dump)
+            msn_dump_file (buf, tmp_bytes_written);
 
         if (tmp_error)
         {
@@ -140,6 +177,9 @@ pecan_stream_write_full (PecanStream *stream,
         break;
     }
 
+    if (bytes_written)
+        *bytes_written = tmp_bytes_written;
+
     return status;
 }
 
@@ -149,6 +189,8 @@ pecan_stream_flush (PecanStream *stream,
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
     GError *tmp_error = NULL;
+
+    g_return_val_if_fail (stream, G_IO_STATUS_ERROR);
 
     status = g_io_channel_flush (stream->channel, &tmp_error);
 
@@ -171,7 +213,12 @@ pecan_stream_read_line (PecanStream *stream,
     GIOStatus status = G_IO_STATUS_NORMAL;
     GError *tmp_error = NULL;
 
+    g_return_val_if_fail (stream, G_IO_STATUS_ERROR);
+
     status = g_io_channel_read_line (stream->channel, str_return, length, terminator_pos, &tmp_error);
+
+    if (stream->dump)
+        msn_dump_file (*str_return, strlen (*str_return));
 
     if (tmp_error)
     {

@@ -21,6 +21,8 @@
  * So commands are sent through a single HTTP gateway (ideally).
  *
  * The current implementation uses one HTTP connection per command connection.
+ * For the NS the default gateway is used, but for SB's the SB IP is used.
+ * That seems to work.
  */
 
 #include "pecan_http_server_priv.h"
@@ -156,6 +158,7 @@ pecan_http_server_new (const gchar *name)
     {
         PecanNode *tmp = PECAN_NODE (http_conn);
         tmp->name = g_strdup (name);
+        tmp->type = PECAN_NODE_HTTP;
     }
 
     msn_log ("end");
@@ -273,16 +276,23 @@ connect_cb (gpointer data,
         conn->stream = pecan_stream_new (source);
         channel = conn->stream->channel;
 
+        g_io_channel_set_encoding (channel, NULL, NULL);
         g_io_channel_set_line_term (channel, "\r\n", 2);
 
         http_conn->timeout_id = g_timeout_add (2 * 1000, http_poll, http_conn);
         conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, conn);
-    }
 
+        {
+            PecanNodeClass *class;
+            class = g_type_class_peek (PECAN_NODE_TYPE);
+            g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
+        }
+    }
+    else
     {
         PecanNodeClass *class;
         class = g_type_class_peek (PECAN_NODE_TYPE);
-        g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
+        g_signal_emit (G_OBJECT (conn), class->error_sig, 0, conn);
     }
 
     msn_log ("end");
@@ -301,8 +311,12 @@ connect_impl (PecanNode *conn,
 
     if (!conn->stream)
     {
+        if (conn->prev->type == PECAN_NODE_NS)
+            hostname = http_conn->gateway;
+        port = 80;
+        msn_debug ("conn=%p,hostname=%s,port=%d", conn, hostname, port);
         conn->connect_data = purple_proxy_connect (NULL, msn_session_get_account (conn->session),
-                                                   http_conn->gateway, 80, connect_cb, conn);
+                                                   hostname, port, connect_cb, conn);
         return;
     }
     else

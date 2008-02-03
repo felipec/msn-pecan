@@ -34,10 +34,12 @@ enum
 
 enum PecanNodeType
 {
+    PECAN_NODE_NULL, /**< Not set */
     PECAN_NODE_NS, /**< Notification Server */
     PECAN_NODE_PASSPORT, /**< Passport Server (for login) */
     PECAN_NODE_CS, /**< Contact Server (addressbook stuff) */
-    PECAN_NODE_SB /**< Switcbhard Server (a conversation) */
+    PECAN_NODE_SB, /**< Switcbhard Server (a conversation) */
+    PECAN_NODE_HTTP /**< HTTP gateway server */
 };
 
 typedef enum PecanNodeType PecanNodeType;

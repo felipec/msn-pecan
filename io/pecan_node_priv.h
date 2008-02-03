@@ -62,6 +62,8 @@ struct PecanNode
     gulong open_sig_handler;
     gulong close_sig_handler;
     gulong error_sig_handler;
+
+    gboolean dump_file;
 };
 
 struct PecanNodeClass
@@ -70,6 +72,7 @@ struct PecanNodeClass
 
     guint open_sig;
     guint close_sig;
+    guint error_sig;
 
     GIOStatus (*read) (PecanNode *conn, gchar *buf, gsize count, gsize *bytes_read, GError **error);
     GIOStatus (*write) (PecanNode *conn, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
