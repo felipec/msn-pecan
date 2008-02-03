@@ -47,9 +47,17 @@ void msn_parse_format(const char *mime, char **pre_ret, char **post_ret);
  */
 void msn_import_html(const char *html, char **attributes, char **message);
 
+void
+pecan_handle_challenge (const gchar *input,
+                        const gchar *product_id,
+                        gchar *output);
+
 void msn_parse_socket(const char *str, char **ret_host, int *ret_port);
 char *msn_rand_guid(void);
 
+#if !GLIB_CHECK_VERSION(2,12,0)
+void g_hash_table_remove_all (GHashTable *hash_table);
+#endif /* !GLIB_CHECK_VERSION(2,12,0) */
 gpointer g_hash_table_peek_first (GHashTable *hash_table);
 gboolean g_ascii_strcase_equal (gconstpointer v1, gconstpointer v2);
 guint g_ascii_strcase_hash (gconstpointer v);

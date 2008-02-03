@@ -507,7 +507,7 @@ chl_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     for (i = 0; i < 16; i++)
         g_snprintf(buf + (i*2), 3, "%02x", digest[i]);
 #else
-    msn_handle_challenge (cmd->params[1], "PROD0101{0RM?UBW", buf);
+    pecan_handle_challenge (cmd->params[1], "PROD0101{0RM?UBW", buf);
 #endif
 
     /* trans = msn_transaction_new(cmdproc, "QRY", "%s 32", "PROD0038W!61ZTF9"); */
@@ -1540,9 +1540,9 @@ msn_notification_rem_buddy(MsnNotification *notification, const char *list,
                            const char *who, const gchar *user_guid, const gchar *group_guid)
 {
     MsnCmdProc *cmdproc;
-    cmdproc = notification->cmdproc;
     const gchar *final_who;
 
+    cmdproc = notification->cmdproc;
     final_who = ((strcmp (list, "FL") == 0) ? user_guid : who);
 
     /* moogman: If user is only in one group, set group_guid == NULL (force a complete remove).
