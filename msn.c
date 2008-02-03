@@ -552,6 +552,12 @@ msn_tooltip_text(PurpleBuddy *buddy, PurpleNotifyUserInfo *user_info, gboolean f
 									   (purple_presence_is_idle(presence) ? _("Idle") : purple_status_get_name(status)));
 	}
 
+	if (full && user && pecan_contact_get_personal_message (user))
+	{
+		purple_notify_user_info_add_pair(user_info, _("Personal Message"),
+									   pecan_contact_get_personal_message (user));
+	}
+
 	if (full && user)
 	{
 		purple_notify_user_info_add_pair(user_info, _("Has you"),
