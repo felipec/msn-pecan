@@ -257,6 +257,28 @@ msn_session_get_swboard(MsnSession *session, const char *username,
 }
 
 void
+msn_session_warning (MsnSession *session,
+                     const gchar *fmt,
+                     ...)
+{
+    PurpleConnection *gc;
+    gchar *tmp;
+    va_list args;
+
+    gc = purple_account_get_connection (session->account);
+
+    va_start (args, fmt);
+
+    tmp = g_strdup_vprintf (fmt, args);
+
+    purple_notify_error (gc, NULL, tmp, NULL);
+
+    g_free (tmp);
+
+    va_end (args);
+}
+
+void
 msn_session_set_error(MsnSession *session, MsnErrorType error,
 					  const char *info)
 {

@@ -177,6 +177,17 @@ msn_session_get_swboard (MsnSession *session,
                          MsnSBFlag flag);
 
 /**
+ * Displays a non fatal error.
+ *
+ * @param session The MSN session.
+ * @param msg The message to display.
+ */
+void
+msn_session_warning (MsnSession *session,
+                     const gchar *fmt,
+                     ...);
+
+/**
  * Sets an error for the MSN session.
  *
  * @param session The MSN session.

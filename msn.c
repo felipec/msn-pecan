@@ -967,7 +967,7 @@ msn_rem_buddy(PurpleConnection *gc, PurpleBuddy *buddy, PurpleGroup *group)
 
 	    user = pecan_contactlist_find_contact (contactlist, buddy->name);
 
-	    if (pecan_contact_get_group_count (user) <= 1)
+	    if (user && pecan_contact_get_group_count (user) <= 1)
 		group_name = NULL;
 	}
 
@@ -1305,6 +1305,8 @@ msn_remove_group(PurpleConnection *gc, PurpleGroup *group)
 	session = gc->proto_data;
 	cmdproc = session->notification->cmdproc;
 
+	/* The server automatically removes the contacts and sends
+	 * notifications back. */
 	if ((group_guid = pecan_contactlist_find_group_id(session->contactlist, group->name)))
 	{
 		msn_cmdproc_send(cmdproc, "RMG", "%s", group_guid);

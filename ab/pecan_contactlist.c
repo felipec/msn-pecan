@@ -622,7 +622,6 @@ pecan_contactlist_remove_group_id (PecanContactList *contactlist,
     if (group)
     {
         pecan_contactlist_remove_group (contactlist, group);
-        pecan_group_free (group);
     }
 }
 
@@ -655,14 +654,6 @@ pecan_contactlist_rem_buddy (PecanContactList *contactlist,
         }
 
         group_guid = pecan_group_get_id (group);
-
-        if (!group_guid)
-        {
-            /* There's no way to remove a contact from the no-group. */
-            /* Adding him to other groups does that. */
-            msn_debug ("virtual group: group_name=[%s]", group_name);
-            return;
-        }
     }
 
     list = lists[list_id];
@@ -712,12 +703,19 @@ pecan_contactlist_add_buddy (PecanContactList *contactlist,
 
         group_guid = pecan_group_get_id (group);
 
-        if (!group_guid)
+#if 0
+        /* There's no way to add a contact to the no-group. */
+        /* Removing from other groups does that. */
+        if (contact && pecan_contact_get_group_count (contact) > 0 && !group_guid)
         {
-            /* There's no way to add a contact to the no-group. */
-            /* Removing from other groups does that. */
+            msn_error ("trying to add contact to a virtual group: who=[%s]",
+                       who);
+            msn_session_warning (contactlist->session,
+                                 _("Can't add to \"%s\"; it's a virtual group"), group_name);
+            purple_blist_remove_buddy (buddy);
             return;
         }
+#endif
     }
 
     contact = pecan_contactlist_find_contact (contactlist, who);
@@ -796,6 +794,8 @@ pecan_contactlist_add_buddy_helper (PecanContactList *contactlist,
     who = purple_buddy_get_name (buddy);
     group_name = purple_group_get_name (purple_group);
 
+    msn_debug ("who=[%s],group_name=[%s]", who, group_name);
+
     {
         PecanContact *contact;
         int list_id;
@@ -819,10 +819,21 @@ pecan_contactlist_add_buddy_helper (PecanContactList *contactlist,
 
             group_guid = pecan_group_get_id (group);
 
+#if 0
+            msn_error ("group_guid=[%s]", group_guid);
+            msn_error ("contact=[%p]", contact);
+            if (contact)
+                msn_error ("group_count=[%d]", pecan_contact_get_group_count (contact));
+#endif
+
+            /* There's no way to add a contact to the no-group. */
+            /* Removing from other groups does that. */
             if (contact && pecan_contact_get_group_count (contact) > 0 && !group_guid)
             {
                 msn_error ("trying to add contact to a virtual group: who=[%s]",
                            who);
+                msn_session_warning (contactlist->session,
+                                     _("Can't add to \"%s\"; it's a virtual group"), group_name);
                 purple_blist_remove_buddy (buddy);
                 return;
             }
