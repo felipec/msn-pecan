@@ -17,7 +17,7 @@
  */
 
 #include "pecan_node_priv.h"
-#include "msn_io.h"
+#include "pecan_stream.h"
 #include "msn_log.h"
 
 #include "session.h" /* for libpurple account */
@@ -281,7 +281,8 @@ connect_cb (gpointer data,
     {
         GIOChannel *channel;
 
-        conn->channel = channel = g_io_channel_unix_new (source);
+        conn->stream = pecan_stream_new (source);
+        channel = conn->stream->channel;
 
         g_io_channel_set_encoding (channel, NULL, NULL);
         g_io_channel_set_buffered (channel, FALSE);
@@ -357,7 +358,7 @@ close_impl (PecanNode *conn)
     g_free (conn->hostname);
     conn->hostname = NULL;
 
-    if (!conn->channel)
+    if (!conn->stream)
     {
         msn_warning ("not connected: conn=%p", conn);
     }
@@ -376,12 +377,11 @@ close_impl (PecanNode *conn)
         conn->read_watch = 0;
     }
 
-    if (conn->channel)
+    if (conn->stream)
     {
-        msn_info ("channel shutdown: %p", conn->channel);
-        g_io_channel_shutdown (conn->channel, FALSE, NULL);
-        g_io_channel_unref (conn->channel);
-        conn->channel = NULL;
+        msn_info ("stream shutdown: %p", conn->stream);
+        pecan_stream_free (conn->stream);
+        conn->stream = NULL;
     }
 
     msn_log ("end");
@@ -415,9 +415,9 @@ write_impl (PecanNode *conn,
         GError *tmp_error = NULL;
         gsize bytes_written = 0;
 
-        msn_debug ("channel=%p", conn->channel);
+        msn_debug ("stream=%p", conn->stream);
 
-        status = msn_io_write_full (conn->channel, buf, count, &bytes_written, &tmp_error);
+        status = pecan_stream_write_full (conn->stream, buf, count, &bytes_written, &tmp_error);
 
         msn_log ("bytes_written=%d", bytes_written);
 
@@ -468,9 +468,9 @@ read_impl (PecanNode *conn,
         GError *tmp_error = NULL;
         gsize bytes_read = 0;
 
-        msn_debug ("channel=%p", conn->channel);
+        msn_debug ("stream=%p", conn->stream);
 
-        status = msn_io_read (conn->channel, buf, count, &bytes_read, &tmp_error);
+        status = pecan_stream_read (conn->stream, buf, count, &bytes_read, &tmp_error);
 
         if (status != G_IO_STATUS_NORMAL)
         {

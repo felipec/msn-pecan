@@ -21,7 +21,7 @@
  */
 
 #include "directconn.h"
-#include "msn_io.h"
+#include "io/pecan_stream.h"
 #include "msn_log.h"
 
 #include "session.h"
@@ -285,7 +285,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     directconn = data;
 
     /* Let's read the length of the data. */
-    if (msn_io_read_full (source, (gchar *) &body_len, sizeof(body_len), &len, NULL) != G_IO_STATUS_NORMAL)
+    if (pecan_stream_read_full (source, (gchar *) &body_len, sizeof(body_len), &len, NULL) != G_IO_STATUS_NORMAL)
     {
         msn_directconn_destroy(directconn);
         return FALSE;
@@ -305,7 +305,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     }
 
     /* Let's read the data. */
-    if (msn_io_read_full (source, body, body_len, &len, NULL) != G_IO_STATUS_NORMAL)
+    if (pecan_stream_read_full (source, body, body_len, &len, NULL) != G_IO_STATUS_NORMAL)
     {
         msn_directconn_destroy(directconn);
         return FALSE;

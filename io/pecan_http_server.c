@@ -18,11 +18,13 @@
 
 /*
  * Each command connection (NS,SB) can use the auxiliar HTTP connection method.
- * So commands are sent through an HTTP gateway.
+ * So commands are sent through a single HTTP gateway (ideally).
+ *
+ * The current implementation uses one HTTP connection per command connection.
  */
 
 #include "pecan_http_server_priv.h"
-#include "msn_io.h"
+#include "pecan_stream.h"
 #include "msn_log.h"
 
 #include <glib.h>
@@ -187,7 +189,7 @@ http_poll (gpointer data)
     conn = PECAN_NODE (data);
     http_conn = PECAN_HTTP_SERVER (data);
 
-    msn_debug ("channel=%p", conn->channel);
+    msn_debug ("stream=%p", conn->stream);
 
     if (!http_conn->cur)
         return TRUE;
@@ -226,11 +228,11 @@ http_poll (gpointer data)
 
     g_free (params);
 
-    status = msn_io_write_full (conn->channel, header, strlen (header), &bytes_written, &tmp_error);
+    status = pecan_stream_write_full (conn->stream, header, strlen (header), &bytes_written, &tmp_error);
 
     if (status == G_IO_STATUS_NORMAL)
     {
-        status = g_io_channel_flush (conn->channel, &tmp_error);
+        status = pecan_stream_flush (conn->stream, &tmp_error);
 
         g_free (header);
 
@@ -268,7 +270,8 @@ connect_cb (gpointer data,
     {
         GIOChannel *channel;
 
-        conn->channel = channel = g_io_channel_unix_new (source);
+        conn->stream = pecan_stream_new (source);
+        channel = conn->stream->channel;
 
         g_io_channel_set_line_term (channel, "\r\n", 2);
 
@@ -296,7 +299,7 @@ connect_impl (PecanNode *conn,
 
     g_return_if_fail (conn->session);
 
-    if (!conn->channel)
+    if (!conn->stream)
     {
         conn->connect_data = purple_proxy_connect (NULL, msn_session_get_account (conn->session),
                                                    http_conn->gateway, 80, connect_cb, conn);
@@ -369,7 +372,7 @@ read_impl (PecanNode *conn,
 
     http_conn = PECAN_HTTP_SERVER (conn);
 
-    msn_debug ("channel=%p", conn->channel);
+    msn_debug ("stream=%p", conn->stream);
 
     {
         gchar *str = NULL;
@@ -381,7 +384,7 @@ read_impl (PecanNode *conn,
 
             {
                 gsize terminator_pos;
-                status = g_io_channel_read_line (conn->channel,
+                status = pecan_stream_read_line (conn->stream,
                                                  &str, NULL, &terminator_pos, &tmp_error);
                 if (str)
                     str[terminator_pos] = '\0';
@@ -442,7 +445,7 @@ read_impl (PecanNode *conn,
             {
                 {
                     gsize terminator_pos;
-                    status = g_io_channel_read_line (conn->channel,
+                    status = pecan_stream_read_line (conn->stream,
                                                      &str, NULL, &terminator_pos, &tmp_error);
                     if (str)
                         str[terminator_pos] = '\0';
@@ -593,7 +596,7 @@ read_impl (PecanNode *conn,
                 g_free (session_id);
             }
 
-            status = msn_io_read (conn->channel, buf, MIN (http_conn->content_length, count), &bytes_read, &tmp_error);
+            status = pecan_stream_read (conn->stream, buf, MIN (http_conn->content_length, count), &bytes_read, &tmp_error);
 
             msn_log ("status=%d", status);
             msn_log ("bytes_read=%d", bytes_read);
@@ -637,7 +640,7 @@ foo_write (PecanNode *conn,
 
     http_conn = PECAN_HTTP_SERVER (conn);
 
-    msn_debug ("channel=%p", conn->channel);
+    msn_debug ("stream=%p", conn->stream);
 
     {
         gchar *params;
@@ -682,13 +685,16 @@ foo_write (PecanNode *conn,
 
         g_free (params);
 
-        status = msn_io_write_full (conn->channel, header, strlen (header), &bytes_written, &tmp_error);
+        status = pecan_stream_write_full (conn->stream, header, strlen (header), &bytes_written, &tmp_error);
     }
 
-    status = msn_io_write_full (conn->channel, buf, count, &bytes_written, &tmp_error);
+    if (status == G_IO_STATUS_NORMAL)
+    {
+        status = pecan_stream_write_full (conn->stream, buf, count, &bytes_written, &tmp_error);
+    }
 
     if (status == G_IO_STATUS_NORMAL)
-        status = g_io_channel_flush (conn->channel, &tmp_error);
+        status = pecan_stream_flush (conn->stream, &tmp_error);
 
     if (status == G_IO_STATUS_NORMAL)
     {
@@ -728,7 +734,7 @@ write_impl (PecanNode *conn,
     http_conn = PECAN_HTTP_SERVER (conn);
     prev = PECAN_NODE (conn->prev);
 
-    msn_debug ("channel=%p", conn->channel);
+    msn_debug ("stream=%p", conn->stream);
     msn_debug ("conn=%p,prev=%p", conn, prev);
 
     g_return_val_if_fail (prev, G_IO_STATUS_ERROR);

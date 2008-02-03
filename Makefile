@@ -32,7 +32,6 @@ objects = \
 	state.o \
 	switchboard.o \
 	sync.o \
-	msn_io.o \
 	msn_log.o \
 	pecan_util.o \
 	cmd/cmdproc.o \
@@ -44,6 +43,7 @@ objects = \
 	ab/pecan_group.o \
 	ab/pecan_contact.o \
 	ab/pecan_contactlist.o \
+	io/pecan_stream.o \
 	io/pecan_node.o \
 	io/pecan_cmd_server.o \
 	io/pecan_http_server.o \
