@@ -143,6 +143,7 @@ lst_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 	const gchar *friendly = NULL;
         const gchar *user_guid = NULL;
 	int list_op = -1;
+        gint type;
         guint i;
 
         for (i = 0; i < cmd->param_count; i++)
@@ -165,6 +166,7 @@ lst_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         }
 
         list_op = g_ascii_strtod (cmd->params[i++], NULL);
+        type = g_ascii_strtod (cmd->params[i++], NULL);
 
 	user = pecan_contact_new (session->contactlist, passport, user_guid);
 

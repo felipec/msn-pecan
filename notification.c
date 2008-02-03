@@ -83,7 +83,7 @@ open_cb (PecanNode *conn)
     else
         msn_session_set_login_step (session, MSN_LOGIN_STEP_HANDSHAKE2);
 
-    msn_cmdproc_send (cmd_conn->cmdproc, "VER", "MSNP11 CVR0");
+    msn_cmdproc_send (cmd_conn->cmdproc, "VER", "MSNP12 CVR0");
 
     msn_log ("end");
 }
@@ -384,7 +384,7 @@ ver_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     session = cmdproc->session;
     account = session->account;
 
-    proto_str = "MSNP11";
+    proto_str = "MSNP12";
 
     for (i = 1; i < cmd->param_count; i++)
     {
