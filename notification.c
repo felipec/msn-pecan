@@ -83,7 +83,7 @@ open_cb (PecanNode *conn)
     else
         msn_session_set_login_step (session, MSN_LOGIN_STEP_HANDSHAKE2);
 
-    msn_cmdproc_send (cmd_conn->cmdproc, "VER", "MSNP10 CVR0");
+    msn_cmdproc_send (cmd_conn->cmdproc, "VER", "MSNP11 CVR0");
 
     msn_log ("end");
 }
@@ -384,7 +384,7 @@ ver_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     session = cmdproc->session;
     account = session->account;
 
-    proto_str = "MSNP10";
+    proto_str = "MSNP11";
 
     for (i = 1; i < cmd->param_count; i++)
     {
@@ -482,11 +482,13 @@ static void
 chl_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnTransaction *trans;
-    char buf[33];
-    const char *challenge_resp;
+    gchar buf[32];
+
+#if 0
     PurpleCipher *cipher;
     PurpleCipherContext *context;
     guchar digest[16];
+    const char *challenge_resp;
     int i;
 
     cipher = purple_ciphers_find_cipher("md5");
@@ -504,12 +506,16 @@ chl_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     for (i = 0; i < 16; i++)
         g_snprintf(buf + (i*2), 3, "%02x", digest[i]);
+#else
+    msn_handle_challenge (cmd->params[1], "PROD0101{0RM?UBW", buf);
+#endif
 
-    trans = msn_transaction_new(cmdproc, "QRY", "%s 32", "PROD0038W!61ZTF9");
+    /* trans = msn_transaction_new(cmdproc, "QRY", "%s 32", "PROD0038W!61ZTF9"); */
+    trans = msn_transaction_new (cmdproc, "QRY", "%s 32", "PROD0101{0RM?UBW");
 
-    msn_transaction_set_payload(trans, buf, 32);
+    msn_transaction_set_payload (trans, buf, 32);
 
-    msn_cmdproc_send_trans(cmdproc, trans);
+    msn_cmdproc_send_trans (cmdproc, trans);
 }
 
 /**************************************************************************

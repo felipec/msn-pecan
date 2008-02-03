@@ -52,6 +52,7 @@ objects = \
 	cvr/slplink.o \
 	cvr/slpmsg.o \
 	cvr/slpsession.o \
+	challenge.o \
 	fix_purple.o
 
 sources = $(patsubst %.o,%.c,$(objects))
