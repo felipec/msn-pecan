@@ -85,6 +85,14 @@ void pecan_contact_set_passport (PecanContact *contact, const gchar *passport);
 void pecan_contact_set_friendly_name (PecanContact *contact, const gchar *name);
 
 /**
+ * Sets the personal message for a contact.
+ *
+ * @param contact The contact.
+ * @param name The personal message.
+ */
+void pecan_contact_set_personal_message (PecanContact *contact, const gchar *value);
+
+/**
  * Sets the store name for a contact.
  *
  * @param contact The contact.
@@ -188,6 +196,15 @@ const gchar *pecan_contact_get_passport (const PecanContact *contact);
  * @return The friendly name.
  */
 const gchar *pecan_contact_get_friendly_name (const PecanContact *contact);
+
+/**
+ * Returns the personal message of a contact.
+ *
+ * @param contact The contact.
+ *
+ * @return The personal message.
+ */
+const gchar *pecan_contact_get_personal_message (const PecanContact *contact);
 
 /**
  * Returns the store name for a contact.

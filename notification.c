@@ -1069,6 +1069,47 @@ syn_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     cmdproc->cbs_table = sync->cbs_table;
 }
 
+static void
+ubx_cmd_post (MsnCmdProc *cmdproc,
+              MsnCommand *cmd,
+              gchar *payload,
+              gsize len)
+{
+    MsnSession *session;
+    PecanContact *contact;
+    const gchar *passport;
+
+    session = cmdproc->session;
+
+    passport = cmd->params[0];
+    contact = pecan_contactlist_find_contact (session->contactlist, passport);
+
+    if (contact)
+    {
+        gchar *psm;
+        const gchar *start;
+        const gchar *end;
+
+        start = g_strstr_len (payload, len, "<PSM>");
+        start += 5;
+        end = g_strstr_len (start, len - (start - payload), "</PSM>");
+
+        psm = g_strndup (start, end - start);
+        pecan_contact_set_personal_message (contact, psm);
+        g_free (psm);
+
+        pecan_contact_update (contact);
+    }
+}
+
+static void
+ubx_cmd (MsnCmdProc *cmdproc,
+         MsnCommand *cmd)
+{
+    cmdproc->last_cmd->payload_cb = ubx_cmd_post;
+    cmd->payload_len = atoi (cmd->params[1]);
+}
+
 /**************************************************************************
  * Misc commands
  **************************************************************************/
@@ -1565,6 +1606,8 @@ msn_notification_init(void)
     msn_table_add_cmd(cbs_table, NULL, "ILN", iln_cmd);
     msn_table_add_cmd(cbs_table, NULL, "OUT", out_cmd);
     msn_table_add_cmd(cbs_table, NULL, "RNG", rng_cmd);
+
+    msn_table_add_cmd(cbs_table, NULL, "UBX", ubx_cmd);
 
     msn_table_add_cmd(cbs_table, NULL, "URL", url_cmd);
 

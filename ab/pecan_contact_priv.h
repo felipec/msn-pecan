@@ -38,6 +38,7 @@ struct PecanContact
     gchar *passport; /**< The passport account. */
     gchar *store_name; /**< The name stored in the server. */
     gchar *friendly_name; /**< The friendly name. */
+    gchar *personal_message; /**< The personal message. */
     gchar *guid; /**< The GUID. Only present for contacts in our FL. */
 
     const gchar *status; /**< The state of the contact. */

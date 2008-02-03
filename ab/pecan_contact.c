@@ -73,6 +73,7 @@ pecan_contact_free (PecanContact *contact)
 
     g_free (contact->passport);
     g_free (contact->friendly_name);
+    g_free (contact->personal_message);
     g_free (contact->store_name);
     g_free (contact->guid);
     g_free (contact->phone.home);
@@ -191,6 +192,21 @@ pecan_contact_set_friendly_name (PecanContact *contact,
         msn_debug ("contact is account");
         pecan_contact_set_store_name (contact, name);
     }
+}
+
+void
+pecan_contact_set_personal_message (PecanContact *contact,
+                                    const gchar *value)
+{
+    g_return_if_fail (contact);
+
+    msn_debug ("passport=[%s],value=[%s]", contact->passport, value);
+
+    if (contact->personal_message && strcmp (contact->personal_message, value) == 0)
+        return;
+
+    g_free (contact->personal_message);
+    contact->personal_message = g_strdup (value);
 }
 
 void
@@ -487,6 +503,14 @@ pecan_contact_get_friendly_name (const PecanContact *contact)
     g_return_val_if_fail (contact, NULL);
 
     return contact->friendly_name;
+}
+
+const gchar *
+pecan_contact_get_personal_message (const PecanContact *contact)
+{
+    g_return_val_if_fail (contact, NULL);
+
+    return contact->personal_message;
 }
 
 const gchar *

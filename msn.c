@@ -515,9 +515,18 @@ msn_status_text(PurpleBuddy *buddy)
 {
 	PurplePresence *presence;
 	PurpleStatus *status;
+	PecanContact *contact;
 
 	presence = purple_buddy_get_presence(buddy);
 	status = purple_presence_get_active_status(presence);
+	contact = buddy->proto_data;
+
+	{
+	    const gchar *personal_message;
+	    personal_message = pecan_contact_get_personal_message (contact);
+	    if (personal_message)
+		return g_markup_escape_text (personal_message, -1);
+	}
 
 	if (!purple_presence_is_available(presence) && !purple_presence_is_idle(presence))
 	{
