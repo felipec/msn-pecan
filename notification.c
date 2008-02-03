@@ -59,6 +59,12 @@
 
 static MsnTable *cbs_table;
 
+typedef struct
+{
+    gchar *who;
+    gchar *group_guid;
+} MsnAddBuddy;
+
 static void
 open_cb (PecanNode *conn)
 {
@@ -562,6 +568,19 @@ adc_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     list_id = msn_get_list_id(list);
 
     msn_got_add_contact(session, user, list_id, group_guid);
+
+    /* There is a user that must me moved to this group */
+    if (cmd->trans && cmd->trans->data)
+    {
+        MsnAddBuddy *data = cmd->trans->data;
+
+        msn_notification_add_buddy (session->notification, "FL", data->who,
+                                    user_guid, friendly, data->group_guid);
+
+        g_free (data->who);
+        g_free (data->group_guid);
+    }
+
     pecan_contact_update(user);
 }
 
@@ -634,7 +653,7 @@ adg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     pecan_group_new(session->contactlist, group_name, group_guid);
 
     /* There is a user that must me moved to this group */
-    if (cmd->trans->data)
+    if (cmd->trans && cmd->trans->data)
     {
         /* pecan_contactlist_move_buddy(); */
         PecanContactList *contactlist = cmdproc->session->contactlist;
@@ -1446,8 +1465,21 @@ msn_notification_add_buddy(MsnNotification *notification, const char *list,
     else if (strcmp(list, "FL") == 0)
     {
         /* Add buddy to our FL. */
-        store_name = purple_url_encode (store_name);
-        msn_cmdproc_send (cmdproc, "ADC", "%s N=%s F=%s", list, who, store_name);
+        /* FunkTastic Foo! */
+        MsnTransaction *trans;
+        MsnAddBuddy *data;
+
+        data = g_new0 (MsnAddBuddy, 1);
+
+        data->who = g_strdup (who);
+        data->group_guid = g_strdup (group_guid);
+
+        trans = msn_transaction_new (cmdproc, "ADC", "%s N=%s F=%s",
+                                     list, who, store_name);
+
+        msn_transaction_set_data (trans, data);
+
+        msn_cmdproc_send_trans (cmdproc, trans);
     }
     else
     {
@@ -1466,7 +1498,7 @@ msn_notification_rem_buddy(MsnNotification *notification, const char *list,
 
     final_who = ((strcmp (list, "FL") == 0) ? user_guid : who);
 
-    /* moogman: If user is only in one group, set group_id == NULL (force a complete remove).
+    /* moogman: If user is only in one group, set group_guid == NULL (force a complete remove).
      * It seems as if we don't need to do the above check. I've tested it as it is and it seems 
      * to work fine. However, a note is left here incase things change. */
     if (group_guid)

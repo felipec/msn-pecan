@@ -372,7 +372,7 @@ pecan_contact_add_group_id (PecanContact *contact,
         if (group_name)
             g = purple_find_group (group_name);
 
-        /* If the group is not there, add him */
+        /* If the group is not there, add it */
         if (!g)
         {
             g = purple_group_new (group_name);

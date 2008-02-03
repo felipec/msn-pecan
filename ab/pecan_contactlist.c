@@ -112,7 +112,7 @@ got_new_entry (PurpleConnection *gc,
 
 static gboolean
 contact_is_in_group (PecanContact *contact,
-                  const gchar *group_guid)
+                     const gchar *group_guid)
 {
     if (!contact)
         return FALSE;
@@ -134,8 +134,9 @@ contact_is_in_group (PecanContact *contact,
 
 static gboolean
 contact_is_there (PecanContact *contact,
-               gint list_id,
-               const gchar *group_guid)
+                  gint list_id,
+                  gboolean check_group,
+                  const gchar *group_guid)
 {
     int list_op;
 
@@ -147,7 +148,7 @@ contact_is_there (PecanContact *contact,
     if (!(contact->list_op & list_op))
         return FALSE;
 
-    if (list_id == MSN_LIST_FL)
+    if (list_id == MSN_LIST_FL && check_group)
     {
         return contact_is_in_group (contact, group_guid);
     }
@@ -305,11 +306,14 @@ msn_got_rem_contact (MsnSession *session,
     if (list_id == MSN_LIST_FL)
     {
         /** @todo when is the contact totally removed? */
+        /** when the group count reaches 0, and there's no list_op */
         if (group_guid)
         {
             pecan_contact_remove_group_id (contact, group_guid);
             return;
         }
+
+        g_hash_table_remove_all (contact->groups);
     }
     else if (list_id == MSN_LIST_AL)
     {
@@ -664,7 +668,7 @@ pecan_contactlist_rem_buddy (PecanContactList *contactlist,
     list = lists[list_id];
 
     /* First we're going to check if not there. */
-    if (!(contact_is_there (contact, list_id, group_guid)))
+    if (!(contact_is_there (contact, list_id, group_name != NULL, group_guid)))
     {
         msn_error ("contact not there: who=[%s],list=[%s],group_guid=[%s]",
                    who, list, group_guid);
@@ -815,7 +819,7 @@ pecan_contactlist_add_buddy_helper (PecanContactList *contactlist,
 
             group_guid = pecan_group_get_id (group);
 
-            if (!group_guid)
+            if (contact && pecan_contact_get_group_count (contact) > 0 && !group_guid)
             {
                 msn_error ("trying to add contact to a virtual group: who=[%s]",
                            who);
@@ -825,7 +829,7 @@ pecan_contactlist_add_buddy_helper (PecanContactList *contactlist,
         }
 
         /* First we're going to check if he's already there. */
-        if (contact && contact_is_there (contact, list_id, group_guid))
+        if (contact && contact_is_there (contact, list_id, TRUE, group_guid))
         {
             const gchar *list;
 
