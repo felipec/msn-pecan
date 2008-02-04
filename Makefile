@@ -16,7 +16,7 @@ OTHER_WARNINGS=-D_FORTIFY_SOURCE=2 -fstack-protector -g3 -pedantic -W -Wall \
 	       -Wpointer-arith -Wshadow -Wstack-protector -Wstrict-prototypes \
 	       -Wswitch -Wundef -Wwrite-strings
 
-CFLAGS=-Wall -ggdb -I. -DHAVE_LIBPURPLE -DMSN_DEBUG $(EXTRA_WARNINGS)
+CFLAGS=-Wall -ggdb -I. -DHAVE_LIBPURPLE $(EXTRA_WARNINGS)
 
 purpledir=$(DESTDIR)/$(PURPLE_PREFIX)/lib/purple-2
 
