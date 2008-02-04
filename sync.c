@@ -185,7 +185,7 @@ lst_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
                 const gchar *group_guids;
                 GSList *group_ids;
 
-                group_guids = cmd->params[4];
+                group_guids = cmd->params[i];
 
                 group_ids = NULL;
 
