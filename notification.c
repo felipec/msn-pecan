@@ -1091,14 +1091,20 @@ ubx_cmd_post (MsnCmdProc *cmdproc,
         const gchar *end;
 
         start = g_strstr_len (payload, len, "<PSM>");
-        start += 5;
-        end = g_strstr_len (start, len - (start - payload), "</PSM>");
+        if (start)
+        {
+            start += 5;
+            end = g_strstr_len (start, len - (start - payload), "</PSM>");
 
-        psm = g_strndup (start, end - start);
-        pecan_contact_set_personal_message (contact, psm);
-        g_free (psm);
+            if (end)
+            {
+                psm = g_strndup (start, end - start);
+                pecan_contact_set_personal_message (contact, psm);
+                g_free (psm);
 
-        pecan_contact_update (contact);
+                pecan_contact_update (contact);
+            }
+        }
     }
 }
 
