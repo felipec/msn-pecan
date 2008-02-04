@@ -32,6 +32,8 @@
 
 #ifndef _WIN32
 #include <netdb.h>
+#else
+#include "win32dep.h"
 #endif
 
 /* libpurple stuff. */
