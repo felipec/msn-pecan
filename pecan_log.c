@@ -26,7 +26,7 @@
 #include <glib/gstdio.h>
 
 static const gchar *
-log_level_to_string (enum MsnLogLevel level)
+log_level_to_string (PecanLogLevel level)
 {
     switch (level)
     {
