@@ -20,7 +20,7 @@
 #define MSN_CONFIG_H
 
 #define PACKAGE_NAME "msn-pecan"
-#define VERSION "0.0.6"
+#define VERSION "0.0.7"
 #define PURPLE_PLUGINS
 
 #endif /* MSN_CONFIG_H */
