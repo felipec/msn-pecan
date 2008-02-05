@@ -1086,7 +1086,7 @@ ubx_cmd_post (MsnCmdProc *cmdproc,
 
     if (contact)
     {
-        gchar *psm;
+        gchar *psm = NULL;
         const gchar *start;
         const gchar *end;
 
@@ -1097,14 +1097,13 @@ ubx_cmd_post (MsnCmdProc *cmdproc,
             end = g_strstr_len (start, len - (start - payload), "</PSM>");
 
             if (end)
-            {
                 psm = g_strndup (start, end - start);
-                pecan_contact_set_personal_message (contact, psm);
-                g_free (psm);
-
-                pecan_contact_update (contact);
-            }
         }
+
+        pecan_contact_set_personal_message (contact, psm);
+        g_free (psm);
+
+        pecan_contact_update (contact);
     }
 }
 
