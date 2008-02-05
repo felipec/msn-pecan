@@ -35,6 +35,7 @@
 #include "msn_intl.h"
 
 /* libpurple stuff. */
+#include "fix_purple_win32.h"
 #include <account.h>
 
 static const char *away_text[] =

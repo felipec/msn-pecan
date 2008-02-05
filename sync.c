@@ -34,6 +34,7 @@
 #include <string.h>
 
 /* libpurple stuff. */
+#include "fix_purple_win32.h"
 #include <account.h>
 #include <privacy.h>
 

@@ -36,8 +36,8 @@
 #include "session.h"
 
 /* libpurple stuff. */
-#include <proxy.h>
 #include "fix_purple_win32.h"
+#include <proxy.h>
 
 static PecanNodeClass *parent_class = NULL;
 

@@ -33,6 +33,7 @@
 
 #ifdef HAVE_LIBPURPLE
 /* libpurple stuff. */
+#include "fix_purple_win32.h"
 #include <util.h>
 #include <cipher.h>
 
@@ -453,7 +454,6 @@ pecan_handle_challenge (const gchar *input,
     {
         PurpleCipher *cipher;
         PurpleCipherContext *context;
-        guchar digest[16];
 
         cipher = purple_ciphers_find_cipher ("md5");
         context = purple_cipher_context_new (cipher, NULL);

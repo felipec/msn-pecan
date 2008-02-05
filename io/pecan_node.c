@@ -24,9 +24,8 @@
 
 #ifdef HAVE_LIBPURPLE
 /* libpurple stuff. */
-#include <proxy.h>
-
 #include "fix_purple_win32.h"
+#include <proxy.h>
 #endif /* HAVE_LIBPURPLE */
 
 void pecan_node_error (PecanNode *conn);

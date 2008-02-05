@@ -33,10 +33,11 @@
 #ifndef _WIN32
 #include <netdb.h>
 #else
-#include "win32dep.h"
+#include <win32dep.h>
 #endif
 
 /* libpurple stuff. */
+#include "fix_purple_win32.h"
 #include <proxy.h>
 
 /**************************************************************************

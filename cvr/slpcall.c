@@ -34,6 +34,7 @@
 #endif /* MSN_DIRECTCONN */
 
 /* libpurple stuff. */
+#include "fix_purple_win32.h"
 #include <eventloop.h>
 #include <ft.h>
 

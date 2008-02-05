@@ -28,6 +28,7 @@
 
 #ifdef HAVE_LIBPURPLE
 /* libpurple stuff. */
+#include "fix_purple_win32.h"
 #include <util.h>
 #endif /* HAVE_LIBPURPLE */
 

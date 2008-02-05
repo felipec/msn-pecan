@@ -44,6 +44,7 @@
 #include <string.h>
 
 /* libpurple stuff. */
+#include "fix_purple_win32.h"
 #include <ft.h>
 
 void msn_slplink_send_msgpart(MsnSlpLink *slplink, MsnSlpMessage *slpmsg);

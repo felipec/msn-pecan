@@ -29,6 +29,7 @@
 #include "session_private.h"
 
 /* libpurple stuff. */
+#include "fix_purple_win32.h"
 #include <sslconn.h>
 #include "internal.h"
 

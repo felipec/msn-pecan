@@ -33,6 +33,7 @@
 #include "fix_purple.h"
 
 /* libpurple stuff. */
+#include "fix_purple_win32.h"
 #include <cipher.h>
 #include <account.h>
 #endif /* HAVE_LIBPURPLE */
@@ -355,12 +356,12 @@ pecan_contact_add_group_id (PecanContact *contact,
 #ifdef HAVE_LIBPURPLE
     {
         PecanContactList *contactlist;
-        contactlist = contact->contactlist;
         PurpleAccount *account;
         PurpleBuddy *b = NULL;
         PurpleGroup *g = NULL;
         const gchar *group_name;
 
+        contactlist = contact->contactlist;
         group_name = pecan_contactlist_find_group_name (contactlist, group_guid);
         account = msn_session_get_account (contactlist->session);
 
