@@ -525,10 +525,9 @@ msg_error_helper(MsnCmdProc *cmdproc, MsnMessage *msg, MsnMsgErrorType error)
         msg->nak_cb(msg, msg->ack_data);
 
     swboard = cmdproc->data;
-    g_return_if_fail (swboard);
 
     /* This is not good, and should be fixed somewhere else. */
-    g_return_if_fail(swboard);
+    g_return_if_fail (swboard);
 
     if (msg->type == MSN_MSG_TEXT)
     {
@@ -610,7 +609,7 @@ msg_error_helper(MsnCmdProc *cmdproc, MsnMessage *msg, MsnMsgErrorType error)
         g_free(body_str);
     }
 
-    /* If a timeout occures we will want the msg around just in case we
+    /* If a timeout occurs we want the msg around just in case we
      * receive the ACK after the timeout. */
     if (msg->ack_ref && error != MSN_MSG_ERROR_TIMEOUT)
     {
@@ -903,6 +902,8 @@ msg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     cmdproc->last_cmd->payload_cb = msg_cmd_post;
 }
 
+/** @todo This ACK, NAK, timeout stuff needs to be completely reworked.
+ * This leaves way too much room for bugs. */
 static void
 nak_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {

@@ -22,6 +22,7 @@
 
 #include "msg_private.h"
 #include "command_private.h"
+#include "transaction_private.h"
 #include "pecan_log.h"
 
 #include <string.h> /* for strlen. */
@@ -70,7 +71,32 @@ msn_message_destroy(MsnMessage *msg)
 	pecan_log ("msg=%p", msg);
 #endif
 
-	if (msg->remote_user != NULL)
+        /** @todo this is ugly, but we really need to kill the pending
+         * transactions. */
+        {
+            MsnTransaction *trans;
+
+            trans = msg->trans;
+
+            if (trans)
+            {
+                trans->error_cb = NULL;
+
+                if (trans->callbacks && trans->has_custom_callbacks)
+                    g_hash_table_destroy (trans->callbacks);
+
+                trans->callbacks = NULL;
+
+                if (trans->timer)
+                    purple_timeout_remove (trans->timer);
+
+                trans->timer = 0;
+
+                msg->trans = NULL;
+            }
+        }
+
+        if (msg->remote_user != NULL)
 		g_free(msg->remote_user);
 
 	if (msg->body != NULL)

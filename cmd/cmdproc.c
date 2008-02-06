@@ -271,6 +271,8 @@ msn_cmdproc_process_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     g_return_if_fail (cmdproc->cbs_table);
 
+    pecan_log ("begin");
+
     if (cmd->trId)
         trans = msn_history_find(cmdproc->history, cmd->trId);
 
@@ -338,6 +340,8 @@ msn_cmdproc_process_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     if (trans != NULL && trans->pendent_cmd != NULL)
         msn_transaction_unqueue_cmd(trans, cmdproc);
+
+    pecan_log ("begin");
 }
 
 void
