@@ -132,6 +132,7 @@ error_handler (MsnCmdProc *cmdproc,
     char *tmp;
 
     notification = cmdproc->data;
+    g_return_if_fail (notification);
 
     {
         const gchar *reason;

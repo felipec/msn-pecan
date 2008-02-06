@@ -79,7 +79,7 @@ open_cb (PecanNode *conn)
     pecan_info ("foo");
 
     swboard = cmdproc->data;
-    g_return_if_fail (swboard != NULL);
+    g_return_if_fail (swboard);
 
     {
         MsnTransaction *trans;
@@ -114,7 +114,7 @@ close_cb (PecanNode *conn,
 {
     char *tmp;
 
-    g_return_if_fail (swboard != NULL);
+    g_return_if_fail (swboard);
 
     {
         const char *reason = NULL;
@@ -220,7 +220,7 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
     pecan_log ("swboard=[%p]", swboard);
 #endif
 
-    g_return_if_fail(swboard != NULL);
+    g_return_if_fail(swboard);
 
     if (swboard->destroying)
         return;
@@ -279,7 +279,7 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
 void
 msn_switchboard_set_auth_key(MsnSwitchBoard *swboard, const char *key)
 {
-    g_return_if_fail(swboard != NULL);
+    g_return_if_fail(swboard);
     g_return_if_fail(key != NULL);
 
     swboard->auth_key = g_strdup(key);
@@ -288,7 +288,7 @@ msn_switchboard_set_auth_key(MsnSwitchBoard *swboard, const char *key)
 const char *
 msn_switchboard_get_auth_key(MsnSwitchBoard *swboard)
 {
-    g_return_val_if_fail(swboard != NULL, NULL);
+    g_return_val_if_fail(swboard, NULL);
 
     return swboard->auth_key;
 }
@@ -296,7 +296,7 @@ msn_switchboard_get_auth_key(MsnSwitchBoard *swboard)
 void
 msn_switchboard_set_session_id(MsnSwitchBoard *swboard, const char *id)
 {
-    g_return_if_fail(swboard != NULL);
+    g_return_if_fail(swboard);
     g_return_if_fail(id != NULL);
 
     if (swboard->session_id != NULL)
@@ -308,7 +308,7 @@ msn_switchboard_set_session_id(MsnSwitchBoard *swboard, const char *id)
 const char *
 msn_switchboard_get_session_id(MsnSwitchBoard *swboard)
 {
-    g_return_val_if_fail(swboard != NULL, NULL);
+    g_return_val_if_fail(swboard, NULL);
 
     return swboard->session_id;
 }
@@ -316,7 +316,7 @@ msn_switchboard_get_session_id(MsnSwitchBoard *swboard)
 void
 msn_switchboard_set_invited(MsnSwitchBoard *swboard, gboolean invited)
 {
-    g_return_if_fail(swboard != NULL);
+    g_return_if_fail(swboard);
 
     swboard->invited = invited;
 }
@@ -324,7 +324,7 @@ msn_switchboard_set_invited(MsnSwitchBoard *swboard, gboolean invited)
 gboolean
 msn_switchboard_is_invited(MsnSwitchBoard *swboard)
 {
-    g_return_val_if_fail(swboard != NULL, FALSE);
+    g_return_val_if_fail(swboard, FALSE);
 
     return swboard->invited;
 }
@@ -354,7 +354,7 @@ msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
     MsnCmdProc *cmdproc;
     PurpleAccount *account;
 
-    g_return_if_fail(swboard != NULL);
+    g_return_if_fail(swboard);
 
     cmdproc = swboard->cmdproc;
     account = cmdproc->session->account;
@@ -447,7 +447,7 @@ msn_switchboard_get_conv(MsnSwitchBoard *swboard)
 {
     PurpleAccount *account;
 
-    g_return_val_if_fail(swboard != NULL, NULL);
+    g_return_val_if_fail(swboard, NULL);
 
     if (swboard->conv != NULL)
         return swboard->conv;
@@ -465,7 +465,7 @@ msn_switchboard_report_user(MsnSwitchBoard *swboard, PurpleMessageFlags flags, c
 {
     PurpleConversation *conv;
 
-    g_return_if_fail(swboard != NULL);
+    g_return_if_fail(swboard);
     g_return_if_fail(msg != NULL);
 
     if ((conv = msn_switchboard_get_conv(swboard)) != NULL)
@@ -477,7 +477,7 @@ msn_switchboard_report_user(MsnSwitchBoard *swboard, PurpleMessageFlags flags, c
 static void
 swboard_error_helper(MsnSwitchBoard *swboard, int reason, const char *passport)
 {
-    g_return_if_fail(swboard != NULL);
+    g_return_if_fail(swboard);
 
     pecan_error ("unable to call the user: passport=[%s],reason[%i]",
                passport ? passport : "(null)", reason);
@@ -503,6 +503,7 @@ cal_error_helper(MsnTransaction *trans, int reason)
     passport = params[0];
 
     swboard = trans->data;
+    g_return_if_fail (swboard);
 
     pecan_warning ("failed: command=[%s],reason=%i",
                  trans->command, reason);
@@ -524,9 +525,10 @@ msg_error_helper(MsnCmdProc *cmdproc, MsnMessage *msg, MsnMsgErrorType error)
         msg->nak_cb(msg, msg->ack_data);
 
     swboard = cmdproc->data;
+    g_return_if_fail (swboard);
 
     /* This is not good, and should be fixed somewhere else. */
-    g_return_if_fail(swboard != NULL);
+    g_return_if_fail(swboard);
 
     if (msg->type == MSN_MSG_TEXT)
     {
@@ -674,7 +676,7 @@ release_msg(MsnSwitchBoard *swboard, MsnMessage *msg)
     char *payload;
     gsize payload_len;
 
-    g_return_if_fail(swboard != NULL);
+    g_return_if_fail(swboard);
     g_return_if_fail(msg     != NULL);
 
     cmdproc = swboard->cmdproc;
@@ -724,7 +726,7 @@ release_msg(MsnSwitchBoard *swboard, MsnMessage *msg)
 static void
 queue_msg(MsnSwitchBoard *swboard, MsnMessage *msg)
 {
-    g_return_if_fail(swboard != NULL);
+    g_return_if_fail(swboard);
     g_return_if_fail(msg     != NULL);
 
     pecan_info ("appending message to queue");
@@ -739,7 +741,7 @@ process_queue(MsnSwitchBoard *swboard)
 {
     MsnMessage *msg;
 
-    g_return_if_fail(swboard != NULL);
+    g_return_if_fail(swboard);
 
     pecan_info ("processing queue");
 
@@ -754,7 +756,7 @@ process_queue(MsnSwitchBoard *swboard)
 gboolean
 msn_switchboard_can_send(MsnSwitchBoard *swboard)
 {
-    g_return_val_if_fail(swboard != NULL, FALSE);
+    g_return_val_if_fail(swboard, FALSE);
 
     if (swboard->empty || !g_queue_is_empty(swboard->msg_queue))
         return FALSE;
@@ -766,7 +768,7 @@ void
 msn_switchboard_send_msg(MsnSwitchBoard *swboard, MsnMessage *msg,
                          gboolean queue)
 {
-    g_return_if_fail(swboard != NULL);
+    g_return_if_fail(swboard);
     g_return_if_fail(msg     != NULL);
 
     if (msn_switchboard_can_send(swboard))
@@ -785,6 +787,7 @@ ans_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     MsnSwitchBoard *swboard;
 
     swboard = cmdproc->data;
+    g_return_if_fail (swboard);
     swboard->ready = TRUE;
 }
 
@@ -797,9 +800,11 @@ bye_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     swboard = cmdproc->data;
     user = cmd->params[0];
 
+    g_return_if_fail (swboard);
+
     /* cmdproc->data is set to NULL when the switchboard is destroyed;
      * we may get a bye shortly thereafter. */
-    g_return_if_fail(swboard != NULL);
+    g_return_if_fail(swboard);
 
     if (!(swboard->flag & MSN_SB_FLAG_IM) && (swboard->conv != NULL))
         pecan_error ("bye_cmd: helper bug");
@@ -835,6 +840,7 @@ iro_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     account = cmdproc->session->account;
     gc = account->gc;
     swboard = cmdproc->data;
+    g_return_if_fail (swboard);
 
     swboard->total_users = atoi(cmd->params[2]);
 
@@ -856,6 +862,7 @@ joi_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     account = session->account;
     gc = account->gc;
     swboard = cmdproc->data;
+    g_return_if_fail (swboard);
 
     msn_switchboard_add_user(swboard, passport);
 
@@ -901,8 +908,12 @@ nak_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnMessage *msg;
 
+    g_return_if_fail(cmd);
+    g_return_if_fail(cmd->trans);
+
     msg = cmd->trans->data;
-    g_return_if_fail(msg != NULL);
+
+    g_return_if_fail(msg);
 
     msg_error_helper(cmdproc, msg, MSN_MSG_ERROR_NAK);
 }
@@ -912,6 +923,9 @@ ack_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSwitchBoard *swboard;
     MsnMessage *msg;
+
+    g_return_if_fail(cmd);
+    g_return_if_fail(cmd->trans);
 
     msg = cmd->trans->data;
 
@@ -932,6 +946,7 @@ out_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     gc = cmdproc->session->account->gc;
     swboard = cmdproc->data;
+    g_return_if_fail (swboard);
 
     if (swboard->current_users > 1)
         serv_got_chat_left(gc, swboard->chat_id);
@@ -945,6 +960,7 @@ usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     MsnSwitchBoard *swboard;
 
     swboard = cmdproc->data;
+    g_return_if_fail (swboard);
 
 #if 0
     GList *l;
@@ -980,6 +996,7 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
     gc = cmdproc->session->account->gc;
     swboard = cmdproc->data;
+    g_return_if_fail (swboard);
 
     body = msn_message_get_bin_data(msg, &body_len);
     body_str = g_strndup(body, body_len);
@@ -1064,6 +1081,7 @@ control_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     swboard = cmdproc->data;
     passport = msg->remote_user;
 
+    g_return_if_fail (swboard);
     if (swboard->current_users == 1 &&
         msn_message_get_attr(msg, "TypingUser") != NULL)
     {
@@ -1093,11 +1111,9 @@ clientcaps_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 static void
 nudge_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 {
-    MsnSwitchBoard *swboard;
     PurpleAccount *account;
     const char *user;
 
-    swboard = cmdproc->data;
     account = cmdproc->session->account;
     user = msg->remote_user;
 
@@ -1127,6 +1143,7 @@ ans_usr_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
     params = g_strsplit(trans->params, " ", 0);
     passport = params[0];
     swboard = trans->data;
+    g_return_if_fail (swboard);
 
     swboard_error_helper(swboard, reason, passport);
 
@@ -1136,7 +1153,7 @@ ans_usr_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
 gboolean
 msn_switchboard_connect(MsnSwitchBoard *swboard, const char *host, int port)
 {
-    g_return_val_if_fail (swboard != NULL, FALSE);
+    g_return_val_if_fail (swboard, FALSE);
 
     pecan_node_connect (PECAN_NODE (swboard->conn), host, port);
 
@@ -1146,7 +1163,7 @@ msn_switchboard_connect(MsnSwitchBoard *swboard, const char *host, int port)
 void
 msn_switchboard_disconnect(MsnSwitchBoard *swboard)
 {
-    g_return_if_fail(swboard != NULL);
+    g_return_if_fail(swboard);
 }
 
 /**************************************************************************
@@ -1160,6 +1177,7 @@ got_cal(MsnCmdProc *cmdproc, MsnCommand *cmd)
     const char *user;
 
     swboard = cmdproc->data;
+    g_return_if_fail (swboard);
 
     user = cmd->params[0];
 
@@ -1202,7 +1220,7 @@ msn_switchboard_request_add_user(MsnSwitchBoard *swboard, const char *user)
     MsnTransaction *trans;
     MsnCmdProc *cmdproc;
 
-    g_return_if_fail(swboard != NULL);
+    g_return_if_fail(swboard);
 
     cmdproc = swboard->cmdproc;
 
@@ -1230,7 +1248,12 @@ got_swboard(MsnCmdProc *cmdproc, MsnCommand *cmd)
     MsnSwitchBoard *swboard;
     char *host;
     int port;
+
+    g_return_if_fail(cmd);
+    g_return_if_fail(cmd->trans);
+
     swboard = cmd->trans->data;
+    g_return_if_fail (swboard);
 
     if (g_list_find(cmdproc->session->switches, swboard) == NULL)
         /* The conversation window was closed. */
@@ -1258,6 +1281,7 @@ xfr_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
         reason = MSN_SB_ERROR_TOO_FAST;
 
     swboard = trans->data;
+    g_return_if_fail (swboard);
 
     pecan_info ("error=%i,user=[%s],trans=%p,command=[%s],reason=%i",
               error, swboard->im_user, trans,
@@ -1272,7 +1296,7 @@ msn_switchboard_request(MsnSwitchBoard *swboard)
     MsnCmdProc *cmdproc;
     MsnTransaction *trans;
 
-    g_return_if_fail(swboard != NULL);
+    g_return_if_fail(swboard);
 
     cmdproc = swboard->session->notification->cmdproc;
 
@@ -1288,7 +1312,7 @@ msn_switchboard_request(MsnSwitchBoard *swboard)
 void
 msn_switchboard_close(MsnSwitchBoard *swboard)
 {
-    g_return_if_fail(swboard != NULL);
+    g_return_if_fail(swboard);
 
     if (swboard->error != MSN_SB_ERROR_NONE)
     {
@@ -1312,7 +1336,7 @@ msn_switchboard_close(MsnSwitchBoard *swboard)
 gboolean
 msn_switchboard_release(MsnSwitchBoard *swboard, MsnSBFlag flag)
 {
-    g_return_val_if_fail(swboard != NULL, FALSE);
+    g_return_val_if_fail(swboard, FALSE);
 
     swboard->flag &= ~flag;
 
