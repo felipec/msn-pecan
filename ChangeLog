@@ -1,3 +1,186 @@
-* Improve errors messages
-* Improve group handling (Individuals, multiple contacts per group)
-* Add true server-side aliases
+
+2008-02-06	Felipe Contreras <felipe.contreras@gmail.com>
+	* Fix SB mess, first try.
+	* Add a lot of extra checks to avoid crashes.
+
+2008-02-05	Felipe Contreras <felipe.contreras@gmail.com>
+	* Fix win32 compilation.
+	* Properly display the personal message.
+	* Allow personal message to be unset.
+	* Allow compilation in certain win32 environments.
+	* Use right enum for logging.
+	* Fix stupid contaclist bug.
+
+2008-02-04	Felipe Contreras <felipe.contreras@gmail.com>
+	* Fix segfault when personal message is NULL.
+	* Move to development again.
+	* Disable debugging.
+	* Tag 0.0.7.
+	* Fix compilation for win32.
+	* Rename debugging stuff, add "pecan" prefix.
+	* Fix HTTP method, improve debugging.
+
+2008-02-03	Felipe Contreras <felipe.contreras@gmail.com>
+	* Wrap GIOChannel inside PecanStream.
+	* Update to MSNP12.
+	* Also show the personal message on the tooltip.
+	* Allow display of personal message.
+	* Add MSNP11 support.
+	* Improve error handling for AB stuff.
+	* Fix non-grouped behavior.
+	* Fix adding a contact to a group, while in no-group.
+	* Rename libpurple fixes.
+
+2008-02-02	Felipe Contreras <felipe.contreras@gmail.com>
+	* Fix bug adding/removing buddies.
+	* Fix crash when disabling the displayname.
+	* Bugfix for displayname.
+	* Improve support for displaynames.
+	* Cleanup the display<->friendly thing.
+	* Link display/friendly name when the contact is ourself.
+	* Add simple tests for AB stuff.
+	* Rename AB stuff.
+	* Add PL (Pending List) support, other fixes.
+	* Fixes and cleanups for AB stuff.
+	* Use hashtables in userlist.c.
+	* Use a hashtable in user.c, and bug fixes.
+	* Update TODO.
+	* Don't disconnect when we receive non-fatal errors.
+	* Random cleanups of the AB stuff.
+	* Initial MSNP10 implementation.
+
+2008-02-01	Felipe Contreras <felipe.contreras@gmail.com>
+	* Fix segfault.
+	* Report error on EOS.
+	* Cleanup user.c.
+	* Add buffer test.
+
+2008-01-31	Felipe Contreras <felipe.contreras@gmail.com>
+	* Fix compilation for win32.
+	* Add TODO file.
+	* Properly fix ISO C warning.
+	* Fix warnings. Be more ISO C friendly.
+
+2008-01-30	Felipe Contreras <felipe.contreras@gmail.com>
+	* Fix crash when testing.
+	* Random cleanups.
+	* Add simple parsing tests.
+	* Move MSN_DEBUG define to the Makefile.
+	* Fix stupid bug.
+
+2008-01-29	Felipe Contreras <felipe.contreras@gmail.com>
+	* Install where libpurple is really installed.
+	* Fix SB destruction.
+
+2008-01-28	Felipe Contreras <felipe.contreras@gmail.com>
+	* Add option to save debug logs.
+	* Fix warnings, cleanups, and win32 support.
+
+2008-01-27	Felipe Contreras <felipe.contreras@gmail.com>
+	* Disable debugging.
+	* Prefix io stuff with 'pecan'.
+	* Move slp aka msnp2p stuff to 'cvr' subdir.
+	* Move command processing stuff to 'cmd' subdir.
+	* Move user, userlist and group stuff to 'ab' subir.
+	* Cleanup sync.h.
+	* Remove connection ends, not needed anymore.
+	* Remove uneeded stuff and cleanup profile file generation.
+	* Cleanup session and split into private.
+	* Use an HTTP connection per cmd connection bugfixes.
+	* Split io stuff into base and private.
+	* Improve error reporting and HTTP fixes.
+	* Bugfixes, HTTP and error handling improvements.
+
+2008-01-26	Felipe Contreras <felipe.contreras@gmail.com>
+	* Fix segfault.
+	* Fixes, cleanups and disable directconn.
+	* Cleanup object, add private header.
+	* Cleanup group, add private header.
+	* Cleanup user, new private header.
+	* Cleanup userlist, use private header.
+	* More headers clean up, new _private headers.
+	* Remove more header dependencies.
+	* Fix headers, remove purple_debug stuff.
+	* Remove unused stuff and cleanup inclusion mess.
+	* More reorganization, remove unused stuff.
+	* Reorganize connection stuff for HTTP method.
+
+2008-01-24	Felipe Contreras <felipe.contreras@gmail.com>
+	* HTTP connection almost functional.
+
+2008-01-23	Felipe Contreras <felipe.contreras@gmail.com>
+	* Partial HTTP connection support.
+
+2008-01-22	Felipe Contreras <felipe.contreras@gmail.com>
+	* Remove annoying debugging stuff.
+
+2008-01-22	Felipe Contreras <felipec@localhost.localdomain>
+	* Remove unneded stuff.
+	* Move stuff from conn to conn_end.
+	* Remove uneeded stuff from servconn.
+	* Improve error handling.
+
+2008-01-21	Felipe Contreras <felipec@localhost.localdomain>
+	* Update the README.
+	* Fix debugging issues.
+	* Cleanup warnings and use GObject signals.
+	* Cleanups and remove unneeded stuff.
+	* Whitespace changes for cmdproc and sb.
+	* Cleanup notification stuff.
+	* Improve makedepend.
+
+2008-01-20	Felipe Contreras <felipec@localhost.localdomain>
+	* Cleanups and bufix in connection object.
+	* Cleanups and some fixes.
+	* Move some stuff to command connection.
+	* New command connection object.
+	* First connection gobject try.
+	* Cleanup notification connection.
+	* Add GObjectivied connection end-point.
+	* Update copyright.
+	* Update httpconn to use new IO stuff.
+	* New debugging stuff and fixes.
+
+2008-01-20	Felipe Contreras <felipe.contreras@gmail.com>
+	* Copy the changes from servconn to directconn.
+	* Fix connection bug.
+	* Improve connection error reporting.
+
+2008-01-19	Felipe Contreras <felipe.contreras@gmail.com>
+	* Random cleanups.
+	* Use GIOChannel.
+	* Whitespace changes for msn-utils.
+	* Whitespace changes for directconn.
+	* Whitespace changes for servconn.
+	* Whitespace changes for httpconn.
+
+2007-12-30	Felipe Contreras <felipe.contreras@gmail.com>
+	* Fix several special warnings.
+
+2007-12-29	Felipe Contreras <felipe.contreras@gmail.com>
+	* Fix for dumb bug with unknown SLP messages.
+
+2007-12-22	Felipe Contreras <felipe.contreras@gmail.com>
+	* Whitespace changes.
+	* Fix p2p transfers and cleanups.
+
+2007-12-21	Felipe Contreras <felipe.contreras@gmail.com>
+	* Add partial direct connection support.
+	* Remove SELinux specific stuff.
+
+2007-12-17	Felipe Contreras <felipe.contreras@gmail.com>
+	* Compilation fix and cleanups.
+
+2007-12-16	Felipe Contreras <felipe.contreras@gmail.com>
+	* Improve error and group handling.
+	* Remove unused dialog stuff.
+	* Code formatting.
+
+2007-11-30	Felipe Contreras <felipe.contreras@gmail.com>
+	* Add readme.
+	* Update copyright stuff.
+	* Fix to allow aliases with special characters.
+
+2007-11-29	Felipe Contreras <felipe.contreras@gmail.com>
+	* Fix warnings.
+	* Add display name support.
