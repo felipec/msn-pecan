@@ -1098,7 +1098,8 @@ ubx_cmd_post (MsnCmdProc *cmdproc,
             start += 5;
             end = g_strstr_len (start, len - (start - payload), "</PSM>");
 
-            if (end)
+            /*check that the closing <PSM> tag is there, and that the PSM isn't empty*/
+	    if (end > start)
                 psm = g_strndup (start, end - start);
         }
 
