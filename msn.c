@@ -525,7 +525,8 @@ msn_status_text(PurpleBuddy *buddy)
 	{
 	    const gchar *personal_message;
 	    personal_message = pecan_contact_get_personal_message (contact);
-            return g_strdup (personal_message);
+            if (personal_message)
+                return g_strdup (personal_message);
 	}
 
 	if (!purple_presence_is_available(presence) && !purple_presence_is_idle(presence))
