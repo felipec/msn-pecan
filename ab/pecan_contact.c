@@ -167,8 +167,11 @@ pecan_contact_set_friendly_name (PecanContact *contact,
 
     pecan_debug ("passport=[%s],name=[%s]", contact->passport, name);
 
-    if (contact->friendly_name && strcmp (contact->friendly_name, name) == 0)
+    if (contact->friendly_name && name &&
+        strcmp (contact->friendly_name, name) == 0)
+    {
         return;
+    }
 
     g_free (contact->friendly_name);
     contact->friendly_name = g_strdup (name);
@@ -203,8 +206,11 @@ pecan_contact_set_personal_message (PecanContact *contact,
 
     pecan_debug ("passport=[%s],value=[%s]", contact->passport, value);
 
-    if (contact->personal_message && strcmp (contact->personal_message, value) == 0)
+    if (contact->personal_message && value &&
+        strcmp (contact->personal_message, value) == 0)
+    {
         return;
+    }
 
     g_free (contact->personal_message);
     contact->personal_message = g_strdup (value);
@@ -220,10 +226,15 @@ pecan_contact_set_store_name (PecanContact *contact,
     pecan_debug ("passport=[%s],name=[%s]", contact->passport, name);
 
     /** @todo this is a hack to disable display names. */
-    if (strcmp (contact->passport, name) == 0)
+    if (name &&
+        strcmp (contact->passport, name) == 0)
+    {
         tmp_name = NULL;
+    }
     else
+    {
         tmp_name = name;
+    }
 
     if (contact->store_name && tmp_name &&
         strcmp (contact->store_name, tmp_name) == 0)
