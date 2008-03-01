@@ -93,6 +93,35 @@ msn_change_status(MsnSession *session)
 
 		g_free(msnobj_str);
 	}
+
+        {
+            PurpleStatus *status;
+            gchar *payload;
+            const gchar *formatted_msg;
+
+            status = purple_account_get_active_status (account);
+            formatted_msg = purple_status_get_attr_string (status, "message");
+
+            printf ("msg=%s\n", formatted_msg);
+            if (formatted_msg)
+            {
+                gchar *msg;
+                msg = purple_markup_strip_html (formatted_msg);
+                payload = g_strdup_printf ("<Data><PSM>%s</PSM><CurrentMedia></CurrentMedia></Data>", msg);
+                g_free (msg);
+            }
+            else
+            {
+                payload = g_strdup_printf ("<Data><PSM></PSM><CurrentMedia></CurrentMedia></Data>");
+            }
+
+            {
+                MsnTransaction *trans;
+                trans = msn_transaction_new (cmdproc, "UUX", "%d", strlen (payload));
+                msn_transaction_set_payload (trans, payload, strlen (payload));
+                msn_cmdproc_send_trans (cmdproc, trans);
+            }
+        }
 }
 
 const char *

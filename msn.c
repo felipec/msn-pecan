@@ -582,28 +582,40 @@ msn_status_types(PurpleAccount *account)
 	PurpleStatusType *status;
 	GList *types = NULL;
 
-	status = purple_status_type_new_full(PURPLE_STATUS_AVAILABLE,
-			NULL, NULL, FALSE, TRUE, FALSE);
+	status = purple_status_type_new_with_attrs(PURPLE_STATUS_AVAILABLE,
+			NULL, NULL, TRUE, TRUE, FALSE,
+			"message", _("Message"), purple_value_new(PURPLE_TYPE_STRING),
+			NULL);
 	types = g_list_append(types, status);
 
-	status = purple_status_type_new_full(PURPLE_STATUS_AWAY,
-			NULL, NULL, FALSE, TRUE, FALSE);
+	status = purple_status_type_new_with_attrs(PURPLE_STATUS_AWAY,
+			NULL, NULL, TRUE, TRUE, FALSE,
+			"message", _("Message"), purple_value_new(PURPLE_TYPE_STRING),
+			NULL);
 	types = g_list_append(types, status);
 
-	status = purple_status_type_new_full(PURPLE_STATUS_AWAY,
-			"brb", _("Be Right Back"), FALSE, TRUE, FALSE);
+	status = purple_status_type_new_with_attrs(PURPLE_STATUS_AWAY,
+			"brb", _("Be Right Back"), TRUE, TRUE, FALSE,
+			"message", _("Message"), purple_value_new(PURPLE_TYPE_STRING),
+			NULL);
 	types = g_list_append(types, status);
 
-	status = purple_status_type_new_full(PURPLE_STATUS_UNAVAILABLE,
-			"busy", _("Busy"), FALSE, TRUE, FALSE);
+	status = purple_status_type_new_with_attrs(PURPLE_STATUS_UNAVAILABLE,
+			"busy", _("Busy"), TRUE, TRUE, FALSE,
+			"message", _("Message"), purple_value_new(PURPLE_TYPE_STRING),
+			NULL);
 	types = g_list_append(types, status);
 
-	status = purple_status_type_new_full(PURPLE_STATUS_UNAVAILABLE,
-			"phone", _("On the Phone"), FALSE, TRUE, FALSE);
+	status = purple_status_type_new_with_attrs(PURPLE_STATUS_UNAVAILABLE,
+			"phone", _("On the Phone"), TRUE, TRUE, FALSE,
+			"message", _("Message"), purple_value_new(PURPLE_TYPE_STRING),
+			NULL);
 	types = g_list_append(types, status);
 
-	status = purple_status_type_new_full(PURPLE_STATUS_AWAY,
-			"lunch", _("Out to Lunch"), FALSE, TRUE, FALSE);
+	status = purple_status_type_new_with_attrs(PURPLE_STATUS_AWAY,
+			"lunch", _("Out to Lunch"), TRUE, TRUE, FALSE,
+			"message", _("Message"), purple_value_new(PURPLE_TYPE_STRING),
+			NULL);
 	types = g_list_append(types, status);
 
 	status = purple_status_type_new_full(PURPLE_STATUS_INVISIBLE,
