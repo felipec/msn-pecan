@@ -73,10 +73,7 @@ msn_slpmsg_destroy(MsnSlpMessage *slpmsg)
 	if (slpmsg->fp != NULL)
 		fclose(slpmsg->fp);
 
-	purple_imgstore_unref(slpmsg->img);
-
-	if (slpmsg->buffer)
-		g_free(slpmsg->buffer);
+	g_free(slpmsg->buffer);
 
 #ifdef PECAN_DEBUG_SLP
 	/*
@@ -114,7 +111,6 @@ msn_slpmsg_set_body(MsnSlpMessage *slpmsg,
 {
 	/* We can only have one data source at a time. */
 	g_return_if_fail(slpmsg->buffer == NULL);
-	g_return_if_fail(slpmsg->img == NULL);
 	g_return_if_fail(slpmsg->fp == NULL);
 
 	if (body != NULL)
@@ -128,12 +124,9 @@ msn_slpmsg_set_body(MsnSlpMessage *slpmsg,
 void
 msn_slpmsg_set_image(MsnSlpMessage *slpmsg, PurpleStoredImage *img)
 {
-	/* We can only have one data source at a time. */
 	g_return_if_fail(slpmsg->buffer == NULL);
-	g_return_if_fail(slpmsg->img == NULL);
 	g_return_if_fail(slpmsg->fp == NULL);
 
-	slpmsg->img = purple_imgstore_ref(img);
 	slpmsg->size = purple_imgstore_get_size(img);
 	slpmsg->buffer = g_memdup(purple_imgstore_get_data(img), slpmsg->size);
 }
@@ -143,9 +136,7 @@ msn_slpmsg_open_file(MsnSlpMessage *slpmsg, const char *file_name)
 {
 	struct stat st;
 
-	/* We can only have one data source at a time. */
 	g_return_if_fail(slpmsg->buffer == NULL);
-	g_return_if_fail(slpmsg->img == NULL);
 	g_return_if_fail(slpmsg->fp == NULL);
 
 	slpmsg->fp = g_fopen(file_name, "rb");

@@ -553,7 +553,6 @@ got_ok(MsnSlpCall *slpcall,
 
 	if (!strcmp(type, "application/x-msnmsgr-sessionreqbody"))
 	{
-#ifdef MSN_DIRECTCONN
 		if (slpcall->type == MSN_SLPCALL_DC)
 		{
 			/* First let's try a DirectConnection. */
@@ -598,9 +597,6 @@ got_ok(MsnSlpCall *slpcall,
 		{
 			msn_slp_call_session_init(slpcall);
 		}
-#else
-                msn_slp_call_session_init(slpcall);
-#endif /* MSN_DIRECTCONN */
 	}
 	else if (!strcmp(type, "application/x-msnmsgr-transreqbody"))
 	{

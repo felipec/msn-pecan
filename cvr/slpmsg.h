@@ -62,7 +62,6 @@ struct MsnSlpMessage
 	long flags;
 
 	FILE *fp;
-	PurpleStoredImage *img;
 	gchar *buffer;
 	long long offset;
 	long long size;
