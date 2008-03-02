@@ -35,9 +35,15 @@
 #include "pecan_util.h"
 #include "session.h"
 
+#ifdef HAVE_LIBPURPLE
 /* libpurple stuff. */
 #include "fix_purple_win32.h"
 #include <proxy.h>
+#undef connect
+#undef write
+#undef read
+#undef close
+#endif /* HAVE_LIBPURPLE */
 
 static PecanNodeClass *parent_class = NULL;
 

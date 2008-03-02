@@ -19,6 +19,8 @@
 #include "pecan_stream.h"
 #include "pecan_log.h"
 
+#include <string.h>
+
 PecanStream *
 pecan_stream_new (gint fd)
 {

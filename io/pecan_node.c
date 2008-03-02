@@ -26,6 +26,10 @@
 /* libpurple stuff. */
 #include "fix_purple_win32.h"
 #include <proxy.h>
+#undef connect
+#undef write
+#undef read
+#undef close
 #endif /* HAVE_LIBPURPLE */
 
 void pecan_node_error (PecanNode *conn);
