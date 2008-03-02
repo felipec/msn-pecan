@@ -25,6 +25,11 @@
 
 #include <glib/gstdio.h>
 
+#ifdef PURPLE_DEBUG
+/* libpurple stuff. */
+#include <debug.h>
+#endif /* PURPLE_DEBUG */
+
 static const gchar *
 log_level_to_string (PecanLogLevel level)
 {
@@ -78,7 +83,7 @@ msn_base_log_helper (guint level,
     va_start (args, fmt);
 
     tmp = g_strdup_vprintf (fmt, args);
-#ifdef PECAN_DEBUG_FILE
+#if defined(PECAN_DEBUG_FILE)
     {
         static FILE *logfile;
         if (!logfile)
@@ -92,11 +97,33 @@ msn_base_log_helper (guint level,
                    file, line, function,
                    tmp);
     }
+#elif defined(PURPLE_DEBUG)
+    {
+        PurpleDebugLevel purple_level;
+
+        switch (level)
+        {
+            case PECAN_LOG_LEVEL_ERROR:
+                purple_level = PURPLE_DEBUG_ERROR; break;
+            case PECAN_LOG_LEVEL_WARNING:
+                purple_level = PURPLE_DEBUG_WARNING; break;
+            case PECAN_LOG_LEVEL_INFO:
+                purple_level = PURPLE_DEBUG_INFO; break;
+            case PECAN_LOG_LEVEL_DEBUG:
+                purple_level = PURPLE_DEBUG_MISC; break;
+            case PECAN_LOG_LEVEL_LOG:
+                purple_level = PURPLE_DEBUG_MISC; break;
+            default:
+                purple_level = PURPLE_DEBUG_MISC; break;
+        }
+
+        purple_debug (purple_level, "msn", "%s:%d:%s() %s\n", file, line, function, tmp);
+    }
 #else
     pecan_print ("%s %s:%d:%s() %s\n",
-               log_level_to_string (level),
-               file, line, function,
-               tmp);
+                 log_level_to_string (level),
+                 file, line, function,
+                 tmp);
 #endif
     g_free (tmp);
 

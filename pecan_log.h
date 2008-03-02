@@ -55,7 +55,6 @@ void msn_base_log_helper (PecanLogLevel level, const gchar *file, const gchar *f
 void msn_dump_file (const gchar *buffer, gsize len);
 
 #define pecan_print(...) g_print (__VA_ARGS__);
-/* #define pecan_print(...) purple_debug_info ("msn", __VA_ARGS__); */
 
 #define msn_base_log(level, ...) msn_base_log_helper (level, __FILE__, __func__, __LINE__, __VA_ARGS__);
 

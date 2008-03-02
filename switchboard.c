@@ -112,35 +112,24 @@ static void
 close_cb (PecanNode *conn,
           MsnSwitchBoard *swboard)
 {
-    char *tmp;
-
     g_return_if_fail (swboard);
 
+    if (conn->error)
     {
         const char *reason = NULL;
 
-        if (conn->error)
-        {
-            reason = conn->error->message;
+        reason = conn->error->message;
 
-            pecan_error ("connection error: (SB):reason=[%s]", reason);
-            tmp = g_strdup_printf (_("Error: %s"), reason);
+        pecan_error ("connection error: (SB):reason=[%s]", reason);
 
-            g_clear_error (&conn->error);
-        }
-        else
-        {
-            pecan_error ("connection error: (SB)");
-            tmp = g_strdup_printf (_("Error: Unknown"));
-        }
-
+        g_clear_error (&conn->error);
+    }
+    else
+    {
+        pecan_error ("connection error: (SB)");
     }
 
-    msn_switchboard_report_user (swboard, PURPLE_MESSAGE_ERROR, tmp);
-
     msn_switchboard_destroy (swboard);
-
-    g_free (tmp);
 }
 
 /**************************************************************************
