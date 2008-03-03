@@ -4,6 +4,9 @@ PURPLE_CFLAGS=`pkg-config --cflags purple`
 PURPLE_LIBS=`pkg-config --libs purple`
 PURPLE_PREFIX=`pkg-config --variable=prefix purple`
 
+GOBJECT_CFLAGS=`pkg-config --cflags gobject-2.0`
+GOBJECT_LIBS=`pkg-config --libs gobject-2.0`
+
 EXTRA_WARNINGS=-Wall -W -Wformat-nonliteral -Wcast-align -Wpointer-arith \
 	       -Wbad-function-cast -Wmissing-prototypes -Wstrict-prototypes \
 	       -Wmissing-declarations -Winline -Wundef -Wnested-externs -Wcast-qual \
@@ -59,10 +62,10 @@ sources = $(patsubst %.o,%.c,$(objects))
 all: libmsn-pecan.so
 
 libmsn-pecan.so: $(objects)
-	$(CC) $(PURPLE_LIBS) $+ -shared -o $@
+	$(CC) $(PURPLE_LIBS) $(GOBJECT_LIBS) $+ -shared -o $@
 
 %.o: %.c
-	$(CC) -fPIC $(CFLAGS) $(PURPLE_CFLAGS) $< -c -o $@
+	$(CC) -fPIC $(CFLAGS) $(PURPLE_CFLAGS) $(GOBJECT_CFLAGS) $< -c -o $@
 
 clean:
 	rm -f libmsn-pecan.so $(objects)
