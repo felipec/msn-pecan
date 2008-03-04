@@ -1530,7 +1530,7 @@ msn_notification_add_buddy(MsnNotification *notification, const char *list,
         data->group_guid = g_strdup (group_guid);
 
         trans = msn_transaction_new (cmdproc, "ADC", "%s N=%s F=%s",
-                                     list, who, store_name);
+                                     list, who, purple_url_encode (store_name));
 
         msn_transaction_set_data (trans, data);
 
