@@ -173,10 +173,10 @@ get_store_name (PecanContact *contact)
 }
 
 static void
-msn_request_add_group (PecanContactList *contactlist,
-                       const gchar *who,
-                       const gchar *old_group_name,
-                       const gchar *new_group_name)
+request_add_group (PecanContactList *contactlist,
+                   const gchar *who,
+                   const gchar *old_group_guid,
+                   const gchar *new_group_name)
 {
 #ifdef HAVE_LIBPURPLE
     MsnCmdProc *cmdproc;
@@ -188,8 +188,8 @@ msn_request_add_group (PecanContactList *contactlist,
 
     data->who = g_strdup (who);
 
-    if (old_group_name)
-        data->old_group_name = g_strdup (old_group_name);
+    if (old_group_guid)
+        data->old_group_guid = g_strdup (old_group_guid);
 
     trans = msn_transaction_new (cmdproc, "ADG", "%s %d",
                                  purple_url_encode (new_group_name),
@@ -689,6 +689,8 @@ pecan_contactlist_add_buddy (PecanContactList *contactlist,
 
     pecan_debug ("who=[%s],list_id=%d,group_name=[%s]", who, list_id, group_name);
 
+    contact = pecan_contactlist_find_contact (contactlist, who);
+
     if (group_name)
     {
         PecanGroup *group;
@@ -698,28 +700,21 @@ pecan_contactlist_add_buddy (PecanContactList *contactlist,
         if (!group)
         {
             /* We must add that group first. */
-            msn_request_add_group (contactlist, who, NULL, group_name);
+            request_add_group (contactlist, who, NULL, group_name);
             return;
         }
 
         group_guid = pecan_group_get_id (group);
 
-#if 0
         /* There's no way to add a contact to the no-group. */
         /* Removing from other groups does that. */
         if (contact && pecan_contact_get_group_count (contact) > 0 && !group_guid)
         {
             pecan_error ("trying to add contact to a virtual group: who=[%s]",
-                       who);
-            msn_session_warning (contactlist->session,
-                                 _("Can't add to \"%s\"; it's a virtual group"), group_name);
-            purple_blist_remove_buddy (buddy);
+                         who);
             return;
         }
-#endif
     }
-
-    contact = pecan_contactlist_find_contact (contactlist, who);
 
     store_name = (contact) ? get_store_name (contact) : who;
     contact_guid = (contact) ? contact->guid : NULL;
@@ -737,18 +732,23 @@ pecan_contactlist_move_buddy (PecanContactList *contactlist,
                               const gchar *old_group_name,
                               const gchar *new_group_name)
 {
+    PecanGroup *old_group;
     PecanGroup *new_group;
+    const gchar *old_group_guid;
 
+    old_group = pecan_contactlist_find_group_with_name (contactlist, old_group_name);
     new_group = pecan_contactlist_find_group_with_name (contactlist, new_group_name);
+
+    old_group_guid = pecan_group_get_id (old_group);
 
     if (!new_group)
     {
-        msn_request_add_group (contactlist, who, old_group_name, new_group_name);
+        request_add_group (contactlist, who, old_group_guid, new_group_name);
         return;
     }
 
     pecan_contactlist_add_buddy (contactlist, who, MSN_LIST_FL, new_group_name);
-    if (old_group_name)
+    if (old_group_guid)
         pecan_contactlist_rem_buddy (contactlist, who, MSN_LIST_FL, old_group_name);
 }
 
@@ -814,7 +814,7 @@ pecan_contactlist_add_buddy_helper (PecanContactList *contactlist,
             if (!group)
             {
                 /* We must add that group first. */
-                msn_request_add_group (contactlist, who, NULL, group_name);
+                request_add_group (contactlist, who, NULL, group_name);
                 return;
             }
 
@@ -832,7 +832,7 @@ pecan_contactlist_add_buddy_helper (PecanContactList *contactlist,
             if (contact && pecan_contact_get_group_count (contact) > 0 && !group_guid)
             {
                 pecan_error ("trying to add contact to a virtual group: who=[%s]",
-                           who);
+                             who);
                 msn_session_warning (contactlist->session,
                                      _("Can't add to \"%s\"; it's a virtual group"), group_name);
                 purple_blist_remove_buddy (buddy);
@@ -848,7 +848,7 @@ pecan_contactlist_add_buddy_helper (PecanContactList *contactlist,
             list = lists[list_id];
 
             pecan_error ("already there: who=[%s],list=[%s],group_guid=[%s]",
-                       who, list, group_guid);
+                         who, list, group_guid);
 
             /* MSN doesn't support the same contact twice in the same group. */
             purple_blist_remove_buddy (buddy);

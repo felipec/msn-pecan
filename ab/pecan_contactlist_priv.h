@@ -30,7 +30,7 @@
 typedef struct
 {
     gchar *who;
-    gchar *old_group_name;
+    gchar *old_group_guid;
 } MsnMoveBuddy;
 
 struct MsnSesion;
