@@ -31,7 +31,7 @@
 #include "io/pecan_node.h"
 
 #ifndef _WIN32
-#include <netdb.h>
+#include <netinet/in.h>
 #else
 #include <win32dep.h>
 #endif
