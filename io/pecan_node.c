@@ -445,6 +445,13 @@ write_impl (PecanNode *conn,
                          status, status_to_str (status));
         }
 
+        /** @todo should this be here? */
+        if (tmp_error)
+        {
+            conn->error = g_error_copy (tmp_error);
+            pecan_node_error (conn);
+        }
+
         if (ret_bytes_written)
             *ret_bytes_written = bytes_written;
 
