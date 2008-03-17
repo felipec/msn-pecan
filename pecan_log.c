@@ -20,6 +20,8 @@
 
 #ifdef PECAN_DEBUG
 
+/* #define PECAN_CUSTOM_PRINTF */
+
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -69,6 +71,57 @@ msn_dump_file (const gchar *buffer,
     }
 }
 
+#ifdef PECAN_CUSTOM_PRINTF
+gchar *
+pecan_strdup_vprintf (const char *format,
+                      va_list args)
+{
+    const gchar *cur;
+    GString *buf;
+
+    buf = g_string_new (NULL);
+
+    for (cur = format; *cur; cur++)
+    {
+        if (*cur == '%')
+        {
+            cur++;
+
+            /* skip field width */
+            for (; *cur >= '0' && *cur <= '9'; cur++);
+
+            switch (*cur)
+            {
+                case 's':
+                    {
+                        const char *value;
+                        value = va_arg (args, char *);
+                        g_string_append_printf (buf, "%s", value ? value : "(nil)");
+                        break;
+                    }
+                case 'p':
+                    g_string_append_printf (buf, "%p", va_arg (args, void *));
+                    break;
+                case 'd':
+                case 'i':
+                    g_string_append_printf (buf, "%d", va_arg (args, int));
+                    break;
+                default:
+                    va_arg (args, int);
+                    g_string_append_printf (buf, "%c", *cur);
+                    break;
+            }
+        }
+        else
+        {
+            g_string_append_c (buf, *cur);
+        }
+    }
+
+    return g_string_free (buf, FALSE);
+}
+#endif /* PECAN_CUSTOM_PRINTF */
+
 void
 msn_base_log_helper (guint level,
                      const gchar *file,
@@ -82,7 +135,12 @@ msn_base_log_helper (guint level,
 
     va_start (args, fmt);
 
+#ifdef PECAN_CUSTOM_PRINTF
+    tmp = pecan_strdup_vprintf (fmt, args);
+#else
     tmp = g_strdup_vprintf (fmt, args);
+#endif /* PECAN_CUSTOM_PRINTF */
+
 #if defined(PECAN_DEBUG_FILE)
     {
         static FILE *logfile;
