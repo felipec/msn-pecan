@@ -21,7 +21,7 @@
 
 #include <glib.h>
 
-#include "buffer.h"
+#include "pecan_buffer.h"
 
 typedef struct MsnCmd MsnCmd;
 
