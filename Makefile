@@ -37,6 +37,7 @@ objects = \
 	switchboard.o \
 	sync.o \
 	pecan_log.o \
+	pecan_printf.o \
 	pecan_util.o \
 	cmd/cmdproc.o \
 	cmd/command.o \
