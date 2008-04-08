@@ -22,9 +22,11 @@
 /* #define PECAN_CUSTOM_PRINTF */
 
 #ifdef PECAN_CUSTOM_PRINTF
-gchar *pecan_strdup_vprintf (const char *format, va_list args);
+gchar *pecan_strdup_vprintf (const gchar *format, va_list args);
+gchar *pecan_strdup_printf (const gchar *format, ...);
 #else
-#define pecan_strdup_vprintf g_strdup_printf
+#define pecan_strdup_vprintf g_strdup_vprintf
+#define pecan_strdup_printf g_strdup_printf
 #endif /* PECAN_CUSTOM_PRINTF */
 
 #endif /* PECAN_PRINTF_H */

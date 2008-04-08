@@ -18,7 +18,7 @@
 
 #ifdef PECAN_CUSTOM_PRINTF
 gchar *
-pecan_strdup_vprintf (const char *format,
+pecan_strdup_vprintf (const gchar *format,
                       va_list args)
 {
     const gchar *cur;
@@ -65,4 +65,19 @@ pecan_strdup_vprintf (const char *format,
 
     return g_string_free (buf, FALSE);
 }
+
+gchar *
+pecan_strdup_printf (const gchar *format,
+                     ...)
+{
+    gchar *buffer;
+    va_list args;
+
+    va_start (args, format);
+    buffer = pecan_strdup_vprintf (format, args);
+    va_end (args);
+
+    return buffer;
+}
+
 #endif /* PECAN_CUSTOM_PRINTF */
