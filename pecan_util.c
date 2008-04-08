@@ -426,9 +426,9 @@ msn_import_html(const char *html, char **attributes, char **message)
     if (fontface == NULL)
         fontface = g_strdup("MS Sans Serif");
 
-    *attributes = g_strdup_printf("FN=%s; EF=%s; CO=%s; PF=0; RL=%c",
-                                  encode_spaces(fontface),
-                                  fonteffect, fontcolor, direction);
+    *attributes = pecan_strdup_printf("FN=%s; EF=%s; CO=%s; PF=0; RL=%c",
+                                      encode_spaces(fontface),
+                                      fonteffect, fontcolor, direction);
     *message = msg;
 
     g_free(fontface);
@@ -547,15 +547,15 @@ msn_parse_socket(const char *str, char **ret_host, int *ret_port)
 char *
 msn_rand_guid()
 {
-    return g_strdup_printf("%4X%4X-%4X-%4X-%4X-%4X%4X%4X",
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111);
+    return pecan_strdup_printf("%4X%4X-%4X-%4X-%4X-%4X%4X%4X",
+                               rand() % 0xAAFF + 0x1111,
+                               rand() % 0xAAFF + 0x1111,
+                               rand() % 0xAAFF + 0x1111,
+                               rand() % 0xAAFF + 0x1111,
+                               rand() % 0xAAFF + 0x1111,
+                               rand() % 0xAAFF + 0x1111,
+                               rand() % 0xAAFF + 0x1111,
+                               rand() % 0xAAFF + 0x1111);
 }
 
 struct FooGHashNode

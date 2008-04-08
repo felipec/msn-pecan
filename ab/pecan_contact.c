@@ -324,13 +324,13 @@ pecan_contact_set_buddy_icon (PecanContact *contact,
         msn_object_set_size (msnobj, size);
 
         /* Compute the SHA1C field. */
-        buf = g_strdup_printf ("Creator%sSize%dType%dLocation%sFriendly%sSHA1D%s",
-                               msn_object_get_creator (msnobj),
-                               msn_object_get_size (msnobj),
-                               msn_object_get_type (msnobj),
-                               msn_object_get_location (msnobj),
-                               msn_object_get_friendly (msnobj),
-                               msn_object_get_sha1d (msnobj));
+        buf = pecan_strdup_printf ("Creator%sSize%dType%dLocation%sFriendly%sSHA1D%s",
+                                   msn_object_get_creator (msnobj),
+                                   msn_object_get_size (msnobj),
+                                   msn_object_get_type (msnobj),
+                                   msn_object_get_location (msnobj),
+                                   msn_object_get_friendly (msnobj),
+                                   msn_object_get_sha1d (msnobj));
 
         memset (digest, 0, sizeof (digest));
 

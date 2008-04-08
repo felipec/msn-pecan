@@ -19,7 +19,9 @@
 #ifndef PECAN_PRINTF_H
 #define PECAN_PRINTF_H
 
-/* #define PECAN_CUSTOM_PRINTF */
+#include <glib.h>
+
+#define PECAN_CUSTOM_PRINTF
 
 #ifdef PECAN_CUSTOM_PRINTF
 gchar *pecan_strdup_vprintf (const gchar *format, va_list args);

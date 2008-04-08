@@ -212,24 +212,24 @@ http_poll (gpointer data)
         return TRUE;
     }
 
-    params = g_strdup_printf ("Action=poll&SessionID=%s",
-                              (gchar *) http_conn->cur->foo_data);
+    params = pecan_strdup_printf ("Action=poll&SessionID=%s",
+                                  (gchar *) http_conn->cur->foo_data);
 
-    header = g_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
-                              "Accept: */*\r\n"
-                              "Accept-Language: en-us\r\n"
-                              "User-Agent: MSMSGS\r\n"
-                              "Host: %s\r\n"
-                              "Proxy-Connection: Keep-Alive\r\n"
-                              "%s" /* Proxy auth */
-                              "Connection: Keep-Alive\r\n"
-                              "Pragma: no-cache\r\n"
-                              "Content-Type: application/x-msn-messenger\r\n"
-                              "Content-Length: 0\r\n\r\n",
-                              http_conn->gateway,
-                              params,
-                              http_conn->gateway,
-                              auth ? auth : "");
+    header = pecan_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
+                                  "Accept: */*\r\n"
+                                  "Accept-Language: en-us\r\n"
+                                  "User-Agent: MSMSGS\r\n"
+                                  "Host: %s\r\n"
+                                  "Proxy-Connection: Keep-Alive\r\n"
+                                  "%s" /* Proxy auth */
+                                  "Connection: Keep-Alive\r\n"
+                                  "Pragma: no-cache\r\n"
+                                  "Content-Type: application/x-msn-messenger\r\n"
+                                  "Content-Length: 0\r\n\r\n",
+                                  http_conn->gateway,
+                                  params,
+                                  http_conn->gateway,
+                                  auth ? auth : "");
 
 #ifdef PECAN_DEBUG_HTTP
     pecan_debug ("header=[%s]", header);
@@ -672,32 +672,32 @@ foo_write (PecanNode *conn,
 
         if (session_id)
         {
-            params = g_strdup_printf ("SessionID=%s",
-                                      session_id);
+            params = pecan_strdup_printf ("SessionID=%s",
+                                          session_id);
         }
         else
         {
-            params = g_strdup_printf ("Action=open&Server=%s&IP=%s",
-                                      prev->type == PECAN_NODE_NS ? "NS" : "SB",
-                                      prev->hostname);
+            params = pecan_strdup_printf ("Action=open&Server=%s&IP=%s",
+                                          prev->type == PECAN_NODE_NS ? "NS" : "SB",
+                                          prev->hostname);
         }
 
-        header = g_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
-                                  "Accept: */*\r\n"
-                                  "Accept-Language: en-us\r\n"
-                                  "User-Agent: MSMSGS\r\n"
-                                  "Host: %s\r\n"
-                                  "Proxy-Connection: Keep-Alive\r\n"
-                                  "%s" /* Proxy auth */
-                                  "Connection: Keep-Alive\r\n"
-                                  "Pragma: no-cache\r\n"
-                                  "Content-Type: application/x-msn-messenger\r\n"
-                                  "Content-Length: %d\r\n\r\n",
-                                  http_conn->gateway,
-                                  params,
-                                  http_conn->gateway,
-                                  auth ? auth : "",
-                                  count);
+        header = pecan_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
+                                      "Accept: */*\r\n"
+                                      "Accept-Language: en-us\r\n"
+                                      "User-Agent: MSMSGS\r\n"
+                                      "Host: %s\r\n"
+                                      "Proxy-Connection: Keep-Alive\r\n"
+                                      "%s" /* Proxy auth */
+                                      "Connection: Keep-Alive\r\n"
+                                      "Pragma: no-cache\r\n"
+                                      "Content-Type: application/x-msn-messenger\r\n"
+                                      "Content-Length: %d\r\n\r\n",
+                                      http_conn->gateway,
+                                      params,
+                                      http_conn->gateway,
+                                      auth ? auth : "",
+                                      count);
 
 #ifdef PECAN_DEBUG_HTTP
         pecan_debug ("header=[%s]", header);

@@ -207,7 +207,7 @@ msn_directconn_write(MsnDirectConn *directconn,
 
 #ifdef PECAN_DEBUG_DC_FILES
         char *str;
-        str = g_strdup_printf("%s/msntest/%s/w%.4d.bin", g_get_home_dir(), "dc", directconn->c);
+        str = pecan_strdup_printf("%s/msntest/%s/w%.4d.bin", g_get_home_dir(), "dc", directconn->c);
 
         FILE *tf = g_fopen(str, "w");
         fwrite(&body_len, 1, sizeof(body_len), tf);
@@ -323,7 +323,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
 #ifdef PECAN_DEBUG_DC_FILES
         {
             char *str;
-            str = g_strdup_printf("%s/msntest/%s/r%04d.bin", g_get_home_dir(), "dc", directconn->c);
+            str = pecan_strdup_printf("%s/msntest/%s/r%04d.bin", g_get_home_dir(), "dc", directconn->c);
 
             FILE *tf = g_fopen(str, "w");
             fwrite(body, 1, len, tf);

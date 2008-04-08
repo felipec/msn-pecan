@@ -55,7 +55,7 @@ msn_dump_file (const gchar *buffer,
     gchar *basename;
     gchar *fullname;
 
-    basename = g_strdup_printf ("pecan-%.6u.bin", c++);
+    basename = pecan_strdup_printf ("pecan-%.6u.bin", c++);
 
     fullname = g_build_filename (g_get_tmp_dir (), basename, NULL);
 

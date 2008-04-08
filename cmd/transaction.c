@@ -100,9 +100,9 @@ msn_transaction_to_string(MsnTransaction *trans)
 	g_return_val_if_fail(trans != NULL, FALSE);
 
 	if (trans->params != NULL)
-		str = g_strdup_printf("%s %u %s\r\n", trans->command, trans->trId, trans->params);
+		str = pecan_strdup_printf("%s %u %s\r\n", trans->command, trans->trId, trans->params);
 	else
-		str = g_strdup_printf("%s %u\r\n", trans->command, trans->trId);
+		str = pecan_strdup_printf("%s %u\r\n", trans->command, trans->trId);
 
 	return str;
 }

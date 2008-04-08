@@ -16,7 +16,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
+#include "pecan_printf.h"
+
 #ifdef PECAN_CUSTOM_PRINTF
+/** @todo this needs to be heavily optimized */
 gchar *
 pecan_strdup_vprintf (const gchar *format,
                       va_list args)
@@ -30,10 +33,25 @@ pecan_strdup_vprintf (const gchar *format,
     {
         if (*cur == '%')
         {
+            gboolean fill = FALSE;
+            guint field_width = 0;
+
             cur++;
 
-            /* skip field width */
-            for (; *cur >= '0' && *cur <= '9'; cur++);
+            /** @todo hack */
+            if (*cur == '0' || *cur == '.')
+            {
+                cur++;
+                fill = TRUE;
+            }
+
+            /* field width */
+            for (; *cur >= '0' && *cur <= '9'; cur++)
+                field_width = field_width * 10 + (*cur - '0');
+
+            /** @todo hack */
+            if (*cur == 'l')
+                cur++;
 
             switch (*cur)
             {
@@ -45,11 +63,24 @@ pecan_strdup_vprintf (const gchar *format,
                         break;
                     }
                 case 'p':
-                    g_string_append_printf (buf, "%p", va_arg (args, void *));
-                    break;
                 case 'd':
                 case 'i':
-                    g_string_append_printf (buf, "%d", va_arg (args, int));
+                case 'u':
+                case 'X':
+                    {
+                        gchar *format;
+                        if (field_width && fill)
+                            format = g_strdup_printf ("%%0%d%c", field_width, *cur);
+                        else if (field_width)
+                            format = g_strdup_printf ("%%%d%c", field_width, *cur);
+                        else
+                            format = g_strdup_printf ("%%%c", *cur);
+                        g_string_append_printf (buf, format, va_arg (args, void *));
+                        g_free (format);
+                        break;
+                    }
+                case 'c':
+                    g_string_append_c (buf, va_arg (args, int));
                     break;
                 default:
                     va_arg (args, int);

@@ -107,8 +107,8 @@ msn_xfer_init(PurpleXfer *xfer)
 	slpcall = xfer->data;
 
 	/* Send Ok */
-	content = g_strdup_printf("SessionID: %lu\r\n\r\n",
-							  slpcall->session_id);
+        content = pecan_strdup_printf("SessionID: %lu\r\n\r\n",
+                                      slpcall->session_id);
 
 	send_ok(slpcall, slpcall->branch, "application/x-msnmsgr-sessionreqbody",
 			content);
@@ -136,7 +136,7 @@ msn_xfer_cancel(PurpleXfer *xfer)
 		}
 		else
 		{
-			content = g_strdup_printf("SessionID: %lu\r\n\r\n",
+			content = pecan_strdup_printf("SessionID: %lu\r\n\r\n",
 									  slpcall->session_id);
 
 			send_decline(slpcall, slpcall->branch, "application/x-msnmsgr-sessionreqbody",
@@ -281,8 +281,8 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 		int type;
 
 		/* Send Ok */
-		content = g_strdup_printf("SessionID: %lu\r\n\r\n",
-								  slpcall->session_id);
+                content = pecan_strdup_printf("SessionID: %lu\r\n\r\n",
+                                              slpcall->session_id);
 
 		send_ok(slpcall, branch, "application/x-msnmsgr-sessionreqbody",
 				content);
@@ -403,8 +403,8 @@ send_bye(MsnSlpCall *slpcall, const char *type)
 
 	g_return_if_fail(slplink != NULL);
 
-	header = g_strdup_printf("BYE MSNMSGR:%s MSNSLP/1.0",
-							 slplink->local_user);
+        header = pecan_strdup_printf("BYE MSNMSGR:%s MSNSLP/1.0",
+                                     slplink->local_user);
 
 	slpmsg = msn_slpmsg_sip_new(slpcall, 0, header,
 								"A0D624A6-6C0C-4283-A9E0-BC97B4B46D32",
@@ -482,16 +482,16 @@ got_invite(MsnSlpCall *slpcall,
 
 			port = directconn->port;
 
-			new_content = g_strdup_printf(
-									  "Bridge: TCPv1\r\n"
-									  "Listening: %s\r\n"
-									  "Nonce: {%s}\r\n"
-									  "Ipv4Internal-Addrs: 192.168.0.82\r\n"
-									  "Ipv4Internal-Port: %d\r\n"
-									  "\r\n",
-									  listening,
-									  nonce,
-									  port);
+                        new_content = pecan_strdup_printf(
+                                                          "Bridge: TCPv1\r\n"
+                                                          "Listening: %s\r\n"
+                                                          "Nonce: {%s}\r\n"
+                                                          "Ipv4Internal-Addrs: 192.168.0.82\r\n"
+                                                          "Ipv4Internal-Port: %d\r\n"
+                                                          "\r\n",
+                                                          listening,
+                                                          nonce,
+                                                          port);
 #endif
 		}
 		else
@@ -499,13 +499,13 @@ got_invite(MsnSlpCall *slpcall,
 			listening = "false";
 			nonce = g_strdup("00000000-0000-0000-0000-000000000000");
 
-			new_content = g_strdup_printf(
-										  "Bridge: TCPv1\r\n"
-										  "Listening: %s\r\n"
-										  "Nonce: {%s}\r\n"
-										  "\r\n",
-										  listening,
-										  nonce);
+                        new_content = pecan_strdup_printf(
+                                                          "Bridge: TCPv1\r\n"
+                                                          "Listening: %s\r\n"
+                                                          "Nonce: {%s}\r\n"
+                                                          "\r\n",
+                                                          listening,
+                                                          nonce);
 		}
 
 		send_ok(slpcall, branch,
@@ -568,16 +568,16 @@ got_ok(MsnSlpCall *slpcall,
 
 			branch = msn_rand_guid();
 
-			new_content = g_strdup_printf(
-									  "Bridges: TRUDPv1 TCPv1\r\n"
-									  "NetID: 0\r\n"
-									  "Conn-Type: Direct-Connect\r\n"
-									  "UPnPNat: false\r\n"
-									  "ICF: false\r\n"
-									 );
+                        new_content = pecan_strdup_printf(
+                                                          "Bridges: TRUDPv1 TCPv1\r\n"
+                                                          "NetID: 0\r\n"
+                                                          "Conn-Type: Direct-Connect\r\n"
+                                                          "UPnPNat: false\r\n"
+                                                          "ICF: false\r\n"
+                                                         );
 
-			header = g_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
-									 slplink->remote_user);
+                        header = pecan_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
+                                                     slplink->remote_user);
 
 			slpmsg = msn_slpmsg_sip_new(slpcall, 0, header, branch,
 										"application/x-msnmsgr-transreqbody",

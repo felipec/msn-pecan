@@ -270,8 +270,8 @@ msn_got_add_contact (MsnSession *session,
             gchar *msg;
 
             buddy = purple_find_buddy (account, passport);
-            msg = g_strdup_printf (_("%s has added you to his or her buddy list."),
-                                   buddy ? purple_buddy_get_contact_alias(buddy) : passport);
+            msg = pecan_strdup_printf (_("%s has added you to his or her buddy list."),
+                                       buddy ? purple_buddy_get_contact_alias(buddy) : passport);
             purple_conv_im_write (PURPLE_CONV_IM (convo), passport, msg,
                                   PURPLE_MESSAGE_SYSTEM, time (NULL));
             g_free (msg);
@@ -338,8 +338,8 @@ msn_got_rem_contact (MsnSession *session,
             gchar *msg;
 
             buddy = purple_find_buddy (account, passport);
-            msg = g_strdup_printf (_("%s has removed you from his or her buddy list."),
-                                   buddy ? purple_buddy_get_contact_alias (buddy) : passport);
+            msg = pecan_strdup_printf (_("%s has removed you from his or her buddy list."),
+                                       buddy ? purple_buddy_get_contact_alias (buddy) : passport);
             purple_conv_im_write (PURPLE_CONV_IM (convo), passport, msg,
                                   PURPLE_MESSAGE_SYSTEM, time (NULL));
             g_free (msg);

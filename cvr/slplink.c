@@ -65,7 +65,7 @@ debug_msg_to_file(MsnMessage *msg, gboolean send)
 
 	dir = send ? "send" : "recv";
 	c = send ? m_sc++ : m_rc++;
-	tmp = g_strdup_printf("%s/msntest/%s/%03d", g_get_home_dir(), dir, c);
+        tmp = pecan_strdup_printf("%s/msntest/%s/%03d", g_get_home_dir(), dir, c);
 	tf = g_fopen(tmp, "wb");
 	if (tf == NULL)
 	{

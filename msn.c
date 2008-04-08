@@ -862,8 +862,8 @@ msn_send_im(PurpleConnection *gc, const char *who, const char *message,
 
 		format = msn_message_get_attr(msg, "X-MMS-IM-Format");
 		msn_parse_format(format, &pre, &post);
-		body_str = g_strdup_printf("%s%s%s", pre ? pre :  "",
-								   body_enc ? body_enc : "", post ? post : "");
+                body_str = pecan_strdup_printf("%s%s%s", pre ? pre :  "",
+                                               body_enc ? body_enc : "", post ? post : "");
 		g_free(body_enc);
 		g_free(pre);
 		g_free(post);
@@ -1366,7 +1366,7 @@ msn_tooltip_extract_info_text(PurpleNotifyUserInfo *user_info, MsnGetInfoData *i
 		if (b->server_alias)
 		{
 			char *nicktext = g_markup_escape_text(b->server_alias, -1);
-			tmp = g_strdup_printf("<font sml=\"msn\">%s</font><br>", nicktext);
+			tmp = pecan_strdup_printf("<font sml=\"msn\">%s</font><br>", nicktext);
 			purple_notify_user_info_add_pair(user_info, _("Nickname"), tmp);
 			g_free(tmp);
 			g_free(nicktext);
@@ -1473,7 +1473,7 @@ msn_got_info(PurpleUtilFetchUrlData *url_data, gpointer data,
 
 	if (error_message != NULL || url_text == NULL || strcmp(url_text, "") == 0)
 	{
-		tmp = g_strdup_printf("<b>%s</b>", _("Error retrieving profile"));
+		tmp = pecan_strdup_printf("<b>%s</b>", _("Error retrieving profile"));
 		purple_notify_user_info_add_pair(user_info, NULL, tmp);
 		g_free(tmp);
 
@@ -1792,7 +1792,7 @@ msn_got_info(PurpleUtilFetchUrlData *url_data, gpointer data,
 	/* If we were able to fetch a homepage url earlier, stick it in there */
 	if (user_url != NULL)
 	{
-		tmp = g_strdup_printf("<a href=\"%s\">%s</a>", user_url, user_url);
+		tmp = pecan_strdup_printf("<a href=\"%s\">%s</a>", user_url, user_url);
 		purple_notify_user_info_add_pair(user_info, _("Homepage"), tmp);
 		g_free(tmp);
 		g_free(user_url);
@@ -1828,8 +1828,8 @@ msn_got_info(PurpleUtilFetchUrlData *url_data, gpointer data,
 	}
 
 	/* put a link to the actual profile URL */
-	tmp = g_strdup_printf("<a href=\"%s%s\">%s%s</a>",
-					PROFILE_URL, info_data->name, PROFILE_URL, info_data->name);
+        tmp = pecan_strdup_printf("<a href=\"%s%s\">%s%s</a>",
+                                  PROFILE_URL, info_data->name, PROFILE_URL, info_data->name);
 	purple_notify_user_info_add_pair(user_info, _("Profile URL"), tmp);
 	g_free(tmp);
 
@@ -1937,7 +1937,7 @@ msn_get_info(PurpleConnection *gc, const char *name)
 	data->gc   = gc;
 	data->name = g_strdup(name);
 
-	url = g_strdup_printf("%s%s", PROFILE_URL, name);
+	url = pecan_strdup_printf("%s%s", PROFILE_URL, name);
 
 	purple_util_fetch_url(url, FALSE,
 				   "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)",

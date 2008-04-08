@@ -107,12 +107,12 @@ msn_change_status(MsnSession *session)
             {
                 gchar *msg;
                 msg = purple_markup_strip_html (formatted_msg);
-                payload = g_strdup_printf ("<Data><PSM>%s</PSM><CurrentMedia></CurrentMedia></Data>", msg);
+                payload = pecan_strdup_printf ("<Data><PSM>%s</PSM><CurrentMedia></CurrentMedia></Data>", msg);
                 g_free (msg);
             }
             else
             {
-                payload = g_strdup_printf ("<Data><PSM></PSM><CurrentMedia></CurrentMedia></Data>");
+                payload = pecan_strdup_printf ("<Data><PSM></PSM><CurrentMedia></CurrentMedia></Data>");
             }
 
             {

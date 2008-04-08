@@ -349,33 +349,33 @@ login_connect_cb(gpointer data, PurpleSslConnection *gsc,
 
 	ctint = strtoul((char *)g_hash_table_lookup(nexus->challenge_data, "ct"), NULL, 10) + 200;
 
-	head = g_strdup_printf(
-		"GET %s HTTP/1.1\r\n"
-		"Authorization: Passport1.4 OrgVerb=GET,OrgURL=%s,sign-in=%s",
-		nexus->login_path,
-		(char *)g_hash_table_lookup(nexus->challenge_data, "ru"),
-		username);
+        head = pecan_strdup_printf(
+                                   "GET %s HTTP/1.1\r\n"
+                                   "Authorization: Passport1.4 OrgVerb=GET,OrgURL=%s,sign-in=%s",
+                                   nexus->login_path,
+                                   (char *)g_hash_table_lookup(nexus->challenge_data, "ru"),
+                                   username);
 
-	tail = g_strdup_printf(
-		"lc=%s,id=%s,tw=%s,fs=%s,ru=%s,ct=%" G_GUINT32_FORMAT ",kpp=%s,kv=%s,ver=%s,tpf=%s\r\n"
-		"User-Agent: MSMSGS\r\n"
-		"Host: %s\r\n"
-		"Connection: Keep-Alive\r\n"
-		"Cache-Control: no-cache\r\n",
-		nexus_challenge_data_lookup(nexus->challenge_data, "lc"),
-		nexus_challenge_data_lookup(nexus->challenge_data, "id"),
-		nexus_challenge_data_lookup(nexus->challenge_data, "tw"),
-		nexus_challenge_data_lookup(nexus->challenge_data, "fs"),
-		nexus_challenge_data_lookup(nexus->challenge_data, "ru"),
-		ctint,
-		nexus_challenge_data_lookup(nexus->challenge_data, "kpp"),
-		nexus_challenge_data_lookup(nexus->challenge_data, "kv"),
-		nexus_challenge_data_lookup(nexus->challenge_data, "ver"),
-		nexus_challenge_data_lookup(nexus->challenge_data, "tpf"),
-		nexus->login_host);
+        tail = pecan_strdup_printf(
+                                   "lc=%s,id=%s,tw=%s,fs=%s,ru=%s,ct=%" G_GUINT32_FORMAT ",kpp=%s,kv=%s,ver=%s,tpf=%s\r\n"
+                                   "User-Agent: MSMSGS\r\n"
+                                   "Host: %s\r\n"
+                                   "Connection: Keep-Alive\r\n"
+                                   "Cache-Control: no-cache\r\n",
+                                   nexus_challenge_data_lookup(nexus->challenge_data, "lc"),
+                                   nexus_challenge_data_lookup(nexus->challenge_data, "id"),
+                                   nexus_challenge_data_lookup(nexus->challenge_data, "tw"),
+                                   nexus_challenge_data_lookup(nexus->challenge_data, "fs"),
+                                   nexus_challenge_data_lookup(nexus->challenge_data, "ru"),
+                                   ctint,
+                                   nexus_challenge_data_lookup(nexus->challenge_data, "kpp"),
+                                   nexus_challenge_data_lookup(nexus->challenge_data, "kv"),
+                                   nexus_challenge_data_lookup(nexus->challenge_data, "ver"),
+                                   nexus_challenge_data_lookup(nexus->challenge_data, "tpf"),
+                                   nexus->login_host);
 
-	buffer = g_strdup_printf("%s,pwd=XXXXXXXX,%s\r\n", head, tail);
-	request_str = g_strdup_printf("%s,pwd=%s,%s\r\n", head, password, tail);
+	buffer = pecan_strdup_printf("%s,pwd=XXXXXXXX,%s\r\n", head, tail);
+	request_str = pecan_strdup_printf("%s,pwd=%s,%s\r\n", head, password, tail);
 
 	pecan_log ("sending: [%s]", buffer);
 

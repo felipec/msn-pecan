@@ -24,6 +24,7 @@
 #define MSN_H
 
 #include "msn-config.h"
+#include "pecan_printf.h" /** @todo remove this */
 
 #define MSN_BUF_LEN 8192
 

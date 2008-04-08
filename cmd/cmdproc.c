@@ -167,9 +167,9 @@ msn_cmdproc_send_quick(MsnCmdProc *cmdproc, const char *command,
     }
 
     if (params != NULL)
-        data = g_strdup_printf("%s %s\r\n", command, params);
+        data = pecan_strdup_printf("%s %s\r\n", command, params);
     else
-        data = g_strdup_printf("%s\r\n", command);
+        data = pecan_strdup_printf("%s\r\n", command);
 
     g_free(params);
 
