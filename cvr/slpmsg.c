@@ -27,6 +27,7 @@
 #include "slpcall.h"
 #include "slplink.h"
 #include "session.h"
+#include "pecan_printf.h"
 
 #include "cmd/msg_private.h"
 

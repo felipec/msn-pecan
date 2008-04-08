@@ -31,6 +31,7 @@ OBJECTS = \
 	  sync.o \
 	  pecan_log.o \
 	  pecan_util.o \
+	  pecan_printf.o \
 	  cmd/cmdproc.o \
 	  cmd/command.o \
 	  cmd/history.o \

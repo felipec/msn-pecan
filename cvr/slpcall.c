@@ -28,6 +28,7 @@
 #include "slpmsg.h"
 #include "session.h"
 #include "pecan_util.h"
+#include "pecan_printf.h"
 
 #ifdef MSN_DIRECTCONN
 #include "directconn.h"

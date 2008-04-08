@@ -21,6 +21,7 @@
  */
 
 #include "page.h"
+#include "pecan_printf.h"
 
 #include <string.h>
 
