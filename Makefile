@@ -1,4 +1,5 @@
 CC=gcc
+LD=ld
 
 PURPLE_CFLAGS=`pkg-config --cflags purple`
 PURPLE_LIBS=`pkg-config --libs purple`
@@ -62,7 +63,7 @@ sources = $(patsubst %.o,%.c,$(objects))
 all: libmsn-pecan.so
 
 libmsn-pecan.so: $(objects)
-	$(CC) $(PURPLE_LIBS) $(GOBJECT_LIBS) $+ -shared -o $@
+	$(LD) $(PURPLE_LIBS) $(GOBJECT_LIBS) $+ -shared -o $@
 
 %.o: %.c
 	$(CC) -fPIC $(CFLAGS) $(PURPLE_CFLAGS) $(GOBJECT_CFLAGS) $< -c -o $@
