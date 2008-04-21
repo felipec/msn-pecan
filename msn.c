@@ -2162,7 +2162,7 @@ init_plugin(PurplePlugin *plugin)
 
 	purple_cmd_register("nudge", "", PURPLE_CMD_P_PRPL,
 	                  PURPLE_CMD_FLAG_IM | PURPLE_CMD_FLAG_PRPL_ONLY,
-	                 "prpl-msn", msn_cmd_nudge,
+	                 "prpl-msn-pecan", msn_cmd_nudge,
 	                  _("nudge: nudge a user to get their attention"), NULL);
 
 	purple_prefs_remove("/plugins/prpl/msn");
