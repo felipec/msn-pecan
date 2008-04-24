@@ -1996,7 +1996,7 @@ static gboolean msn_uri_handler(const char *proto, const char *cmd, GHashTable *
 	if (g_ascii_strcasecmp(proto, "msnim"))
 		return FALSE;
 
-	acct = find_acct("prpl-msn", acct_id);
+	acct = find_acct("prpl-msn-pecan", acct_id);
 
 	if (!acct)
 		return FALSE;
