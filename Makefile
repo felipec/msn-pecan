@@ -1,6 +1,8 @@
 CC=gcc
 LD=ld
 
+PLATFORM=$(shell uname -s)
+
 PURPLE_CFLAGS=`pkg-config --cflags purple`
 PURPLE_LIBS=`pkg-config --libs purple`
 PURPLE_PREFIX=`pkg-config --variable=prefix purple`
@@ -61,10 +63,16 @@ objects = \
 
 sources = $(patsubst %.o,%.c,$(objects))
 
+ifeq ($(PLATFORM),Darwin)
+	DYNFLAG=-dynamiclib
+else
+	DYNFLAG=-shared
+endif
+
 all: libmsn-pecan.so
 
 libmsn-pecan.so: $(objects)
-	$(LD) $(PURPLE_LIBS) $(GOBJECT_LIBS) $+ -shared -o $@
+	$(LD) $(PURPLE_LIBS) $(GOBJECT_LIBS) $+ $(DYNFLAG) -o $@
 
 %.o: %.c
 	$(CC) -fPIC $(CFLAGS) $(PURPLE_CFLAGS) $(GOBJECT_CFLAGS) $< -c -o $@
