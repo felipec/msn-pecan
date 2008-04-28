@@ -1,6 +1,66 @@
- * GObjectify NS and SB
- * Add testing framework
- * GObjectify AdressBook
- * Use hashetables in AB stuff (user/group/userlist)
- * Allow cancel in authorization dialog
- * Allow alias from the add buddy dialog
+== GObjectification ==
+
+The objective is that all of the important structures in msn-pecan are
+developed using GObject.
+
+ * Network I/O
+   * Command server (done)
+   * HTTP server (done)
+   * Notification server
+   * Switchboard server
+   * Direct Connection (p2p)
+   * Nexus (authentication)
+
+ * AddressBook
+   * Contact
+   * Group
+   * Contact List
+
+ * CVR
+
+== Unit Testing ==
+
+For this better modularization is required so individual modules can tested
+independently. Also, to be able to work without libpurple.
+
+ * Modularization
+  * Network I/O
+  * AddressBook
+  * CVR
+
+ * Unit Tests
+  * Utilities
+    * Command parsing
+    * Message parsing
+    * Transaction handling
+  * Network I/O
+  * AddressBook
+  * CVR
+
+== Utilities ==
+
+=== printf ===
+
+GLib's printf utility is sub-obtimal so a custom one has been developed in
+msn-pecan. It's far from being complete, and probably should be pushed into
+mainline GLib.
+
+So that g_print ("%s", NULL) works on all architectures. Currently that crashes
+in Windows.
+
+== Documentation ==
+
+ * Overview, architecture
+ * Create design diagrams
+ * Use doxygen
+ * Add documentation to: http://imfreedom.org/wiki/index.php/MSN
+ * Examples of communications (client/server, p2p)
+
+== Other ideas ==
+
+ * Create a standalone library.
+ * Don't rely on GLib's mainloop. (for Adium X)
+ * Properly use and test pecan_buffer.
+ * Port offline message support from libgmsn.
+ * Allow cancel in authorization dialog.
+ * Allow alias from the add buddy dialog.
