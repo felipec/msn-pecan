@@ -1,5 +1,4 @@
 CC=gcc
-LD=ld
 
 PLATFORM=$(shell uname -s)
 
@@ -72,7 +71,7 @@ endif
 all: libmsn-pecan.so
 
 libmsn-pecan.so: $(objects)
-	$(LD) $(PURPLE_LIBS) $(GOBJECT_LIBS) $+ $(DYNFLAG) -o $@
+	$(CC) $(PURPLE_LIBS) $(GOBJECT_LIBS) $+ $(DYNFLAG) -o $@
 
 %.o: %.c
 	$(CC) -fPIC $(CFLAGS) $(PURPLE_CFLAGS) $(GOBJECT_CFLAGS) $< -c -o $@
