@@ -82,6 +82,12 @@ clean:
 depend:
 	makedepend -Y -- $(CFLAGS) -- $(sources)
 
+dist:
+	git archive --format=tar --prefix=msn-pecan-$(version)/ $(version) > /tmp/msn-pecan-$(version).tar
+	git-changelog > ChangeLog
+	tar --append -f /tmp/msn-pecan-$(version).tar ChangeLog
+	bzip2 /tmp/msn-pecan-$(version).tar
+
 install: libmsn-pecan.so
 	mkdir -p $(purpledir)
 	install libmsn-pecan.so $(purpledir)
