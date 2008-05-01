@@ -84,8 +84,11 @@ depend:
 
 dist:
 	git archive --format=tar --prefix=msn-pecan-$(version)/ $(version) > /tmp/msn-pecan-$(version).tar
-	git-changelog > ChangeLog
-	tar --append -f /tmp/msn-pecan-$(version).tar ChangeLog
+	mkdir -p msn-pecan-$(version)
+	git-changelog > msn-pecan-$(version)/ChangeLog
+	chmod 664 msn-pecan-$(version)/ChangeLog
+	tar --append -f /tmp/msn-pecan-$(version).tar --owner root --group root msn-pecan-$(version)/ChangeLog
+	rm -r msn-pecan-$(version)
 	bzip2 /tmp/msn-pecan-$(version).tar
 
 install: libmsn-pecan.so
