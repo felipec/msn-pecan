@@ -22,7 +22,11 @@
 #include <glib.h>
 #include "msn.h"
 
+#define PECAN_DEBUG
+
 #if defined(PECAN_DEBUG)
+
+#define PURPLE_DEBUG
 
 /* #define PECAN_DEBUG_FILE */
 
