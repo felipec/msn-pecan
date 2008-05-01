@@ -102,12 +102,16 @@ msn_change_status(MsnSession *session)
             status = purple_account_get_active_status (account);
             formatted_msg = purple_status_get_attr_string (status, "message");
 
-            printf ("msg=%s\n", formatted_msg);
             if (formatted_msg)
             {
                 gchar *msg;
-                msg = purple_markup_strip_html (formatted_msg);
+                gchar *tmp;
+
+                tmp = purple_markup_strip_html (formatted_msg);
+                msg = g_markup_escape_text (tmp, -1);
                 payload = pecan_strdup_printf ("<Data><PSM>%s</PSM><CurrentMedia></CurrentMedia></Data>", msg);
+
+                g_free (tmp);
                 g_free (msg);
             }
             else
