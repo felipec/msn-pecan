@@ -319,6 +319,8 @@ usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     if (!g_ascii_strcasecmp(cmd->params[1], "OK"))
     {
         /* OK */
+        session->login_timestamp = time (NULL);
+
         msn_session_set_login_step(session, PECAN_LOGIN_STEP_SYN);
 
         msn_cmdproc_send(cmdproc, "SYN", "%s %s", "0", "0");
@@ -1136,8 +1138,9 @@ url_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     char buf2[3];
     char sendbuf[64];
     int i;
-    GError *error = NULL;
-    gint fd;
+    glong tmp_timestamp;
+
+    /* @todo does this needs to be updated? */
 
     session = cmdproc->session;
     account = session->account;
@@ -1145,9 +1148,11 @@ url_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     rru = cmd->params[1];
     url = cmd->params[2];
 
-    buf = pecan_strdup_printf("%s%lu%s",
+    tmp_timestamp = time (NULL) - session->login_timestamp;
+
+    buf = pecan_strdup_printf("%s%ld%s",
                               session->passport_info.mspauth ? session->passport_info.mspauth : "BOGUS",
-                              time(NULL) - session->passport_info.sl,
+                              tmp_timestamp,
                               purple_connection_get_password(account->gc));
 
     cipher = purple_ciphers_find_cipher("md5");
@@ -1173,6 +1178,10 @@ url_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         g_free(session->passport_info.file);
     }
 
+#if 0
+    gint fd;
+    GError *error = NULL;
+
     if ((fd = g_file_open_tmp ("XXXXXX.html", &session->passport_info.file, &error)))
     {
         GString *str;
@@ -1191,8 +1200,6 @@ url_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         g_string_append_printf (str, "<form name=\"pform\" action=\"%s\" method=\"POST\">\n\n",
                                 url);
         g_string_append_printf (str, "<input type=\"hidden\" name=\"mode\" value=\"ttl\">\n");
-        g_string_append_printf (str, "<input type=\"hidden\" name=\"login\" value=\"%s\">\n",
-                                purple_account_get_username (account));
         g_string_append_printf (str, "<input type=\"hidden\" name=\"username\" value=\"%s\">\n",
                                 purple_account_get_username (account));
         if (session->passport_info.sid != NULL)
@@ -1203,7 +1210,7 @@ url_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
                                     session->passport_info.kv);
         g_string_append_printf (str, "<input type=\"hidden\" name=\"id\" value=\"2\">\n");
         g_string_append_printf (str, "<input type=\"hidden\" name=\"sl\" value=\"%ld\">\n",
-                                time (NULL) - session->passport_info.sl);
+                                tmp_timestamp);
         g_string_append_printf (str, "<input type=\"hidden\" name=\"rru\" value=\"%s\">\n",
                                 rru);
         if (session->passport_info.mspauth != NULL)
@@ -1229,12 +1236,49 @@ url_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     if (error)
     {
-        pecan_error ("error opening temp passport file: [%s]",
-                   error->message);
+        pecan_error ("error opening temp passport file: [%s]", error->message);
 
         g_error_free (error);
+
+        return;
+    }
+#else
+    {
+        session->passport_info.file = g_strdup_printf ("%s&auth=%s&creds=%s&sl=%ld&username=%s&mode=ttl&sid=%s&id=2&rru=%ssvc_mail&js=yes",
+                                                       url,
+                                                       session->passport_info.mspauth,
+                                                       sendbuf,
+                                                       tmp_timestamp,
+                                                       pecan_contact_get_passport (session->user),
+                                                       session->passport_info.sid,
+                                                       rru);
+    }
+#endif
+
+    {
+        static gboolean is_initial = TRUE;
+
+        if (!is_initial)
+            return;
+
+        if (session->inbox_unread_count > 0)
+        {
+            PurpleConnection *gc;
+            const char *passport;
+            const char *file_url;
+
+            gc = session->account->gc;
+            passport = pecan_contact_get_passport (session->user);
+            file_url = session->passport_info.file;
+
+            purple_notify_emails (gc, session->inbox_unread_count, FALSE, NULL, NULL,
+                                  &passport, &file_url, NULL, NULL);
+        }
+
+        is_initial = FALSE;
     }
 }
+
 /**************************************************************************
  * Switchboards
  **************************************************************************/
@@ -1345,6 +1389,70 @@ profile_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
     if ((value = msn_message_get_attr(msg, "LoginTime")) != NULL)
         session->passport_info.sl = atol(value);
+}
+
+static void
+initial_mdata_msg (MsnCmdProc *cmdproc,
+                   MsnMessage *msg)
+{
+    MsnSession *session;
+    PurpleConnection *gc;
+    GHashTable *table;
+
+    session = cmdproc->session;
+    gc = session->account->gc;
+
+    if (strcmp (msg->remote_user, "Hotmail"))
+        /* This isn't an official message. */
+        return;
+
+    table = msn_message_get_hashtable_from_body (msg);
+
+    {
+        gchar *mdata;
+        mdata = g_hash_table_lookup (table, "Mail-Data");
+
+        if (mdata)
+        {
+            gchar *iu = NULL;
+            const gchar *start;
+            const gchar *end;
+            guint len;
+
+            len = strlen (mdata);
+            start = g_strstr_len (mdata, len, "<IU>");
+
+            if (start)
+            {
+                start += strlen ("<IU>");
+                end = g_strstr_len (start, len - (start - mdata), "</IU>");
+
+                if (end > start)
+                    iu = g_strndup (start, end - start);
+            }
+
+            if (iu)
+            {
+                session->inbox_unread_count = atoi (iu);
+
+                g_free (iu);
+            }
+        }
+
+        if (purple_account_get_check_mail (session->account))
+        {
+            if (!session->passport_info.file)
+            {
+                MsnTransaction *trans;
+                trans = msn_transaction_new (cmdproc, "URL", "%s", "INBOX");
+                msn_transaction_queue_cmd (trans, msg->cmd);
+
+                msn_cmdproc_send_trans (cmdproc, trans);
+            }
+        }
+    }
+
+    g_hash_table_destroy(table);
 }
 
 static void
@@ -1631,6 +1739,9 @@ msn_notification_init(void)
     msn_table_add_msg_type(cbs_table,
                            "text/x-msmsgsinitialemailnotification",
                            initial_email_msg);
+    msn_table_add_msg_type(cbs_table,
+                           "text/x-msmsgsinitialmdatanotification",
+                           initial_mdata_msg);
     msn_table_add_msg_type(cbs_table,
                            "text/x-msmsgsemailnotification",
                            email_msg);

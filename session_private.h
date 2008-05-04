@@ -77,6 +77,9 @@ struct MsnSession
         int client_port;
 
     } passport_info;
+
+    guint inbox_unread_count; /* The number of unread e-mails on the inbox. */
+    gulong login_timestamp;
 };
 
 #endif /* MSN_SESSION_PRIVATE_H */
