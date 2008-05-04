@@ -1369,8 +1369,6 @@ initial_email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
         msn_transaction_queue_cmd(trans, msg->cmd);
 
         msn_cmdproc_send_trans(cmdproc, trans);
-
-        return;
     }
 
     if (!purple_account_get_check_mail(session->account))
