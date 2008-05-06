@@ -287,6 +287,7 @@ msn_session_set_error(MsnSession *session, MsnErrorType error,
 	char *msg;
 
 	gc = purple_account_get_connection(session->account);
+        g_return_if_fail (gc);
 
 	switch (error)
 	{
