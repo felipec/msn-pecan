@@ -1295,86 +1295,24 @@ msn_remove_group(PurpleConnection *gc, PurpleGroup *group)
 	}
 }
 
-static gboolean msn_load(PurplePlugin *plugin)
+static gboolean
+load (PurplePlugin *plugin)
 {
-	msn_notification_init();
-	msn_switchboard_init();
-	msn_sync_init();
+    msn_notification_init ();
+    msn_switchboard_init ();
+    msn_sync_init ();
 
-	return TRUE;
+    return TRUE;
 }
 
-static gboolean msn_unload(PurplePlugin *plugin)
+static gboolean
+unload (PurplePlugin *plugin)
 {
-	msn_notification_end();
-	msn_switchboard_end();
-	msn_sync_end();
+    msn_notification_end ();
+    msn_switchboard_end ();
+    msn_sync_end ();
 
-	return TRUE;
-}
-
-static PurpleAccount *find_acct(const char *prpl, const char *acct_id)
-{
-	PurpleAccount *acct = NULL;
-
-	/* If we have a specific acct, use it */
-	if (acct_id) {
-		acct = purple_accounts_find(acct_id, prpl);
-		if (acct && !purple_account_is_connected(acct))
-			acct = NULL;
-	} else { /* Otherwise find an active account for the protocol */
-		GList *l = purple_accounts_get_all();
-		while (l) {
-			if (!strcmp(prpl, purple_account_get_protocol_id(l->data))
-					&& purple_account_is_connected(l->data)) {
-				acct = l->data;
-				break;
-			}
-			l = l->next;
-		}
-	}
-
-	return acct;
-}
-
-static gboolean msn_uri_handler(const char *proto, const char *cmd, GHashTable *params)
-{
-	char *acct_id = g_hash_table_lookup(params, "account");
-	PurpleAccount *acct;
-
-	if (g_ascii_strcasecmp(proto, "msnim"))
-		return FALSE;
-
-	acct = find_acct("prpl-msn-pecan", acct_id);
-
-	if (!acct)
-		return FALSE;
-
-	/* msnim:chat?contact=user@domain.tld */
-	if (!g_ascii_strcasecmp(cmd, "Chat")) {
-		char *sname = g_hash_table_lookup(params, "contact");
-		if (sname) {
-			PurpleConversation *conv = purple_find_conversation_with_account(
-				PURPLE_CONV_TYPE_IM, sname, acct);
-			if (conv == NULL)
-				conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, acct, sname);
-			purple_conversation_present(conv);
-		}
-		/*else
-			**If pidgindialogs_im() was in the core, we could use it here.
-			 * It is all purple_request_* based, but I'm not sure it really belongs in the core
-			pidgindialogs_im();*/
-
-		return TRUE;
-	}
-	/* msnim:add?contact=user@domain.tld */
-	else if (!g_ascii_strcasecmp(cmd, "Add")) {
-		char *name = g_hash_table_lookup(params, "contact");
-		purple_blist_request_add_buddy(acct, name, NULL, NULL);
-		return TRUE;
-	}
-
-	return FALSE;
+    return TRUE;
 }
 
 /*
@@ -1472,8 +1410,8 @@ static PurplePluginInfo info =
     "Felipe Contreras <felipe.contreras@gmail.com>", /**< author */
     PURPLE_WEBSITE, /**< homepage */
 
-    msn_load, /**< load */
-    msn_unload, /**< unload */
+    load, /**< load */
+    unload, /**< unload */
     NULL, /**< destroy */
 
     NULL, /**< ui_info */
@@ -1513,9 +1451,6 @@ init_plugin (PurplePlugin *plugin)
                          _("nudge: nudge a user to get their attention"), NULL);
 
     purple_prefs_remove ("/plugins/prpl/msn");
-
-    purple_signal_connect (purple_get_core (), "uri-handler", plugin,
-                           PURPLE_CALLBACK (msn_uri_handler), NULL);
 }
 
 PURPLE_INIT_PLUGIN (msn_pecan, init_plugin, info)
