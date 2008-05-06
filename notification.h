@@ -46,8 +46,6 @@ struct MsnNotification
     gulong error_handler;
 };
 
-#include "state.h"
-
 void msn_notification_end (void);
 void msn_notification_init (void);
 

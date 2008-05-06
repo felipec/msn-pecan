@@ -25,8 +25,8 @@
 #include "msn.h"
 #include "page.h"
 #include "session.h"
-#include "state.h"
 #include "pecan_util.h"
+#include "pecan_status.h"
 
 #include "switchboard.h"
 #include "notification.h"
@@ -896,7 +896,8 @@ set_status (PurpleAccount *account,
     if (gc)
     {
         session = gc->proto_data;
-        msn_update_status (session);
+        pecan_update_status (session);
+        pecan_update_personal_message (session);
     }
 }
 
@@ -908,7 +909,7 @@ set_idle (PurpleConnection *gc,
 
     session = gc->proto_data;
 
-    msn_update_status (session);
+    pecan_update_status (session);
 }
 
 static void
@@ -1282,7 +1283,7 @@ set_buddy_icon (PurpleConnection *gc,
         pecan_contact_set_buddy_icon (session->user, image);
     }
 
-    msn_update_status (session);
+    pecan_update_status (session);
 }
 
 static void

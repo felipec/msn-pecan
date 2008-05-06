@@ -36,12 +36,12 @@ objects = \
 	object.o \
 	page.o \
 	session.o \
-	state.o \
 	switchboard.o \
 	sync.o \
 	pecan_log.o \
 	pecan_printf.o \
 	pecan_util.o \
+	pecan_status.o \
 	cmd/cmdproc.o \
 	cmd/command.o \
 	cmd/history.o \

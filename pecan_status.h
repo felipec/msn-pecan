@@ -1,7 +1,5 @@
 /**
- * @file state.h State functions and definitions
- *
- * purple
+ * Copyright (C) 2007-2008 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -22,47 +20,41 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#ifndef MSN_STATE_H
-#define MSN_STATE_H
+#ifndef PECAN_STATUS_H
+#define PECAN_STATUS_H
 
 /**
- * Away types.
+ * Status types.
  */
 typedef enum
 {
-	MSN_ONLINE  = 1,
-	MSN_BUSY    = 2,
-	MSN_IDLE    = 3,
-	MSN_BRB     = 4,
-	MSN_AWAY    = 5,
-	MSN_PHONE   = 6,
-	MSN_LUNCH   = 7,
-	MSN_OFFLINE = 8,
-	MSN_HIDDEN  = 9
+    PECAN_STATUS_NONE,
+    PECAN_STATUS_ONLINE,
+    PECAN_STATUS_BUSY,
+    PECAN_STATUS_IDLE,
+    PECAN_STATUS_BRB,
+    PECAN_STATUS_AWAY,
+    PECAN_STATUS_PHONE,
+    PECAN_STATUS_LUNCH,
+    PECAN_STATUS_OFFLINE,
+    PECAN_STATUS_HIDDEN
 
-} MsnAwayType;
+} PecanStatusType;
 
 struct MsnSession;
-struct _PurpleAccount;
 
 /**
  * Updates the status of the user.
  *
  * @param session The MSN session.
  */
-void msn_update_status (struct MsnSession *session);
+void pecan_update_status (struct MsnSession *session);
 
 /**
- * Returns the string representation of an away type.
+ * Updates the personal message of the user.
  *
- * @param type The away type.
- *
- * @return The string representation of the away type.
+ * @param session The MSN session.
  */
-const char *msn_away_get_text(MsnAwayType type);
+void pecan_update_personal_message (struct MsnSession *session);
 
-const char *msn_state_get_text(MsnAwayType state);
-
-MsnAwayType msn_state_from_account(struct _PurpleAccount *account);
-
-#endif /* MSN_STATE_H */
+#endif /* PECAN_STATUS_H */

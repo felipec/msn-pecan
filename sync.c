@@ -22,7 +22,6 @@
 
 #include "session.h"
 #include "sync.h"
-#include "state.h"
 
 #include "session_private.h"
 

@@ -405,7 +405,9 @@ msn_session_finish_login(MsnSession *session)
 
 	session->logged_in = TRUE;
 
-	msn_update_status (session);
+        /** @todo move this to msn.c */
+	pecan_update_status (session);
+	pecan_update_personal_message (session);
 
 	purple_connection_set_state(gc, PURPLE_CONNECTED);
 
