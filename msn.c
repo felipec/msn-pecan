@@ -2028,147 +2028,145 @@ static gboolean msn_uri_handler(const char *proto, const char *cmd, GHashTable *
 	return FALSE;
 }
 
+/*
+ * Plugin information
+ */
 
 static PurplePluginProtocolInfo prpl_info =
 {
-	OPT_PROTO_MAIL_CHECK,
-	NULL,					/* user_splits */
-	NULL,					/* protocol_options */
-	{"png", 0, 0, 96, 96, 0, PURPLE_ICON_SCALE_SEND},	/* icon_spec */
-	msn_list_icon,			/* list_icon */
-	NULL,				/* list_emblems */
-	msn_status_text,		/* status_text */
-	msn_tooltip_text,		/* tooltip_text */
-	msn_status_types,		/* away_states */
-	msn_blist_node_menu,		/* blist_node_menu */
-	NULL,					/* chat_info */
-	NULL,					/* chat_info_defaults */
-	msn_login,			/* login */
-	msn_close,			/* close */
-	msn_send_im,			/* send_im */
-	NULL,					/* set_info */
-	msn_send_typing,		/* send_typing */
-	msn_get_info,			/* get_info */
-	msn_set_status,			/* set_away */
-	msn_set_idle,			/* set_idle */
-	NULL,					/* change_passwd */
-	msn_add_buddy,			/* add_buddy */
-	NULL,					/* add_buddies */
-	msn_rem_buddy,			/* remove_buddy */
-	NULL,					/* remove_buddies */
-	msn_add_permit,			/* add_permit */
-	msn_add_deny,			/* add_deny */
-	msn_rem_permit,			/* rem_permit */
-	msn_rem_deny,			/* rem_deny */
-	msn_set_permit_deny,		/* set_permit_deny */
-	NULL,					/* join_chat */
-	NULL,					/* reject chat invite */
-	NULL,					/* get_chat_name */
-	msn_chat_invite,		/* chat_invite */
-	msn_chat_leave,			/* chat_leave */
-	NULL,					/* chat_whisper */
-	msn_chat_send,			/* chat_send */
-	msn_keepalive,			/* keepalive */
-	NULL,					/* register_user */
-	NULL,					/* get_cb_info */
-	NULL,					/* get_cb_away */
-	msn_alias_buddy,		/* alias_buddy */
-	pecan_group_buddy,		/* group_buddy */
-	msn_rename_group,		/* rename_group */
-	NULL,					/* buddy_free */
-	msn_convo_closed,		/* convo_closed */
-	msn_normalize,			/* normalize */
-	msn_set_buddy_icon,		/* set_buddy_icon */
-	msn_remove_group,		/* remove_group */
-	NULL,					/* get_cb_real_name */
-	NULL,					/* set_chat_topic */
-	NULL,					/* find_blist_chat */
-	NULL,					/* roomlist_get_list */
-	NULL,					/* roomlist_cancel */
-	NULL,					/* roomlist_expand_category */
-	msn_can_receive_file,	/* can_receive_file */
-	msn_send_file,			/* send_file */
-	msn_new_xfer,			/* new_xfer */
-	msn_offline_message,			/* offline_message */
-	NULL,					/* whiteboard_prpl_ops */
-	NULL,					/* send_raw */
-	NULL,					/* roomlist_room_serialize */
-	NULL,					/* unregister_user */
-	msn_send_attention,                     /* send_attention */
-	msn_attention_types,                    /* attention_types */
+    OPT_PROTO_MAIL_CHECK,
+    NULL, /* user_splits */
+    NULL, /* protocol_options */
+    {"png", 0, 0, 96, 96, 0, PURPLE_ICON_SCALE_SEND}, /* icon_spec */
+    msn_list_icon, /* list_icon */
+    NULL, /* list_emblems */
+    msn_status_text, /* status_text */
+    msn_tooltip_text, /* tooltip_text */
+    msn_status_types, /* away_states */
+    msn_blist_node_menu, /* blist_node_menu */
+    NULL, /* chat_info */
+    NULL, /* chat_info_defaults */
+    msn_login, /* login */
+    msn_close, /* close */
+    msn_send_im, /* send_im */
+    NULL, /* set_info */
+    msn_send_typing, /* send_typing */
+    msn_get_info, /* get_info */
+    msn_set_status, /* set_away */
+    msn_set_idle, /* set_idle */
+    NULL, /* change_passwd */
+    msn_add_buddy, /* add_buddy */
+    NULL, /* add_buddies */
+    msn_rem_buddy, /* remove_buddy */
+    NULL, /* remove_buddies */
+    msn_add_permit, /* add_permit */
+    msn_add_deny, /* add_deny */
+    msn_rem_permit, /* rem_permit */
+    msn_rem_deny, /* rem_deny */
+    msn_set_permit_deny, /* set_permit_deny */
+    NULL, /* join_chat */
+    NULL, /* reject chat invite */
+    NULL, /* get_chat_name */
+    msn_chat_invite, /* chat_invite */
+    msn_chat_leave, /* chat_leave */
+    NULL, /* chat_whisper */
+    msn_chat_send, /* chat_send */
+    msn_keepalive, /* keepalive */
+    NULL, /* register_user */
+    NULL, /* get_cb_info */
+    NULL, /* get_cb_away */
+    msn_alias_buddy, /* alias_buddy */
+    pecan_group_buddy, /* group_buddy */
+    msn_rename_group, /* rename_group */
+    NULL, /* buddy_free */
+    msn_convo_closed, /* convo_closed */
+    msn_normalize, /* normalize */
+    msn_set_buddy_icon, /* set_buddy_icon */
+    msn_remove_group, /* remove_group */
+    NULL, /* get_cb_real_name */
+    NULL, /* set_chat_topic */
+    NULL, /* find_blist_chat */
+    NULL, /* roomlist_get_list */
+    NULL, /* roomlist_cancel */
+    NULL, /* roomlist_expand_category */
+    msn_can_receive_file, /* can_receive_file */
+    msn_send_file, /* send_file */
+    msn_new_xfer, /* new_xfer */
+    msn_offline_message, /* offline_message */
+    NULL, /* whiteboard_prpl_ops */
+    NULL, /* send_raw */
+    NULL, /* roomlist_room_serialize */
+    NULL, /* unregister_user */
+    msn_send_attention, /* send_attention */
+    msn_attention_types, /* attention_types */
 
-	/* padding */
-	NULL
+    /* padding */
+    NULL
 };
 
 static PurplePluginInfo info =
 {
-	PURPLE_PLUGIN_MAGIC,
-	PURPLE_MAJOR_VERSION,
-	PURPLE_MINOR_VERSION,
-	PURPLE_PLUGIN_PROTOCOL,                           /**< type           */
-	NULL,                                             /**< ui_requirement */
-	0,                                                /**< flags          */
-	NULL,                                             /**< dependencies   */
-	PURPLE_PRIORITY_DEFAULT,                          /**< priority       */
+    PURPLE_PLUGIN_MAGIC,
+    PURPLE_MAJOR_VERSION,
+    PURPLE_MINOR_VERSION,
+    PURPLE_PLUGIN_PROTOCOL, /**< type */
+    NULL, /**< ui_requirement */
+    0, /**< flags */
+    NULL, /**< dependencies */
+    PURPLE_PRIORITY_DEFAULT, /**< priority */
 
-	"prpl-msn-pecan",                                 /**< id             */
-	"WLM",                                            /**< name           */
-	VERSION,                                          /**< version        */
-	N_("WLM Protocol Plugin"),                        /**< summary        */
-	N_("WLM Protocol Plugin"),                        /**< description    */
-	"Felipe Contreras <felipe.contreras@gmail.com>",  /**< author         */
-	PURPLE_WEBSITE,                                   /**< homepage       */
+    "prpl-msn-pecan", /**< id */
+    "WLM", /**< name */
+    VERSION, /**< version */
+    N_("WLM Protocol Plugin"), /**< summary */
+    N_("WLM Protocol Plugin"), /**< description */
+    "Felipe Contreras <felipe.contreras@gmail.com>", /**< author */
+    PURPLE_WEBSITE, /**< homepage */
 
-	msn_load,                                         /**< load           */
-	msn_unload,                                       /**< unload         */
-	NULL,                                             /**< destroy        */
+    msn_load, /**< load */
+    msn_unload, /**< unload */
+    NULL, /**< destroy */
 
-	NULL,                                             /**< ui_info        */
-	&prpl_info,                                       /**< extra_info     */
-	NULL,                                             /**< prefs_info     */
-	msn_actions,
+    NULL, /**< ui_info */
+    &prpl_info, /**< extra_info */
+    NULL, /**< prefs_info */
+    msn_actions,
 
-	/* padding */
-	NULL,
-	NULL,
-	NULL,
-	NULL
+    /* padding */
+    NULL,
+    NULL,
+    NULL,
+    NULL
 };
 
 static void
-init_plugin(PurplePlugin *plugin)
+init_plugin (PurplePlugin *plugin)
 {
-	PurpleAccountOption *option;
+    {
+        PurpleAccountOption *option;
 
-	option = purple_account_option_string_new(_("Server"), "server",
-											MSN_SERVER);
-	prpl_info.protocol_options = g_list_append(prpl_info.protocol_options,
-											   option);
+        option = purple_account_option_string_new (_("Server"), "server", MSN_SERVER);
+        prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
 
-	option = purple_account_option_int_new(_("Port"), "port", 1863);
-	prpl_info.protocol_options = g_list_append(prpl_info.protocol_options,
-											   option);
+        option = purple_account_option_int_new (_("Port"), "port", 1863);
+        prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
 
-	option = purple_account_option_bool_new(_("Use HTTP Method"),
-										  "http_method", FALSE);
-	prpl_info.protocol_options = g_list_append(prpl_info.protocol_options,
-											   option);
+        option = purple_account_option_bool_new (_("Use HTTP Method"), "http_method", FALSE);
+        prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
 
-	option = purple_account_option_bool_new(_("Show custom smileys"),
-										  "custom_smileys", TRUE);
-	prpl_info.protocol_options = g_list_append(prpl_info.protocol_options,
-											   option);
+        option = purple_account_option_bool_new (_("Show custom smileys"), "custom_smileys", TRUE);
+        prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
+    }
 
-	purple_cmd_register("nudge", "", PURPLE_CMD_P_PRPL,
-	                  PURPLE_CMD_FLAG_IM | PURPLE_CMD_FLAG_PRPL_ONLY,
-	                 "prpl-msn-pecan", msn_cmd_nudge,
-	                  _("nudge: nudge a user to get their attention"), NULL);
+    purple_cmd_register ("nudge", "", PURPLE_CMD_P_PRPL,
+                         PURPLE_CMD_FLAG_IM | PURPLE_CMD_FLAG_PRPL_ONLY,
+                         "prpl-msn-pecan", msn_cmd_nudge,
+                         _("nudge: nudge a user to get their attention"), NULL);
 
-	purple_prefs_remove("/plugins/prpl/msn");
+    purple_prefs_remove ("/plugins/prpl/msn");
 
-	purple_signal_connect(purple_get_core(), "uri-handler", plugin,
-		PURPLE_CALLBACK(msn_uri_handler), NULL);
+    purple_signal_connect (purple_get_core (), "uri-handler", plugin,
+                           PURPLE_CALLBACK (msn_uri_handler), NULL);
 }
 
 PURPLE_INIT_PLUGIN (msn_pecan, init_plugin, info)
