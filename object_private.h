@@ -25,7 +25,7 @@
 
 #include <glib.h>
 
-struct _PurpleStoredImage;
+#include "io/pecan_buffer.h"
 
 struct MsnObject
 {
@@ -39,7 +39,7 @@ struct MsnObject
     gchar *sha1d;
     gchar *sha1c;
 
-    struct _PurpleStoredImage *img;
+    PecanBuffer *image;
 };
 
 #endif /* MSN_OBJECT_PRIVATE_H */

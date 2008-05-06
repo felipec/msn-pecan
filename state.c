@@ -53,7 +53,7 @@ static const char *away_text[] =
 };
 
 void
-msn_change_status(MsnSession *session)
+msn_update_status (MsnSession *session)
 {
 	PurpleAccount *account;
 	MsnCmdProc *cmdproc;

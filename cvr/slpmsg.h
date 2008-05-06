@@ -25,8 +25,6 @@
 
 typedef struct MsnSlpMessage MsnSlpMessage;
 
-#include "imgstore.h"
-
 struct MsnSlpSesison;
 struct MsnSlpCall;
 struct MsnSlpLink;
@@ -34,6 +32,7 @@ struct MsnSession;
 struct MsnMessage;
 
 #include "slp.h"
+#include "io/pecan_buffer.h"
 
 #include <glib/gstdio.h>
 
@@ -96,7 +95,7 @@ void msn_slpmsg_destroy(MsnSlpMessage *slpmsg);
 void msn_slpmsg_set_body(MsnSlpMessage *slpmsg,
 						 gconstpointer *body,
 						 long long size);
-void msn_slpmsg_set_image(MsnSlpMessage *slpmsg, PurpleStoredImage *img);
+void msn_slpmsg_set_image (MsnSlpMessage *slpmsg, PecanBuffer *image);
 void msn_slpmsg_open_file(MsnSlpMessage *slpmsg,
 						  const char *file_name);
 MsnSlpMessage * msn_slpmsg_sip_new(struct MsnSlpCall *slpcall, int cseq,

@@ -28,9 +28,9 @@ typedef struct PecanContact PecanContact;
 #include "session.h"
 #include "object.h"
 
-#include "pecan_contactlist.h"
+#include "io/pecan_buffer.h"
 
-struct _PurpleStoredImage;
+#include "pecan_contactlist.h"
 
 /**
  * Creates a new contact structure.
@@ -114,7 +114,7 @@ void pecan_contact_set_guid (PecanContact *contact, const gchar *guid);
  * @param contact The contact.
  * @param img The buddy icon image
  */
-void pecan_contact_set_buddy_icon (PecanContact *contact, struct _PurpleStoredImage *img);
+void pecan_contact_set_buddy_icon (PecanContact *contact, PecanBuffer *buffer);
 
 /**
  * Adds the group ID for a contact.

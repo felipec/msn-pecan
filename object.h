@@ -27,7 +27,7 @@
 
 typedef struct MsnObject MsnObject;
 
-struct _PurpleStoredImage;
+#include "io/pecan_buffer.h"
 
 typedef enum
 {
@@ -121,12 +121,12 @@ void msn_object_set_sha1d(MsnObject *obj, const gchar *sha1d);
 void msn_object_set_sha1c(MsnObject *obj, const gchar *sha1c);
 
 /**
- * Associates an image with a MsnObject.
+ * Associates an image with an MsnObject.
  *
  * @param obj The object.
- * @param img The image to associate.
+ * @param buffer The image to associate.
  */
-void msn_object_set_image(MsnObject *obj, struct _PurpleStoredImage *img);
+void msn_object_set_image (MsnObject *obj, PecanBuffer *buffer);
 
 /**
  * Returns a MsnObject's creator value.
@@ -207,7 +207,7 @@ const gchar *msn_object_get_sha1(const MsnObject *obj);
  *
  * @return The associated image.
  */
-struct _PurpleStoredImage *msn_object_get_image(const MsnObject *obj);
+PecanBuffer *msn_object_get_image (const MsnObject *obj);
 
 void msn_object_set_local(MsnObject *obj);
 

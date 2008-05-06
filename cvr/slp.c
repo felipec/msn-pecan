@@ -26,6 +26,7 @@
 #include "slpmsg.h"
 #include "slpsession.h"
 #include "pecan_log.h"
+#include "io/pecan_buffer.h"
 
 #include "session_private.h"
 
@@ -277,7 +278,7 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 		MsnSlpMessage *slpmsg;
 		MsnObject *obj;
 		char *msnobj_data;
-		PurpleStoredImage *img;
+		PecanBuffer *image;
 		int type;
 
 		/* Send Ok */
@@ -303,12 +304,12 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 			g_return_if_reached();
 		}
 
-		img = msn_object_get_image(obj);
-		if (img == NULL)
+		image = msn_object_get_image (obj);
+		if (!image)
 		{
-			pecan_error ("Wrong object");
-			msn_object_destroy(obj);
-			g_return_if_reached();
+                    pecan_error ("Wrong object");
+                    msn_object_destroy (obj);
+                    g_return_if_reached ();
 		}
 
 		msn_object_destroy(obj);
@@ -335,7 +336,7 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 #ifdef PECAN_DEBUG_SLP
 		slpmsg->info = "SLP DATA";
 #endif
-		msn_slpmsg_set_image(slpmsg, img);
+		msn_slpmsg_set_image (slpmsg, image);
 		msn_slplink_queue_slpmsg(slplink, slpmsg);
 	}
 	else if (!strcmp(euf_guid, "5D3E02AB-6190-11D3-BBBB-00C04F795683"))
@@ -1122,9 +1123,10 @@ msn_request_user_display(PecanContact *user)
 
 		if (my_obj != NULL)
 		{
-			PurpleStoredImage *img = msn_object_get_image(my_obj);
-			data = purple_imgstore_get_data(img);
-			len = purple_imgstore_get_size(img);
+                    PecanBuffer *image;
+                    image = msn_object_get_image (my_obj);
+                    data = image->data;
+                    len = image->len;
 		}
 
 		purple_buddy_icons_set_for_user(account, user->passport, g_memdup(data, len), len, info);

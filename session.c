@@ -393,12 +393,19 @@ msn_session_finish_login(MsnSession *session)
 	gc = purple_account_get_connection(account);
 
 	img = purple_buddy_icons_find_account_icon(session->account);
-	pecan_contact_set_buddy_icon(session->user, img);
+
+        {
+            PecanBuffer *image;
+            image = pecan_buffer_new_memdup (purple_imgstore_get_data (img),
+                                             purple_imgstore_get_size (img));
+            pecan_contact_set_buddy_icon (session->user, image);
+        }
+
 	purple_imgstore_unref(img);
 
 	session->logged_in = TRUE;
 
-	msn_change_status(session);
+	msn_update_status (session);
 
 	purple_connection_set_state(gc, PURPLE_CONNECTED);
 

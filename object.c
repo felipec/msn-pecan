@@ -121,7 +121,7 @@ msn_object_destroy(MsnObject *obj)
     g_free(obj->sha1d);
     g_free(obj->sha1c);
 
-    purple_imgstore_unref(obj->img);
+    purple_imgstore_unref(obj->image);
 
     if (obj->local)
         local_objs = g_list_remove(local_objs, obj);
@@ -324,28 +324,26 @@ msn_object_set_local(MsnObject *obj)
 }
 
 void
-msn_object_set_image(MsnObject *obj, PurpleStoredImage *img)
+msn_object_set_image (MsnObject *obj,
+                      PecanBuffer *buffer)
 {
-    g_return_if_fail(obj != NULL);
-    g_return_if_fail(img != NULL);
+    g_return_if_fail (obj);
 
-    /* obj->local = TRUE; */
-
-    purple_imgstore_unref(obj->img);
-    obj->img = purple_imgstore_ref(img);
+    pecan_buffer_free (obj->image);
+    obj->image = buffer;
 }
 
-PurpleStoredImage *
-msn_object_get_image(const MsnObject *obj)
+PecanBuffer *
+msn_object_get_image (const MsnObject *obj)
 {
     MsnObject *local_obj;
 
-    g_return_val_if_fail(obj != NULL, NULL);
+    g_return_val_if_fail (obj, NULL);
 
-    local_obj = msn_object_find_local(msn_object_get_sha1(obj));
+    local_obj = msn_object_find_local (msn_object_get_sha1 (obj));
 
-    if (local_obj != NULL)
-        return local_obj->img;
+    if (local_obj)
+        return local_obj->image;
 
     return NULL;
 }

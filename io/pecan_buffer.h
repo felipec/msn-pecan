@@ -35,6 +35,7 @@ struct PecanBuffer
 
 PecanBuffer *pecan_buffer_new (void);
 PecanBuffer *pecan_buffer_new_and_alloc (gsize size);
+PecanBuffer *pecan_buffer_new_memdup (gpointer data, gsize size);
 void pecan_buffer_free (PecanBuffer *buffer);
 void pecan_buffer_resize (PecanBuffer *buffer, gsize new_size);
 gchar *pecan_buffer_to_string (PecanBuffer *buffer);

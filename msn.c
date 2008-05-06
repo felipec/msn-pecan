@@ -885,28 +885,30 @@ send_typing (PurpleConnection *gc,
 }
 
 static void
-msn_set_status(PurpleAccount *account, PurpleStatus *status)
+set_status (PurpleAccount *account,
+            PurpleStatus *status)
 {
-	PurpleConnection *gc;
-	MsnSession *session;
+    PurpleConnection *gc;
+    MsnSession *session;
 
-	gc = purple_account_get_connection(account);
+    gc = purple_account_get_connection (account);
 
-	if (gc != NULL)
-	{
-		session = gc->proto_data;
-		msn_change_status(session);
-	}
+    if (gc)
+    {
+        session = gc->proto_data;
+        msn_update_status (session);
+    }
 }
 
 static void
-msn_set_idle(PurpleConnection *gc, int idle)
+set_idle (PurpleConnection *gc,
+          gint idle)
 {
-	MsnSession *session;
+    MsnSession *session;
 
-	session = gc->proto_data;
+    session = gc->proto_data;
 
-	msn_change_status(session);
+    msn_update_status (session);
 }
 
 static void
@@ -1264,17 +1266,23 @@ msn_convo_closed(PurpleConnection *gc, const char *who)
 }
 
 static void
-msn_set_buddy_icon(PurpleConnection *gc, PurpleStoredImage *img)
+set_buddy_icon (PurpleConnection *gc,
+                PurpleStoredImage *img)
 {
-	MsnSession *session;
-	PecanContact *user;
+    MsnSession *session;
+    PecanContact *user;
 
-	session = gc->proto_data;
-	user = session->user;
+    session = gc->proto_data;
+    user = session->user;
 
-	pecan_contact_set_buddy_icon(user, img);
+    {
+        PecanBuffer *image;
+        image = pecan_buffer_new_memdup (purple_imgstore_get_data (img),
+                                         purple_imgstore_get_size (img));
+        pecan_contact_set_buddy_icon (session->user, image);
+    }
 
-	msn_change_status(session);
+    msn_update_status (session);
 }
 
 static void
@@ -1339,8 +1347,8 @@ static PurplePluginProtocolInfo prpl_info =
     NULL, /* set_info */
     send_typing, /* send_typing */
     NULL, /* get_info */
-    msn_set_status, /* set_away */
-    msn_set_idle, /* set_idle */
+    set_status, /* set_away */
+    set_idle, /* set_idle */
     NULL, /* change_passwd */
     msn_add_buddy, /* add_buddy */
     NULL, /* add_buddies */
@@ -1368,7 +1376,7 @@ static PurplePluginProtocolInfo prpl_info =
     NULL, /* buddy_free */
     msn_convo_closed, /* convo_closed */
     msn_normalize, /* normalize */
-    msn_set_buddy_icon, /* set_buddy_icon */
+    set_buddy_icon, /* set_buddy_icon */
     msn_remove_group, /* remove_group */
     NULL, /* get_cb_real_name */
     NULL, /* set_chat_topic */

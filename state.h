@@ -46,11 +46,11 @@ struct MsnSession;
 struct _PurpleAccount;
 
 /**
- * Changes the status of the user.
+ * Updates the status of the user.
  *
  * @param session The MSN session.
  */
-void msn_change_status(struct MsnSession *session);
+void msn_update_status (struct MsnSession *session);
 
 /**
  * Returns the string representation of an away type.

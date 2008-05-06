@@ -45,6 +45,19 @@ pecan_buffer_new_and_alloc (gsize size)
     return buffer;
 }
 
+PecanBuffer *
+pecan_buffer_new_memdup (gpointer data,
+                         gsize size)
+{
+    PecanBuffer *buffer;
+
+    buffer = g_new (PecanBuffer, 1);
+    buffer->size = buffer->len = size;
+    buffer->data = buffer->alloc_data = g_memdup (data, size);
+
+    return buffer;
+}
+
 void
 pecan_buffer_free (PecanBuffer *buffer)
 {

@@ -123,13 +123,14 @@ msn_slpmsg_set_body(MsnSlpMessage *slpmsg,
 }
 
 void
-msn_slpmsg_set_image(MsnSlpMessage *slpmsg, PurpleStoredImage *img)
+msn_slpmsg_set_image (MsnSlpMessage *slpmsg,
+                      PecanBuffer *image)
 {
-	g_return_if_fail(slpmsg->buffer == NULL);
-	g_return_if_fail(slpmsg->fp == NULL);
+    g_return_if_fail (!slpmsg->buffer);
+    g_return_if_fail (!slpmsg->fp);
 
-	slpmsg->size = purple_imgstore_get_size(img);
-	slpmsg->buffer = g_memdup(purple_imgstore_get_data(img), slpmsg->size);
+    slpmsg->size = image->len;
+    slpmsg->buffer = g_memdup (image->data, slpmsg->size);
 }
 
 void
