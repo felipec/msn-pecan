@@ -20,8 +20,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#include "object.h"
-#include "object_private.h"
+#include "cvr/pecan_slp_object.h"
+#include "cvr/pecan_slp_object_private.h"
 #include "pecan_log.h"
 
 #include <string.h>

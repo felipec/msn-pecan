@@ -37,7 +37,7 @@
 #include "ab/pecan_contact_priv.h"
 #include "ab/pecan_contactlist_priv.h"
 
-#include "object.h"
+#include "cvr/pecan_slp_object.h"
 #include "switchboard.h"
 
 #ifdef MSN_DIRECTCONN

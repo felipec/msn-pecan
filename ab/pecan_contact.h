@@ -26,7 +26,7 @@
 typedef struct PecanContact PecanContact;
 
 #include "session.h"
-#include "object.h"
+#include "cvr/pecan_slp_object.h"
 
 #include "io/pecan_buffer.h"
 

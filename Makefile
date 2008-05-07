@@ -33,7 +33,6 @@ objects = \
 	msn.o \
 	nexus.o \
 	notification.o \
-	object.o \
 	page.o \
 	session.o \
 	switchboard.o \
@@ -61,6 +60,7 @@ objects = \
 	cvr/slplink.o \
 	cvr/slpmsg.o \
 	cvr/slpsession.o \
+	cvr/pecan_slp_object.o \
 	fix_purple.o
 
 sources = $(patsubst %.o,%.c,$(objects))

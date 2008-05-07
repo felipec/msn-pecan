@@ -26,7 +26,7 @@
 #include <glib.h>
 
 #include "pecan_contactlist.h"
-#include "object.h"
+#include "cvr/pecan_slp_object.h"
 
 /**
  * A contact.

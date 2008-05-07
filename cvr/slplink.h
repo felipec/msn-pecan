@@ -37,7 +37,7 @@ struct _PurpleXfer;
 #include <glib.h>
 
 #include "slpcall.h"
-#include "object.h"
+#include "cvr/pecan_slp_object.h"
 
 typedef void (*MsnSlpCb) (MsnSlpCall *slpcall, const guchar *data, gsize size);
 typedef void (*MsnSlpEndCb) (MsnSlpCall *slpcall, struct MsnSession *session);
