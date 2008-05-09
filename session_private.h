@@ -72,14 +72,12 @@ struct MsnSession
         char *sid;
         char *mspauth;
         unsigned long sl;
-        char *file;
         char *client_ip;
         int client_port;
-
+        gchar *mail_url;
     } passport_info;
 
     guint inbox_unread_count; /* The number of unread e-mails on the inbox. */
-    gulong login_timestamp;
 };
 
 #endif /* MSN_SESSION_PRIVATE_H */

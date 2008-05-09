@@ -354,22 +354,23 @@ msn_show_set_mobile_pages(PurplePluginAction *action)
 }
 
 static void
-msn_show_hotmail_inbox(PurplePluginAction *action)
+show_hotmail_inbox (PurplePluginAction *action)
 {
-	PurpleConnection *gc;
-	MsnSession *session;
+    PurpleConnection *gc;
+    MsnSession *session;
 
-	gc = (PurpleConnection *) action->context;
-	session = gc->proto_data;
+    gc = (PurpleConnection *) action->context;
+    session = gc->proto_data;
 
-	if (session->passport_info.file == NULL)
-	{
-		purple_notify_error(gc, NULL,
-						  _("This Hotmail account may not be active."), NULL);
-		return;
-	}
+    /** @todo what about people who don't want notifications but still check
+     * the email? */
+    if (!session->passport_info.mail_url)
+    {
+        purple_notify_error (gc, NULL,  _("This Hotmail account may not be active."), NULL);
+        return;
+    }
 
-	purple_notify_uri(gc, session->passport_info.file);
+    purple_notify_uri (gc, session->passport_info.mail_url);
 }
 
 static void
@@ -664,8 +665,7 @@ msn_actions(PurplePlugin *plugin, gpointer context)
 		(strstr(user, "@msn.com") != NULL))
 	{
 		m = g_list_append(m, NULL);
-		act = purple_plugin_action_new(_("Open Hotmail Inbox"),
-				msn_show_hotmail_inbox);
+		act = purple_plugin_action_new (_("Open Hotmail Inbox"), show_hotmail_inbox);
 		m = g_list_append(m, act);
 	}
 

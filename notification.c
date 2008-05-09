@@ -319,8 +319,6 @@ usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     if (!g_ascii_strcasecmp(cmd->params[1], "OK"))
     {
         /* OK */
-        session->login_timestamp = time (NULL);
-
         msn_session_set_login_step(session, PECAN_LOGIN_STEP_SYN);
 
         msn_cmdproc_send(cmdproc, "SYN", "%s %s", "0", "0");
@@ -692,7 +690,7 @@ qng_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     session = cmdproc->session;
     account = session->account;
 
-    if (session->passport_info.file == NULL)
+    if (!session->passport_info.mail_url)
         return;
 
     passport = purple_normalize(account, purple_account_get_username(account));
@@ -1125,135 +1123,68 @@ ubx_cmd (MsnCmdProc *cmdproc,
  **************************************************************************/
 
 static void
-url_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
+url_cmd (MsnCmdProc *cmdproc,
+         MsnCommand *cmd)
 {
     MsnSession *session;
-    PurpleAccount *account;
-    const char *rru;
-    const char *url;
-    PurpleCipher *cipher;
-    PurpleCipherContext *context;
-    guchar digest[16];
-    char *buf;
-    char buf2[3];
-    char sendbuf[64];
-    int i;
+    PurpleConnection *connection;
+    const gchar *rru;
+    const gchar *url;
+    gchar creds[64];
     glong tmp_timestamp;
 
-    /* @todo does this needs to be updated? */
-
     session = cmdproc->session;
-    account = session->account;
+    connection = purple_account_get_connection (session->account);
 
     rru = cmd->params[1];
     url = cmd->params[2];
 
-    tmp_timestamp = time (NULL) - session->login_timestamp;
+    tmp_timestamp = time (NULL) - session->passport_info.sl;
 
-    buf = pecan_strdup_printf("%s%ld%s",
-                              session->passport_info.mspauth ? session->passport_info.mspauth : "BOGUS",
-                              tmp_timestamp,
-                              purple_connection_get_password(account->gc));
-
-    cipher = purple_ciphers_find_cipher("md5");
-    context = purple_cipher_context_new(cipher, NULL);
-
-    purple_cipher_context_append(context, (const guchar *)buf, strlen(buf));
-    purple_cipher_context_digest(context, sizeof(digest), digest, NULL);
-    purple_cipher_context_destroy(context);
-
-    g_free(buf);
-
-    memset(sendbuf, 0, sizeof(sendbuf));
-
-    for (i = 0; i < 16; i++)
     {
-        g_snprintf(buf2, sizeof(buf2), "%02x", digest[i]);
-        strcat(sendbuf, buf2);
-    }
+        PurpleCipher *cipher;
+        PurpleCipherContext *context;
+        guchar digest[16];
+        gchar *buf;
 
-    if (session->passport_info.file != NULL)
-    {
-        g_unlink(session->passport_info.file);
-        g_free(session->passport_info.file);
-    }
+        buf = pecan_strdup_printf ("%s%ld%s",
+                                   session->passport_info.mspauth ? session->passport_info.mspauth : "BOGUS",
+                                   tmp_timestamp,
+                                   purple_connection_get_password (connection));
 
-#if 0
-    gint fd;
-    GError *error = NULL;
+        cipher = purple_ciphers_find_cipher ("md5");
+        context = purple_cipher_context_new (cipher, NULL);
 
-    if ((fd = g_file_open_tmp ("XXXXXX.html", &session->passport_info.file, &error)))
-    {
-        GString *str;
-        str = g_string_new (NULL);
+        purple_cipher_context_append (context, (const guchar *) buf, strlen (buf));
+        purple_cipher_context_digest (context, sizeof (digest), digest, NULL);
+        purple_cipher_context_destroy (context);
 
-        g_string_append_printf (str,
-                                "<html>\n"
-                                "<head>\n"
-                                "<noscript>\n"
-                                "<meta http-equiv=\"Refresh\" content=\"0; "
-                                "url=http://www.hotmail.com\">\n"
-                                "</noscript>\n"
-                                "</head>\n\n");
+        g_free (buf);
 
-        g_string_append_printf (str, "<body onload=\"document.pform.submit(); \">\n");
-        g_string_append_printf (str, "<form name=\"pform\" action=\"%s\" method=\"POST\">\n\n",
-                                url);
-        g_string_append_printf (str, "<input type=\"hidden\" name=\"mode\" value=\"ttl\">\n");
-        g_string_append_printf (str, "<input type=\"hidden\" name=\"username\" value=\"%s\">\n",
-                                purple_account_get_username (account));
-        if (session->passport_info.sid != NULL)
-            g_string_append_printf (str, "<input type=\"hidden\" name=\"sid\" value=\"%s\">\n",
-                                    session->passport_info.sid);
-        if (session->passport_info.kv != NULL)
-            g_string_append_printf (str, "<input type=\"hidden\" name=\"kv\" value=\"%s\">\n",
-                                    session->passport_info.kv);
-        g_string_append_printf (str, "<input type=\"hidden\" name=\"id\" value=\"2\">\n");
-        g_string_append_printf (str, "<input type=\"hidden\" name=\"sl\" value=\"%ld\">\n",
-                                tmp_timestamp);
-        g_string_append_printf (str, "<input type=\"hidden\" name=\"rru\" value=\"%s\">\n",
-                                rru);
-        if (session->passport_info.mspauth != NULL)
-            g_string_append_printf (str, "<input type=\"hidden\" name=\"auth\" value=\"%s\">\n",
-                                    session->passport_info.mspauth);
-        g_string_append_printf (str, "<input type=\"hidden\" name=\"creds\" value=\"%s\">\n",
-                                sendbuf); /* TODO Digest me (huh? -- ChipX86) */
-        g_string_append_printf (str, "<input type=\"hidden\" name=\"svc\" value=\"mail\">\n");
-        g_string_append_printf (str, "<input type=\"hidden\" name=\"js\" value=\"yes\">\n");
-        g_string_append_printf (str, "</form></body>\n");
-        g_string_append_printf (str, "</html>\n");
+        memset (creds, 0, sizeof (creds));
 
         {
-            GIOChannel *channel;
-            channel = g_io_channel_unix_new (fd);
-            g_io_channel_write_chars (channel, str->str, str->len, NULL, &error);
-            g_io_channel_shutdown (channel, TRUE, &error);
-            g_io_channel_unref (channel);
+            gchar buf2[3];
+            gint i;
+
+            for (i = 0; i < 16; i++)
+            {
+                g_snprintf (buf2, sizeof (buf2), "%02x", digest[i]);
+                strcat (creds, buf2);
+            }
         }
-
-        g_string_free (str, TRUE);
     }
 
-    if (error)
-    {
-        pecan_error ("error opening temp passport file: [%s]", error->message);
+    g_free (session->passport_info.mail_url);
 
-        g_error_free (error);
-
-        return;
-    }
-#else
-    {
-        session->passport_info.file = g_strdup_printf ("%s&auth=%s&creds=%s&sl=%ld&username=%s&mode=ttl&sid=%s&id=2&rru=%ssvc_mail&js=yes",
+    session->passport_info.mail_url = g_strdup_printf ("%s&auth=%s&creds=%s&sl=%ld&username=%s&mode=ttl&sid=%s&id=2&rru=%ssvc_mail&js=yes",
                                                        url,
                                                        session->passport_info.mspauth,
-                                                       sendbuf,
+                                                       creds,
                                                        tmp_timestamp,
                                                        pecan_contact_get_passport (session->user),
                                                        session->passport_info.sid,
                                                        rru);
-    }
-#endif
 
     {
         static gboolean is_initial = TRUE;
@@ -1263,16 +1194,14 @@ url_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
         if (session->inbox_unread_count > 0)
         {
-            PurpleConnection *gc;
-            const char *passport;
-            const char *file_url;
+            const gchar *passport;
+            const gchar *main_url;
 
-            gc = session->account->gc;
             passport = pecan_contact_get_passport (session->user);
-            file_url = session->passport_info.file;
+            main_url = session->passport_info.mail_url;
 
-            purple_notify_emails (gc, session->inbox_unread_count, FALSE, NULL, NULL,
-                                  &passport, &file_url, NULL, NULL);
+            purple_notify_emails (connection, session->inbox_unread_count, FALSE, NULL, NULL,
+                                  &passport, &main_url, NULL, NULL);
         }
 
         is_initial = FALSE;
@@ -1441,14 +1370,11 @@ initial_mdata_msg (MsnCmdProc *cmdproc,
 
         if (purple_account_get_check_mail (session->account))
         {
-            if (!session->passport_info.file)
-            {
-                MsnTransaction *trans;
-                trans = msn_transaction_new (cmdproc, "URL", "%s", "INBOX");
-                msn_transaction_queue_cmd (trans, msg->cmd);
+            MsnTransaction *trans;
+            trans = msn_transaction_new (cmdproc, "URL", "%s", "INBOX");
+            msn_transaction_queue_cmd (trans, msg->cmd);
 
-                msn_cmdproc_send_trans (cmdproc, trans);
-            }
+            msn_cmdproc_send_trans (cmdproc, trans);
         }
     }
 
@@ -1470,13 +1396,13 @@ initial_email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
         /* This isn't an official message. */
         return;
 
-    if (session->passport_info.file == NULL)
+    if (!session->passport_info.mail_url)
     {
         MsnTransaction *trans;
-        trans = msn_transaction_new(cmdproc, "URL", "%s", "INBOX");
-        msn_transaction_queue_cmd(trans, msg->cmd);
+        trans = msn_transaction_new (cmdproc, "URL", "%s", "INBOX");
+        msn_transaction_queue_cmd (trans, msg->cmd);
 
-        msn_cmdproc_send_trans(cmdproc, trans);
+        msn_cmdproc_send_trans (cmdproc, trans);
     }
 
     if (!purple_account_get_check_mail(session->account))
@@ -1496,7 +1422,7 @@ initial_email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
             const char *url;
 
             passport = pecan_contact_get_passport(session->user);
-            url = session->passport_info.file;
+            url = session->passport_info.mail_url;
 
             purple_notify_emails(gc, atoi(unread), FALSE, NULL, NULL,
                                  &passport, &url, NULL, NULL);
@@ -1521,13 +1447,13 @@ email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
         /* This isn't an official message. */
         return;
 
-    if (session->passport_info.file == NULL)
+    if (!session->passport_info.mail_url)
     {
         MsnTransaction *trans;
-        trans = msn_transaction_new(cmdproc, "URL", "%s", "INBOX");
-        msn_transaction_queue_cmd(trans, msg->cmd);
+        trans = msn_transaction_new (cmdproc, "URL", "%s", "INBOX");
+        msn_transaction_queue_cmd (trans, msg->cmd);
 
-        msn_cmdproc_send_trans(cmdproc, trans);
+        msn_cmdproc_send_trans (cmdproc, trans);
 
         return;
     }
@@ -1547,11 +1473,12 @@ email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     if (tmp != NULL)
         subject = purple_mime_decode_field(tmp);
 
+    /** @todo go to the extact email */
     purple_notify_email(gc,
                         (subject != NULL ? subject : ""),
                         (from != NULL ?  from : ""),
                         pecan_contact_get_passport(session->user),
-                        session->passport_info.file, NULL, NULL);
+                        session->passport_info.mail_url, NULL, NULL);
 
     g_free(from);
     g_free(subject);
