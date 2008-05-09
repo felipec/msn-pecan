@@ -274,7 +274,9 @@ msn_cmdproc_process_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     pecan_log ("begin");
 
     if (cmd->trId)
-        trans = msn_history_find(cmdproc->history, cmd->trId);
+    {
+        cmd->trans = trans = msn_history_find(cmdproc->history, cmd->trId);
+    }
 
 #ifdef HAVE_LIBPURPLE
     if (trans != NULL)
@@ -319,8 +321,6 @@ msn_cmdproc_process_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     if (cb == NULL && trans != NULL)
     {
-        cmd->trans = trans;
-
         if (trans->callbacks != NULL)
             cb = g_hash_table_lookup(trans->callbacks, cmd->command);
     }
