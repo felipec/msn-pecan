@@ -1139,7 +1139,8 @@ url_cmd (MsnCmdProc *cmdproc,
     rru = cmd->params[1];
     url = cmd->params[2];
 
-    tmp_timestamp = time (NULL) - session->passport_info.sl;
+    session->passport_info.mail_url_timestamp = time (NULL);
+    tmp_timestamp = session->passport_info.mail_url_timestamp - session->passport_info.sl;
 
     {
         PurpleCipher *cipher;
@@ -1185,6 +1186,13 @@ url_cmd (MsnCmdProc *cmdproc,
                                                        pecan_contact_get_passport (session->user),
                                                        session->passport_info.sid,
                                                        rru);
+
+    /* The user wants to check his email */
+    if (cmd->trans && cmd->trans->data)
+    {
+        purple_notify_uri (connection, session->passport_info.mail_url);
+        return;
+    }
 
     {
         static gboolean is_initial = TRUE;

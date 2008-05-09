@@ -27,6 +27,7 @@
 #include "session.h"
 #include "pecan_util.h"
 #include "pecan_status.h"
+#include "pecan_log.h"
 
 #include "switchboard.h"
 #include "notification.h"
@@ -367,6 +368,24 @@ show_hotmail_inbox (PurplePluginAction *action)
     if (!session->passport_info.mail_url)
     {
         purple_notify_error (gc, NULL,  _("This Hotmail account may not be active."), NULL);
+        return;
+    }
+
+    /** apparently the correct value is 777 */
+    if (time (NULL) - session->passport_info.mail_url_timestamp >= 750)
+    {
+        MsnTransaction *trans;
+        MsnCmdProc *cmdproc;
+
+        cmdproc = session->notification->cmdproc;
+
+        trans = msn_transaction_new (cmdproc, "URL", "%s", "INBOX");
+        msn_transaction_set_data (trans, GUINT_TO_POINTER (TRUE));
+
+        msn_cmdproc_send_trans (cmdproc, trans);
+
+        pecan_debug ("mail_url update");
+
         return;
     }
 

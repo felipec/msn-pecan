@@ -75,6 +75,7 @@ struct MsnSession
         char *client_ip;
         int client_port;
         gchar *mail_url;
+        gulong mail_url_timestamp;
     } passport_info;
 
     guint inbox_unread_count; /* The number of unread e-mails on the inbox. */
