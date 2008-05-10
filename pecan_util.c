@@ -560,10 +560,10 @@ msn_rand_guid()
 
 struct FooGHashNode
 {
-  gpointer key;
-  gpointer value;
-  struct FooGHashNode *next;
-  guint key_hash;
+    gpointer key;
+    gpointer value;
+    struct FooGHashNode *next;
+    guint key_hash;
 };
 
 struct FooGHashTable
@@ -600,7 +600,7 @@ always_true (gpointer key,
 void
 g_hash_table_remove_all (GHashTable *hash_table)
 {
-    g_return_if_fail (hash_table != NULL);
+    g_return_if_fail (hash_table);
 
     g_hash_table_foreach_remove (hash_table, always_true, NULL);
 }
@@ -610,22 +610,22 @@ gboolean
 g_ascii_strcase_equal (gconstpointer v1,
                        gconstpointer v2)
 {
-  const gchar *string1 = v1;
-  const gchar *string2 = v2;
-  
-  return g_ascii_strcasecmp (string1, string2) == 0;
+    const gchar *string1 = v1;
+    const gchar *string2 = v2;
+
+    return g_ascii_strcasecmp (string1, string2) == 0;
 }
 
 guint
 g_ascii_strcase_hash (gconstpointer v)
 {
-  /* 31 bit hash function */
-  const signed char *p = v;
-  guint32 h = *p;
+    /* 31 bit hash function */
+    const signed char *p = v;
+    guint32 h = *p;
 
-  if (h)
-    for (p += 1; *p != '\0'; p++)
-      h = (h << 5) - h + g_ascii_tolower (*p);
+    if (h)
+        for (p += 1; *p != '\0'; p++)
+            h = (h << 5) - h + g_ascii_tolower (*p);
 
-  return h;
+    return h;
 }
