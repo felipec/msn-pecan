@@ -596,7 +596,7 @@ tooltip_text (PurpleBuddy *buddy,
     }
 }
 
-inline PurpleStatusType *
+static inline PurpleStatusType *
 util_gen_state (PurpleStatusPrimitive primitive,
                 const gchar *id,
                 const gchar *name)

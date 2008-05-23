@@ -39,7 +39,7 @@
 #include <account.h>
 #endif /* HAVE_LIBPURPLE */
 
-inline const gchar *
+static inline const gchar *
 util_type_to_str (PecanStatusType status)
 {
     static const gchar *status_text[] =
@@ -48,7 +48,7 @@ util_type_to_str (PecanStatusType status)
     return status_text[status];
 }
 
-inline void
+static inline void
 pecan_set_status (MsnSession *session,
                   PecanStatusType status)
 {
@@ -80,7 +80,7 @@ pecan_set_status (MsnSession *session,
     }
 }
 
-inline void
+static inline void
 pecan_set_personal_message (MsnSession *session,
                             gchar *value)
 {
@@ -99,7 +99,7 @@ pecan_set_personal_message (MsnSession *session,
 }
 
 #ifdef HAVE_LIBPURPLE
-inline PecanStatusType
+static inline PecanStatusType
 util_status_from_account (PurpleAccount *account)
 {
     PecanStatusType msnstatus;
