@@ -51,6 +51,7 @@ struct MsnSession
     gboolean logged_in; /**< A temporal flag to ignore local buddy list adds. */
     gboolean destroying; /**< A flag that states if the session is being destroyed. */
     gboolean http_method;
+    gboolean server_alias;
     PecanNode *http_conn;
 
     struct MsnNotification *notification;

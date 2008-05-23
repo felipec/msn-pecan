@@ -164,7 +164,14 @@ get_store_name (PecanContact *contact)
 
     g_return_val_if_fail (contact, NULL);
 
-    store_name = pecan_contact_get_store_name (contact);
+    if (contact->contactlist->session->server_alias)
+    {
+        store_name = pecan_contact_get_store_name (contact);
+    }
+    else
+    {
+        store_name = pecan_contact_get_friendly_name (contact);
+    }
 
     if (!store_name)
         store_name = pecan_contact_get_passport (contact);
@@ -391,7 +398,14 @@ msn_got_lst_contact (MsnSession *session,
             pecan_contact_add_group_id (contact, NULL);
         }
 
-        pecan_contact_set_store_name (contact, extra);
+        if (session->server_alias)
+        {
+            pecan_contact_set_store_name (contact, extra);
+        }
+        else
+        {
+            pecan_contact_set_friendly_name (contact, extra);
+        }
     }
 
     if (list_op & MSN_LIST_AL_OP)
