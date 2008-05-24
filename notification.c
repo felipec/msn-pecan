@@ -684,30 +684,8 @@ adg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 static void
 qng_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
-    MsnSession *session;
-    static int count = 0;
-    const char *passport;
-    PurpleAccount *account;
-
-    session = cmdproc->session;
-    account = session->account;
-
-    if (!session->passport_info.mail_url)
-        return;
-
-    passport = purple_normalize(account, purple_account_get_username(account));
-
-    if ((strstr(passport, "@hotmail.") != NULL) ||
-        (strstr(passport, "@msn.com") != NULL))
-        return;
-
-    if (count++ < 26)
-        return;
-
-    count = 0;
-    msn_cmdproc_send(cmdproc, "URL", "%s", "INBOX");
+    /** @todo set the png timeout to the argument of this command */
 }
-
 
 static void
 fln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
