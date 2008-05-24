@@ -1188,103 +1188,117 @@ set_permit_deny (PurpleConnection *gc)
     }
 }
 
+/*
+ * Chat stuff
+ */
+
 static void
-msn_chat_invite(PurpleConnection *gc, int id, const char *msg,
-				const char *who)
+chat_invite (PurpleConnection *gc,
+             gint id,
+             const gchar *msg,
+             const gchar *who)
 {
-	MsnSession *session;
-	MsnSwitchBoard *swboard;
+    MsnSession *session;
+    MsnSwitchBoard *swboard;
 
-	session = gc->proto_data;
+    session = gc->proto_data;
 
-	swboard = msn_session_find_swboard_with_id(session, id);
+    swboard = msn_session_find_swboard_with_id (session, id);
 
-	if (swboard == NULL)
-	{
-		/* if we have no switchboard, everyone else left the chat already */
-		swboard = msn_switchboard_new(session);
-		msn_switchboard_request(swboard);
-		swboard->chat_id = id;
-		swboard->conv = purple_find_chat(gc, id);
-	}
+    /* if we have no switchboard, everyone else left the chat already */
+    if (!swboard)
+    {
+        swboard = msn_switchboard_new (session);
+        msn_switchboard_request (swboard);
+        swboard->chat_id = id;
+        swboard->conv = purple_find_chat (gc, id);
+    }
 
-	swboard->flag |= MSN_SB_FLAG_IM;
+    swboard->flag |= MSN_SB_FLAG_IM;
 
-	msn_switchboard_request_add_user(swboard, who);
+    msn_switchboard_request_add_user (swboard, who);
 }
 
 static void
-msn_chat_leave(PurpleConnection *gc, int id)
+chat_leave (PurpleConnection *gc,
+            gint id)
 {
-	MsnSession *session;
-	MsnSwitchBoard *swboard;
-	PurpleConversation *conv;
+    MsnSession *session;
+    MsnSwitchBoard *swboard;
+    PurpleConversation *conv;
 
-	session = gc->proto_data;
+    session = gc->proto_data;
 
-	swboard = msn_session_find_swboard_with_id(session, id);
+    swboard = msn_session_find_swboard_with_id (session, id);
 
-	/* if swboard is NULL we were the only person left anyway */
-	if (swboard == NULL)
-		return;
+    /* if swboard is NULL we were the only person left anyway */
+    if (!swboard)
+        return;
 
-	conv = swboard->conv;
+    conv = swboard->conv;
 
-	msn_switchboard_release(swboard, MSN_SB_FLAG_IM);
+    msn_switchboard_release (swboard, MSN_SB_FLAG_IM);
 
-	/* If other switchboards managed to associate themselves with this
-	 * conv, make sure they know it's gone! */
-	if (conv != NULL)
-	{
-		while ((swboard = msn_session_find_swboard_with_conv(session, conv)) != NULL)
-			swboard->conv = NULL;
-	}
+    /* If other switchboards managed to associate themselves with this
+     * conv, make sure they know it's gone! */
+    /** @todo this should not happen */
+    if (conv)
+    {
+        while ((swboard = msn_session_find_swboard_with_conv (session, conv)))
+        {
+            swboard->conv = NULL;
+        }
+    }
 }
 
-static int
-msn_chat_send(PurpleConnection *gc, int id, const char *message, PurpleMessageFlags flags)
+static gint
+chat_send (PurpleConnection *gc,
+           gint id,
+           const gchar *message,
+           PurpleMessageFlags flags)
 {
-	PurpleAccount *account;
-	MsnSession *session;
-	MsnSwitchBoard *swboard;
-	MsnMessage *msg;
-	char *msgformat;
-	char *msgtext;
+    PurpleAccount *account;
+    MsnSession *session;
+    MsnSwitchBoard *swboard;
+    MsnMessage *msg;
+    char *msgformat;
+    char *msgtext;
 
-	account = purple_connection_get_account(gc);
-	session = gc->proto_data;
-	swboard = msn_session_find_swboard_with_id(session, id);
+    account = purple_connection_get_account (gc);
+    session = gc->proto_data;
+    swboard = msn_session_find_swboard_with_id (session, id);
 
-	if (swboard == NULL)
-		return -EINVAL;
+    if (!swboard)
+        return -EINVAL;
 
-	if (!swboard->ready)
-		return 0;
+    if (!swboard->ready)
+        return 0;
 
-	swboard->flag |= MSN_SB_FLAG_IM;
+    swboard->flag |= MSN_SB_FLAG_IM;
 
-	msn_import_html(message, &msgformat, &msgtext);
+    msn_import_html (message, &msgformat, &msgtext);
 
-	if (strlen(msgtext) + strlen(msgformat) + strlen(VERSION) > 1564)
-	{
-		g_free(msgformat);
-		g_free(msgtext);
+    /** @todo use a constant */
+    /** @todo don't call strlen all the time */
+    if (strlen (msgtext) + strlen (msgformat) + strlen (VERSION) > 1564)
+    {
+        g_free (msgformat);
+        g_free (msgtext);
 
-		return -E2BIG;
-	}
+        return -E2BIG;
+    }
 
-	msg = msn_message_new_plain(msgtext);
-	msn_message_set_attr(msg, "X-MMS-IM-Format", msgformat);
-	msn_switchboard_send_msg(swboard, msg, FALSE);
-	msn_message_destroy(msg);
+    msg = msn_message_new_plain (msgtext);
+    msn_message_set_attr (msg, "X-MMS-IM-Format", msgformat);
+    msn_switchboard_send_msg (swboard, msg, FALSE);
+    msn_message_destroy (msg);
 
-	g_free(msgformat);
-	g_free(msgtext);
+    g_free (msgformat);
+    g_free (msgtext);
 
-	serv_got_chat_in(gc, id, purple_account_get_username(account), 0,
-					 message, time(NULL));
+    serv_got_chat_in (gc, id, purple_account_get_username (account), 0, message, time (NULL));
 
-	return 0;
+    return 0;
 }
 
 static void
@@ -1303,40 +1317,39 @@ msn_keepalive(PurpleConnection *gc)
 }
 
 static void
-msn_convo_closed(PurpleConnection *gc, const char *who)
+convo_closed (PurpleConnection *gc,
+              const gchar *who)
 {
-	MsnSession *session;
-	MsnSwitchBoard *swboard;
-	PurpleConversation *conv;
+    MsnSession *session;
+    MsnSwitchBoard *swboard;
+    PurpleConversation *conv;
 
-	session = gc->proto_data;
+    session = gc->proto_data;
 
-	swboard = msn_session_find_swboard(session, who);
+    swboard = msn_session_find_swboard (session, who);
 
-	/*
-	 * Don't perform an assertion here. If swboard is NULL, then the
-	 * switchboard was either closed by the other party, or the person
-	 * is talking to himself.
-	 */
-	if (swboard == NULL)
-		return;
+    if (!swboard)
+        return;
 
-	conv = swboard->conv;
+    conv = swboard->conv;
 
-	/* If we release the switchboard here, it may still have messages
-	   pending ACK which would result in incorrect unsent message errors.
-	   Just let it timeout... This is *so* going to screw with people who
-	   use dumb clients that report "User has closed the conversation window" */
-	/* msn_switchboard_release(swboard, MSN_SB_FLAG_IM); */
-	swboard->conv = NULL;
+    /* If we release the switchboard here, it may still have messages
+       pending ACK which would result in incorrect unsent message errors.
+       Just let it timeout... This is *so* going to screw with people who
+       use dumb clients that report "User has closed the conversation window" */
+    /* msn_switchboard_release(swboard, MSN_SB_FLAG_IM); */
+    swboard->conv = NULL;
 
-	/* If other switchboards managed to associate themselves with this
-	 * conv, make sure they know it's gone! */
-	if (conv != NULL)
-	{
-		while ((swboard = msn_session_find_swboard_with_conv(session, conv)) != NULL)
-			swboard->conv = NULL;
-	}
+    /* If other switchboards managed to associate themselves with this
+     * conv, make sure they know it's gone! */
+    /** @todo this should not happen */
+    if (conv)
+    {
+        while ((swboard = msn_session_find_swboard_with_conv (session, conv)))
+        {
+            swboard->conv = NULL;
+        }
+    }
 }
 
 static void
@@ -1418,10 +1431,10 @@ static PurplePluginProtocolInfo prpl_info =
     NULL, /* join_chat */
     NULL, /* reject chat invite */
     NULL, /* get_chat_name */
-    msn_chat_invite, /* chat_invite */
-    msn_chat_leave, /* chat_leave */
+    chat_invite, /* chat_invite */
+    chat_leave, /* chat_leave */
     NULL, /* chat_whisper */
-    msn_chat_send, /* chat_send */
+    chat_send, /* chat_send */
     msn_keepalive, /* keepalive */
     NULL, /* register_user */
     NULL, /* get_cb_info */
@@ -1430,7 +1443,7 @@ static PurplePluginProtocolInfo prpl_info =
     group_buddy, /* group_buddy */
     rename_group, /* rename_group */
     NULL, /* buddy_free */
-    msn_convo_closed, /* convo_closed */
+    convo_closed, /* convo_closed */
     msn_normalize, /* normalize */
     set_buddy_icon, /* set_buddy_icon */
     remove_group, /* remove_group */
