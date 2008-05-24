@@ -66,21 +66,43 @@ objects = \
 sources = $(patsubst %.o,%.c,$(objects))
 
 ifeq ($(PLATFORM),Darwin)
-	DYNFLAG=-dynamiclib
+	SHLIBEXT=dylib
 else
-	DYNFLAG=-shared
+	SHLIBEXT=so
 endif
 
-all: libmsn-pecan.so
+lib=libmsn-pecan.$(SHLIBEXT)
 
-libmsn-pecan.so: $(objects)
-	$(CC) $(LDFLAGS) $(PURPLE_LIBS) $(GOBJECT_LIBS) $+ $(DYNFLAG) -o $@
+all: $(lib)
 
-%.o: %.c
-	$(CC) -fPIC $(CFLAGS) $(PURPLE_CFLAGS) $(GOBJECT_CFLAGS) $< -c -o $@
+# from Lauri Leukkunen's build system
+ifdef V
+Q = 
+P = @printf "" # <- space before hash is important!!!
+else
+P = @printf "[%s] $@\n" # <- space before hash is important!!!
+Q = @
+endif
+
+$(lib): $(objects)
+$(lib): CFLAGS := $(CFLAGS) -fPIC $(PURPLE_CFLAGS) $(GOBJECT_CFLAGS)
+$(lib): LIBS := $(PURPLE_LIBS) $(GOBJECT_LIBS)
+
+%.dylib::
+	$(P)DYLIB
+	$(Q)$(CC) $(LDFLAGS) -dynamiclib -o $@ $^ $(LIBS)
+
+%.so::
+	$(P)SHLIB
+	$(Q)$(CC) $(LDFLAGS) -shared -o $@ $^ $(LIBS)
+
+%.o:: %.c
+	$(P)CC
+	$(Q)$(CC) $(CFLAGS) -Wp,-MMD,$(dir $@).$(notdir $@).d -o $@ -c $<
 
 clean:
-	rm -f libmsn-pecan.so $(objects)
+	rm -f $(lib) $(objects)
+	rm -f *.o .*.d
 
 depend:
 	makedepend -Y -- $(CFLAGS) -- $(sources)
@@ -94,7 +116,7 @@ dist:
 	rm -r msn-pecan-$(version)
 	bzip2 /tmp/msn-pecan-$(version).tar
 
-install: libmsn-pecan.so
+install: $(lib)
 	mkdir -p $(purpledir)
-	install libmsn-pecan.so $(purpledir)
-	# chcon -t textrel_shlib_t /usr/lib/purple-2/libmsn-pecan.so
+	install $(lib) $(purpledir)
+	# chcon -t textrel_shlib_t $(purpledir)/$(lib)
