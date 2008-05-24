@@ -1083,7 +1083,7 @@ add_permit (PurpleConnection *gc,
     if (!session->logged_in)
     {
         pecan_error ("not connected");
-        return;
+        g_return_if_reached ();
     }
 
     if (user && user->list_op & MSN_LIST_BL_OP)
@@ -1107,7 +1107,7 @@ add_deny (PurpleConnection *gc,
     if (!session->logged_in)
     {
         pecan_error ("not connected");
-        return;
+        g_return_if_reached ();
     }
 
     if (user && user->list_op & MSN_LIST_AL_OP)
@@ -1130,7 +1130,7 @@ rem_permit (PurpleConnection *gc,
     if (!session->logged_in)
     {
         pecan_error ("not connected");
-        return;
+        g_return_if_reached ();
     }
 
     user = pecan_contactlist_find_contact (contactlist, who);
@@ -1155,7 +1155,7 @@ rem_deny (PurpleConnection *gc,
     if (!session->logged_in)
     {
         pecan_error ("not connected");
-        return;
+        g_return_if_reached ();
     }
 
     user = pecan_contactlist_find_contact (contactlist, who);
