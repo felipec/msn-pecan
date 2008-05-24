@@ -988,6 +988,76 @@ rem_buddy (PurpleConnection *gc,
     pecan_contactlist_rem_buddy (contactlist, buddy->name, MSN_LIST_FL, group_name);
 }
 
+static void
+msn_alias_buddy (PurpleConnection *gc, const char *name, const char *alias)
+{
+	MsnSession *session;
+	MsnCmdProc *cmdproc;
+	PecanContact *contact;
+
+	session = gc->proto_data;
+	cmdproc = session->notification->cmdproc;
+	contact = pecan_contactlist_find_contact (session->contactlist, name);
+
+        if (alias && strlen (alias))
+            alias = purple_url_encode (alias);
+        else
+            alias = pecan_contact_get_passport (contact);
+
+        msn_cmdproc_send(cmdproc, "SBP", "%s %s %s", pecan_contact_get_guid (contact), "MFN", alias);
+}
+
+static void
+pecan_group_buddy(PurpleConnection *gc, const char *who,
+				const char *old_group_name, const char *new_group_name)
+{
+	MsnSession *session;
+	PecanContactList *contactlist;
+
+	session = gc->proto_data;
+	contactlist = session->contactlist;
+
+	pecan_contactlist_move_buddy(contactlist, who, old_group_name, new_group_name);
+}
+
+static void
+msn_rename_group(PurpleConnection *gc, const char *old_name,
+				 PurpleGroup *group, GList *moved_buddies)
+{
+	MsnSession *session;
+	MsnCmdProc *cmdproc;
+	const gchar *old_group_guid;
+	const char *enc_new_group_name;
+
+	session = gc->proto_data;
+	cmdproc = session->notification->cmdproc;
+	enc_new_group_name = purple_url_encode(group->name);
+
+	old_group_guid = pecan_contactlist_find_group_id(session->contactlist, old_name);
+
+        g_return_if_fail (old_group_guid);
+        msn_cmdproc_send (cmdproc, "REG", "%s %s", old_group_guid,
+                          enc_new_group_name);
+}
+
+static void
+msn_remove_group(PurpleConnection *gc, PurpleGroup *group)
+{
+	MsnSession *session;
+	MsnCmdProc *cmdproc;
+	const gchar *group_guid;
+
+	session = gc->proto_data;
+	cmdproc = session->notification->cmdproc;
+
+	/* The server automatically removes the contacts and sends
+	 * notifications back. */
+	if ((group_guid = pecan_contactlist_find_group_id(session->contactlist, group->name)))
+	{
+		msn_cmdproc_send(cmdproc, "RMG", "%s", group_guid);
+	}
+}
+
 /*
  * Permission stuff
  */
@@ -1227,58 +1297,6 @@ msn_keepalive(PurpleConnection *gc)
 }
 
 static void
-msn_alias_buddy (PurpleConnection *gc, const char *name, const char *alias)
-{
-	MsnSession *session;
-	MsnCmdProc *cmdproc;
-	PecanContact *contact;
-
-	session = gc->proto_data;
-	cmdproc = session->notification->cmdproc;
-	contact = pecan_contactlist_find_contact (session->contactlist, name);
-
-        if (alias && strlen (alias))
-            alias = purple_url_encode (alias);
-        else
-            alias = pecan_contact_get_passport (contact);
-
-        msn_cmdproc_send(cmdproc, "SBP", "%s %s %s", pecan_contact_get_guid (contact), "MFN", alias);
-}
-
-static void
-pecan_group_buddy(PurpleConnection *gc, const char *who,
-				const char *old_group_name, const char *new_group_name)
-{
-	MsnSession *session;
-	PecanContactList *contactlist;
-
-	session = gc->proto_data;
-	contactlist = session->contactlist;
-
-	pecan_contactlist_move_buddy(contactlist, who, old_group_name, new_group_name);
-}
-
-static void
-msn_rename_group(PurpleConnection *gc, const char *old_name,
-				 PurpleGroup *group, GList *moved_buddies)
-{
-	MsnSession *session;
-	MsnCmdProc *cmdproc;
-	const gchar *old_group_guid;
-	const char *enc_new_group_name;
-
-	session = gc->proto_data;
-	cmdproc = session->notification->cmdproc;
-	enc_new_group_name = purple_url_encode(group->name);
-
-	old_group_guid = pecan_contactlist_find_group_id(session->contactlist, old_name);
-
-        g_return_if_fail (old_group_guid);
-        msn_cmdproc_send (cmdproc, "REG", "%s %s", old_group_guid,
-                          enc_new_group_name);
-}
-
-static void
 msn_convo_closed(PurpleConnection *gc, const char *who)
 {
 	MsnSession *session;
@@ -1333,24 +1351,6 @@ set_buddy_icon (PurpleConnection *gc,
     }
 
     pecan_update_status (session);
-}
-
-static void
-msn_remove_group(PurpleConnection *gc, PurpleGroup *group)
-{
-	MsnSession *session;
-	MsnCmdProc *cmdproc;
-	const gchar *group_guid;
-
-	session = gc->proto_data;
-	cmdproc = session->notification->cmdproc;
-
-	/* The server automatically removes the contacts and sends
-	 * notifications back. */
-	if ((group_guid = pecan_contactlist_find_group_id(session->contactlist, group->name)))
-	{
-		msn_cmdproc_send(cmdproc, "RMG", "%s", group_guid);
-	}
 }
 
 static gboolean
