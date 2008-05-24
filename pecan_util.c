@@ -448,7 +448,7 @@ pecan_handle_challenge (const gchar *input,
     long long nHigh = 0;
     long long nLow = 0;
 
-    int i;
+    guint i;
 
     /* Create the MD5 hash */
     {

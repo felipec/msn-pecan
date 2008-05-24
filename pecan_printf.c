@@ -68,15 +68,15 @@ pecan_strdup_vprintf (const gchar *format,
                 case 'u':
                 case 'X':
                     {
-                        gchar *format;
+                        gchar *tmp;
                         if (field_width && fill)
-                            format = g_strdup_printf ("%%0%d%c", field_width, *cur);
+                            tmp = g_strdup_printf ("%%0%d%c", field_width, *cur);
                         else if (field_width)
-                            format = g_strdup_printf ("%%%d%c", field_width, *cur);
+                            tmp = g_strdup_printf ("%%%d%c", field_width, *cur);
                         else
-                            format = g_strdup_printf ("%%%c", *cur);
-                        g_string_append_printf (buf, format, va_arg (args, void *));
-                        g_free (format);
+                            tmp = g_strdup_printf ("%%%c", *cur);
+                        g_string_append_printf (buf, tmp, va_arg (args, void *));
+                        g_free (tmp);
                         break;
                     }
                 case 'c':
