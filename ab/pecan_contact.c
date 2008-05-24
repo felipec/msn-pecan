@@ -153,7 +153,7 @@ pecan_contact_set_passport (PecanContact *contact,
 static gboolean
 contact_is_account (PecanContact *contact)
 {
-    if (strcmp (msn_session_get_contact (contact->contactlist->session)->passport, contact->passport) == 0)
+    if (strcmp (msn_session_get_username (contact->contactlist->session), contact->passport) == 0)
         return TRUE;
 
     return FALSE;

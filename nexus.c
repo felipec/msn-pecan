@@ -342,10 +342,10 @@ login_connect_cb(gpointer data, PurpleSslConnection *gsc,
 	msn_session_set_login_step(session, PECAN_LOGIN_STEP_GET_COOKIE);
 
 	username =
-		g_strdup(purple_url_encode(purple_account_get_username(session->account)));
+		g_strdup(purple_url_encode(msn_session_get_username(session)));
 
 	password =
-		g_strdup(purple_url_encode(purple_connection_get_password(session->account->gc)));
+		g_strdup(purple_url_encode(msn_session_get_password(session)));
 
 	ctint = strtoul((char *)g_hash_table_lookup(nexus->challenge_data, "ct"), NULL, 10) + 200;
 

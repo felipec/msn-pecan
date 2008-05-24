@@ -100,7 +100,7 @@ msn_slplink_new(MsnSession *session, const char *username)
 	slplink->slp_seq_id = rand() % 0xFFFFFF00 + 4;
 	slplink->slp_session_id = rand() % 0xFFFFFF00 + 4;
 
-	slplink->local_user = g_strdup(pecan_contact_get_passport(session->user));
+	slplink->local_user = g_strdup(msn_session_get_username(session));
 	slplink->remote_user = g_strdup(username);
 
 	slplink->slp_msg_queue = g_queue_new();

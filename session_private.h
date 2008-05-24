@@ -40,6 +40,9 @@ struct _PurpleConversation;
 
 struct MsnSession
 {
+    gchar *username;
+    gchar *password;
+
     struct _PurpleAccount *account;
     PecanContact *user;
 

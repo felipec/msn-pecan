@@ -933,31 +933,33 @@ prp_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     MsnSession *session = cmdproc->session;
     PurpleConnection *gc = session->account->gc;
     const gchar *type, *value;
+    PecanContact *user;
 
     g_return_if_fail(cmd->param_count >= 3);
 
     type = cmd->params[1];
+    user = msn_session_get_contact (session);
 
     if (cmd->param_count == 3)
     {
         value = cmd->params[2];
         if (!strcmp(type, "PHH"))
-            pecan_contact_set_home_phone(session->user, purple_url_decode(value));
+            pecan_contact_set_home_phone(user, purple_url_decode(value));
         else if (!strcmp(type, "PHW"))
-            pecan_contact_set_work_phone(session->user, purple_url_decode(value));
+            pecan_contact_set_work_phone(user, purple_url_decode(value));
         else if (!strcmp(type, "PHM"))
-            pecan_contact_set_mobile_phone(session->user, purple_url_decode(value));
+            pecan_contact_set_mobile_phone(user, purple_url_decode(value));
         else if (!strcmp(type, "MFN"))
             purple_connection_set_display_name(gc, purple_url_decode(value));
     }
     else
     {
         if (!strcmp(type, "PHH"))
-            pecan_contact_set_home_phone(session->user, NULL);
+            pecan_contact_set_home_phone(user, NULL);
         else if (!strcmp(type, "PHW"))
-            pecan_contact_set_work_phone(session->user, NULL);
+            pecan_contact_set_work_phone(user, NULL);
         else if (!strcmp(type, "PHM"))
-            pecan_contact_set_mobile_phone(session->user, NULL);
+            pecan_contact_set_mobile_phone(user, NULL);
     }
 }
 
@@ -1192,7 +1194,7 @@ url_cmd (MsnCmdProc *cmdproc,
                                                        session->passport_info.mspauth,
                                                        creds,
                                                        tmp_timestamp,
-                                                       pecan_contact_get_passport (session->user),
+                                                       msn_session_get_username (session),
                                                        session->passport_info.sid,
                                                        rru);
 
@@ -1214,7 +1216,7 @@ url_cmd (MsnCmdProc *cmdproc,
             const gchar *passport;
             const gchar *main_url;
 
-            passport = pecan_contact_get_passport (session->user);
+            passport = msn_session_get_username (session);
             main_url = session->passport_info.mail_url;
 
             purple_notify_emails (connection, session->inbox_unread_count, FALSE, NULL, NULL,
@@ -1438,7 +1440,7 @@ initial_email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
             const char *passport;
             const char *url;
 
-            passport = pecan_contact_get_passport(session->user);
+            passport = msn_session_get_username(session);
             url = session->passport_info.mail_url;
 
             purple_notify_emails(gc, atoi(unread), FALSE, NULL, NULL,
@@ -1494,7 +1496,7 @@ email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     purple_notify_email(gc,
                         (subject != NULL ? subject : ""),
                         (from != NULL ?  from : ""),
-                        pecan_contact_get_passport(session->user),
+                        msn_session_get_username (session),
                         session->passport_info.mail_url, NULL, NULL);
 
     g_free(from);

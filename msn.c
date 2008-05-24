@@ -294,7 +294,7 @@ msn_show_set_home_phone(PurplePluginAction *action)
 	session = gc->proto_data;
 
 	purple_request_input(gc, NULL, _("Set your home phone number."), NULL,
-					   pecan_contact_get_home_phone(session->user), FALSE, FALSE, NULL,
+					   pecan_contact_get_home_phone(msn_session_get_contact (session)), FALSE, FALSE, NULL,
 					   _("OK"), G_CALLBACK(msn_set_home_phone_cb),
 					   _("Cancel"), NULL,
 					   purple_connection_get_account(gc), NULL, NULL,
@@ -311,7 +311,7 @@ msn_show_set_work_phone(PurplePluginAction *action)
 	session = gc->proto_data;
 
 	purple_request_input(gc, NULL, _("Set your work phone number."), NULL,
-					   pecan_contact_get_work_phone(session->user), FALSE, FALSE, NULL,
+					   pecan_contact_get_work_phone(msn_session_get_contact (session)), FALSE, FALSE, NULL,
 					   _("OK"), G_CALLBACK(msn_set_work_phone_cb),
 					   _("Cancel"), NULL,
 					   purple_connection_get_account(gc), NULL, NULL,
@@ -328,7 +328,7 @@ msn_show_set_mobile_phone(PurplePluginAction *action)
 	session = gc->proto_data;
 
 	purple_request_input(gc, NULL, _("Set your mobile phone number."), NULL,
-					   pecan_contact_get_mobile_phone(session->user), FALSE, FALSE, NULL,
+					   pecan_contact_get_mobile_phone(msn_session_get_contact (session)), FALSE, FALSE, NULL,
 					   _("OK"), G_CALLBACK(msn_set_mobile_phone_cb),
 					   _("Cancel"), NULL,
 					   purple_connection_get_account(gc), NULL, NULL,
@@ -736,7 +736,6 @@ login (PurpleAccount *account)
 {
     PurpleConnection *gc;
     MsnSession *session;
-    const char *username;
     const char *host;
     int port;
 
@@ -765,11 +764,8 @@ login (PurpleAccount *account)
 
     msn_session_set_login_step (session, PECAN_LOGIN_STEP_START);
 
-    /** @todo remove normalization */
-    username = msn_normalize (account, purple_account_get_username (account));
-
-    if (strcmp (username, purple_account_get_username (account)))
-        purple_account_set_username (account, username);
+    msn_session_set_username (session, purple_account_get_username (account));
+    msn_session_set_password (session, purple_account_get_password (account));
 
     if (!msn_session_connect (session, host, port))
         purple_connection_error (gc, _("Failed to connect to server."));
@@ -1358,13 +1354,13 @@ set_buddy_icon (PurpleConnection *gc,
     PecanContact *user;
 
     session = gc->proto_data;
-    user = session->user;
+    user = msn_session_get_contact (session);
 
     {
         PecanBuffer *image;
         image = pecan_buffer_new_memdup (purple_imgstore_get_data (img),
                                          purple_imgstore_get_size (img));
-        pecan_contact_set_buddy_icon (session->user, image);
+        pecan_contact_set_buddy_icon (user, image);
     }
 
     pecan_update_status (session);

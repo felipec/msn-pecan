@@ -109,14 +109,44 @@ msn_session_destroy(MsnSession *session)
 	if (session->user != NULL)
 		pecan_contact_free(session->user);
 
+	g_free (session->username);
+	g_free (session->password);
+
 	g_free(session);
+}
+
+void
+msn_session_set_username (MsnSession *session,
+                          const gchar *value)
+{
+    g_free (session->username);
+    session->username = g_strdup (value);
+}
+
+const gchar *
+msn_session_get_username (MsnSession *session)
+{
+    return session->username;
+}
+
+void
+msn_session_set_password (MsnSession *session,
+                          const gchar *value)
+{
+    g_free (session->password);
+    session->password = g_strdup (value);
+}
+
+const gchar *
+msn_session_get_password (MsnSession *session)
+{
+    return session->password;
 }
 
 PecanContact *
 msn_session_get_contact (MsnSession *session)
 {
     g_return_val_if_fail (session, NULL);
-
     return session->user;
 }
 

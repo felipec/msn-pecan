@@ -84,6 +84,15 @@ msn_session_new (struct _PurpleAccount *account);
 void
 msn_session_destroy (MsnSession *session);
 
+void
+msn_session_set_username (MsnSession *session, const gchar *value);
+const gchar *
+msn_session_get_username (MsnSession *session);
+void
+msn_session_set_password (MsnSession *session, const gchar *value);
+const gchar *
+msn_session_get_password (MsnSession *session);
+
 /**
  * Retrieves the session contact.
  *

@@ -72,31 +72,33 @@ static void
 prp_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
 	MsnSession *session = cmdproc->session;
-        PurpleConnection *gc = session->account->gc;
+	PurpleConnection *gc = session->account->gc;
 	const gchar *type, *value;
+	PecanContact *user;
 
 	type  = cmd->params[0];
 	value = cmd->params[1];
+	user = msn_session_get_contact (session);
 
 	if (cmd->param_count == 2)
 	{
 		if (!strcmp(type, "PHH"))
-			pecan_contact_set_home_phone(session->user, purple_url_decode(value));
+			pecan_contact_set_home_phone(user, purple_url_decode(value));
 		else if (!strcmp(type, "PHW"))
-			pecan_contact_set_work_phone(session->user, purple_url_decode(value));
+			pecan_contact_set_work_phone(user, purple_url_decode(value));
 		else if (!strcmp(type, "PHM"))
-			pecan_contact_set_mobile_phone(session->user, purple_url_decode(value));
-                else if (!strcmp(type, "MFN"))
+			pecan_contact_set_mobile_phone(user, purple_url_decode(value));
+		else if (!strcmp(type, "MFN"))
 			purple_connection_set_display_name(gc, purple_url_decode(value));
 	}
 	else
 	{
 		if (!strcmp(type, "PHH"))
-			pecan_contact_set_home_phone(session->user, NULL);
+			pecan_contact_set_home_phone(user, NULL);
 		else if (!strcmp(type, "PHW"))
-			pecan_contact_set_work_phone(session->user, NULL);
+			pecan_contact_set_work_phone(user, NULL);
 		else if (!strcmp(type, "PHM"))
-			pecan_contact_set_mobile_phone(session->user, NULL);
+			pecan_contact_set_mobile_phone(user, NULL);
 	}
 }
 

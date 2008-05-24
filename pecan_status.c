@@ -57,7 +57,7 @@ pecan_set_status (MsnSession *session,
     const gchar *state_text;
     MsnObject *msnobj;
 
-    user = session->user;
+    user = msn_session_get_contact (session);
     cmdproc = session->notification->cmdproc;
     state_text = util_type_to_str (status);
     msnobj = pecan_contact_get_object (user);

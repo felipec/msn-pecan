@@ -1119,7 +1119,7 @@ msn_request_user_display(PecanContact *user)
 		pecan_info ("requesting our own user display");
 #endif
 
-		my_obj = pecan_contact_get_object(session->user);
+		my_obj = pecan_contact_get_object(msn_session_get_contact (session));
 
 		if (my_obj != NULL)
 		{
