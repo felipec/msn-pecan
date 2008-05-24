@@ -453,10 +453,12 @@ pecan_contactlist_new (MsnSession *session)
 
     contactlist->session = session;
 
-    contactlist->contact_names = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, pecan_contact_free);
+    contactlist->contact_names = g_hash_table_new_full (g_str_hash, g_str_equal, g_free,
+                                                        (GDestroyNotify) pecan_contact_free);
     contactlist->contact_guids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 
-    contactlist->group_names = g_hash_table_new_full (g_ascii_strcase_hash, g_ascii_strcase_equal, g_free, pecan_group_free);
+    contactlist->group_names = g_hash_table_new_full (g_ascii_strcase_hash, g_ascii_strcase_equal, g_free,
+                                                      (GDestroyNotify) pecan_group_free);
     contactlist->group_guids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
     contactlist->null_group = pecan_group_new (contactlist, MSN_NULL_GROUP_NAME, NULL);
 

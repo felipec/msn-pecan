@@ -1358,7 +1358,7 @@ set_buddy_icon (PurpleConnection *gc,
 
     {
         PecanBuffer *image;
-        image = pecan_buffer_new_memdup (purple_imgstore_get_data (img),
+        image = pecan_buffer_new_memdup ((const gpointer) purple_imgstore_get_data (img),
                                          purple_imgstore_get_size (img));
         pecan_contact_set_buddy_icon (user, image);
     }

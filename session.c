@@ -23,6 +23,7 @@
 #include "session_private.h"
 #include "pecan_log.h"
 #include "notification.h"
+#include "pecan_status.h"
 
 #include "cvr/slplink.h"
 
@@ -423,7 +424,7 @@ msn_session_finish_login(MsnSession *session)
 
         {
             PecanBuffer *image;
-            image = pecan_buffer_new_memdup (purple_imgstore_get_data (img),
+            image = pecan_buffer_new_memdup ((const gpointer) purple_imgstore_get_data (img),
                                              purple_imgstore_get_size (img));
             pecan_contact_set_buddy_icon (session->user, image);
         }

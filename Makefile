@@ -21,14 +21,13 @@ OTHER_WARNINGS=-D_FORTIFY_SOURCE=2 -fstack-protector -g3 -pedantic -W -Wall \
 	       -Wpointer-arith -Wshadow -Wstack-protector -Wstrict-prototypes \
 	       -Wswitch -Wundef -Wwrite-strings
 
-CFLAGS=-Wall -ggdb $(EXTRA_WARNINGS)
+CFLAGS=-Wall -ggdb # $(EXTRA_WARNINGS)
 
 override CFLAGS += -I. -DHAVE_LIBPURPLE
 
 purpledir=$(DESTDIR)/$(PURPLE_PREFIX)/lib/purple-2
 
 objects = \
-	directconn.o \
 	error.o \
 	msn.o \
 	nexus.o \
@@ -62,6 +61,11 @@ objects = \
 	cvr/slpsession.o \
 	cvr/pecan_slp_object.o \
 	fix_purple.o
+
+ifdef DIRECTCONN
+objects += directconn.o
+override CFLAGS += -DMSN_DIRECTCONN
+endif
 
 sources = $(patsubst %.o,%.c,$(objects))
 

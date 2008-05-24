@@ -458,8 +458,8 @@ pecan_handle_challenge (const gchar *input,
         cipher = purple_ciphers_find_cipher ("md5");
         context = purple_cipher_context_new (cipher, NULL);
 
-        purple_cipher_context_append (context, input, strlen (input));
-        purple_cipher_context_append (context, productKey, strlen (productKey));
+        purple_cipher_context_append (context, (const guchar *) input, strlen (input));
+        purple_cipher_context_append (context, (const guchar *) productKey, strlen (productKey));
 
         purple_cipher_context_digest (context, sizeof (md5Hash), md5Hash, NULL);
         purple_cipher_context_destroy (context);

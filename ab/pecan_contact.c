@@ -308,7 +308,7 @@ pecan_contact_set_buddy_icon (PecanContact *contact,
         memset (digest, 0, sizeof (digest));
 
         ctx = purple_cipher_context_new_by_name ("sha1", NULL);
-        purple_cipher_context_append (ctx, image->data, image->size);
+        purple_cipher_context_append (ctx, (const guchar *) image->data, image->size);
         purple_cipher_context_digest (ctx, sizeof (digest), digest, NULL);
 
         base64 = purple_base64_encode (digest, sizeof (digest));

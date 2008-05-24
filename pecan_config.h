@@ -24,6 +24,5 @@
 #define PURPLE_PLUGINS
 
 #define PECAN_MAX_MESSAGE_LENGTH 1564
-#define MSN_DIRECTCONN
 
 #endif /* PECAN_CONFIG_H */

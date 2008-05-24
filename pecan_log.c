@@ -31,6 +31,7 @@
 #include <debug.h>
 #endif /* PURPLE_DEBUG */
 
+#if !defined(PURPLE_DEBUG)
 static const gchar *
 log_level_to_string (PecanLogLevel level)
 {
@@ -45,6 +46,7 @@ log_level_to_string (PecanLogLevel level)
         default: return "Unknown"; break;
     }
 }
+#endif
 
 void
 msn_dump_file (const gchar *buffer,
