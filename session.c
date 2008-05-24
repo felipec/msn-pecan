@@ -412,7 +412,6 @@ msn_session_finish_login(MsnSession *session)
 	PurpleAccount *account;
 	PurpleConnection *gc;
 	PurpleStoredImage *img;
-	const char *passport;
 
 	if (session->logged_in)
 		return;
@@ -440,16 +439,4 @@ msn_session_finish_login(MsnSession *session)
 	purple_connection_set_state(gc, PURPLE_CONNECTED);
 
         pecan_contactlist_check_pending (session->contactlist);
-
-	/* It seems that some accounts that haven't accessed hotmail for a while
-	 * and @msn.com accounts don't automatically get the initial email
-	 * notification so we always request it on login
-	 */
-	passport = purple_normalize(account, purple_account_get_username(account));
-
-	if ((strstr(passport, "@hotmail.") != NULL) ||
-		(strstr(passport, "@msn.com") != NULL))
-	{
-		msn_cmdproc_send(session->notification->cmdproc, "URL", "%s", "INBOX");
-	}
 }
