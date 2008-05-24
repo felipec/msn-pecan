@@ -822,9 +822,8 @@ send_im (PurpleConnection *gc,
 
     msn_import_html (message, &msgformat, &msgtext);
 
-    /** @todo use a constant */
     /** @todo don't call strlen all the time */
-    if (strlen (msgtext) + strlen (msgformat) + strlen (VERSION) > 1564)
+    if (strlen (msgtext) + strlen (msgformat) + strlen (VERSION) > PECAN_MAX_MESSAGE_LENGTH)
     {
         g_free (msgformat);
         g_free (msgtext);
@@ -1278,9 +1277,8 @@ chat_send (PurpleConnection *gc,
 
     msn_import_html (message, &msgformat, &msgtext);
 
-    /** @todo use a constant */
     /** @todo don't call strlen all the time */
-    if (strlen (msgtext) + strlen (msgformat) + strlen (VERSION) > 1564)
+    if (strlen (msgtext) + strlen (msgformat) + strlen (VERSION) > PECAN_MAX_MESSAGE_LENGTH)
     {
         g_free (msgformat);
         g_free (msgtext);
