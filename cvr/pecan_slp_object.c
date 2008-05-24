@@ -121,7 +121,7 @@ msn_object_destroy(MsnObject *obj)
     g_free(obj->sha1d);
     g_free(obj->sha1c);
 
-    purple_imgstore_unref(obj->image);
+    pecan_buffer_free (obj->image);
 
     if (obj->local)
         local_objs = g_list_remove(local_objs, obj);
