@@ -569,8 +569,10 @@ adc_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     if (user == NULL)
     {
-        user = pecan_contact_new(session->contactlist, passport, user_guid);
-        pecan_contactlist_add_contact(session->contactlist, user);
+        user = pecan_contact_new (session->contactlist);
+        pecan_contact_set_passport (user, passport);
+        pecan_contact_set_guid (user, user_guid);
+        pecan_contactlist_add_contact (session->contactlist, user);
     }
 
     list_id = msn_get_list_id(list);

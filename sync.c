@@ -170,7 +170,9 @@ lst_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         list_op = g_ascii_strtod (cmd->params[i++], NULL);
         type = g_ascii_strtod (cmd->params[i++], NULL);
 
-	user = pecan_contact_new (session->contactlist, passport, user_guid);
+	user = pecan_contact_new (session->contactlist);
+	pecan_contact_set_passport (user, passport);
+	pecan_contact_set_guid (user, user_guid);
 
 	pecan_contactlist_add_contact(session->contactlist, user);
 

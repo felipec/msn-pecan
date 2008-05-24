@@ -35,13 +35,11 @@ typedef struct PecanContact PecanContact;
 /**
  * Creates a new contact structure.
  *
- * @param session The MSN session.
- * @param passport The initial passport.
- * @param guid The contact guid.
+ * @param contactlist The ContactList that will contain this contact.
  *
  * @return A new contact structure.
  */
-PecanContact *pecan_contact_new (PecanContactList *contactlist, const gchar *passport, const gchar *guid);
+PecanContact *pecan_contact_new (PecanContactList *contactlist);
 
 /**
  * Destroys a contact structure.

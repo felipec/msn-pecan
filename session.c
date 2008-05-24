@@ -64,7 +64,7 @@ msn_session_new(PurpleAccount *account)
 	session->notification = msn_notification_new(session);
 	session->contactlist = pecan_contactlist_new(session);
 
-	session->user = pecan_contact_new(session->contactlist, purple_account_get_username(account), NULL);
+	session->user = pecan_contact_new (session->contactlist);
 
 	session->protocol_ver = 9;
 	session->conv_seq = 1;

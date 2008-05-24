@@ -39,19 +39,13 @@
 #endif /* HAVE_LIBPURPLE */
 
 PecanContact *
-pecan_contact_new (PecanContactList *contactlist,
-                   const gchar *passport,
-                   const gchar *guid)
+pecan_contact_new (PecanContactList *contactlist)
 {
     PecanContact *contact;
 
     contact = g_new0 (PecanContact, 1);
 
     contact->contactlist = contactlist;
-
-    pecan_contact_set_passport (contact, passport);
-    pecan_contact_set_guid (contact, guid);
-
     contact->groups = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 
     return contact;
