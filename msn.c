@@ -931,155 +931,185 @@ set_idle (PurpleConnection *gc,
     pecan_update_status (session);
 }
 
+/*
+ * Contact list stuff
+ */
+
 static void
-msn_add_buddy(PurpleConnection *gc, PurpleBuddy *buddy, PurpleGroup *group)
+add_buddy (PurpleConnection *gc,
+           PurpleBuddy *buddy,
+           PurpleGroup *group)
 {
-	MsnSession *session;
-	PecanContactList *contactlist;
+    MsnSession *session;
+    PecanContactList *contactlist;
 
-	session = gc->proto_data;
-	contactlist = session->contactlist;
+    session = gc->proto_data;
+    contactlist = session->contactlist;
 
-	if (!session->logged_in)
-	{
-		purple_debug_error("msn", "msn_add_buddy called before connected\n");
+    if (!session->logged_in)
+    {
+        pecan_error ("not connected");
+        return;
+    }
 
-		return;
-	}
-
-	pecan_contactlist_add_buddy_helper(contactlist, buddy, group);
+    pecan_contactlist_add_buddy_helper (contactlist, buddy, group);
 }
 
 static void
-msn_rem_buddy(PurpleConnection *gc, PurpleBuddy *buddy, PurpleGroup *group)
+rem_buddy (PurpleConnection *gc,
+           PurpleBuddy *buddy,
+           PurpleGroup *group)
 {
-	MsnSession *session;
-	PecanContactList *contactlist;
-	const gchar *group_name;
+    MsnSession *session;
+    PecanContactList *contactlist;
+    const gchar *group_name;
 
-	session = gc->proto_data;
-	contactlist = session->contactlist;
-	group_name = group->name;
+    session = gc->proto_data;
+    contactlist = session->contactlist;
+    group_name = group->name;
 
-	if (!session->logged_in)
-		return;
+    if (!session->logged_in)
+    {
+        pecan_error ("not connected");
+        return;
+    }
 
-	/* Are we going to remove him completely? */
-	if (group_name)
-	{
-	    PecanContact *user;
+    /* Are we going to remove him completely? */
+    if (group_name)
+    {
+        PecanContact *user;
 
-	    user = pecan_contactlist_find_contact (contactlist, buddy->name);
+        user = pecan_contactlist_find_contact (contactlist, buddy->name);
 
-	    if (user && pecan_contact_get_group_count (user) <= 1)
-		group_name = NULL;
-	}
+        if (user && pecan_contact_get_group_count (user) <= 1)
+            group_name = NULL;
+    }
 
-	pecan_contactlist_rem_buddy(contactlist, buddy->name, MSN_LIST_FL, group_name);
+    pecan_contactlist_rem_buddy (contactlist, buddy->name, MSN_LIST_FL, group_name);
+}
+
+/*
+ * Permission stuff
+ */
+
+static void
+add_permit (PurpleConnection *gc,
+            const gchar *who)
+{
+    MsnSession *session;
+    PecanContactList *contactlist;
+    PecanContact *user;
+
+    session = gc->proto_data;
+    contactlist = session->contactlist;
+    user = pecan_contactlist_find_contact (contactlist, who);
+
+    if (!session->logged_in)
+    {
+        pecan_error ("not connected");
+        return;
+    }
+
+    if (user && user->list_op & MSN_LIST_BL_OP)
+        pecan_contactlist_rem_buddy (contactlist, who, MSN_LIST_BL, NULL);
+
+    pecan_contactlist_add_buddy (contactlist, who, MSN_LIST_AL, NULL);
 }
 
 static void
-msn_add_permit(PurpleConnection *gc, const char *who)
+add_deny (PurpleConnection *gc,
+          const gchar *who)
 {
-	MsnSession *session;
-	PecanContactList *contactlist;
-	PecanContact *user;
+    MsnSession *session;
+    PecanContactList *contactlist;
+    PecanContact *user;
 
-	session = gc->proto_data;
-	contactlist = session->contactlist;
-	user = pecan_contactlist_find_contact(contactlist, who);
+    session = gc->proto_data;
+    contactlist = session->contactlist;
+    user = pecan_contactlist_find_contact (contactlist, who);
 
-	if (!session->logged_in)
-		return;
+    if (!session->logged_in)
+    {
+        pecan_error ("not connected");
+        return;
+    }
 
-	if (user != NULL && user->list_op & MSN_LIST_BL_OP)
-		pecan_contactlist_rem_buddy(contactlist, who, MSN_LIST_BL, NULL);
+    if (user && user->list_op & MSN_LIST_AL_OP)
+        pecan_contactlist_rem_buddy (contactlist, who, MSN_LIST_AL, NULL);
 
-	pecan_contactlist_add_buddy(contactlist, who, MSN_LIST_AL, NULL);
+    pecan_contactlist_add_buddy (contactlist, who, MSN_LIST_BL, NULL);
 }
 
 static void
-msn_add_deny(PurpleConnection *gc, const char *who)
+rem_permit (PurpleConnection *gc,
+            const gchar *who)
 {
-	MsnSession *session;
-	PecanContactList *contactlist;
-	PecanContact *user;
+    MsnSession *session;
+    PecanContactList *contactlist;
+    PecanContact *user;
 
-	session = gc->proto_data;
-	contactlist = session->contactlist;
-	user = pecan_contactlist_find_contact(contactlist, who);
+    session = gc->proto_data;
+    contactlist = session->contactlist;
 
-	if (!session->logged_in)
-		return;
+    if (!session->logged_in)
+    {
+        pecan_error ("not connected");
+        return;
+    }
 
-	if (user != NULL && user->list_op & MSN_LIST_AL_OP)
-		pecan_contactlist_rem_buddy(contactlist, who, MSN_LIST_AL, NULL);
+    user = pecan_contactlist_find_contact (contactlist, who);
 
-	pecan_contactlist_add_buddy(contactlist, who, MSN_LIST_BL, NULL);
+    pecan_contactlist_rem_buddy (contactlist, who, MSN_LIST_AL, NULL);
+
+    if (user && user->list_op & MSN_LIST_RL_OP)
+        pecan_contactlist_add_buddy (contactlist, who, MSN_LIST_BL, NULL);
 }
 
 static void
-msn_rem_permit(PurpleConnection *gc, const char *who)
+rem_deny (PurpleConnection *gc,
+          const gchar *who)
 {
-	MsnSession *session;
-	PecanContactList *contactlist;
-	PecanContact *user;
+    MsnSession *session;
+    PecanContactList *contactlist;
+    PecanContact *user;
 
-	session = gc->proto_data;
-	contactlist = session->contactlist;
+    session = gc->proto_data;
+    contactlist = session->contactlist;
 
-	if (!session->logged_in)
-		return;
+    if (!session->logged_in)
+    {
+        pecan_error ("not connected");
+        return;
+    }
 
-	user = pecan_contactlist_find_contact(contactlist, who);
+    user = pecan_contactlist_find_contact (contactlist, who);
 
-	pecan_contactlist_rem_buddy(contactlist, who, MSN_LIST_AL, NULL);
+    pecan_contactlist_rem_buddy (contactlist, who, MSN_LIST_BL, NULL);
 
-	if (user != NULL && user->list_op & MSN_LIST_RL_OP)
-		pecan_contactlist_add_buddy(contactlist, who, MSN_LIST_BL, NULL);
+    if (user && user->list_op & MSN_LIST_RL_OP)
+        pecan_contactlist_add_buddy (contactlist, who, MSN_LIST_AL, NULL);
 }
 
 static void
-msn_rem_deny(PurpleConnection *gc, const char *who)
+set_permit_deny (PurpleConnection *gc)
 {
-	MsnSession *session;
-	PecanContactList *contactlist;
-	PecanContact *user;
+    PurpleAccount *account;
+    MsnSession *session;
+    MsnCmdProc *cmdproc;
 
-	session = gc->proto_data;
-	contactlist = session->contactlist;
+    account = purple_connection_get_account (gc);
+    session = gc->proto_data;
+    cmdproc = session->notification->cmdproc;
 
-	if (!session->logged_in)
-		return;
-
-	user = pecan_contactlist_find_contact(contactlist, who);
-
-	pecan_contactlist_rem_buddy(contactlist, who, MSN_LIST_BL, NULL);
-
-	if (user != NULL && user->list_op & MSN_LIST_RL_OP)
-		pecan_contactlist_add_buddy(contactlist, who, MSN_LIST_AL, NULL);
-}
-
-static void
-msn_set_permit_deny(PurpleConnection *gc)
-{
-	PurpleAccount *account;
-	MsnSession *session;
-	MsnCmdProc *cmdproc;
-
-	account = purple_connection_get_account(gc);
-	session = gc->proto_data;
-	cmdproc = session->notification->cmdproc;
-
-	if (account->perm_deny == PURPLE_PRIVACY_ALLOW_ALL ||
-		account->perm_deny == PURPLE_PRIVACY_DENY_USERS)
-	{
-		msn_cmdproc_send(cmdproc, "BLP", "%s", "AL");
-	}
-	else
-	{
-		msn_cmdproc_send(cmdproc, "BLP", "%s", "BL");
-	}
+    if (account->perm_deny == PURPLE_PRIVACY_ALLOW_ALL ||
+        account->perm_deny == PURPLE_PRIVACY_DENY_USERS)
+    {
+        msn_cmdproc_send (cmdproc, "BLP", "%s", "AL");
+    }
+    else
+    {
+        msn_cmdproc_send (cmdproc, "BLP", "%s", "BL");
+    }
 }
 
 static void
@@ -1370,15 +1400,15 @@ static PurplePluginProtocolInfo prpl_info =
     set_status, /* set_away */
     set_idle, /* set_idle */
     NULL, /* change_passwd */
-    msn_add_buddy, /* add_buddy */
+    add_buddy, /* add_buddy */
     NULL, /* add_buddies */
-    msn_rem_buddy, /* remove_buddy */
+    rem_buddy, /* remove_buddy */
     NULL, /* remove_buddies */
-    msn_add_permit, /* add_permit */
-    msn_add_deny, /* add_deny */
-    msn_rem_permit, /* rem_permit */
-    msn_rem_deny, /* rem_deny */
-    msn_set_permit_deny, /* set_permit_deny */
+    add_permit, /* add_permit */
+    add_deny, /* add_deny */
+    rem_permit, /* rem_permit */
+    rem_deny, /* rem_deny */
+    set_permit_deny, /* set_permit_deny */
     NULL, /* join_chat */
     NULL, /* reject chat invite */
     NULL, /* get_chat_name */
