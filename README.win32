@@ -1,0 +1,21 @@
+In order to compile for win32 you will need mingw32, and a build of libpurple
+as well as glib for win32 ready.
+
+Make sure the pkg-config files are set up properly:
+
+export PKG_CONFIG_PATH=/opt/win32/gtk-2.0/lib/pkgconfig:/opt/win32/libpurple/lib/pkgconfig
+
+So that: pkg-config --libs purple                                                                            
+Returns:
+-L/opt/win32/gtk-2.0/lib -L/opt/win32/libpurple/lib -lpurple -lglib-2.0 -lintl -liconv
+
+And: pkg-config --libs gobject-2.0
+-L/opt/win32/gtk-2.0/lib -lgobject-2.0 -lglib-2.0 -lintl -liconv
+
+Then run:
+make CC=i386-mingw32-gcc PLATFORM=win32
+
+== to-do ==
+
+ * Remove PLATFORM variable (use gcc -dumpmachine)
+ * Create builds to ease the process (glib and libpurple)

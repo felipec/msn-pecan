@@ -167,7 +167,9 @@
 #endif
 
 #ifdef _WIN32
-#include "win32dep.h"
+#include <shlobj.h>
+#include <winsock2.h>
+#include <process.h>
 #endif
 
 /* ugly ugly ugly */

@@ -32,39 +32,39 @@ override CFLAGS+=-I. -DHAVE_LIBPURPLE
 purpledir=$(DESTDIR)/$(PURPLE_PREFIX)/lib/purple-2
 
 objects = \
-	error.o \
-	msn.o \
-	nexus.o \
-	notification.o \
-	page.o \
-	session.o \
-	switchboard.o \
-	sync.o \
-	pecan_log.o \
-	pecan_printf.o \
-	pecan_util.o \
-	pecan_status.o \
-	cmd/cmdproc.o \
-	cmd/command.o \
-	cmd/history.o \
-	cmd/msg.o \
-	cmd/table.o \
-	cmd/transaction.o \
-	io/pecan_buffer.o \
-	ab/pecan_group.o \
-	ab/pecan_contact.o \
-	ab/pecan_contactlist.o \
-	io/pecan_stream.o \
-	io/pecan_node.o \
-	io/pecan_cmd_server.o \
-	io/pecan_http_server.o \
-	cvr/slp.o \
-	cvr/slpcall.o \
-	cvr/slplink.o \
-	cvr/slpmsg.o \
-	cvr/slpsession.o \
-	cvr/pecan_slp_object.o \
-	fix_purple.o
+	  error.o \
+	  msn.o \
+	  nexus.o \
+	  notification.o \
+	  page.o \
+	  session.o \
+	  switchboard.o \
+	  sync.o \
+	  pecan_log.o \
+	  pecan_printf.o \
+	  pecan_util.o \
+	  pecan_status.o \
+	  cmd/cmdproc.o \
+	  cmd/command.o \
+	  cmd/history.o \
+	  cmd/msg.o \
+	  cmd/table.o \
+	  cmd/transaction.o \
+	  io/pecan_buffer.o \
+	  ab/pecan_group.o \
+	  ab/pecan_contact.o \
+	  ab/pecan_contactlist.o \
+	  io/pecan_stream.o \
+	  io/pecan_node.o \
+	  io/pecan_cmd_server.o \
+	  io/pecan_http_server.o \
+	  cvr/slp.o \
+	  cvr/slpcall.o \
+	  cvr/slplink.o \
+	  cvr/slpmsg.o \
+	  cvr/slpsession.o \
+	  cvr/pecan_slp_object.o \
+	  fix_purple.o
 
 ifdef DIRECTCONN
 objects += directconn.o
@@ -76,10 +76,17 @@ sources = $(patsubst %.o,%.c,$(objects))
 ifeq ($(PLATFORM),Darwin)
 	SHLIBEXT=dylib
 else
+ifeq ($(PLATFORM),win32)
+	SHLIBEXT=dll
+	LDFLAGS:=-Wl,--enable-auto-image-base -Wl,--exclude-libs=libintl.a
+else
 	SHLIBEXT=so
+endif
 endif
 
 lib=libmsn-pecan.$(SHLIBEXT)
+
+.PHONY: all clean
 
 all: $(lib)
 
@@ -100,6 +107,10 @@ $(lib): LIBS := $(PURPLE_LIBS) $(GOBJECT_LIBS)
 	$(P)DYLIB
 	$(Q)$(CC) $(LDFLAGS) -dynamiclib -o $@ $^ $(LIBS)
 
+%.dll::
+	$(P)SHLIB
+	$(Q)$(CC) $(LDFLAGS) -shared -o $@ $^ $(LIBS)
+
 %.so::
 	$(P)SHLIB
 	$(Q)$(CC) $(LDFLAGS) -shared -o $@ $^ $(LIBS)
@@ -110,7 +121,6 @@ $(lib): LIBS := $(PURPLE_LIBS) $(GOBJECT_LIBS)
 
 clean:
 	rm -f $(lib) $(objects)
-	rm -f *.o .*.d
 
 depend:
 	makedepend -Y -- $(CFLAGS) -- $(sources)
