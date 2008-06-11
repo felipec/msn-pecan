@@ -1397,6 +1397,46 @@ initial_mdata_msg (MsnCmdProc *cmdproc,
 
                 g_free (iu);
             }
+
+            do
+            {
+                start = g_strstr_len (start, len - (start - mdata), "<M>");
+
+                if (start)
+                {
+                    start += strlen ("<M>");
+                    end = g_strstr_len (start, len - (start - mdata), "</M>");
+
+                    if (end > start)
+                    {
+#if 0
+                        {
+                            gchar *field;
+                            gchar *tmp;
+                            tmp = pecan_get_xml_field ("N", start, end);
+                            field = purple_mime_decode_field (tmp);
+                            g_print ("field={%s}\n", field);
+                            g_free (field);
+                            g_free (tmp);
+                        }
+#endif
+
+                        {
+                            gchar *passport;
+                            gchar *message_id;
+
+                            passport = pecan_get_xml_field ("E", start, end);
+
+                            message_id = pecan_get_xml_field ("I", start, end);
+
+                            g_free (passport);
+                            g_free (message_id);
+                        }
+
+                        start = end + strlen ("</M>");
+                    }
+                }
+            } while (start);
         }
 
         if (purple_account_get_check_mail (session->account) &&

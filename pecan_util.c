@@ -677,3 +677,36 @@ g_ascii_strcase_hash (gconstpointer v)
 
     return h;
 }
+
+/** @todo make this more efficient. */
+gchar *
+pecan_get_xml_field (const gchar *tag,
+                     const gchar *start,
+                     const gchar *end)
+{
+    const gchar *field_start;
+    const gchar *field_end;
+    gchar *field = NULL;
+    gchar *tag_start;
+    gchar *tag_end;
+
+    tag_start = g_strconcat ("<", tag, ">", NULL);
+    tag_end = g_strconcat ("</", tag, ">", NULL);
+
+    field_start = g_strstr_len (start, end - start, tag_start);
+    if (field_start)
+    {
+        field_start += strlen (tag_start);
+        field_end = g_strstr_len (field_start, field_start - end, tag_end);
+
+        if (field_end > field_start)
+        {
+            field = g_strndup (field_start, field_end - field_start);
+        }
+    }
+
+    g_free (tag_start);
+    g_free (tag_end);
+
+    return field;
+}
