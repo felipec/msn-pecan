@@ -32,6 +32,8 @@ override CFLAGS+=-I. -DHAVE_LIBPURPLE
 # For glib < 2.6 support (libpurple maniacs)
 FALLBACK_CFLAGS+=-I./fix_purple
 
+LDFLAGS:=-Wl,--no-undefined
+
 purpledir=$(DESTDIR)/$(PURPLE_PREFIX)/lib/purple-2
 
 objects = \
