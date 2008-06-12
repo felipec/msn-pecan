@@ -29,6 +29,9 @@ CFLAGS+=-Wall # $(EXTRA_WARNINGS)
 
 override CFLAGS+=-I. -DHAVE_LIBPURPLE
 
+# For glib < 2.6 support (libpurple maniacs)
+FALLBACK_CFLAGS+=-I./fix_purple
+
 purpledir=$(DESTDIR)/$(PURPLE_PREFIX)/lib/purple-2
 
 objects = \
@@ -107,7 +110,7 @@ Q = @
 endif
 
 $(lib): $(objects)
-$(lib): CFLAGS := $(CFLAGS) $(PURPLE_CFLAGS) $(GOBJECT_CFLAGS)
+$(lib): CFLAGS := $(CFLAGS) $(PURPLE_CFLAGS) $(GOBJECT_CFLAGS) $(FALLBACK_CFLAGS)
 $(lib): LIBS := $(PURPLE_LIBS) $(GOBJECT_LIBS)
 
 %.dylib::

@@ -23,6 +23,16 @@ struct _PurpleConnection;
 
 #include <glib.h>
 
+#if !GLIB_CHECK_VERSION(2,3,1)
+
+#if GLIB_SIZEOF_LONG == 8
+#define G_GSIZE_FORMAT "lu"
+#else
+#define G_GSIZE_FORMAT "u"
+#endif
+
+#endif /* !GLIB_CHECK_VERSION(2,3,1) */
+
 void purple_buddy_set_displayname (struct _PurpleConnection *gc, const gchar *who, const gchar *value);
 void purple_buddy_set_nickname (struct _PurpleConnection *gc, const gchar *who, const gchar *value);
 
