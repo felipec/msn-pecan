@@ -84,7 +84,14 @@ else
 endif
 endif
 
-lib=libmsn-pecan.$(SHLIBEXT)
+ifdef STATIC
+	lib=libmsn-pecan.a
+	override CFLAGS += -DPURPLE_STATIC_PRPL
+else
+	lib=libmsn-pecan.$(SHLIBEXT)
+	override CFLAGS += -fPIC
+endif
+
 
 .PHONY: all clean
 
@@ -100,7 +107,7 @@ Q = @
 endif
 
 $(lib): $(objects)
-$(lib): CFLAGS := $(CFLAGS) -fPIC $(PURPLE_CFLAGS) $(GOBJECT_CFLAGS)
+$(lib): CFLAGS := $(CFLAGS) $(PURPLE_CFLAGS) $(GOBJECT_CFLAGS)
 $(lib): LIBS := $(PURPLE_LIBS) $(GOBJECT_LIBS)
 
 %.dylib::
@@ -114,6 +121,10 @@ $(lib): LIBS := $(PURPLE_LIBS) $(GOBJECT_LIBS)
 %.so::
 	$(P)SHLIB
 	$(Q)$(CC) $(LDFLAGS) -shared -o $@ $^ $(LIBS)
+
+%.a::
+	$(P)ARCHIVE
+	$(AR) rcs $@ $^
 
 %.o:: %.c
 	$(P)CC
