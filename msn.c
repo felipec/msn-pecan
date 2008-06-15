@@ -778,7 +778,7 @@ logout (PurpleConnection *gc)
 
     session = gc->proto_data;
 
-    g_return_if_fail (!session);
+    g_return_if_fail (session);
 
     msn_session_destroy (session);
 
