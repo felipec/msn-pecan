@@ -182,14 +182,15 @@ pecan_contact_set_friendly_name (PecanContact *contact,
 
         purple_buddy_set_nickname (gc, contact->passport, contact->friendly_name);
     }
-#endif /* HAVE_LIBPURPLE */
 
     /* If contact == account; display and friendly are the same thing. */
+    /** @todo this is a libpurple specific thing */
     if (contact_is_account (contact))
     {
         pecan_debug ("contact is account");
         pecan_contact_set_store_name (contact, name);
     }
+#endif /* HAVE_LIBPURPLE */
 }
 
 void
@@ -251,14 +252,15 @@ pecan_contact_set_store_name (PecanContact *contact,
 
         purple_buddy_set_displayname (gc, contact->passport, contact->store_name);
     }
-#endif /* HAVE_LIBPURPLE */
 
     /* If contact == account; display and friendly are the same thing. */
+    /** @todo this is a libpurple specific thing */
     if (contact_is_account (contact))
     {
         pecan_debug ("contact is account");
         pecan_contact_set_friendly_name (contact, name);
     }
+#endif /* HAVE_LIBPURPLE */
 }
 
 void
