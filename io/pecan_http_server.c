@@ -90,7 +90,7 @@ read_cb (GIOChannel *source,
          gpointer data)
 {
     PecanNode *conn;
-    gchar buf[MSN_BUF_LEN];
+    gchar buf[MSN_BUF_LEN + 1];
     gsize bytes_read;
 
     pecan_log ("begin");
@@ -102,7 +102,7 @@ read_cb (GIOChannel *source,
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
-        status = pecan_node_read (conn, buf, sizeof (buf), &bytes_read, &conn->error);
+        status = pecan_node_read (conn, buf, MSN_BUF_LEN, &bytes_read, &conn->error);
 
         if (status == G_IO_STATUS_AGAIN)
             return TRUE;
