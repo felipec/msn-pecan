@@ -558,51 +558,29 @@ msn_rand_guid()
                                rand() % 0xAAFF + 0x1111);
 }
 
-struct FooGHashNode
-{
-    gpointer key;
-    gpointer value;
-    struct FooGHashNode *next;
-    guint key_hash;
-};
-
-struct FooGHashTable
-{
-    gint size;
-    gint nnodes;
-    struct FooGHashNode **nodes;
-};
-
-gpointer
-g_hash_table_peek_first (GHashTable *hash_table)
-{
-    struct FooGHashTable *foo;
-
-    g_return_val_if_fail (hash_table, NULL);
-
-    foo = (struct FooGHashTable *) hash_table;
-
-    if (foo->nnodes >= 1)
-        return foo->nodes[0]->value;
-
-    return NULL;
-}
-
-#if !GLIB_CHECK_VERSION(2,12,0)
 static gboolean
-always_true (gpointer key,
-             gpointer value,
-             gpointer user_data)
+true_predicate (gpointer key,
+                gpointer value,
+                gpointer user_data)
 {
     return TRUE;
 }
 
+gpointer
+g_hash_table_peek_first (GHashTable *hash_table)
+{
+    g_return_val_if_fail (hash_table, NULL);
+
+    return g_hash_table_find (hash_table, true_predicate, NULL);
+}
+
+#if !GLIB_CHECK_VERSION(2,12,0)
 void
 g_hash_table_remove_all (GHashTable *hash_table)
 {
     g_return_if_fail (hash_table);
 
-    g_hash_table_foreach_remove (hash_table, always_true, NULL);
+    g_hash_table_foreach_remove (hash_table, true_predicate, NULL);
 }
 #endif /* !GLIB_CHECK_VERSION(2,12,0) */
 
