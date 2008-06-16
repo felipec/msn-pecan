@@ -1527,4 +1527,4 @@ init_plugin (PurplePlugin *plugin)
     purple_prefs_remove ("/plugins/prpl/msn");
 }
 
-PURPLE_INIT_PLUGIN (msn_pecan, init_plugin, info)
+PURPLE_INIT_PLUGIN (msn-pecan, init_plugin, info)
