@@ -1,22 +1,25 @@
-This is an alternative implementation of the MSN protocol plugin for libpurple.
+This is an alternative implementation of the MSN protocol plug-in for
+libpurple.
 
-It's based on the code from 2.2.2 plues a few extras.
+It's based on the code from 2.2.2 but slowly becoming a completely different
+code.
 
-* Server-side storage for aliases
-* Partial direct connection support
-* Improved network IO
-* Network problems tested with netem
-* GObject usage
+Features include:
+
+ * Support for personal messages
+ * Server-side storage for display names (private alias)
+ * Partial direct connection support (p2p transfers)
+ * Improved network IO (using GIOChannel)
+ * Improved error handling
+ * Network issues tested with netem
+ * GObject usage
 
 Future plans:
 
-* Complete direct connection (Fast file-transfers)
-* Send custom simleys
-* MSNP10 support
-* Personal messages
-* Complete GObjectification
+ * Complete direct connection (Fast file-transfers)
+ * Send custom simleys (for Pidgin 2.5)
+ * MSNP15 support
+ * Complete GObjectification
 
-Some things will be done as workarounds/dirty hacks that's why this code is not proposed for merging into the official code.
-
-For questions, comments or patches contact me:
-Felipe Contreras <felipe.contreras@gmail.com>
+For questions, comments or patches contact:
+http://groups.google.com/group/msn-pecan
