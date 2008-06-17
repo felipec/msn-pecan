@@ -1366,6 +1366,24 @@ set_buddy_icon (PurpleConnection *gc,
     pecan_update_status (session);
 }
 
+static void
+get_info (PurpleConnection *gc,
+          const char *name)
+{
+    PurpleNotifyUserInfo *user_info;
+    user_info = purple_notify_user_info_new ();
+    purple_notify_user_info_add_pair (user_info, _("Username"), name);
+    {
+        gchar *tmp;
+        tmp = pecan_strdup_printf ("<a href=\"%s%s\">%s%s</a>",
+                                   PROFILE_URL, name, PROFILE_URL, name);
+        purple_notify_user_info_add_pair (user_info, _("Profile URL"), tmp);
+        g_free (tmp);
+    }
+    purple_notify_userinfo (gc, name, user_info, NULL, NULL);
+    purple_notify_user_info_destroy (user_info);
+}
+
 static gboolean
 load (PurplePlugin *plugin)
 {
@@ -1409,7 +1427,7 @@ static PurplePluginProtocolInfo prpl_info =
     send_im, /* send_im */
     NULL, /* set_info */
     send_typing, /* send_typing */
-    NULL, /* get_info */
+    get_info, /* get_info */
     set_status, /* set_away */
     set_idle, /* set_idle */
     NULL, /* change_passwd */
