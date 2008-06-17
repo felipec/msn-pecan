@@ -59,7 +59,6 @@ void msn_got_lst_contact (MsnSession *session, PecanContact *contact, const gcha
 
 PecanContactList *pecan_contactlist_new (MsnSession *session);
 void pecan_contactlist_destroy (PecanContactList *contactlist);
-void pecan_contactlist_add_contact (PecanContactList *contactlist, PecanContact *contact);
 void pecan_contactlist_remove_contact (PecanContactList *contactlist, PecanContact *contact);
 PecanContact *pecan_contactlist_find_contact (PecanContactList *contactlist, const gchar *passport);
 PecanContact *pecan_contactlist_find_contact_by_guid (PecanContactList *contactlist, const gchar *contact_guid);

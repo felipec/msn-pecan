@@ -85,6 +85,8 @@ pecan_contact_update (PecanContact *contact)
 #ifdef HAVE_LIBPURPLE
     PurpleAccount *account;
 
+    g_return_if_fail (contact->contactlist);
+
     account = msn_session_get_account (contact->contactlist->session);
 
     if (contact->status)
@@ -143,6 +145,12 @@ pecan_contact_set_passport (PecanContact *contact,
 
     g_free (contact->passport);
     contact->passport = g_strdup (passport);
+
+    if (contact->contactlist)
+    {
+        g_hash_table_insert (contact->contactlist->contact_names,
+                             g_strdup (passport), contact);
+    }
 }
 
 static gboolean
@@ -172,6 +180,8 @@ pecan_contact_set_friendly_name (PecanContact *contact,
     contact->friendly_name = g_strdup (name);
 
 #ifdef HAVE_LIBPURPLE
+    g_return_if_fail (contact->contactlist);
+
     {
         PurpleAccount *account;
         PurpleConnection *gc;
@@ -220,6 +230,7 @@ pecan_contact_set_store_name (PecanContact *contact,
 
     pecan_debug ("passport=[%s],name=[%s]", contact->passport, name);
 
+    if (contact->contactlist)
     {
         MsnSession *session;
 
@@ -246,6 +257,8 @@ pecan_contact_set_store_name (PecanContact *contact,
     contact->store_name = g_strdup (name);
 
 #ifdef HAVE_LIBPURPLE
+    g_return_if_fail (contact->contactlist);
+
     {
         PurpleAccount *account;
         PurpleConnection *gc;
@@ -276,6 +289,10 @@ pecan_contact_set_guid (PecanContact *contact,
 
     g_free (contact->guid);
     contact->guid = g_strdup (guid);
+    if (contact->contactlist && guid)
+    {
+        g_hash_table_insert (contact->contactlist->contact_guids, g_strdup (guid), contact);
+    }
 }
 
 void
@@ -371,6 +388,8 @@ pecan_contact_add_group_id (PecanContact *contact,
     }
 
 #ifdef HAVE_LIBPURPLE
+    g_return_if_fail (contact->contactlist);
+
     {
         PecanContactList *contactlist;
         PurpleAccount *account;

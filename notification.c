@@ -572,8 +572,9 @@ adc_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         user = pecan_contact_new (session->contactlist);
         pecan_contact_set_passport (user, passport);
         pecan_contact_set_guid (user, user_guid);
-        pecan_contactlist_add_contact (session->contactlist, user);
     }
+
+    pecan_contact_set_guid (user, user_guid);
 
     list_id = msn_get_list_id(list);
 

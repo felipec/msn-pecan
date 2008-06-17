@@ -174,8 +174,6 @@ lst_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 	pecan_contact_set_passport (user, passport);
 	pecan_contact_set_guid (user, user_guid);
 
-	pecan_contactlist_add_contact(session->contactlist, user);
-
 	session->sync->last_user = user;
 
 	/* TODO: This can be improved */

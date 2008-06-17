@@ -491,20 +491,6 @@ pecan_contactlist_destroy (PecanContactList *contactlist)
 }
 
 void
-pecan_contactlist_add_contact (PecanContactList *contactlist,
-                               PecanContact *contact)
-{
-    g_hash_table_insert (contactlist->contact_names,
-                         g_strdup (pecan_contact_get_passport (contact)), contact);
-    {
-        const gchar *guid;
-        guid = pecan_contact_get_guid (contact);
-        if (guid)
-            g_hash_table_insert (contactlist->contact_guids, g_strdup (guid), contact);
-    }
-}
-
-void
 pecan_contactlist_remove_contact (PecanContactList *contactlist,
                                   PecanContact *contact)
 {
