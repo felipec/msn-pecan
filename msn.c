@@ -63,32 +63,6 @@ typedef struct
 
 } MsnMobileData;
 
-typedef struct
-{
-	PurpleConnection *gc;
-	char *name;
-
-} MsnGetInfoData;
-
-typedef struct
-{
-	MsnGetInfoData *info_data;
-	char *stripped;
-	char *url_buffer;
-	PurpleNotifyUserInfo *user_info;
-	char *photo_url_text;
-
-} MsnGetInfoStepTwoData;
-
-typedef struct
-{
-	PurpleConnection *gc;
-	const char *who;
-	char *msg;
-	PurpleMessageFlags flags;
-	time_t when;
-} MsnIMData;
-
 static void msn_set_prp(PurpleConnection *gc, const char *type, const char *entry);
 
 /** @todo remove this crap */
