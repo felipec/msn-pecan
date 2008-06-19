@@ -208,6 +208,8 @@ pecan_node_error (PecanNode *conn)
 
     pecan_debug ("conn=%p", conn);
 
+    g_object_ref (conn);
+
     {
         PecanNodeClass *class;
         class = g_type_class_peek (PECAN_NODE_TYPE);
@@ -219,6 +221,8 @@ pecan_node_error (PecanNode *conn)
         pecan_warning ("unhandled error: %s", conn->error->message);
         g_clear_error (&conn->error);
     }
+
+    g_object_unref (conn);
 }
 
 GIOStatus
