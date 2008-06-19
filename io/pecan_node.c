@@ -526,6 +526,8 @@ pecan_node_dispose (GObject *obj)
 {
     PecanNode *conn = PECAN_NODE (obj);
 
+    pecan_log ("begin");
+
     if (conn->next)
     {
         g_signal_handler_disconnect (conn->next, conn->open_sig_handler);
@@ -545,6 +547,8 @@ pecan_node_dispose (GObject *obj)
     }
 
     G_OBJECT_CLASS (parent_class)->dispose (obj);
+
+    pecan_log ("end");
 }
 
 static void
