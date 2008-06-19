@@ -205,14 +205,16 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
 
     pecan_log ("begin");
 
-#ifdef PECAN_DEBUG_SB
-    pecan_log ("swboard=[%p]", swboard);
-#endif
+    pecan_log ("swboard=%p", swboard);
 
     g_return_if_fail(swboard);
 
     if (swboard->destroying)
+    {
+        pecan_log ("destroying");
+        pecan_log ("end");
         return;
+    }
 
     swboard->destroying = TRUE;
 
