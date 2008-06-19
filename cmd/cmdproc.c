@@ -341,7 +341,7 @@ msn_cmdproc_process_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     if (trans != NULL && trans->pendent_cmd != NULL)
         msn_transaction_unqueue_cmd(trans, cmdproc);
 
-    pecan_log ("begin");
+    pecan_log ("end");
 }
 
 void

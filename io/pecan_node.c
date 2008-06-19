@@ -147,7 +147,7 @@ close_cb (PecanNode *next,
         g_signal_emit (G_OBJECT (conn), class->close_sig, 0, conn);
     }
 
-    pecan_log ("begin");
+    pecan_log ("end");
 }
 
 static void
@@ -172,7 +172,7 @@ error_cb (PecanNode *next,
         g_signal_emit (G_OBJECT (conn), class->error_sig, 0, conn);
     }
 
-    pecan_log ("begin");
+    pecan_log ("end");
 }
 
 PecanNode *
