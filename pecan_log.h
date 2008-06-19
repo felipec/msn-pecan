@@ -26,10 +26,6 @@
 
 #if defined(PECAN_DEBUG)
 
-#define PURPLE_DEBUG
-
-/* #define PECAN_DEBUG_FILE */
-
 /* #define PECAN_DEBUG_MSG */
 /* #define PECAN_DEBUG_SLPMSG */
 /* #define PECAN_DEBUG_HTTP */

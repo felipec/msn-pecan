@@ -21,6 +21,9 @@
 
 #ifdef PECAN_DEBUG
 
+#define PURPLE_DEBUG
+/* #define PECAN_DEBUG_FILE */
+
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -31,8 +34,7 @@
 #include <debug.h>
 #endif /* PURPLE_DEBUG */
 
-#if !defined(PURPLE_DEBUG)
-static const gchar *
+static inline const gchar *
 log_level_to_string (PecanLogLevel level)
 {
     switch (level)
@@ -46,7 +48,6 @@ log_level_to_string (PecanLogLevel level)
         default: return "Unknown"; break;
     }
 }
-#endif
 
 void
 msn_dump_file (const gchar *buffer,
@@ -93,13 +94,17 @@ msn_base_log_helper (guint level,
         if (!logfile)
         {
             gint fd;
-            fd = g_file_open_tmp ("pecan-XXXXXX.log", NULL, NULL);
-            logfile = fdopen (fd, "w");
+            fd = g_file_open_tmp ("msn-pecan-XXXXXX", NULL, NULL);
+            if (fd)
+                logfile = fdopen (fd, "w");
         }
-        g_fprintf (logfile, "%s\t%s:%d:%s()\t%s\n",
-                   log_level_to_string (level),
-                   file, line, function,
-                   tmp);
+        if (logfile)
+        {
+            g_fprintf (logfile, "%s\t%s:%d:%s()\t%s\n",
+                       log_level_to_string (level),
+                       file, line, function,
+                       tmp);
+        }
     }
 #elif defined(PURPLE_DEBUG)
     {
