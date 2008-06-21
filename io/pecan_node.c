@@ -522,7 +522,7 @@ parse_impl (PecanNode *conn,
 /* GObject stuff. */
 
 static void
-pecan_node_dispose (GObject *obj)
+dispose (GObject *obj)
 {
     PecanNode *conn = PECAN_NODE (obj);
 
@@ -552,7 +552,7 @@ pecan_node_dispose (GObject *obj)
 }
 
 static void
-pecan_node_finalize (GObject *obj)
+finalize (GObject *obj)
 {
     G_OBJECT_CLASS (parent_class)->finalize (obj);
 }
@@ -571,8 +571,8 @@ class_init (gpointer g_class,
     conn_class->read = &read_impl;
     conn_class->parse = &parse_impl;
 
-    gobject_class->dispose = pecan_node_dispose;
-    gobject_class->finalize = pecan_node_finalize;
+    gobject_class->dispose = dispose;
+    gobject_class->finalize = finalize;
 
     parent_class = g_type_class_peek_parent (g_class);
 
