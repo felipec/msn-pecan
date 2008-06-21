@@ -1,4 +1,5 @@
 CC=gcc
+XGETTEXT=xgettext
 
 PLATFORM=$(shell uname -s)
 
@@ -78,6 +79,8 @@ endif
 
 sources = $(patsubst %.o,%.c,$(objects))
 
+PO_TEMPLATE = po/messages.pot
+
 ifeq ($(PLATFORM),Darwin)
 	SHLIBEXT=dylib
 else
@@ -96,7 +99,6 @@ else
 	lib=libmsn-pecan.$(SHLIBEXT)
 	override CFLAGS += -fPIC
 endif
-
 
 .PHONY: all clean
 
@@ -140,6 +142,12 @@ clean:
 
 depend:
 	makedepend -Y -- $(CFLAGS) -- $(sources)
+
+po:
+	mkdir -p $@
+
+$(PO_TEMPLATE): $(sources) | po
+	$(XGETTEXT) -kmc --keyword=_ --keyword=N_ -o $@ $(sources)
 
 dist:
 	git archive --format=tar --prefix=msn-pecan-$(version)/ $(version) > /tmp/msn-pecan-$(version).tar
