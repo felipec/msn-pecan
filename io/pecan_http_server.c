@@ -795,6 +795,8 @@ dispose (GObject *obj)
 {
     PecanHttpServer *http_conn = PECAN_HTTP_SERVER (obj);
 
+    pecan_log ("begin");
+
     g_free (http_conn->gateway);
     http_conn->gateway = NULL;
 
@@ -805,6 +807,8 @@ dispose (GObject *obj)
     http_conn->childs = NULL;
 
     G_OBJECT_CLASS (parent_class)->dispose (obj);
+
+    pecan_log ("end");
 }
 
 static void

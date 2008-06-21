@@ -275,6 +275,8 @@ dispose (GObject *obj)
 {
     PecanCmdServer *conn = CMD_PECAN_NODE (obj);
 
+    pecan_log ("begin");
+
     if (!conn->dispose_has_run)
     {
         conn->dispose_has_run = TRUE;
@@ -282,6 +284,8 @@ dispose (GObject *obj)
     }
 
     G_OBJECT_CLASS (parent_class)->dispose (obj);
+
+    pecan_log ("end");
 }
 
 static void
