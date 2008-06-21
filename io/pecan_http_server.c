@@ -188,6 +188,7 @@ http_poll (gpointer data)
     GIOStatus status = G_IO_STATUS_NORMAL;
     GError *tmp_error = NULL;
     gsize bytes_written = 0;
+    static guint count = 0;
 
     gchar *header;
     gchar *params;
@@ -205,7 +206,11 @@ http_poll (gpointer data)
 
     g_return_val_if_fail (http_conn->cur, FALSE);
 
-    if (http_conn->waiting_response)
+    count++;
+
+    /* Don't poll if we already sent something, unless we have been waiting for
+     * too long; a disconnection might have happened. */
+    if (http_conn->waiting_response && count < 10)
     {
         /* There's no need to poll if we're already waiting for a response */
         pecan_debug ("waiting for response");
@@ -254,7 +259,11 @@ http_poll (gpointer data)
 
     if (status != G_IO_STATUS_NORMAL)
     {
+        PecanNodeClass *class;
         pecan_error ("not normal: status=%d", status);
+        class = g_type_class_peek (PECAN_NODE_TYPE);
+        g_signal_emit (G_OBJECT (conn), class->error_sig, 0, conn);
+        return FALSE;
     }
 
     return TRUE;
