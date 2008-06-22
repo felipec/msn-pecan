@@ -61,7 +61,7 @@ static void send_ok(MsnSlpCall *slpcall, const char *branch,
 static void send_decline(MsnSlpCall *slpcall, const char *branch,
 						 const char *type, const char *content);
 
-void msn_request_user_display(PecanContact *user);
+static void request_user_display(PecanContact *user);
 
 /**************************************************************************
  * Util
@@ -949,7 +949,7 @@ msn_release_buddy_icon_request(PecanContactList *contactlist)
 		username = user->passport;
 
 		contactlist->buddy_icon_window--;
-		msn_request_user_display(user);
+		request_user_display(user);
 
 #ifdef PECAN_DEBUG_UD
                 pecan_info ("msn_release_buddy_icon_request(): buddy_icon_window-- yields =%d",
@@ -1085,8 +1085,8 @@ end_user_display(MsnSlpCall *slpcall, MsnSession *session)
 															msn_release_buddy_icon_request_timeout, contactlist);
 }
 
-void
-msn_request_user_display(PecanContact *user)
+static void
+request_user_display(PecanContact *user)
 {
 	PurpleAccount *account;
 	MsnSession *session;
@@ -1135,7 +1135,7 @@ msn_request_user_display(PecanContact *user)
 		session->contactlist->buddy_icon_window++;
 
 #ifdef PECAN_DEBUG_UD
-                pecan_info ("msn_request_user_display(): buddy_icon_window++ yields =%d",
+                pecan_info ("request_user_display(): buddy_icon_window++ yields =%d",
                           session->contactlist->buddy_icon_window);
 #endif
 
