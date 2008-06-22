@@ -26,7 +26,9 @@
 #include <glib.h>
 
 #include "pecan_contactlist.h"
+#if defined(PECAN_CVR)
 #include "cvr/pecan_slp_object.h"
+#endif /* defined(PECAN_CVR) */
 
 /**
  * A contact.
@@ -57,7 +59,9 @@ struct PecanContact
 
     GHashTable *groups; /**< The groups this contact is on. */
 
+#if defined(PECAN_CVR)
     MsnObject *msnobj; /**< The contact's MSN Object. */
+#endif /* defined(PECAN_CVR) */
 
     GHashTable *clientcaps; /**< The client's capabilities. */
     gulong client_id;

@@ -26,7 +26,9 @@
 #include "pecan_status.h"
 #include "pecan_util.h"
 
+#if defined(PECAN_CVR)
 #include "cvr/slplink.h"
+#endif /* defined(PECAN_CVR) */
 
 #include "sync.h"
 #include "nexus.h"
@@ -94,8 +96,10 @@ msn_session_destroy(MsnSession *session)
 	while (session->switches != NULL)
 		msn_switchboard_destroy(session->switches->data);
 
+#if defined(PECAN_CVR)
 	while (session->slplinks != NULL)
 		msn_slplink_destroy(session->slplinks->data);
+#endif /* defined(PECAN_CVR) */
 
 	pecan_contactlist_destroy(session->contactlist);
 

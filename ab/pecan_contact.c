@@ -63,10 +63,10 @@ pecan_contact_free (PecanContact *contact)
 
     g_hash_table_destroy (contact->groups);
 
-#ifdef HAVE_LIBPURPLE
+#if defined(PECAN_CVR)
     if (contact->msnobj)
         msn_object_destroy (contact->msnobj);
-#endif /* HAVE_LIBPURPLE */
+#endif /* defined(PECAN_CVR) */
 
     g_free (contact->passport);
     g_free (contact->friendly_name);
@@ -326,6 +326,7 @@ void
 pecan_contact_set_buddy_icon (PecanContact *contact,
                               PecanBuffer *image)
 {
+#if defined(PECAN_CVR)
     MsnObject *msnobj;
 
     g_return_if_fail (contact);
@@ -397,6 +398,7 @@ pecan_contact_set_buddy_icon (PecanContact *contact,
         g_free (base64);
     }
 #endif /* HAVE_LIBPURPLE */
+#endif /* defined(PECAN_CVR) */
 }
 
 void
@@ -525,6 +527,7 @@ pecan_contact_set_mobile_phone (PecanContact *contact,
     contact->phone.mobile = (!number ? NULL : g_strdup (number));
 }
 
+#if defined(PECAN_CVR)
 void
 pecan_contact_set_object (PecanContact *contact,
                           MsnObject *obj)
@@ -542,6 +545,7 @@ pecan_contact_set_object (PecanContact *contact,
         msn_queue_buddy_icon_request (contact);
 #endif /* HAVE_LIBPURPLE */
 }
+#endif /* defined(PECAN_CVR) */
 
 void
 pecan_contact_set_client_caps (PecanContact *contact,
@@ -620,6 +624,7 @@ pecan_contact_get_mobile_phone (const PecanContact *contact)
     return contact->phone.mobile;
 }
 
+#if defined(PECAN_CVR)
 MsnObject *
 pecan_contact_get_object (const PecanContact *contact)
 {
@@ -627,6 +632,7 @@ pecan_contact_get_object (const PecanContact *contact)
 
     return contact->msnobj;
 }
+#endif /* defined(PECAN_CVR) */
 
 GHashTable *
 pecan_contact_get_client_caps (const PecanContact *contact)

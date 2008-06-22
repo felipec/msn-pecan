@@ -26,7 +26,9 @@
 typedef struct PecanContact PecanContact;
 
 #include "session.h"
+#if defined(PECAN_CVR)
 #include "cvr/pecan_slp_object.h"
+#endif /* defined(PECAN_CVR) */
 
 #include "io/pecan_buffer.h"
 
@@ -166,6 +168,7 @@ void pecan_contact_set_work_phone (PecanContact *contact, const gchar *number);
  */
 void pecan_contact_set_mobile_phone (PecanContact *contact, const gchar *number);
 
+#if defined(PECAN_CVR)
 /**
  * Sets the MSNObject for a contact.
  *
@@ -173,6 +176,7 @@ void pecan_contact_set_mobile_phone (PecanContact *contact, const gchar *number)
  * @param obj  The MSNObject.
  */
 void pecan_contact_set_object (PecanContact *contact, MsnObject *obj);
+#endif /* defined(PECAN_CVR) */
 
 /**
  * Sets the client information for a contact.
@@ -254,6 +258,7 @@ const gchar *pecan_contact_get_work_phone (const PecanContact *contact);
  */
 const gchar *pecan_contact_get_mobile_phone (const PecanContact *contact);
 
+#if defined(PECAN_CVR)
 /**
  * Returns the MSNObject for a contact.
  *
@@ -262,6 +267,7 @@ const gchar *pecan_contact_get_mobile_phone (const PecanContact *contact);
  * @return The MSNObject.
  */
 MsnObject *pecan_contact_get_object (const PecanContact *contact);
+#endif /* defined(PECAN_CVR) */
 
 /**
  * Returns the client information for a contact.

@@ -24,7 +24,10 @@
 #include "session.h"
 #include "switchboard.h"
 #include "notification.h"
+
+#if defined(PECAN_CVR)
 #include "cvr/slplink.h"
+#endif /* defined(PECAN_CVR) */
 
 #include "session_private.h"
 
@@ -225,9 +228,11 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
     g_signal_handler_disconnect (swboard->conn, swboard->close_handler);
     g_signal_handler_disconnect (swboard->conn, swboard->error_handler);
 
+#if defined(PECAN_CVR)
     /* If it linked us is because its looking for trouble */
     while (swboard->slplinks != NULL)
         msn_slplink_destroy(swboard->slplinks->data);
+#endif /* defined(PECAN_CVR) */
 
     {
         gchar *participant;
@@ -1417,12 +1422,14 @@ msn_switchboard_init(void)
                            clientcaps_msg);
     msn_table_add_msg_type(cbs_table, "text/x-clientinfo",
                            clientcaps_msg);
+#if defined(PECAN_CVR)
     msn_table_add_msg_type(cbs_table, "application/x-msnmsgrp2p",
                            msn_p2p_msg);
     msn_table_add_msg_type(cbs_table, "text/x-mms-emoticon",
                            msn_emoticon_msg);
     msn_table_add_msg_type(cbs_table, "text/x-mms-animemoticon",
                            msn_emoticon_msg);
+#endif /* defined(PECAN_CVR) */
     msn_table_add_msg_type(cbs_table, "text/x-msnmsgr-datacast",
                            nudge_msg);
 #if 0

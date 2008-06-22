@@ -70,13 +70,16 @@ objects = \
 	  io/pecan_cmd_server.o \
 	  io/pecan_http_server.o \
 	  io/pecan_ssl_conn.o \
-	  cvr/slp.o \
-	  cvr/slpcall.o \
-	  cvr/slplink.o \
-	  cvr/slpmsg.o \
-	  cvr/slpsession.o \
-	  cvr/pecan_slp_object.o \
 	  fix_purple.o
+
+ifdef CVR
+objects += cvr/slp.o \
+	   cvr/slpcall.o \
+	   cvr/slplink.o \
+	   cvr/slpmsg.o \
+	   cvr/slpsession.o \
+	   cvr/pecan_slp_object.o
+endif
 
 ifdef DIRECTCONN
 objects += directconn.o

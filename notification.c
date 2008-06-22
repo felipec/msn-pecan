@@ -42,7 +42,9 @@
 #include "io/pecan_node_priv.h"
 #include "io/pecan_cmd_server_priv.h"
 
+#if defined(PECAN_CVR)
 #include "cvr/slplink.h" /* for slplink_destroy */
+#endif /* defined(PECAN_CVR) */
 
 #include "error.h" /* for error_get_text */
 #include "pecan_util.h" /* for parse_socket */
@@ -698,18 +700,22 @@ qng_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 static void
 fln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
-    MsnSlpLink *slplink;
     PecanContact *user;
 
     user = pecan_contactlist_find_contact(cmdproc->session->contactlist, cmd->params[0]);
     pecan_contact_set_state(user, NULL);
     pecan_contact_update(user);
 
-    slplink = msn_session_find_slplink(cmdproc->session, cmd->params[0]);
+#if defined(PECAN_CVR)
+    {
+        MsnSlpLink *slplink;
 
-    if (slplink != NULL)
-        msn_slplink_destroy(slplink);
+        slplink = msn_session_find_slplink(cmdproc->session, cmd->params[0]);
 
+        if (slplink != NULL)
+            msn_slplink_destroy(slplink);
+    }
+#endif /* defined(PECAN_CVR) */
 }
 
 static void
@@ -719,7 +725,9 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     PurpleAccount *account;
     PurpleConnection *gc;
     PecanContact *user;
+#if defined(PECAN_CVR)
     MsnObject *msnobj;
+#endif /* defined(PECAN_CVR) */
     const char *state, *passport;
     gchar *friendly;
 
@@ -742,6 +750,7 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         pecan_contact_set_client_id (user, client_id);
     }
 
+#if defined(PECAN_CVR)
     if (session->protocol_ver >= 9 && cmd->param_count == 6)
     {
         gchar *tmp;
@@ -750,6 +759,7 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         pecan_contact_set_object(user, msnobj);
         g_free (tmp);
     }
+#endif /* defined(PECAN_CVR) */
 
     pecan_contact_set_state(user, state);
     pecan_contact_update(user);
@@ -777,7 +787,9 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     PurpleAccount *account;
     PurpleConnection *gc;
     PecanContact *user;
+#if defined(PECAN_CVR)
     MsnObject *msnobj;
+#endif /* defined(PECAN_CVR) */
     int clientid;
     const char *state, *passport;
     gchar *friendly;
@@ -800,6 +812,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     pecan_contact_set_friendly_name(user, friendly);
 
+#if defined(PECAN_CVR)
     if (cmd->param_count == 5)
     {
         gchar *tmp;
@@ -812,6 +825,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     {
         pecan_contact_set_object(user, NULL);
     }
+#endif /* defined(PECAN_CVR) */
 
     clientid = atoi(cmd->params[3]);
     user->mobile = (clientid & MSN_CLIENT_CAP_MSNMOBILE);

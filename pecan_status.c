@@ -55,11 +55,15 @@ pecan_set_status (MsnSession *session,
     MsnCmdProc *cmdproc;
     PecanContact *user;
     const gchar *state_text;
+#if defined(PECAN_CVR)
     MsnObject *msnobj;
+#endif /* defined(PECAN_CVR) */
 
     user = msn_session_get_contact (session);
     cmdproc = session->notification->cmdproc;
     state_text = util_type_to_str (status);
+
+#if defined(PECAN_CVR)
     msnobj = pecan_contact_get_object (user);
 
     if (msnobj)
@@ -78,6 +82,10 @@ pecan_set_status (MsnSession *session,
         msn_cmdproc_send (cmdproc, "CHG", "%s %d", state_text,
                           MSN_CLIENT_ID);
     }
+#else
+    msn_cmdproc_send (cmdproc, "CHG", "%s %d", state_text,
+                      MSN_CLIENT_ID);
+#endif /* defined(PECAN_CVR) */
 }
 
 static inline void

@@ -39,7 +39,9 @@
 
 #include "ab/pecan_contact_priv.h"
 
+#if defined(PECAN_CVR)
 #include "cvr/slplink.h"
+#endif /* defined(PECAN_CVR) */
 
 /* libpurple stuff. */
 #include "fix_purple_win32.h"
@@ -450,6 +452,7 @@ initiate_chat_cb(PurpleBlistNode *node, gpointer data)
 							msn_session_get_username(session), NULL, PURPLE_CBFLAGS_NONE, TRUE);
 }
 
+#if defined(PECAN_CVR)
 static void
 t_msn_xfer_init(PurpleXfer *xfer)
 {
@@ -509,6 +512,7 @@ msn_can_receive_file(PurpleConnection *gc, const char *who)
 
 	return ret;
 }
+#endif /* defined(PECAN_CVR) */
 
 /**************************************************************************
  * Protocol Plugin ops
@@ -1498,9 +1502,15 @@ static PurplePluginProtocolInfo prpl_info =
     NULL, /* roomlist_get_list */
     NULL, /* roomlist_cancel */
     NULL, /* roomlist_expand_category */
+#if defined(PECAN_CVR)
     msn_can_receive_file, /* can_receive_file */
     msn_send_file, /* send_file */
     msn_new_xfer, /* new_xfer */
+#else
+    NULL, /* can_receive_file */
+    NULL, /* send_file */
+    NULL, /* new_xfer */
+#endif /* defined(PECAN_CVR) */
     msn_offline_message, /* offline_message */
     NULL, /* whiteboard_prpl_ops */
     NULL, /* send_raw */
