@@ -90,18 +90,14 @@ pecan_contact_update (PecanContact *contact)
     account = msn_session_get_account (contact->contactlist->session);
 
     if (contact->status)
-    {
-        if (!strcmp (contact->status, "offline") && contact->mobile)
-        {
-            purple_prpl_got_user_status (account, contact->passport, "offline", NULL);
-            purple_prpl_got_user_status (account, contact->passport, "mobile", NULL);
-        }
-        else
-        {
-            purple_prpl_got_user_status (account, contact->passport, contact->status, NULL);
-            purple_prpl_got_user_status_deactive (account, contact->passport, "mobile");
-        }
-    }
+        purple_prpl_got_user_status (account, contact->passport, contact->status, NULL);
+    else
+        purple_prpl_got_user_status (account, contact->passport, "offline", NULL);
+
+    if (contact->mobile)
+        purple_prpl_got_user_status (account, contact->passport, "mobile", NULL);
+    else
+        purple_prpl_got_user_status_deactive (account, contact->passport, "mobile");
 
     if (contact->idle)
         purple_prpl_got_user_idle (account, contact->passport, TRUE, -1);
@@ -115,6 +111,12 @@ pecan_contact_set_state (PecanContact *contact,
                          const gchar *state)
 {
     const gchar *status;
+
+    if (!state)
+    {
+        contact->status = NULL;
+        return;
+    }
 
     if (!g_ascii_strcasecmp (state, "BSY"))
         status = "busy";

@@ -695,8 +695,7 @@ fln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     PecanContact *user;
 
     user = pecan_contactlist_find_contact(cmdproc->session->contactlist, cmd->params[0]);
-
-    user->status = "offline";
+    pecan_contact_set_state(user, NULL);
     pecan_contact_update(user);
 
     slplink = msn_session_find_slplink(cmdproc->session, cmd->params[0]);
