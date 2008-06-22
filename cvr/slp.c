@@ -1085,6 +1085,21 @@ end_user_display(MsnSlpCall *slpcall, MsnSession *session)
 															msn_release_buddy_icon_request_timeout, contactlist);
 }
 
+static inline void
+skip_request(PecanContactList *contactlist)
+{
+    /* Free one window slot */
+    contactlist->buddy_icon_window++;
+
+#ifdef PECAN_DEBUG_UD
+    pecan_info ("request_user_display(): buddy_icon_window++ yields =%d",
+                contactlist->buddy_icon_window);
+#endif
+
+    /* Request the next one */
+    msn_release_buddy_icon_request(contactlist);
+}
+
 static void
 request_user_display(PecanContact *user)
 {
@@ -1102,6 +1117,14 @@ request_user_display(PecanContact *user)
 	obj = pecan_contact_get_object(user);
 
 	info = msn_object_get_sha1(obj);
+
+	/* Changed while in the queue. */
+	if (!obj)
+	{
+		purple_buddy_icons_set_for_user(account, user->passport, NULL, 0, NULL);
+		skip_request(session->contactlist);
+		return;
+	}
 
 	if (g_ascii_strcasecmp(user->passport,
 						   purple_account_get_username(account)))
@@ -1131,14 +1154,6 @@ request_user_display(PecanContact *user)
 
 		purple_buddy_icons_set_for_user(account, user->passport, g_memdup(data, len), len, info);
 
-		/* Free one window slot */
-		session->contactlist->buddy_icon_window++;
-
-#ifdef PECAN_DEBUG_UD
-                pecan_info ("request_user_display(): buddy_icon_window++ yields =%d",
-                          session->contactlist->buddy_icon_window);
-#endif
-
-		msn_release_buddy_icon_request(session->contactlist);
+		skip_request(session->contactlist);
 	}
 }
