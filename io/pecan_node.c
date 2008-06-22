@@ -74,17 +74,23 @@ read_cb (GIOChannel *source,
 
     pecan_debug ("conn=%p,name=%s", conn, conn->name);
 
+    g_object_ref (conn);
+
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
         status = pecan_node_read (conn, buf, MSN_BUF_LEN, &bytes_read, &conn->error);
 
         if (status == G_IO_STATUS_AGAIN)
+        {
+            g_object_unref (conn);
             return TRUE;
+        }
 
         if (conn->error)
         {
             pecan_node_error (conn);
+            g_object_unref (conn);
             return FALSE;
         }
 
@@ -92,11 +98,10 @@ read_cb (GIOChannel *source,
         {
             conn->error = g_error_new (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN, "End of stream");
             pecan_node_error (conn);
+            g_object_unref (conn);
             return FALSE;
         }
     }
-
-    g_object_ref (conn);
 
     pecan_node_parse (conn, buf, bytes_read);
 
@@ -291,6 +296,8 @@ connect_cb (gpointer data,
     conn = PECAN_NODE (data);
     conn->connect_data = NULL;
 
+    g_object_ref (conn);
+
     if (source >= 0)
     {
         GIOChannel *channel;
@@ -320,6 +327,8 @@ connect_cb (gpointer data,
         class = g_type_class_peek (PECAN_NODE_TYPE);
         g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
     }
+
+    g_object_unref (conn);
 
     pecan_log ("end");
 }
@@ -420,9 +429,17 @@ write_impl (PecanNode *conn,
 
     if (conn->next)
     {
-        conn->next->prev = conn;
-        status = pecan_node_write (conn->next, buf, count, ret_bytes_written, error);
-        conn->next->prev = NULL;
+        PecanNode *next;
+
+        next = conn->next;
+
+        /* conn->next has already a ref from conn, but let's just be sure and
+         * ref anyway */
+        g_object_ref (next);
+        next->prev = conn;
+        status = pecan_node_write (next, buf, count, ret_bytes_written, error);
+        next->prev = NULL;
+        g_object_unref (next);
     }
     else
     {

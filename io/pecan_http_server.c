@@ -99,23 +99,30 @@ read_cb (GIOChannel *source,
 
     pecan_debug ("conn=%p,source=%p", conn, source);
 
+    g_object_ref (conn);
+
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
         status = pecan_node_read (conn, buf, MSN_BUF_LEN, &bytes_read, &conn->error);
 
         if (status == G_IO_STATUS_AGAIN)
+        {
+            g_object_unref (conn);
             return TRUE;
+        }
 
         if (conn->error)
         {
             pecan_node_error (conn);
+            g_object_unref (conn);
             return FALSE;
         }
 
         if (status != G_IO_STATUS_NORMAL)
         {
             pecan_warning ("not normal, status=%d", status);
+            g_object_unref (conn);
             return TRUE;
         }
     }
@@ -125,8 +132,6 @@ read_cb (GIOChannel *source,
         PecanHttpServer *http_conn;
 
         http_conn = PECAN_HTTP_SERVER (conn);
-
-        g_object_ref (http_conn);
 
         if (http_conn->cur)
         {
@@ -140,12 +145,12 @@ read_cb (GIOChannel *source,
         if (conn->error)
         {
             pecan_node_error (conn);
-            g_object_unref (http_conn);
+            g_object_unref (conn);
             return FALSE;
         }
-
-        g_object_unref (http_conn);
     }
+
+    g_object_unref (conn);
 
     pecan_log ("end");
 
