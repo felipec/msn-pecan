@@ -1036,16 +1036,6 @@ got_user_display(MsnSlpCall *slpcall,
 
 	purple_buddy_icons_set_for_user(account, slpcall->slplink->remote_user,
 									g_memdup(data, size), size, info);
-
-#if 0
-	/* Free one window slot */
-	contactlist->buddy_icon_window++;
-
-        pecan_info ("got_user_display(): buddy_icon_window++ yields =%d",
-                  contactlist->buddy_icon_window);
-
-	msn_release_buddy_icon_request(contactlist);
-#endif
 }
 
 static void
