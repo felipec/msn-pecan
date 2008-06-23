@@ -172,20 +172,21 @@ msn_switchboard_new(MsnSession *session)
 
         if (session->http_method)
         {
-            PecanNode *foo;
-
             if (session->http_conn)
             {
-                foo = session->http_conn;
+                /* A single http connection shared by all nodes */
+                pecan_node_link (conn, session->http_conn);
             }
             else
             {
+                /* Each node has it's own http connection. */
+                PecanNode *foo;
+
                 foo = PECAN_NODE (pecan_http_server_new ("foo server"));
                 foo->session = session;
-                swboard->http_conn = foo;
+                pecan_node_link (conn, foo);
+                g_object_unref (foo);
             }
-
-            pecan_node_link (conn, foo);
         }
 
         swboard->open_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), swboard);
@@ -258,8 +259,6 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
     g_signal_handler_disconnect (swboard->conn, swboard->close_handler);
     g_signal_handler_disconnect (swboard->conn, swboard->error_handler);
 
-    if (swboard->http_conn)
-        pecan_node_free (swboard->http_conn);
     pecan_node_free (PECAN_NODE (swboard->conn));
 
     g_free(swboard);

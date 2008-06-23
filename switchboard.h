@@ -106,7 +106,6 @@ struct MsnSwitchBoard
     GList *slplinks; /**< The list of slplinks that are using this switchboard. */
 
     PecanCmdServer *conn;
-    PecanNode *http_conn;
     gulong open_handler;
     gulong close_handler;
     gulong error_handler;
