@@ -376,6 +376,11 @@ close_impl (PecanNode *conn)
 
     pecan_log ("conn=%p,name=%s", conn, conn->name);
 
+    if (conn->next)
+    {
+        pecan_node_close (conn->next);
+    }
+
     g_free (conn->hostname);
     conn->hostname = NULL;
 
