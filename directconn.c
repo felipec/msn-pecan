@@ -221,6 +221,7 @@ msn_directconn_write(MsnDirectConn *directconn,
     }
     else
     {
+        pecan_node_error(directconn->conn);
         msn_directconn_destroy(directconn);
     }
 

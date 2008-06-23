@@ -79,7 +79,7 @@ read_cb (GIOChannel *source,
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
-        status = pecan_node_read (conn, buf, MSN_BUF_LEN, &bytes_read, &conn->error);
+        status = pecan_node_read (conn, buf, MSN_BUF_LEN, &bytes_read, NULL);
 
         if (status == G_IO_STATUS_AGAIN)
         {
@@ -87,16 +87,13 @@ read_cb (GIOChannel *source,
             return TRUE;
         }
 
-        if (conn->error)
-        {
-            pecan_node_error (conn);
-            g_object_unref (conn);
-            return FALSE;
-        }
-
         if (status == G_IO_STATUS_EOF)
         {
             conn->error = g_error_new (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN, "End of stream");
+        }
+
+        if (conn->error)
+        {
             pecan_node_error (conn);
             g_object_unref (conn);
             return FALSE;
@@ -466,18 +463,14 @@ write_impl (PecanNode *conn,
                          status, status_to_str (status));
         }
 
-        /** @todo should this be here? */
-        if (tmp_error)
-        {
-            conn->error = g_error_copy (tmp_error);
-            pecan_node_error (conn);
-        }
-
         if (ret_bytes_written)
             *ret_bytes_written = bytes_written;
 
         if (tmp_error)
+        {
+            conn->error = g_error_copy (tmp_error);
             g_propagate_error (error, tmp_error);
+        }
     }
 
     return status;
@@ -522,7 +515,10 @@ read_impl (PecanNode *conn,
             *ret_bytes_read = bytes_read;
 
         if (tmp_error)
+        {
+            conn->error = g_error_copy (tmp_error);
             g_propagate_error (error, tmp_error);
+        }
     }
 
     return status;

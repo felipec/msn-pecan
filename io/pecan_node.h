@@ -57,8 +57,6 @@ void pecan_node_connect (PecanNode *conn, const gchar *hostname, gint port);
 void pecan_node_close (PecanNode *conn);
 
 GIOStatus pecan_node_read (PecanNode *conn, gchar *buf, gsize count, gsize *bytes_read, GError **error);
-/* Can destroy the node. */
-/** @todo remove call to node_error, the caller should do that. */
 GIOStatus pecan_node_write (PecanNode *conn, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
 /* Can destroy the node. For example: BYE command. */
 void pecan_node_parse (PecanNode *conn, gchar *buf, gsize bytes_read);

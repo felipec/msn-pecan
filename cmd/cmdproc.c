@@ -142,7 +142,14 @@ msn_cmdproc_send_trans(MsnCmdProc *cmdproc, MsnTransaction *trans)
         len += trans->payload_len;
     }
 
-    pecan_node_write (cmdproc->conn, data, len, NULL, NULL);
+    {
+        GIOStatus status;
+
+        status = pecan_node_write (cmdproc->conn, data, len, NULL, NULL);
+
+        if (status != G_IO_STATUS_NORMAL)
+            pecan_node_error (cmdproc->conn);
+    }
 
     g_free(data);
 }
@@ -177,7 +184,14 @@ msn_cmdproc_send_quick(MsnCmdProc *cmdproc, const char *command,
 
     show_debug_cmd(cmdproc, FALSE, data);
 
-    pecan_node_write (cmdproc->conn, data, len, NULL, NULL);
+    {
+        GIOStatus status;
+
+        status = pecan_node_write (cmdproc->conn, data, len, NULL, NULL);
+
+        if (status != G_IO_STATUS_NORMAL)
+            pecan_node_error (cmdproc->conn);
+    }
 
     g_free(data);
 }
