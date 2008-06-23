@@ -40,7 +40,6 @@ struct MsnNotification
     PecanCmdServer *conn;
 
     gboolean in_use;
-    PecanNode *http_conn;
     gulong open_handler;
     gulong close_handler;
     gulong error_handler;
