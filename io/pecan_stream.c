@@ -56,11 +56,24 @@ pecan_stream_read (PecanStream *stream,
 
     g_return_val_if_fail (stream, G_IO_STATUS_ERROR);
 
+#if defined(PECAN_STREAM_RANDOM_ERRORS)
+    if (g_random_int_range (0, 75) == 1)
+    {
+        tmp_error = g_error_new_literal (G_IO_CHANNEL_ERROR, G_IO_CHANNEL_ERROR_FAILED,
+                                         "Randomly introduced error");
+        goto skip;
+    }
+#endif /* defined(PECAN_STREAM_RANDOM_ERRORS) */
+
     status = g_io_channel_read_chars (stream->channel, buf, count,
                                       &tmp_bytes_read, &tmp_error);
 
     if (stream->dump)
         msn_dump_file (buf, tmp_bytes_read);
+
+#if defined(PECAN_STREAM_RANDOM_ERRORS)
+skip:
+#endif /* defined(PECAN_STREAM_RANDOM_ERRORS) */
 
     if (tmp_error)
     {
@@ -87,11 +100,24 @@ pecan_stream_write (PecanStream *stream,
 
     g_return_val_if_fail (stream, G_IO_STATUS_ERROR);
 
+#if defined(PECAN_STREAM_RANDOM_ERRORS)
+    if (g_random_int_range (0, 75) == 1)
+    {
+        tmp_error = g_error_new_literal (G_IO_CHANNEL_ERROR, G_IO_CHANNEL_ERROR_FAILED,
+                                         "Randomly introduced error");
+        goto skip;
+    }
+#endif /* defined(PECAN_STREAM_RANDOM_ERRORS) */
+
     status = g_io_channel_write_chars (stream->channel, buf, count,
                                        &tmp_bytes_written, &tmp_error);
 
     if (stream->dump)
         msn_dump_file (buf, tmp_bytes_written);
+
+#if defined(PECAN_STREAM_RANDOM_ERRORS)
+skip:
+#endif /* defined(PECAN_STREAM_RANDOM_ERRORS) */
 
     if (tmp_error)
     {
