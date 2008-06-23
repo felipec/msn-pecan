@@ -125,7 +125,7 @@ open_cb (PecanNode *next,
         g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
     }
 
-    g_signal_handler_disconnect (conn->next, conn->open_sig_handler);
+    g_signal_handler_disconnect (next, conn->open_sig_handler);
     conn->open_sig_handler = 0;
 
     pecan_log ("end");
@@ -247,6 +247,7 @@ pecan_node_read (PecanNode *conn,
     return PECAN_NODE_GET_CLASS (conn)->read (conn, buf, count, ret_bytes_read, error);
 }
 
+/* If two nodes are linked the 'next' node is used for the real communication. */
 void
 pecan_node_link (PecanNode *conn,
                   PecanNode *next)
