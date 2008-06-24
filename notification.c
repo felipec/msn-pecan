@@ -1297,6 +1297,7 @@ rng_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     msn_parse_socket(cmd->params[1], &host, &port);
 
     swboard = msn_switchboard_new(session);
+    g_hash_table_insert (session->conversations, g_strdup (cmd->params[4]), swboard);
 
     msn_switchboard_set_invited(swboard, TRUE);
     msn_switchboard_set_session_id(swboard, cmd->params[0]);
@@ -1305,7 +1306,7 @@ rng_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     /* msn_switchboard_add_user(swboard, cmd->params[4]); */
 
     if (!msn_switchboard_connect(swboard, host, port))
-        msn_switchboard_destroy(swboard);
+        msn_switchboard_close(swboard);
 
     g_free(host);
 }

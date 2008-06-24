@@ -61,7 +61,9 @@ struct MsnSession
     struct MsnNexus *nexus;
     struct MsnSync *sync;
 
-    GList *switches; /**< The list of all the switchboards. */
+    GHashTable *conversations;
+    GHashTable *chats;
+
     GList *directconns; /**< The list of all the directconnections. */
     GList *slplinks; /**< The list of all the slplinks. */
 

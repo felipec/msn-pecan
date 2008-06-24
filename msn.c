@@ -492,6 +492,7 @@ initiate_chat_cb(PurpleBlistNode *node, gpointer data)
 	session = gc->proto_data;
 
 	swboard = msn_switchboard_new(session);
+        g_hash_table_insert (session->conversations, g_strdup (buddy->name), swboard);
 	msn_switchboard_request(swboard);
 	msn_switchboard_request_add_user(swboard, buddy->name);
 
@@ -1486,6 +1487,7 @@ chat_invite (PurpleConnection *gc,
     if (!swboard)
     {
         swboard = msn_switchboard_new (session);
+        g_hash_table_insert (session->chats, GINT_TO_POINTER (id), swboard);
         msn_switchboard_request (swboard);
         swboard->chat_id = id;
         swboard->conv = purple_find_chat (gc, id);
@@ -1609,23 +1611,8 @@ convo_closed (PurpleConnection *gc,
 
     conv = swboard->conv;
 
-    /* If we release the switchboard here, it may still have messages
-       pending ACK which would result in incorrect unsent message errors.
-       Just let it timeout... This is *so* going to screw with people who
-       use dumb clients that report "User has closed the conversation window" */
-    /* msn_switchboard_release(swboard, MSN_SB_FLAG_IM); */
+    msn_switchboard_release(swboard, MSN_SB_FLAG_IM);
     swboard->conv = NULL;
-
-    /* If other switchboards managed to associate themselves with this
-     * conv, make sure they know it's gone! */
-    /** @todo this should not happen */
-    if (conv)
-    {
-        while ((swboard = msn_session_find_swboard_with_conv (session, conv)))
-        {
-            swboard->conv = NULL;
-        }
-    }
 }
 
 static void

@@ -82,6 +82,9 @@ msn_session_new (const gchar *username,
 
     session->oim_session = pecan_oim_session_new (session);
 
+    session->conversations = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) msn_switchboard_unref);
+    session->chats = g_hash_table_new_full (g_int_hash, g_int_equal, NULL, (GDestroyNotify) msn_switchboard_unref);
+
     return session;
 }
 
@@ -99,15 +102,16 @@ msn_session_destroy (MsnSession *session)
     if (session->notification)
         msn_notification_destroy (session->notification);
 
-    while (session->switches)
-        msn_switchboard_destroy (session->switches->data);
-
 #if defined(PECAN_CVR)
     while (session->slplinks)
         msn_slplink_destroy (session->slplinks->data);
 #endif /* defined(PECAN_CVR) */
 
     pecan_ud_manager_free (session->udm);
+
+    g_hash_table_destroy (session->conversations);
+    g_hash_table_destroy (session->chats);
+
     pecan_contactlist_destroy (session->contactlist);
 
     g_free (session->passport_info.kv);
@@ -203,8 +207,8 @@ msn_session_disconnect (MsnSession *session)
 
     session->connected = FALSE;
 
-    while (session->switches)
-        msn_switchboard_close (session->switches->data);
+    g_hash_table_remove_all (session->conversations);
+    g_hash_table_remove_all (session->chats);
 
     if (session->notification)
         msn_notification_close (session->notification);
@@ -218,66 +222,46 @@ MsnSwitchBoard *
 msn_session_find_swboard (const MsnSession *session,
                           const gchar *username)
 {
-    GList *l;
-
     g_return_val_if_fail (session, NULL);
     g_return_val_if_fail (username, NULL);
 
-    for (l = session->switches; l; l = l->next)
-    {
-        MsnSwitchBoard *swboard;
+    return g_hash_table_lookup (session->conversations, username);
+}
 
-        swboard = l->data;
-
-        if (swboard->im_user && strcmp (username, swboard->im_user) == 0)
-            return swboard;
-    }
-
-    return NULL;
+static gboolean
+find_sb_conv (gpointer key,
+              gpointer value,
+              gpointer user_data)
+{
+    MsnSwitchBoard *swboard;
+    swboard = value;
+    return (swboard->conv == user_data);
 }
 
 MsnSwitchBoard *
 msn_session_find_swboard_with_conv (const MsnSession *session,
                                     const PurpleConversation *conv)
 {
-    GList *l;
+    MsnSwitchBoard *swboard;
 
     g_return_val_if_fail (session, NULL);
     g_return_val_if_fail (conv, NULL);
 
-    for (l = session->switches; l; l = l->next)
-    {
-        MsnSwitchBoard *swboard;
+    swboard = g_hash_table_find (session->conversations, find_sb_conv, (gpointer) conv);
+    if (!swboard)
+        swboard = g_hash_table_find (session->chats, find_sb_conv, (gpointer) conv);
 
-        swboard = l->data;
-
-        if (swboard->conv == conv)
-            return swboard;
-    }
-
-    return NULL;
+    return swboard;
 }
 
 MsnSwitchBoard *
 msn_session_find_swboard_with_id (const MsnSession *session,
                                   int chat_id)
 {
-    GList *l;
-
     g_return_val_if_fail (session, NULL);
     g_return_val_if_fail (chat_id >= 0,    NULL);
 
-    for (l = session->switches; l; l = l->next)
-    {
-        MsnSwitchBoard *swboard;
-
-        swboard = l->data;
-
-        if (swboard->chat_id == chat_id)
-            return swboard;
-    }
-
-    return NULL;
+    return g_hash_table_lookup (session->conversations, GINT_TO_POINTER (chat_id));
 }
 
 MsnSwitchBoard *
@@ -293,10 +277,11 @@ msn_session_get_swboard (MsnSession *session,
 
     if (!swboard)
     {
-        swboard = msn_switchboard_new (session);
-        swboard->im_user = g_strdup (username);
-        msn_switchboard_request (swboard);
-        msn_switchboard_request_add_user (swboard, username);
+        swboard = msn_switchboard_new(session);
+        g_hash_table_insert (session->conversations, g_strdup (username), swboard);
+        swboard->im_user = g_strdup(username);
+        msn_switchboard_request(swboard);
+        msn_switchboard_request_add_user(swboard, username);
     }
 
     swboard->flag |= flag;

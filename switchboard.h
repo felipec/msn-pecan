@@ -87,10 +87,9 @@ struct MsnSwitchBoard
                                   switchboard. */
     gboolean ready;			/**< A flag that states if this switchboard is
                                           ready to be used. */
-    gboolean closed;		/**< A flag that states if the switchboard has
-                                  been closed by the user. */
-    gboolean destroying;	/**< A flag that states if the switchboard is
-                                  alredy on the process of destruction. */
+    gboolean closed; /**< The switchboard has been closed. */
+    gboolean to_close; /**< The switchboard should be closed after sending the
+                         queued messages. */
 
     int current_users;
     int total_users;
@@ -110,6 +109,8 @@ struct MsnSwitchBoard
     gulong open_handler;
     gulong close_handler;
     gulong error_handler;
+
+    guint ref_count;
 };
 
 /**
@@ -137,6 +138,9 @@ MsnSwitchBoard *msn_switchboard_new(struct MsnSession *session);
  * @param swboard The switchboard to destroy.
  */
 void msn_switchboard_destroy(MsnSwitchBoard *swboard);
+
+MsnSwitchBoard *msn_switchboard_ref (MsnSwitchBoard *swboard);
+MsnSwitchBoard *msn_switchboard_unref (MsnSwitchBoard *swboard);
 
 /**
  * Sets the auth key the switchboard must use when connecting.

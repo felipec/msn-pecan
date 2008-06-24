@@ -127,7 +127,7 @@ close_cb (PecanNode *conn,
         pecan_error ("connection error: (SB)");
     }
 
-    msn_switchboard_destroy (swboard);
+    msn_switchboard_close (swboard);
 }
 
 /**************************************************************************
@@ -191,13 +191,13 @@ msn_switchboard_new(MsnSession *session)
         swboard->error_handler = g_signal_connect (conn, "error", G_CALLBACK (close_cb), swboard);
     }
 
-    session->switches = g_list_append(session->switches, swboard);
+    msn_switchboard_ref (swboard);
 
     return swboard;
 }
 
 void
-msn_switchboard_destroy(MsnSwitchBoard *swboard)
+msn_switchboard_free (MsnSwitchBoard *swboard)
 {
     MsnMessage *msg;
     GList *l;
@@ -207,22 +207,6 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
     pecan_log ("swboard=%p", swboard);
 
     g_return_if_fail(swboard);
-
-    if (swboard->destroying)
-    {
-        pecan_log ("destroying");
-        pecan_log ("end");
-        return;
-    }
-
-    swboard->destroying = TRUE;
-
-    /* Make sure nobody find this swboard again. */
-    {
-        MsnSession *session;
-        session = swboard->session;
-        session->switches = g_list_remove (session->switches, swboard);
-    }
 
     g_signal_handler_disconnect (swboard->conn, swboard->open_handler);
     g_signal_handler_disconnect (swboard->conn, swboard->close_handler);
@@ -281,6 +265,28 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
     g_free(swboard);
 
     pecan_log ("end");
+}
+
+MsnSwitchBoard *
+msn_switchboard_ref (MsnSwitchBoard *swboard)
+{
+    swboard->ref_count++;
+
+    return swboard;
+}
+
+MsnSwitchBoard *
+msn_switchboard_unref (MsnSwitchBoard *swboard)
+{
+    swboard->ref_count--;
+
+    if (swboard->ref_count == 0)
+    {
+        msn_switchboard_free (swboard);
+        return NULL;
+    }
+
+    return swboard;
 }
 
 void
@@ -392,19 +398,26 @@ msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
             purple_conversation_get_type(swboard->conv) != PURPLE_CONV_TYPE_CHAT)
         {
             GList *l;
+            MsnSession *session;
 
 #ifdef PECAN_DEBUG_CHAT
             pecan_info ("switching to chat");
 #endif
 
-#if 0
-            /* this is bad - it causes msn_switchboard_close to be called on the
-             * switchboard we're in the middle of using :( */
+            session = swboard->session;
+
+            swboard->chat_id = session->conv_seq++;
+
+            msn_switchboard_ref(swboard);
+
+            g_hash_table_insert(session->chats, GINT_TO_POINTER (swboard->chat_id), swboard);
+            g_hash_table_remove(session->conversations, swboard->im_user);
+
             if (swboard->conv != NULL)
                 purple_conversation_destroy(swboard->conv);
-#endif
 
-            swboard->chat_id = swboard->session->conv_seq++;
+            msn_switchboard_unref(swboard);
+
             swboard->flag |= MSN_SB_FLAG_IM;
             swboard->conv = serv_got_joined_chat(purple_account_get_connection (account),
                                                  swboard->chat_id,
@@ -815,7 +828,7 @@ bye_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     if (swboard->conv == NULL)
     {
         /* This is a helper switchboard */
-        msn_switchboard_destroy(swboard);
+        msn_switchboard_close(swboard);
     }
     else if ((swboard->current_users > 1) ||
              (purple_conversation_get_type(swboard->conv) == PURPLE_CONV_TYPE_CHAT))
@@ -824,12 +837,12 @@ bye_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         purple_conv_chat_remove_user(PURPLE_CONV_CHAT(swboard->conv), user, NULL);
         swboard->current_users--;
         if (swboard->current_users == 0)
-            msn_switchboard_destroy(swboard);
+            msn_switchboard_close(swboard);
     }
     else
     {
         /* This is a switchboard used for a im session */
-        msn_switchboard_destroy(swboard);
+        msn_switchboard_close(swboard);
     }
 }
 
@@ -868,8 +881,11 @@ joi_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     if (!msn_session_get_bool (session, "use_http_method"))
         send_clientcaps(swboard);
 
-    if (swboard->closed)
+    if (swboard->to_close)
+    {
         msn_switchboard_close(swboard);
+        msn_switchboard_unref(swboard);
+    }
 }
 
 static void
@@ -1513,7 +1529,7 @@ got_swboard(MsnCmdProc *cmdproc, MsnCommand *cmd)
     swboard = cmd->trans->data;
     g_return_if_fail (swboard);
 
-    if (g_list_find(cmdproc->session->switches, swboard) == NULL)
+    if (msn_switchboard_unref (swboard) == NULL)
         /* The conversation window was closed. */
         return;
 
@@ -1522,7 +1538,7 @@ got_swboard(MsnCmdProc *cmdproc, MsnCommand *cmd)
     msn_parse_socket(cmd->params[2], &host, &port);
 
     if (!msn_switchboard_connect(swboard, host, port))
-        msn_switchboard_destroy(swboard);
+        msn_switchboard_close(swboard);
 
     g_free(host);
 }
@@ -1563,6 +1579,7 @@ msn_switchboard_request(MsnSwitchBoard *swboard)
     msn_transaction_set_data(trans, swboard);
     msn_transaction_set_error_cb(trans, xfr_error);
 
+    msn_switchboard_ref(swboard); /* The conversation window might get closed. */
     msn_cmdproc_send_trans(cmdproc, trans);
 }
 
@@ -1571,36 +1588,43 @@ msn_switchboard_close(MsnSwitchBoard *swboard)
 {
     g_return_if_fail(swboard);
 
-    /* Make sure nobody find this swboard again. */
+    if (swboard->closed)
     {
-        MsnSession *session;
-        session = swboard->session;
-        session->switches = g_list_remove (session->switches, swboard);
+        msn_switchboard_unref(swboard);
+        return;
     }
+
+    swboard->closed = TRUE;
+    swboard->conv = NULL;
+
+    /* Don't let a write error destroy the switchboard before we do. */
+    msn_switchboard_ref(swboard);
+
+    if (swboard->chat_id)
+        g_hash_table_remove (swboard->session->chats, GINT_TO_POINTER (swboard->chat_id));
+    else
+        g_hash_table_remove (swboard->session->conversations, swboard->im_user);
 
     if (swboard->error != MSN_SB_ERROR_NONE)
     {
-        msn_switchboard_destroy(swboard);
+        msn_switchboard_unref(swboard);
     }
     else if (g_queue_is_empty(swboard->msg_queue) ||
              !swboard->session->connected)
     {
         MsnCmdProc *cmdproc;
-        gboolean destroying;
 
         cmdproc = swboard->cmdproc;
-        destroying = swboard->destroying;
 
-        /* hack to inhibit destroying */
-        swboard->destroying = TRUE;
         msn_cmdproc_send_quick(cmdproc, "OUT", NULL, NULL);
-        swboard->destroying = destroying;
 
-        msn_switchboard_destroy(swboard);
+        msn_switchboard_unref(swboard);
     }
     else
     {
-        swboard->closed = TRUE;
+        /* Messages are still pending */
+        /* Destroy the switchboard when they are sent. */
+        swboard->to_close = TRUE;
     }
 }
 
