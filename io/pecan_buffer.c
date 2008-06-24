@@ -61,7 +61,8 @@ pecan_buffer_new_memdup (gpointer data,
 void
 pecan_buffer_free (PecanBuffer *buffer)
 {
-    g_return_if_fail (buffer);
+    if (!buffer)
+        return;
 
     g_free (buffer->alloc_data);
     g_free (buffer);
