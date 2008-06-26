@@ -1449,6 +1449,9 @@ static PurplePluginProtocolInfo prpl_info =
     NULL, /* unregister_user */
     msn_send_attention, /* send_attention */
     msn_attention_types, /* attention_types */
+#ifdef LIBPURPLE_NEW_API
+    sizeof (PurplePluginProtocolInfo), /* struct_size */
+#endif
 
     /* padding */
     NULL
