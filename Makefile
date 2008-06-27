@@ -104,7 +104,7 @@ endif
 
 all: $(lib)
 
-VERSION := $(shell git describe --tags)
+VERSION := $(shell ./get-version.sh)
 
 # from Lauri Leukkunen's build system
 ifdef V
