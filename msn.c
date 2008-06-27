@@ -766,27 +766,24 @@ send_im (PurpleConnection *gc,
          PurpleMessageFlags flags)
 {
     PurpleAccount *account;
+    MsnSession *session;
     gchar *msgformat;
     gchar *msgtext;
 
     account = purple_connection_get_account (gc);
+    session = gc->proto_data;
 
-    /** @todo use internal status instead */
+    /* Send to mobile when contact is offline. */
     {
-        PurpleBuddy *buddy;
-        buddy = purple_find_buddy (account, who);
-        if (buddy)
+        PecanContact *contact;
+        contact = pecan_contactlist_find_contact (session->contactlist, who);
+        if (contact && !contact->status && contact->mobile)
         {
-            PurplePresence *p;
-            p = purple_buddy_get_presence (buddy);
-            if (purple_presence_is_status_primitive_active (p, PURPLE_STATUS_MOBILE))
-            {
-                gchar *text;
-                text = purple_markup_strip_html (message);
-                send_to_mobile (gc, who, text);
-                g_free (text);
-                return 1;
-            }
+            gchar *text;
+            text = purple_markup_strip_html (message);
+            send_to_mobile (gc, who, text);
+            g_free (text);
+            return 1;
         }
     }
 
@@ -814,10 +811,8 @@ send_im (PurpleConnection *gc,
             return -1;
 
         {
-            MsnSession *session;
             MsnSwitchBoard *swboard;
 
-            session = gc->proto_data;
             swboard = msn_session_get_swboard (session, who, MSN_SB_FLAG_IM);
 
             msn_switchboard_send_msg (swboard, msg, TRUE);
