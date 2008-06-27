@@ -104,7 +104,7 @@ endif
 
 all: $(lib)
 
-VERSION := $(shell ./get-version.sh)
+version := $(shell ./get-version.sh)
 
 # from Lauri Leukkunen's build system
 ifdef V
@@ -116,7 +116,7 @@ Q = @
 endif
 
 $(lib): $(objects)
-$(lib): CFLAGS := $(CFLAGS) $(PURPLE_CFLAGS) $(GOBJECT_CFLAGS) $(FALLBACK_CFLAGS) -D VERSION='"$(VERSION)"'
+$(lib): CFLAGS := $(CFLAGS) $(PURPLE_CFLAGS) $(GOBJECT_CFLAGS) $(FALLBACK_CFLAGS) -D VERSION='"$(version)"'
 $(lib): LIBS := $(PURPLE_LIBS) $(GOBJECT_LIBS)
 
 %.dylib::
@@ -152,11 +152,14 @@ $(PO_TEMPLATE): $(sources) | po
 	$(XGETTEXT) -kmc --keyword=_ --keyword=N_ -o $@ $(sources)
 
 dist:
-	git archive --format=tar --prefix=msn-pecan-$(version)/ $(version) > /tmp/msn-pecan-$(version).tar
+	git archive --format=tar --prefix=msn-pecan-$(version)/ HEAD > /tmp/msn-pecan-$(version).tar
 	mkdir -p msn-pecan-$(version)
 	git-changelog > msn-pecan-$(version)/ChangeLog
 	chmod 664 msn-pecan-$(version)/ChangeLog
 	tar --append -f /tmp/msn-pecan-$(version).tar --owner root --group root msn-pecan-$(version)/ChangeLog
+	echo $(version) > msn-pecan-$(version)/version
+	chmod 664 msn-pecan-$(version)/version
+	tar --append -f /tmp/msn-pecan-$(version).tar --owner root --group root msn-pecan-$(version)/version
 	rm -r msn-pecan-$(version)
 	bzip2 /tmp/msn-pecan-$(version).tar
 
