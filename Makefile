@@ -104,6 +104,8 @@ endif
 
 all: $(lib)
 
+VERSION := $(shell git describe --tags)
+
 # from Lauri Leukkunen's build system
 ifdef V
 Q = 
@@ -114,7 +116,7 @@ Q = @
 endif
 
 $(lib): $(objects)
-$(lib): CFLAGS := $(CFLAGS) $(PURPLE_CFLAGS) $(GOBJECT_CFLAGS) $(FALLBACK_CFLAGS)
+$(lib): CFLAGS := $(CFLAGS) $(PURPLE_CFLAGS) $(GOBJECT_CFLAGS) $(FALLBACK_CFLAGS) -D VERSION='"$(VERSION)"'
 $(lib): LIBS := $(PURPLE_LIBS) $(GOBJECT_LIBS)
 
 %.dylib::
