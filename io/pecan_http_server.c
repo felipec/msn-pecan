@@ -639,6 +639,7 @@ read_impl (PecanNode *conn,
                             http_conn->cur = NULL;
                             http_conn->gateway = NULL;
                             http_conn->last_session_id = NULL;
+                            pecan_node_close (conn);
                         }
                     }
                 }
