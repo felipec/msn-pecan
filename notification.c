@@ -1182,6 +1182,7 @@ url_cmd (MsnCmdProc *cmdproc,
         return;
     }
 
+    if (purple_account_get_check_mail (session->account))
     {
         static gboolean is_initial = TRUE;
 
