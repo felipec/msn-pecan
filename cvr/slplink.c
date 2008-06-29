@@ -220,9 +220,12 @@ msn_slplink_remove_slpcall(MsnSlpLink *slplink, MsnSlpCall *slpcall)
 		if (slplink->swboard != NULL)
 		{
 			if (msn_switchboard_release(slplink->swboard, MSN_SB_FLAG_FT))
+			{
+				msn_switchboard_unref (slplink->swboard);
 				/* I'm not sure this is the best thing to do, but it's better
 				 * than nothing. */
 				slpcall->slplink = NULL;
+			}
 		}
 	}
 }
@@ -271,6 +274,8 @@ msn_slplink_send_msg(MsnSlpLink *slplink, MsnMessage *msg)
 	{
 		slplink->swboard = msn_session_get_swboard(slplink->session,
 												   slplink->remote_user, MSN_SB_FLAG_FT);
+
+		msn_switchboard_ref (slplink->swboard);
 
 		if (slplink->swboard == NULL)
 			return;
