@@ -385,6 +385,8 @@ close_impl (PecanNode *conn)
         }
     }
 
+    g_hash_table_remove_all (http_conn->childs);
+
     PECAN_NODE_CLASS (parent_class)->close (conn);
 
     pecan_log ("end");
