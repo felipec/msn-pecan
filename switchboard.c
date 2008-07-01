@@ -263,6 +263,11 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
     g_signal_handler_disconnect (swboard->conn, swboard->close_handler);
     g_signal_handler_disconnect (swboard->conn, swboard->error_handler);
 
+    /* make sure all the transactions are destroyed so no timeouts occur after
+     * the switchboard is destroyed; the node can still be refed by someone
+     * else. */
+    pecan_node_close (PECAN_NODE (swboard->conn));
+
     pecan_node_free (PECAN_NODE (swboard->conn));
 
     g_free(swboard);
