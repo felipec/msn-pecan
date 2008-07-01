@@ -536,6 +536,9 @@ tooltip_text (PurpleBuddy *buddy,
     PurplePresence *presence;
     PurpleStatus *status;
 
+    if (!buddy)
+        return;
+
     presence = purple_buddy_get_presence (buddy);
     status = purple_presence_get_active_status (presence);
     user = buddy->proto_data;
@@ -1340,8 +1343,45 @@ get_info (PurpleConnection *gc,
           const char *name)
 {
     PurpleNotifyUserInfo *user_info;
+    PecanContact *user;
+    PurpleBuddy *buddy;
+
     user_info = purple_notify_user_info_new ();
     purple_notify_user_info_add_pair (user_info, _("Username"), name);
+
+    buddy = purple_find_buddy (purple_connection_get_account (gc), name);
+    user = (buddy ? buddy->proto_data : NULL);
+
+    if (user)
+    {
+        const gchar *friendly_name;
+        friendly_name = pecan_contact_get_friendly_name (user);
+        if (friendly_name && strcmp (friendly_name, name) != 0)
+            purple_notify_user_info_add_pair (user_info, _("Friendly Name"), friendly_name);
+    }
+
+    tooltip_text (buddy, user_info, /* full? */ TRUE);
+
+    if (user)
+    {
+        const gchar *home_phone;
+        const gchar *mobile_phone;
+        const gchar *work_phone;
+
+        home_phone = pecan_contact_get_home_phone (user);
+        mobile_phone = pecan_contact_get_mobile_phone (user);
+        work_phone = pecan_contact_get_work_phone (user);
+
+        if (home_phone)
+            purple_notify_user_info_add_pair (user_info, _("Home Phone"), home_phone);
+
+        if (mobile_phone)
+            purple_notify_user_info_add_pair (user_info, _("Mobile Phone"), mobile_phone);
+
+        if (work_phone)
+            purple_notify_user_info_add_pair (user_info, _("Work Phone"), work_phone);
+    }
+
     {
         gchar *tmp;
         tmp = pecan_strdup_printf ("<a href=\"%s%s\">%s%s</a>",
@@ -1349,6 +1389,7 @@ get_info (PurpleConnection *gc,
         purple_notify_user_info_add_pair (user_info, _("Profile URL"), tmp);
         g_free (tmp);
     }
+
     purple_notify_userinfo (gc, name, user_info, NULL, NULL);
     purple_notify_user_info_destroy (user_info);
 }
