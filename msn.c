@@ -146,7 +146,7 @@ msn_act_id(PurpleConnection *gc, const char *entry)
 	cmdproc = session->notification->cmdproc;
 	account = purple_connection_get_account(gc);
 
-        msn_set_prp(gc, "MFN", entry ? entry : "");
+        msn_set_prp(gc, "MFN", entry ? entry : purple_account_get_username (account));
 }
 
 static void
