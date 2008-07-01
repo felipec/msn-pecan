@@ -439,7 +439,9 @@ read_impl (PecanNode *conn,
 
             tokens = g_strsplit (str, " ", 3);
 
-            if (!(tokens[0] && (strcmp (tokens[0], "HTTP/1.1") == 0)))
+            if (!(tokens[0] &&
+                  ((strcmp (tokens[0], "HTTP/1.1") == 0) ||
+                   (strcmp (tokens[0], "HTTP/1.0") == 0))))
             {
                 pecan_debug ("error reading: parse error");
                 tmp_error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
