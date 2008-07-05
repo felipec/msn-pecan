@@ -197,6 +197,9 @@ pecan_contact_set_friendly_name (PecanContact *contact,
         purple_buddy_set_nickname (gc, contact->passport, contact->friendly_name);
     }
 
+    /** @todo temporarily disable this until we have proper server-side aliases
+     * support. */
+#if 0
     /* If contact == account; display and friendly are the same thing. */
     /** @todo this is a libpurple specific thing */
     if (pecan_contact_is_account (contact))
@@ -204,6 +207,7 @@ pecan_contact_set_friendly_name (PecanContact *contact,
         pecan_debug ("contact is account");
         pecan_contact_set_store_name (contact, name);
     }
+#endif
 #endif /* HAVE_LIBPURPLE */
 }
 
@@ -233,6 +237,8 @@ pecan_contact_set_store_name (PecanContact *contact,
 
     pecan_debug ("passport=[%s],name=[%s]", contact->passport, name);
 
+    /** @todo temporarily disable this until a proper way is implemented. */
+#if 0
     if (contact->contactlist)
     {
         MsnSession *session;
@@ -249,6 +255,7 @@ pecan_contact_set_store_name (PecanContact *contact,
             }
         }
     }
+#endif
 
     if (contact->store_name && name &&
         strcmp (contact->store_name, name) == 0)
@@ -274,6 +281,9 @@ pecan_contact_set_store_name (PecanContact *contact,
         purple_buddy_set_displayname (gc, contact->passport, contact->store_name);
     }
 
+    /** @todo temporarily disable this until we have proper server-side aliases
+     * support. */
+#if 0
     /* If contact == account; display and friendly are the same thing. */
     /** @todo this is a libpurple specific thing */
     if (pecan_contact_is_account (contact))
@@ -281,6 +291,7 @@ pecan_contact_set_store_name (PecanContact *contact,
         pecan_debug ("contact is account");
         pecan_contact_set_friendly_name (contact, name);
     }
+#endif
 #endif /* HAVE_LIBPURPLE */
 }
 
