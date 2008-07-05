@@ -1327,8 +1327,15 @@ msn_switchboard_close(MsnSwitchBoard *swboard)
              !swboard->session->connected)
     {
         MsnCmdProc *cmdproc;
+        gboolean destroying;
+
         cmdproc = swboard->cmdproc;
+        destroying = swboard->destroying;
+
+        /* hack to inhibit destroying */
+        swboard->destroying = TRUE;
         msn_cmdproc_send_quick(cmdproc, "OUT", NULL, NULL);
+        swboard->destroying = destroying;
 
         msn_switchboard_destroy(swboard);
     }
