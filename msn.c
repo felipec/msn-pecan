@@ -65,23 +65,35 @@ typedef struct
 
 static void msn_set_prp(PurpleConnection *gc, const char *type, const char *entry);
 
-/** @todo remove this crap */
-static const char *
-msn_normalize(const PurpleAccount *account, const char *str)
+static gboolean
+contact_is_account_quick (MsnSession *session,
+                          const gchar *passport)
 {
-	static char buf[BUF_LEN];
-	char *tmp;
+    gchar *normalized_passport;
 
-	g_return_val_if_fail(str != NULL, NULL);
+    normalized_passport = pecan_normalize (passport);
 
-	g_snprintf(buf, sizeof(buf), "%s%s", str,
-			   (strchr(str, '@') ? "" : "@hotmail.com"));
+    if (strcmp (msn_session_get_username (session), normalized_passport) == 0)
+    {
+        g_free (normalized_passport);
+        return TRUE;
+    }
 
-	tmp = g_utf8_strdown(buf, -1);
-	strncpy(buf, tmp, sizeof(buf));
-	g_free(tmp);
+    g_free (normalized_passport);
+    return FALSE;
+}
 
-	return buf;
+/** @todo remove this crap */
+static const gchar *
+normalize (const PurpleAccount *account,
+           const gchar *str)
+{
+    static gchar buf[BUF_LEN];
+    gchar *tmp;
+    tmp = pecan_normalize (str);
+    strncpy (buf, tmp, sizeof (buf));
+    g_free (tmp);
+    return buf;
 }
 
 static gboolean
@@ -138,15 +150,9 @@ msn_cmd_nudge(PurpleConversation *conv, const gchar *cmd, gchar **args, gchar **
 static void
 msn_act_id(PurpleConnection *gc, const char *entry)
 {
-	MsnCmdProc *cmdproc;
 	MsnSession *session;
-	PurpleAccount *account;
-
 	session = gc->proto_data;
-	cmdproc = session->notification->cmdproc;
-	account = purple_connection_get_account(gc);
-
-        msn_set_prp(gc, "MFN", entry ? entry : purple_account_get_username (account));
+        msn_set_prp(gc, "MFN", entry ? entry : msn_session_get_username (session));
 }
 
 static void
@@ -428,7 +434,7 @@ initiate_chat_cb(PurpleBlistNode *node, gpointer data)
 	swboard->flag = MSN_SB_FLAG_IM;
 
 	purple_conv_chat_add_user(PURPLE_CONV_CHAT(swboard->conv),
-							purple_account_get_username(buddy->account), NULL, PURPLE_CBFLAGS_NONE, TRUE);
+							msn_session_get_username(session), NULL, PURPLE_CBFLAGS_NONE, TRUE);
 }
 
 static void
@@ -474,17 +480,17 @@ msn_send_file(PurpleConnection *gc, const char *who, const char *file)
 static gboolean
 msn_can_receive_file(PurpleConnection *gc, const char *who)
 {
-	PurpleAccount *account;
-	char *normal;
+        MsnSession *session;
+	gchar *normal_who;
 	gboolean ret;
 
-	account = purple_connection_get_account(gc);
+        session = gc->proto_data;
 
-	normal = g_strdup(msn_normalize(account, purple_account_get_username(account)));
+	normal_who = pecan_normalize (who);
 
-	ret = strcmp(normal, msn_normalize(account, who));
+	ret = strcmp(normal_who, msn_session_get_username (session));
 
-	g_free(normal);
+	g_free (normal_who);
 
 	return ret;
 }
@@ -620,7 +626,7 @@ static GList *
 msn_actions(PurplePlugin *plugin, gpointer context)
 {
 	PurpleConnection *gc = (PurpleConnection *)context;
-	PurpleAccount *account;
+	MsnSession *session;
 	const char *user;
 
 	GList *m = NULL;
@@ -654,8 +660,8 @@ msn_actions(PurplePlugin *plugin, gpointer context)
 			msn_show_set_mobile_pages);
 	m = g_list_append(m, act);
 
-	account = purple_connection_get_account(gc);
-	user = msn_normalize(account, purple_account_get_username(account));
+        session = gc->proto_data;
+	user = msn_session_get_username(session);
 
 	if ((strstr(user, "@hotmail.") != NULL) ||
 		(strstr(user, "@msn.com") != NULL))
@@ -686,22 +692,25 @@ blist_node_menu (PurpleBlistNode *node)
 
             user = buddy->proto_data;
 
-            if (user && user->mobile)
+            if (user)
             {
-                /** @todo why is there a special way to do this? */
-                act = purple_menu_action_new (_("Send to Mobile"),
-                                              PURPLE_CALLBACK (show_send_to_mobile_cb),
-                                              NULL, NULL);
-                m = g_list_append (m, act);
-            }
-        }
+                if (user->mobile)
+                {
+                    /** @todo why is there a special way to do this? */
+                    act = purple_menu_action_new (_("Send to Mobile"),
+                                                  PURPLE_CALLBACK (show_send_to_mobile_cb),
+                                                  NULL, NULL);
+                    m = g_list_append (m, act);
+                }
 
-        if (g_ascii_strcasecmp (buddy->name, purple_account_get_username (buddy->account)) != 0)
-        {
-            act = purple_menu_action_new (_("Initiate _Chat"),
-                                          PURPLE_CALLBACK (initiate_chat_cb),
-                                          NULL, NULL);
-            m = g_list_append(m, act);
+                if (!pecan_contact_is_account (user))
+                {
+                    act = purple_menu_action_new (_("Initiate _Chat"),
+                                                  PURPLE_CALLBACK (initiate_chat_cb),
+                                                  NULL, NULL);
+                    m = g_list_append(m, act);
+                }
+            }
         }
 
         return m;
@@ -768,12 +777,10 @@ send_im (PurpleConnection *gc,
          const gchar *message,
          PurpleMessageFlags flags)
 {
-    PurpleAccount *account;
     MsnSession *session;
     gchar *msgformat;
     gchar *msgtext;
 
-    account = purple_connection_get_account (gc);
     session = gc->proto_data;
 
     /* Send to mobile when contact is offline. */
@@ -810,7 +817,7 @@ send_im (PurpleConnection *gc,
         g_free (msgtext);
 
         /* a message to ourselves? */
-        if (g_ascii_strcasecmp (who, purple_account_get_username (account)) == 0)
+        if (contact_is_account_quick (session, who))
             return -1;
 
         {
@@ -832,18 +839,16 @@ send_typing (PurpleConnection *gc,
              const gchar *who,
              PurpleTypingState state)
 {
-    PurpleAccount *account;
     MsnSession *session;
     MsnSwitchBoard *swboard;
 
-    account = purple_connection_get_account (gc);
     session = gc->proto_data;
 
     if (state != PURPLE_TYPING)
         return 0;
 
     /* a message to ourselves? */
-    if (g_ascii_strcasecmp (who, purple_account_get_username (account)) == 0)
+    if (contact_is_account_quick (session, who))
         return MSN_TYPING_SEND_TIMEOUT;
 
     swboard = msn_session_find_swboard (session, who);
@@ -859,7 +864,7 @@ send_typing (PurpleConnection *gc,
         msg = msn_message_new (MSN_MSG_TYPING);
         msn_message_set_content_type (msg, "text/x-msmsgscontrol");
         msn_message_set_flag (msg, 'U');
-        msn_message_set_attr (msg, "TypingUser", purple_account_get_username (account));
+        msn_message_set_attr (msg, "TypingUser", msn_session_get_username (session));
         msn_message_set_bin_data (msg, "\r\n", 2);
 
         msn_switchboard_send_msg (swboard, msg, FALSE);
@@ -1262,7 +1267,7 @@ chat_send (PurpleConnection *gc,
     g_free (msgformat);
     g_free (msgtext);
 
-    serv_got_chat_in (gc, id, purple_account_get_username (account), flags, message, time (NULL));
+    serv_got_chat_in (gc, id, msn_session_get_username (session), flags, message, time (NULL));
 
     return 0;
 }
@@ -1466,7 +1471,7 @@ static PurplePluginProtocolInfo prpl_info =
     rename_group, /* rename_group */
     NULL, /* buddy_free */
     convo_closed, /* convo_closed */
-    msn_normalize, /* normalize */
+    normalize, /* normalize */
     set_buddy_icon, /* set_buddy_icon */
     remove_group, /* remove_group */
     NULL, /* get_cb_real_name */

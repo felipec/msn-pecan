@@ -1124,7 +1124,7 @@ request_user_display(PecanContact *user)
 	}
 
 	if (g_ascii_strcasecmp(user->passport,
-						   purple_account_get_username(account)))
+						   msn_session_get_username(session)))
 	{
 		msn_slplink_request_object(slplink, info, got_user_display,
 								   end_user_display, obj);

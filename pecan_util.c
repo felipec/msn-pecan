@@ -558,6 +558,25 @@ msn_rand_guid()
                                rand() % 0xAAFF + 0x1111);
 }
 
+/** @todo remove this crap */
+gchar *
+pecan_normalize (const gchar *str)
+{
+    gchar *new;
+    gchar *tmp;
+
+    g_return_val_if_fail(str != NULL, NULL);
+
+    if (strchr (str, '@'))
+        return g_strdup (str);
+
+    tmp = g_utf8_strdown (str, -1);
+    new = g_strconcat (tmp, "@hotmail.com", NULL);
+    g_free (tmp);
+
+    return new;
+}
+
 static gboolean
 true_predicate (gpointer key,
                 gpointer value,

@@ -296,12 +296,8 @@ msn_got_login_params(MsnSession *session, const char *login_params)
 static void
 cvr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
-    PurpleAccount *account;
-
-    account = cmdproc->session->account;
-
     msn_cmdproc_send(cmdproc, "USR", "TWN I %s",
-                     purple_account_get_username(account));
+                     msn_session_get_username(cmdproc->session));
 }
 
 static void
@@ -377,13 +373,11 @@ static void
 ver_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSession *session;
-    PurpleAccount *account;
     gboolean protocol_supported = FALSE;
     const gchar *proto_str;
     guint i;
 
     session = cmdproc->session;
-    account = session->account;
 
     proto_str = "MSNP12";
 
@@ -405,7 +399,7 @@ ver_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     msn_cmdproc_send(cmdproc, "CVR",
                      "0x0409 winnt 5.1 i386 MSNMSGR 6.0.0602 MSMSGS %s",
-                     purple_account_get_username(account));
+                     msn_session_get_username(session));
 }
 
 /**************************************************************************

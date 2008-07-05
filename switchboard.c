@@ -92,13 +92,13 @@ open_cb (PecanNode *conn)
             swboard->empty = FALSE;
 
             trans = msn_transaction_new (cmdproc, "ANS", "%s %s %s",
-                                         purple_account_get_username (account),
+                                         msn_session_get_username (session),
                                          swboard->auth_key, swboard->session_id);
         }
         else
         {
             trans = msn_transaction_new (cmdproc, "USR", "%s %s",
-                                         purple_account_get_username (account),
+                                         msn_session_get_username (session),
                                          swboard->auth_key);
         }
 

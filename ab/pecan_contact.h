@@ -58,6 +58,8 @@ void pecan_contact_free (PecanContact *contact);
  */
 void pecan_contact_update (PecanContact *contact);
 
+gboolean pecan_contact_is_account (PecanContact *contact);
+
 /**
  * Sets the new state of contact.
  *

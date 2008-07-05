@@ -24,6 +24,7 @@
 #include "pecan_log.h"
 #include "notification.h"
 #include "pecan_status.h"
+#include "pecan_util.h"
 
 #include "cvr/slplink.h"
 
@@ -121,7 +122,7 @@ msn_session_set_username (MsnSession *session,
                           const gchar *value)
 {
     g_free (session->username);
-    session->username = g_strdup (value);
+    session->username = pecan_normalize (value);
 }
 
 const gchar *
