@@ -514,7 +514,6 @@ void
 pecan_contact_set_object (PecanContact *contact,
                           MsnObject *obj)
 {
-#ifdef HAVE_LIBPURPLE
     g_return_if_fail (contact);
 
     if (contact->msnobj)
@@ -522,6 +521,8 @@ pecan_contact_set_object (PecanContact *contact,
 
     contact->msnobj = obj;
 
+#ifdef HAVE_LIBPURPLE
+    /** @todo only request this when the object is a Display Picture. */
     if (contact->list_op & MSN_LIST_FL_OP)
         msn_queue_buddy_icon_request (contact);
 #endif /* HAVE_LIBPURPLE */
