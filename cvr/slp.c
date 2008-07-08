@@ -1116,13 +1116,6 @@ request_user_display(PecanContact *user)
 		return;
 	}
 
-	/* The user went offline. */
-	if (!user->status)
-	{
-		skip_request(session->contactlist);
-		return;
-	}
-
 	if (g_ascii_strcasecmp(user->passport,
 						   msn_session_get_username(session)))
 	{
