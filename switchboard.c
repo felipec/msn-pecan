@@ -63,11 +63,11 @@ static void
 msn_switchboard_report_user(MsnSwitchBoard *swboard, PurpleMessageFlags flags, const char *msg);
 
 static void
-open_cb (PecanNode *conn)
+open_cb (PecanNode *conn,
+         MsnSwitchBoard *swboard)
 {
     MsnSession *session;
     PecanCmdServer *cmd_conn;
-    MsnSwitchBoard *swboard;
     MsnCmdProc *cmdproc;
 
     g_return_if_fail (conn != NULL);
@@ -75,11 +75,6 @@ open_cb (PecanNode *conn)
     session = conn->session;
     cmd_conn = CMD_PECAN_NODE (conn);
     cmdproc = cmd_conn->cmdproc;
-
-    pecan_info ("foo");
-
-    swboard = cmdproc->data;
-    g_return_if_fail (swboard);
 
     {
         MsnTransaction *trans;
@@ -341,13 +336,11 @@ send_clientcaps(MsnSwitchBoard *swboard)
 static void
 msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
 {
-    MsnCmdProc *cmdproc;
     PurpleAccount *account;
 
     g_return_if_fail(swboard);
 
-    cmdproc = swboard->cmdproc;
-    account = cmdproc->session->account;
+    account = swboard->session->account;
 
     swboard->users = g_list_prepend(swboard->users, g_strdup(user));
     swboard->current_users++;
@@ -389,7 +382,7 @@ msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
                 purple_conversation_destroy(swboard->conv);
 #endif
 
-            swboard->chat_id = cmdproc->session->conv_seq++;
+            swboard->chat_id = swboard->session->conv_seq++;
             swboard->flag |= MSN_SB_FLAG_IM;
             swboard->conv = serv_got_joined_chat(account->gc,
                                                  swboard->chat_id,
