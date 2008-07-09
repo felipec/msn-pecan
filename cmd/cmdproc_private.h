@@ -35,8 +35,6 @@ struct MsnCmdProc
 {
     struct MsnSession *session;
 
-    GQueue *txqueue;
-
     MsnCommand *last_cmd;
 
     MsnTable *cbs_table;

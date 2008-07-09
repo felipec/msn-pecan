@@ -49,7 +49,6 @@ msn_cmdproc_new()
 
     cmdproc = g_new0(MsnCmdProc, 1);
 
-    cmdproc->txqueue = g_queue_new();
     cmdproc->history = msn_history_new();
 
     return cmdproc;
@@ -58,16 +57,9 @@ msn_cmdproc_new()
 void
 msn_cmdproc_destroy(MsnCmdProc *cmdproc)
 {
-    MsnTransaction *trans;
-
     pecan_log ("begin");
 
     pecan_debug ("cmdproc=%p", cmdproc);
-
-    while ((trans = g_queue_pop_head(cmdproc->txqueue)) != NULL)
-        msn_transaction_destroy(trans);
-
-    g_queue_free(cmdproc->txqueue);
 
     msn_history_destroy(cmdproc->history);
 
@@ -82,36 +74,13 @@ msn_cmdproc_destroy(MsnCmdProc *cmdproc)
 void
 msn_cmdproc_flush (MsnCmdProc *cmdproc)
 {
-    MsnTransaction *trans;
-
     pecan_log ("begin");
 
     pecan_debug ("cmdproc=%p", cmdproc);
 
-    while ((trans = g_queue_pop_head (cmdproc->txqueue)))
-        msn_transaction_destroy (trans);
-
     msn_history_flush (cmdproc->history);
 
     pecan_log ("end");
-}
-
-void
-msn_cmdproc_process_queue(MsnCmdProc *cmdproc)
-{
-    MsnTransaction *trans;
-
-    while ((trans = g_queue_pop_head(cmdproc->txqueue)) != NULL)
-        msn_cmdproc_send_trans(cmdproc, trans);
-}
-
-void
-msn_cmdproc_queue_trans(MsnCmdProc *cmdproc, MsnTransaction *trans)
-{
-    g_return_if_fail(cmdproc != NULL);
-    g_return_if_fail(trans   != NULL);
-
-    g_queue_push_tail(cmdproc->txqueue, trans);
 }
 
 static void

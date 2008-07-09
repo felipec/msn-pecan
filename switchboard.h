@@ -99,6 +99,7 @@ struct MsnSwitchBoard
     int chat_id;
 
     GQueue *msg_queue; /**< Queue of messages to send. */
+    GQueue *invites; /**< Queue of participants to invite. */
     GList *ack_list; /**< List of messages waiting for an ack. */
 
     MsnSBErrorType error; /**< The error that occurred in this switchboard

@@ -143,6 +143,7 @@ msn_switchboard_new(MsnSession *session)
     swboard->session = session;
 
     swboard->msg_queue = g_queue_new();
+    swboard->invites = g_queue_new();
     swboard->empty = TRUE;
 
     session->switches = g_list_append(session->switches, swboard);
@@ -217,6 +218,14 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
     /* If it linked us is because its looking for trouble */
     while (swboard->slplinks != NULL)
         msn_slplink_destroy(swboard->slplinks->data);
+
+    {
+        gchar *participant;
+        while ((participant = g_queue_pop_tail (swboard->invites)))
+            g_free (participant);
+    }
+
+    g_queue_free (swboard->invites);
 
     /* Destroy the message queue */
     while ((msg = g_queue_pop_head(swboard->msg_queue)) != NULL)
@@ -958,8 +967,16 @@ usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     }
 #endif
 
+    {
+        gchar *participant;
+        while ((participant = g_queue_pop_head (swboard->invites)))
+        {
+            msn_cmdproc_send (cmdproc, "CAL", "%s", participant);
+            g_free (participant);
+        }
+    }
+
     swboard->ready = TRUE;
-    msn_cmdproc_process_queue(cmdproc);
 }
 
 /**************************************************************************
@@ -1208,6 +1225,13 @@ msn_switchboard_request_add_user(MsnSwitchBoard *swboard, const char *user)
 
     cmdproc = swboard->cmdproc;
 
+    if (!swboard->ready)
+    {
+        pecan_warning ("not ready yet");
+        g_queue_push_tail (swboard->invites, g_strdup (user));
+        return;
+    }
+
     trans = msn_transaction_new(cmdproc, "CAL", "%s", user);
     /* this doesn't do anything, but users seem to think that
      * 'Unhandled command' is some kind of error, so we don't report it */
@@ -1216,10 +1240,7 @@ msn_switchboard_request_add_user(MsnSwitchBoard *swboard, const char *user)
     msn_transaction_set_data(trans, swboard);
     msn_transaction_set_timeout_cb(trans, cal_timeout);
 
-    if (swboard->ready)
-        msn_cmdproc_send_trans(cmdproc, trans);
-    else
-        msn_cmdproc_queue_trans(cmdproc, trans);
+    msn_cmdproc_send_trans(cmdproc, trans);
 }
 
 /**************************************************************************
