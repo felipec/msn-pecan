@@ -67,17 +67,18 @@ typedef struct
 } MsnAddBuddy;
 
 static void
-open_cb (PecanNode *conn)
+open_cb (PecanNode *conn,
+         MsnNotification *notification)
 {
     MsnSession *session;
     PecanCmdServer *cmd_conn;
 
     g_return_if_fail (conn != NULL);
 
+    pecan_log ("begin");
+
     session = conn->session;
     cmd_conn = CMD_PECAN_NODE (conn);
-
-    pecan_log ("begin");
 
     if (session->login_step == PECAN_LOGIN_STEP_START)
         msn_session_set_login_step (session, PECAN_LOGIN_STEP_HANDSHAKE);
