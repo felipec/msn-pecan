@@ -42,6 +42,7 @@ struct MsnHistory
 
 MsnHistory *msn_history_new(void);
 void msn_history_destroy(MsnHistory *history);
+void msn_history_flush(MsnHistory *history);
 MsnTransaction *msn_history_find(MsnHistory *history, unsigned int triId);
 void msn_history_add(MsnHistory *history, MsnTransaction *trans);
 

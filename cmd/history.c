@@ -47,6 +47,15 @@ msn_history_destroy(MsnHistory *history)
 	g_free(history);
 }
 
+void
+msn_history_flush(MsnHistory *history)
+{
+	MsnTransaction *trans;
+
+	while ((trans = g_queue_pop_head(history->queue)) != NULL)
+		msn_transaction_destroy(trans);
+}
+
 MsnTransaction *
 msn_history_find(MsnHistory *history, unsigned int trId)
 {

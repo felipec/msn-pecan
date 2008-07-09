@@ -74,6 +74,23 @@ msn_cmdproc_destroy(MsnCmdProc *cmdproc)
 }
 
 void
+msn_cmdproc_flush (MsnCmdProc *cmdproc)
+{
+    MsnTransaction *trans;
+
+    pecan_log ("begin");
+
+    pecan_debug ("cmdproc=%p", cmdproc);
+
+    while ((trans = g_queue_pop_head (cmdproc->txqueue)))
+        msn_transaction_destroy (trans);
+
+    msn_history_flush (cmdproc->history);
+
+    pecan_log ("end");
+}
+
+void
 msn_cmdproc_process_queue(MsnCmdProc *cmdproc)
 {
     MsnTransaction *trans;

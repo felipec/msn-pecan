@@ -42,6 +42,7 @@ void msn_cmdproc_send_trans (MsnCmdProc *cmdproc, MsnTransaction *trans);
 void msn_cmdproc_queue_trans (MsnCmdProc *cmdproc, MsnTransaction *trans);
 
 void msn_cmdproc_destroy (MsnCmdProc *cmdproc);
+void msn_cmdproc_flush (MsnCmdProc *cmdproc);
 void msn_cmdproc_process_queue (MsnCmdProc *cmdproc);
 void msn_cmdproc_process_msg (MsnCmdProc *cmdproc, MsnMessage *msg);
 void msn_cmdproc_process_cmd (MsnCmdProc *cmdproc, MsnCommand *cmd);

@@ -174,6 +174,9 @@ close_impl (PecanNode *conn)
     cmd_conn->rx_len = 0;
     cmd_conn->payload_len = 0;
 
+    if (cmd_conn->cmdproc)
+        msn_cmdproc_flush (cmd_conn->cmdproc);
+
     PECAN_NODE_CLASS (parent_class)->close (conn);
 
     pecan_log ("end");
