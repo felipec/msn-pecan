@@ -31,7 +31,6 @@ struct MsnCmdProc;
 struct PecanCmdServer
 {
     PecanNode parent;
-    gboolean dispose_has_run;
 
     gsize payload_len;
     gchar *rx_buf;

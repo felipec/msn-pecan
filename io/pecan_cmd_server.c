@@ -276,14 +276,14 @@ read_impl (PecanNode *conn)
 static void
 dispose (GObject *obj)
 {
-    PecanCmdServer *conn = CMD_PECAN_NODE (obj);
+    PecanCmdServer *cmd_conn = CMD_PECAN_NODE (obj);
 
     pecan_log ("begin");
 
-    if (!conn->dispose_has_run)
+    if (cmd_conn->cmdproc)
     {
-        conn->dispose_has_run = TRUE;
-        msn_cmdproc_destroy (conn->cmdproc);
+        msn_cmdproc_destroy (cmd_conn->cmdproc);
+        cmd_conn->cmdproc = NULL;
     }
 
     G_OBJECT_CLASS (parent_class)->dispose (obj);
