@@ -486,6 +486,8 @@ msn_can_receive_file(PurpleConnection *gc, const char *who)
 
         session = gc->proto_data;
 
+	g_return_val_if_fail (session, FALSE);
+
 	normal_who = pecan_normalize (who);
 
 	ret = strcmp(normal_who, msn_session_get_username (session));
