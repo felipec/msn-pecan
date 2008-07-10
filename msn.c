@@ -159,6 +159,14 @@ msn_act_id(PurpleConnection *gc, const char *entry)
         msn_set_prp(gc, "MFN", entry ? entry : msn_session_get_username (session));
 }
 
+/** Adium needs this. */
+void
+msn_set_friendly_name (PurpleConnection *gc,
+                       const gchar *entry)
+{
+    msn_act_id (gc, entry);
+}
+
 static void
 msn_set_prp(PurpleConnection *gc, const char *type, const char *entry)
 {
