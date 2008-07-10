@@ -56,6 +56,10 @@
 #include <prefs.h>
 #include "internal.h"
 
+#define _Q(x) #x
+#define Q(x) _Q(x)
+#define PLUGIN_ID "prpl-" Q(PLUGIN_NAME)
+
 typedef struct
 {
 	PurpleConnection *gc;
@@ -1511,7 +1515,7 @@ static PurplePluginInfo info =
     NULL, /**< dependencies */
     PURPLE_PRIORITY_DEFAULT, /**< priority */
 
-    "prpl-msn-pecan", /**< id */
+    PLUGIN_ID, /**< id */
     "WLM", /**< name */
     VERSION, /**< version */
     N_("WLM Protocol Plugin"), /**< summary */
@@ -1559,10 +1563,10 @@ init_plugin (PurplePlugin *plugin)
 
     purple_cmd_register ("nudge", "", PURPLE_CMD_P_PRPL,
                          PURPLE_CMD_FLAG_IM | PURPLE_CMD_FLAG_PRPL_ONLY,
-                         "prpl-msn-pecan", msn_cmd_nudge,
+                         PLUGIN_ID, msn_cmd_nudge,
                          _("nudge: nudge a user to get their attention"), NULL);
 
     purple_prefs_remove ("/plugins/prpl/msn");
 }
 
-PURPLE_INIT_PLUGIN (msn-pecan, init_plugin, info)
+PURPLE_INIT_PLUGIN (PLUGIN_NAME, init_plugin, info)
