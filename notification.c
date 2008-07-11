@@ -1278,8 +1278,10 @@ profile_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     session = cmdproc->session;
 
     if (strcmp(msg->remote_user, "Hotmail"))
-        /* This isn't an official message. */
+    {
+        pecan_warning ("unofficial message");
         return;
+    }
 
     if ((value = msn_message_get_attr(msg, "kv")) != NULL)
     {
@@ -1327,8 +1329,10 @@ initial_mdata_msg (MsnCmdProc *cmdproc,
     gc = session->account->gc;
 
     if (strcmp (msg->remote_user, "Hotmail"))
-        /* This isn't an official message. */
+    {
+        pecan_warning ("unofficial message");
         return;
+    }
 
     table = msn_message_get_hashtable_from_body (msg);
 
@@ -1389,8 +1393,10 @@ initial_email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     gc = session->account->gc;
 
     if (strcmp(msg->remote_user, "Hotmail"))
-        /* This isn't an official message. */
+    {
+        pecan_warning ("unofficial message");
         return;
+    }
 
     if (!session->passport_info.mail_url)
     {
@@ -1440,8 +1446,10 @@ email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     gc = session->account->gc;
 
     if (strcmp(msg->remote_user, "Hotmail"))
-        /* This isn't an official message. */
+    {
+        pecan_warning ("unofficial message");
         return;
+    }
 
     if (!session->passport_info.mail_url)
     {
@@ -1489,8 +1497,10 @@ system_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     const char *type_s;
 
     if (strcmp(msg->remote_user, "Hotmail"))
-        /* This isn't an official message. */
+    {
+        pecan_warning ("unofficial message");
         return;
+    }
 
     table = msn_message_get_hashtable_from_body(msg);
 
