@@ -24,71 +24,73 @@
 #include "transaction_private.h"
 
 MsnHistory *
-msn_history_new(void)
+msn_history_new (void)
 {
-	MsnHistory *history = g_new0(MsnHistory, 1);
+    MsnHistory *history = g_new0 (MsnHistory, 1);
 
-	history->trId = 1;
+    history->trId = 1;
 
-	history->queue = g_queue_new();
+    history->queue = g_queue_new ();
 
-	return history;
+    return history;
 }
 
 void
-msn_history_destroy(MsnHistory *history)
+msn_history_destroy (MsnHistory *history)
 {
-	MsnTransaction *trans;
+    MsnTransaction *trans;
 
-	while ((trans = g_queue_pop_head(history->queue)) != NULL)
-		msn_transaction_destroy(trans);
+    while ((trans = g_queue_pop_head (history->queue)))
+        msn_transaction_destroy (trans);
 
-	g_queue_free(history->queue);
-	g_free(history);
+    g_queue_free (history->queue);
+    g_free (history);
 }
 
 void
-msn_history_flush(MsnHistory *history)
+msn_history_flush (MsnHistory *history)
 {
-	MsnTransaction *trans;
+    MsnTransaction *trans;
 
-	while ((trans = g_queue_pop_head(history->queue)) != NULL)
-		msn_transaction_destroy(trans);
+    while ((trans = g_queue_pop_head(history->queue)))
+        msn_transaction_destroy (trans);
 }
 
 MsnTransaction *
-msn_history_find(MsnHistory *history, unsigned int trId)
+msn_history_find (MsnHistory *history,
+                  guint trId)
 {
-	MsnTransaction *trans;
-	GList *list;
+    MsnTransaction *trans;
+    GList *list;
 
-	for (list = history->queue->head; list != NULL; list = list->next)
-	{
-		trans = list->data;
-		if (trans->trId == trId)
-			return trans;
-	}
+    for (list = history->queue->head; list != NULL; list = list->next)
+    {
+        trans = list->data;
+        if (trans->trId == trId)
+            return trans;
+    }
 
-	return NULL;
+    return NULL;
 }
 
 void
-msn_history_add(MsnHistory *history, MsnTransaction *trans)
+msn_history_add (MsnHistory *history,
+                 MsnTransaction *trans)
 {
-	GQueue *queue;
+    GQueue *queue;
 
-	g_return_if_fail(history != NULL);
-	g_return_if_fail(trans   != NULL);
+    g_return_if_fail (history);
+    g_return_if_fail (trans);
 
-	queue = history->queue;
+    queue = history->queue;
 
-	trans->trId = history->trId++;
+    trans->trId = history->trId++;
 
-	g_queue_push_tail(queue, trans);
+    g_queue_push_tail (queue, trans);
 
-	if (queue->length > MSN_HIST_ELEMS)
-	{
-		trans = g_queue_pop_head(queue);
-		msn_transaction_destroy(trans);
-	}
+    if (queue->length > MSN_HIST_ELEMS)
+    {
+        trans = g_queue_pop_head (queue);
+        msn_transaction_destroy (trans);
+    }
 }

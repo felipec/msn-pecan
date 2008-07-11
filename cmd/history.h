@@ -1,7 +1,5 @@
 /**
- * @file history.h MSN history functions
- *
- * purple
+ * Copyright (C) 2008 Felipe Contreras
  *
  * Purple is the legal property of its developers, whose names are too numerous
  * to list here.  Please refer to the COPYRIGHT file distributed with this
@@ -36,14 +34,14 @@ typedef struct MsnHistory MsnHistory;
  */
 struct MsnHistory
 {
-	GQueue *queue;
-	unsigned int trId;
+    GQueue *queue;
+    guint trId;
 };
 
-MsnHistory *msn_history_new(void);
-void msn_history_destroy(MsnHistory *history);
-void msn_history_flush(MsnHistory *history);
-MsnTransaction *msn_history_find(MsnHistory *history, unsigned int triId);
-void msn_history_add(MsnHistory *history, MsnTransaction *trans);
+MsnHistory *msn_history_new (void);
+void msn_history_destroy (MsnHistory *history);
+void msn_history_flush (MsnHistory *history);
+MsnTransaction *msn_history_find (MsnHistory *history, guint triId);
+void msn_history_add (MsnHistory *history, MsnTransaction *trans);
 
 #endif /* MSN_HISTORY_H */
