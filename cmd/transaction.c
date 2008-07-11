@@ -51,8 +51,6 @@ msn_transaction_new(MsnCmdProc *cmdproc, const char *command,
 		va_end(arg);
 	}
 
-	/* trans->queue = g_queue_new(); */
-
 	return trans;
 }
 
@@ -64,22 +62,6 @@ msn_transaction_destroy(MsnTransaction *trans)
 	g_free(trans->command);
 	g_free(trans->params);
 	g_free(trans->payload);
-
-#if 0
-	if (trans->pendent_cmd != NULL)
-		msn_message_unref(trans->pendent_msg);
-#endif
-
-#if 0
-	MsnTransaction *elem;
-	if (trans->queue != NULL)
-	{
-		while ((elem = g_queue_pop_head(trans->queue)) != NULL)
-			msn_transaction_destroy(elem);
-
-		g_queue_free(trans->queue);
-	}
-#endif
 
 	if (trans->callbacks != NULL && trans->has_custom_callbacks)
 		g_hash_table_destroy(trans->callbacks);
@@ -106,50 +88,6 @@ msn_transaction_to_string(MsnTransaction *trans)
 
 	return str;
 }
-
-void
-msn_transaction_queue_cmd(MsnTransaction *trans, MsnCommand *cmd)
-{
-	pecan_log ("cmd=%p", cmd);
-	trans->pendent_cmd = cmd;
-	msn_command_ref(cmd);
-}
-
-void
-msn_transaction_unqueue_cmd(MsnTransaction *trans, MsnCmdProc *cmdproc)
-{
-	MsnCommand *cmd;
-
-	cmd = trans->pendent_cmd;
-	pecan_log ("cmd=%p", cmd);
-
-	g_return_if_fail(cmd != NULL);
-
-	msn_cmdproc_process_cmd(cmdproc, cmd);
-	msn_command_unref(cmd);
-
-	trans->pendent_cmd = NULL;
-}
-
-#if 0
-void
-msn_transaction_queue(MsnTransaction *trans, MsnTransaction *elem)
-{
-	if (trans->queue == NULL)
-		trans->queue = g_queue_new();
-
-	g_queue_push_tail(trans->queue, elem);
-}
-
-void
-msn_transaction_unqueue(MsnTransaction *trans, MsnCmdProc *cmdproc)
-{
-	MsnTransaction *elem;
-
-	while ((elem = g_queue_pop_head(trans->queue)) != NULL)
-		msn_cmdproc_send_trans(cmdproc, elem);
-}
-#endif
 
 void
 msn_transaction_set_payload(MsnTransaction *trans,

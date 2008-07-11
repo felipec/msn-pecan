@@ -1370,64 +1370,7 @@ initial_mdata_msg (MsnCmdProc *cmdproc,
         if (purple_account_get_check_mail (session->account) &&
             session->passport_info.email_enabled == 1)
         {
-            MsnTransaction *trans;
-            trans = msn_transaction_new (cmdproc, "URL", "%s", "INBOX");
-            msn_transaction_queue_cmd (trans, msg->cmd);
-
-            msn_cmdproc_send_trans (cmdproc, trans);
-        }
-    }
-
-    g_hash_table_destroy(table);
-}
-
-static void
-initial_email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
-{
-    MsnSession *session;
-    PurpleConnection *gc;
-    GHashTable *table;
-    const char *unread;
-
-    session = cmdproc->session;
-    gc = session->account->gc;
-
-    if (strcmp(msg->remote_user, "Hotmail"))
-    {
-        pecan_warning ("unofficial message");
-        return;
-    }
-
-    if (!session->passport_info.mail_url)
-    {
-        MsnTransaction *trans;
-        trans = msn_transaction_new (cmdproc, "URL", "%s", "INBOX");
-        msn_transaction_queue_cmd (trans, msg->cmd);
-
-        msn_cmdproc_send_trans (cmdproc, trans);
-    }
-
-    if (!purple_account_get_check_mail(session->account))
-        return;
-
-    table = msn_message_get_hashtable_from_body(msg);
-
-    unread = g_hash_table_lookup(table, "Inbox-Unread");
-
-    if (unread != NULL)
-    {
-        int count = atoi(unread);
-
-        if (count > 0)
-        {
-            const char *passport;
-            const char *url;
-
-            passport = msn_session_get_username(session);
-            url = session->passport_info.mail_url;
-
-            purple_notify_emails(gc, atoi(unread), FALSE, NULL, NULL,
-                                 &passport, &url, NULL, NULL);
+            msn_cmdproc_send (cmdproc, "URL", "%s", "INBOX");
         }
     }
 
@@ -1445,6 +1388,9 @@ email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     session = cmdproc->session;
     gc = session->account->gc;
 
+    if (!purple_account_get_check_mail (session->account))
+        return;
+
     if (strcmp(msg->remote_user, "Hotmail"))
     {
         pecan_warning ("unofficial message");
@@ -1453,17 +1399,10 @@ email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
     if (!session->passport_info.mail_url)
     {
-        MsnTransaction *trans;
-        trans = msn_transaction_new (cmdproc, "URL", "%s", "INBOX");
-        msn_transaction_queue_cmd (trans, msg->cmd);
-
-        msn_cmdproc_send_trans (cmdproc, trans);
-
+        pecan_error ("no url");
         return;
     }
 
-    if (!purple_account_get_check_mail(session->account))
-        return;
 
     table = msn_message_get_hashtable_from_body(msg);
 
@@ -1669,9 +1608,6 @@ msn_notification_init(void)
     msn_table_add_msg_type(cbs_table,
                            "text/x-msmsgsprofile",
                            profile_msg);
-    msn_table_add_msg_type(cbs_table,
-                           "text/x-msmsgsinitialemailnotification",
-                           initial_email_msg);
     msn_table_add_msg_type(cbs_table,
                            "text/x-msmsgsinitialmdatanotification",
                            initial_mdata_msg);

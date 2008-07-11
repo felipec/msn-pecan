@@ -49,10 +49,6 @@ struct MsnTransaction
 
     gchar *payload;
     gsize payload_len;
-
-    GQueue *queue;
-    MsnCommand *pendent_cmd; /**< The command that is waiting for the result of
-                               this transaction. */
 };
 
 #endif /* MSN_TRANSACTION_PRIVATE_H */
