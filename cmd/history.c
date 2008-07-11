@@ -22,6 +22,7 @@
 
 #include "history.h"
 #include "transaction_private.h"
+#include "pecan_log.h"
 
 MsnHistory *
 msn_history_new (void)
@@ -52,23 +53,36 @@ msn_history_flush (MsnHistory *history)
 {
     MsnTransaction *trans;
 
-    while ((trans = g_queue_pop_head(history->queue)))
+    while ((trans = g_queue_pop_head (history->queue)))
         msn_transaction_destroy (trans);
+}
+
+static gint
+check_trid (gconstpointer a,
+            gconstpointer b)
+{
+    const MsnTransaction *trans;
+    guint trid;
+
+    trans = a;
+    trid = GPOINTER_TO_INT (b);
+
+    if (trans->trId == trid)
+        return 0;
+
+    return 1;
 }
 
 MsnTransaction *
 msn_history_find (MsnHistory *history,
                   guint trId)
 {
-    MsnTransaction *trans;
-    GList *list;
+    GList *link;
 
-    for (list = history->queue->head; list != NULL; list = list->next)
-    {
-        trans = list->data;
-        if (trans->trId == trId)
-            return trans;
-    }
+    link = g_queue_find_custom (history->queue, GINT_TO_POINTER (trId), check_trid);
+
+    if (link)
+        return link->data;
 
     return NULL;
 }
@@ -90,6 +104,7 @@ msn_history_add (MsnHistory *history,
 
     if (queue->length > MSN_HIST_ELEMS)
     {
+        pecan_warning ("dropping transaction");
         trans = g_queue_pop_head (queue);
         msn_transaction_destroy (trans);
     }
