@@ -1443,30 +1443,6 @@ msn_switchboard_disconnect(MsnSwitchBoard *swboard)
  * Call stuff
  **************************************************************************/
 static void
-got_cal(MsnCmdProc *cmdproc, MsnCommand *cmd)
-{
-#if 0
-    MsnSwitchBoard *swboard;
-    const char *user;
-
-    swboard = cmdproc->data;
-    g_return_if_fail (swboard);
-
-    user = cmd->params[0];
-
-    msn_switchboard_add_user(swboard, user);
-#endif
-}
-
-static void
-cal_timeout(MsnCmdProc *cmdproc, MsnTransaction *trans)
-{
-    pecan_warning ("command=[%s]", trans->command);
-
-    cal_error_helper(trans, MSN_SB_ERROR_UNKNOWN);
-}
-
-static void
 cal_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
 {
     int reason = MSN_SB_ERROR_UNKNOWN;
@@ -1489,7 +1465,6 @@ cal_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
 void
 msn_switchboard_request_add_user(MsnSwitchBoard *swboard, const char *user)
 {
-    MsnTransaction *trans;
     MsnCmdProc *cmdproc;
 
     g_return_if_fail(swboard);
@@ -1503,15 +1478,7 @@ msn_switchboard_request_add_user(MsnSwitchBoard *swboard, const char *user)
         return;
     }
 
-    trans = msn_transaction_new(cmdproc, "CAL", "%s", user);
-    /* this doesn't do anything, but users seem to think that
-     * 'Unhandled command' is some kind of error, so we don't report it */
-    msn_transaction_add_cb(trans, "CAL", got_cal);
-
-    msn_transaction_set_data(trans, swboard);
-    msn_transaction_set_timeout_cb(trans, cal_timeout);
-
-    msn_cmdproc_send_trans(cmdproc, trans);
+    msn_cmdproc_send (cmdproc, "CAL", "%s", user);
 }
 
 /**************************************************************************
