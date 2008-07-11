@@ -37,11 +37,6 @@
 #include "msn.h"
 #include "session.h"
 
-#ifdef HAVE_LIBPURPLE
-/* libpurple stuff. */
-#include <eventloop.h>
-#endif /* HAVE_LIBPURPLE */
-
 MsnCmdProc *
 msn_cmdproc_new()
 {
@@ -284,11 +279,9 @@ msn_cmdproc_process_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         cmd->trans = trans = msn_history_find(cmdproc->history, cmd->trId);
     }
 
-#ifdef HAVE_LIBPURPLE
-    if (trans != NULL)
-        if (trans->timer)
-            purple_timeout_remove(trans->timer);
-#endif /* HAVE_LIBPURPLE */
+    /* transaction finished. clear timeouts. */
+    if (trans)
+        msn_transaction_flush (trans);
 
     if (g_ascii_isdigit(cmd->command[0]))
     {

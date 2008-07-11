@@ -36,6 +36,7 @@ typedef void (*MsnTimeoutCb) (MsnCmdProc *cmdproc, MsnTransaction *trans);
 
 MsnTransaction *msn_transaction_new (MsnCmdProc *cmdproc, const gchar *command, const gchar *format, ...);
 void msn_transaction_destroy (MsnTransaction *trans);
+void msn_transaction_flush (MsnTransaction *trans);
 char *msn_transaction_to_string (MsnTransaction *trans);
 void msn_transaction_set_payload (MsnTransaction *trans, const gchar *payload, gsize payload_len);
 void msn_transaction_set_data (MsnTransaction *trans, void *data);

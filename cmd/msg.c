@@ -72,7 +72,7 @@ msn_message_destroy(MsnMessage *msg)
 #endif
 
         /** @todo this is ugly, but we really need to kill the pending
-         * transactions. */
+         * transactions to avoid further ack/nak handling . */
         {
             MsnTransaction *trans;
 
@@ -87,10 +87,7 @@ msn_message_destroy(MsnMessage *msg)
 
                 trans->callbacks = NULL;
 
-                if (trans->timer)
-                    purple_timeout_remove (trans->timer);
-
-                trans->timer = 0;
+                msn_transaction_flush (trans);
 
                 msg->trans = NULL;
             }
