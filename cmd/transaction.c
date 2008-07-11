@@ -23,7 +23,7 @@
 #include "transaction_private.h"
 #include "pecan_log.h"
 
-#include <string.h>
+#include <string.h> /* For strlen. */
 
 #ifdef HAVE_LIBPURPLE
 /* libpurple stuff. */
@@ -31,139 +31,143 @@
 #endif /* HAVE_LIBPURPLE */
 
 MsnTransaction *
-msn_transaction_new(MsnCmdProc *cmdproc, const char *command,
-					const char *format, ...)
+msn_transaction_new (MsnCmdProc *cmdproc,
+                     const gchar *command,
+                     const gchar *format,
+                     ...)
 {
-	MsnTransaction *trans;
-	va_list arg;
+    MsnTransaction *trans;
+    va_list arg;
 
-	g_return_val_if_fail(command != NULL, NULL);
+    g_return_val_if_fail (command, NULL);
 
-	trans = g_new0(MsnTransaction, 1);
+    trans = g_new0 (MsnTransaction, 1);
 
-	trans->cmdproc = cmdproc;
-	trans->command = g_strdup(command);
+    trans->cmdproc = cmdproc;
+    trans->command = g_strdup (command);
 
-	if (format != NULL)
-	{
-		va_start(arg, format);
-		trans->params = g_strdup_vprintf(format, arg);
-		va_end(arg);
-	}
+    if (format)
+    {
+        va_start (arg, format);
+        trans->params = g_strdup_vprintf (format, arg);
+        va_end (arg);
+    }
 
-	return trans;
+    return trans;
 }
 
 void
-msn_transaction_destroy(MsnTransaction *trans)
+msn_transaction_destroy (MsnTransaction *trans)
 {
-	g_return_if_fail(trans != NULL);
+    g_return_if_fail (trans);
 
-	g_free(trans->command);
-	g_free(trans->params);
-	g_free(trans->payload);
+    g_free (trans->command);
+    g_free (trans->params);
+    g_free (trans->payload);
 
-	if (trans->callbacks != NULL && trans->has_custom_callbacks)
-		g_hash_table_destroy(trans->callbacks);
+    if (trans->callbacks && trans->has_custom_callbacks)
+        g_hash_table_destroy (trans->callbacks);
 
 #ifdef HAVE_LIBPURPLE
-	if (trans->timer)
-		purple_timeout_remove(trans->timer);
+    if (trans->timer)
+        purple_timeout_remove (trans->timer);
 #endif /* HAVE_LIBPURPLE */
 
-	g_free(trans);
+    g_free (trans);
 }
 
-char *
-msn_transaction_to_string(MsnTransaction *trans)
+gchar *
+msn_transaction_to_string (MsnTransaction *trans)
 {
-	char *str;
+    gchar *str;
 
-	g_return_val_if_fail(trans != NULL, FALSE);
+    g_return_val_if_fail (trans, FALSE);
 
-	if (trans->params != NULL)
-		str = pecan_strdup_printf("%s %u %s\r\n", trans->command, trans->trId, trans->params);
-	else
-		str = pecan_strdup_printf("%s %u\r\n", trans->command, trans->trId);
+    if (trans->params)
+        str = pecan_strdup_printf ("%s %u %s\r\n", trans->command, trans->trId, trans->params);
+    else
+        str = pecan_strdup_printf ("%s %u\r\n", trans->command, trans->trId);
 
-	return str;
-}
-
-void
-msn_transaction_set_payload(MsnTransaction *trans,
-							const gchar *payload,
-							gsize payload_len)
-{
-	g_return_if_fail(trans   != NULL);
-	g_return_if_fail(payload != NULL);
-
-	trans->payload = g_strdup(payload);
-	trans->payload_len = payload_len ? payload_len : strlen(trans->payload);
+    return str;
 }
 
 void
-msn_transaction_set_data(MsnTransaction *trans, void *data)
+msn_transaction_set_payload (MsnTransaction *trans,
+                             const gchar *payload,
+                             gsize payload_len)
 {
-	g_return_if_fail(trans != NULL);
+    g_return_if_fail (trans);
+    g_return_if_fail (payload);
 
-	trans->data = data;
+    trans->payload = g_strdup (payload);
+    trans->payload_len = payload_len ? payload_len : strlen (trans->payload);
 }
 
 void
-msn_transaction_add_cb(MsnTransaction *trans,
-					   const gchar *answer,
-					   MsnTransCb cb)
+msn_transaction_set_data (MsnTransaction *trans,
+                          const gpointer data)
 {
-	g_return_if_fail(trans  != NULL);
-	g_return_if_fail(answer != NULL);
+    g_return_if_fail (trans);
 
-	if (trans->callbacks == NULL)
-	{
-		trans->has_custom_callbacks = TRUE;
-		trans->callbacks = g_hash_table_new_full(g_str_hash, g_str_equal, g_free,
-												 NULL);
-	}
-	else if (trans->has_custom_callbacks != TRUE)
-	{
-		g_return_if_reached ();
-	}
+    trans->data = data;
+}
 
-	g_hash_table_insert(trans->callbacks, g_strdup (answer), cb);
+void
+msn_transaction_add_cb( MsnTransaction *trans,
+                        const gchar *answer,
+                        MsnTransCb cb)
+{
+    g_return_if_fail (trans);
+    g_return_if_fail (answer);
+
+    if (!trans->callbacks)
+    {
+        trans->has_custom_callbacks = TRUE;
+        trans->callbacks = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+    }
+    else if (!trans->has_custom_callbacks)
+    {
+        g_return_if_reached ();
+    }
+
+    g_hash_table_insert (trans->callbacks, g_strdup (answer), cb);
 }
 
 static gboolean
-transaction_timeout(gpointer data)
+transaction_timeout (gpointer data)
 {
-	MsnTransaction *trans;
+    MsnTransaction *trans;
 
-	trans = data;
-	g_return_val_if_fail(trans != NULL, FALSE);
+    trans = data;
+    g_return_val_if_fail (trans, FALSE);
 
-        pecan_log ("cmd=[%s],trid=[%d],params=[%s]",
-                 trans->command, trans->trId, trans->params);
+    pecan_log ("cmd=[%s],trid=[%d],params=[%s]",
+               trans->command, trans->trId, trans->params);
 
-	if (trans->timeout_cb != NULL)
-		trans->timeout_cb(trans->cmdproc, trans);
+    if (trans->timeout_cb)
+        trans->timeout_cb (trans->cmdproc, trans);
 
-	return FALSE;
+    return FALSE;
 }
 
 void
-msn_transaction_set_timeout_cb(MsnTransaction *trans, MsnTimeoutCb cb)
+msn_transaction_set_timeout_cb (MsnTransaction *trans,
+                                MsnTimeoutCb cb)
 {
 #ifdef HAVE_LIBPURPLE
-	if (trans->timer)
-	{
-		pecan_error ("this shouldn't be happening");
-		purple_timeout_remove(trans->timer);
-	}
-	trans->timeout_cb = cb;
-	trans->timer = purple_timeout_add(60000, transaction_timeout, trans);
+    if (trans->timer)
+    {
+        pecan_error ("this shouldn't be happening");
+        purple_timeout_remove (trans->timer);
+    }
+    trans->timeout_cb = cb;
+    trans->timer = purple_timeout_add (60000, transaction_timeout, trans);
 #endif /* HAVE_LIBPURPLE */
 }
 
 void
-msn_transaction_set_error_cb(MsnTransaction *trans, MsnErrorCb cb)
+msn_transaction_set_error_cb (MsnTransaction *trans,
+                              MsnErrorCb cb)
 {
-	trans->error_cb = cb;
+    trans->error_cb = cb;
 }
