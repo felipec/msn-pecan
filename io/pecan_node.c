@@ -178,7 +178,8 @@ error_cb (PecanNode *next,
 }
 
 PecanNode *
-pecan_node_new (gchar *name, PecanNodeType type)
+pecan_node_new (gchar *name,
+                PecanNodeType type)
 {
     PecanNode *conn;
 
@@ -229,20 +230,20 @@ pecan_node_error (PecanNode *conn)
 
 GIOStatus
 pecan_node_write (PecanNode *conn,
-                   const gchar *buf,
-                   gsize count,
-                   gsize *ret_bytes_written,
-                   GError **error)
+                  const gchar *buf,
+                  gsize count,
+                  gsize *ret_bytes_written,
+                  GError **error)
 {
     return PECAN_NODE_GET_CLASS (conn)->write (conn, buf, count, ret_bytes_written, error);
 }
 
 GIOStatus
 pecan_node_read (PecanNode *conn,
-                  gchar *buf,
-                  gsize count,
-                  gsize *ret_bytes_read,
-                  GError **error)
+                 gchar *buf,
+                 gsize count,
+                 gsize *ret_bytes_read,
+                 GError **error)
 {
     return PECAN_NODE_GET_CLASS (conn)->read (conn, buf, count, ret_bytes_read, error);
 }
@@ -250,7 +251,7 @@ pecan_node_read (PecanNode *conn,
 /* If two nodes are linked the 'next' node is used for the real communication. */
 void
 pecan_node_link (PecanNode *conn,
-                  PecanNode *next)
+                 PecanNode *next)
 {
     conn->next = g_object_ref (next);
     conn->open_sig_handler = g_signal_connect (next, "open", G_CALLBACK (open_cb), conn);
@@ -260,8 +261,8 @@ pecan_node_link (PecanNode *conn,
 
 void
 pecan_node_connect (PecanNode *conn,
-                     const gchar *hostname,
-                     gint port)
+                    const gchar *hostname,
+                    gint port)
 {
     PECAN_NODE_GET_CLASS (conn)->connect (conn, hostname, port);
 }
@@ -274,8 +275,8 @@ pecan_node_close (PecanNode *conn)
 
 void
 pecan_node_parse (PecanNode *conn,
-                   gchar *buf,
-                   gsize bytes_read)
+                  gchar *buf,
+                  gsize bytes_read)
 {
     PECAN_NODE_GET_CLASS (conn)->parse (conn, buf, bytes_read);
 }
@@ -461,13 +462,14 @@ write_impl (PecanNode *conn,
             if (bytes_written < count)
             {
                 /* This shouldn't happen, right? */
+                /* It doesn't seem to happen, but keep checking for now. */
                 pecan_error ("write check: %d < %d", bytes_written, count);
             }
         }
         else
         {
             pecan_warning ("not normal: status=%d (%s)",
-                         status, status_to_str (status));
+                           status, status_to_str (status));
         }
 
         if (ret_bytes_written)
@@ -513,7 +515,7 @@ read_impl (PecanNode *conn,
         if (status != G_IO_STATUS_NORMAL)
         {
             pecan_info ("not normal: status=%d (%s)",
-                      status, status_to_str (status));
+                        status, status_to_str (status));
         }
 
         pecan_log ("bytes_read=%d", bytes_read);

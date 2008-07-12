@@ -80,7 +80,6 @@ struct PecanNodeClass
     void (*connect) (PecanNode *conn, const gchar *hostname, gint port);
     void (*close) (PecanNode *conn);
     void (*parse) (PecanNode *conn, gchar *buf, gsize bytes_read);
-
 };
 
 #endif /* PECAN_NODE_PRIVATE_H */
