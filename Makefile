@@ -68,6 +68,7 @@ objects = \
 	  io/pecan_node.o \
 	  io/pecan_cmd_server.o \
 	  io/pecan_http_server.o \
+	  io/pecan_ssl_conn.o \
 	  cvr/slp.o \
 	  cvr/slpcall.o \
 	  cvr/slplink.o \
