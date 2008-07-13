@@ -331,6 +331,14 @@ connect_impl (PecanNode *conn,
 
     if (!conn->stream)
     {
+        /* close a pending connection */
+        /* this can happen when reconecting before receiving the connection
+         * callback. */
+        if (conn->connect_data)
+        {
+            purple_proxy_connect_cancel (conn->connect_data);
+        }
+
         if (conn->prev->type == PECAN_NODE_NS)
             hostname = http_conn->gateway;
         port = 80;
