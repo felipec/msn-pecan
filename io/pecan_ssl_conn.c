@@ -42,46 +42,61 @@ read_cb (gpointer data,
          PurpleInputCondition cond)
 {
     PecanNode *conn;
-    gchar buf[MSN_BUF_LEN + 1];
-    gsize bytes_read;
+    PecanSslConn *ssl_conn;
 
     pecan_log ("begin");
 
     conn = PECAN_NODE (data);
+    ssl_conn = PECAN_SSL_CONN (data);
 
     pecan_debug ("conn=%p,name=%s", conn, conn->name);
 
-    g_object_ref (conn);
-
+    if (ssl_conn->read_cb)
     {
-        GIOStatus status = G_IO_STATUS_NORMAL;
-
-        status = pecan_node_read (conn, buf, MSN_BUF_LEN, &bytes_read, NULL);
-
-        if (status == G_IO_STATUS_AGAIN)
-        {
-            g_object_unref (conn);
-            return;
-        }
-
-        if (status == G_IO_STATUS_EOF)
-        {
-            conn->error = g_error_new (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN, "End of stream");
-        }
-
-        if (conn->error)
-        {
-            pecan_node_error (conn);
-            g_object_unref (conn);
-            purple_ssl_close (gsc);
-            return;
-        }
+        ssl_conn->read_cb (conn, ssl_conn->read_cb_data);
+        goto leave;
     }
 
-    /* pecan_node_parse (conn, buf, bytes_read); */
+    /* not used right now */
+#if 0
+    {
+        gchar buf[MSN_BUF_LEN + 1];
+        gsize bytes_read;
 
-    g_object_unref (conn);
+        g_object_ref (conn);
 
+        {
+            GIOStatus status = G_IO_STATUS_NORMAL;
+
+            status = pecan_node_read (conn, buf, MSN_BUF_LEN, &bytes_read, NULL);
+
+            if (status == G_IO_STATUS_AGAIN)
+            {
+                g_object_unref (conn);
+                return;
+            }
+
+            if (status == G_IO_STATUS_EOF)
+            {
+                conn->error = g_error_new (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN, "End of stream");
+            }
+
+            if (conn->error)
+            {
+                pecan_node_error (conn);
+                g_object_unref (conn);
+                purple_ssl_close (gsc);
+                return;
+            }
+        }
+
+        pecan_node_parse (conn, buf, bytes_read);
+
+        g_object_unref (conn);
+    }
+#endif
+
+leave:
     pecan_log ("end");
 }
 
@@ -113,6 +128,15 @@ pecan_ssl_conn_free (PecanSslConn *conn)
     pecan_log ("begin");
     g_object_unref (G_OBJECT (conn));
     pecan_log ("end");
+}
+
+void
+pecan_ssl_conn_set_read_cb (PecanSslConn *ssl_conn,
+                            PecanSslConnReadCb read_cb,
+                            gpointer data)
+{
+    ssl_conn->read_cb = read_cb;
+    ssl_conn->read_cb_data = data;
 }
 
 /* PecanNode stuff. */

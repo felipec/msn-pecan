@@ -35,6 +35,8 @@ struct PecanSslConn
     PecanNode parent;
 
     struct _PurpleSslConnection *ssl_data;
+    PecanSslConnReadCb read_cb;
+    gpointer read_cb_data;
 };
 
 struct PecanSslConnClass

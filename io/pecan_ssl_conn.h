@@ -25,6 +25,8 @@
 
 typedef struct PecanSslConn PecanSslConn;
 
+typedef void (*PecanSslConnReadCb) (PecanNode *conn, gpointer data);
+
 #define PECAN_SSL_CONN_TYPE (pecan_ssl_conn_get_type ())
 #define PECAN_SSL_CONN(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), PECAN_SSL_CONN_TYPE, PecanSslConn))
 #define PECAN_SSL_CONN_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), PECAN_SSL_CONN_TYPE, PecanSslConnClass))
@@ -34,6 +36,8 @@ typedef struct PecanSslConn PecanSslConn;
 
 PecanSslConn *pecan_ssl_conn_new (gchar *name, PecanNodeType type);
 void pecan_ssl_conn_free (PecanSslConn *ssl_conn);
+/** @todo this thing should be on the main class */
+void pecan_ssl_conn_set_read_cb (PecanSslConn *ssl_conn, PecanSslConnReadCb read_cb, gpointer data);
 
 GType pecan_ssl_conn_get_type (void);
 
