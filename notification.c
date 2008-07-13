@@ -292,6 +292,14 @@ msn_got_login_params(MsnSession *session, const char *login_params)
 
     msn_session_set_login_step(session, PECAN_LOGIN_STEP_AUTH_END);
 
+    {
+        gchar **tokens;
+        tokens = g_strsplit (login_params, "&", 2);
+        session->passport_cookie.t = g_strdup (tokens[0] + 2);
+        session->passport_cookie.p = g_strdup (tokens[1] + 2);
+        g_strfreev (tokens);
+    }
+
     msn_cmdproc_send(cmdproc, "USR", "TWN S %s", login_params);
 }
 

@@ -106,6 +106,9 @@ msn_session_destroy(MsnSession *session)
 
         g_free (session->passport_info.mail_url);
 
+	g_free (session->passport_cookie.t);
+	g_free (session->passport_cookie.p);
+
 	if (session->sync != NULL)
 		msn_sync_destroy(session->sync);
 
