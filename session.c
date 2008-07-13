@@ -71,6 +71,8 @@ msn_session_new(PurpleAccount *account)
 	session->protocol_ver = 9;
 	session->conv_seq = 1;
 
+	session->oim_session = pecan_oim_session_new (session);
+
 	return session;
 }
 
@@ -80,6 +82,8 @@ msn_session_destroy(MsnSession *session)
 	g_return_if_fail(session != NULL);
 
 	session->destroying = TRUE;
+
+        pecan_oim_session_free (session->oim_session);
 
 	if (session->connected)
 		msn_session_disconnect(session);
