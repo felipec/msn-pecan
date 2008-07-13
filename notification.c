@@ -1310,6 +1310,9 @@ profile_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
     if ((value = msn_message_get_attr(msg, "LoginTime")) != NULL)
         session->passport_info.sl = atol(value);
+
+    if ((value = msn_message_get_attr(msg, "EmailEnabled")) != NULL)
+        session->passport_info.email_enabled = atol(value);
 }
 
 static void

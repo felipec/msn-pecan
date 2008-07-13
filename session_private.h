@@ -76,6 +76,7 @@ struct MsnSession
         char *sid;
         char *mspauth;
         unsigned long sl;
+        int email_enabled;
         char *client_ip;
         int client_port;
         gchar *mail_url;
