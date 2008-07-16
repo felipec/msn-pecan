@@ -1363,7 +1363,8 @@ initial_mdata_msg (MsnCmdProc *cmdproc,
             }
         }
 
-        if (purple_account_get_check_mail (session->account))
+        if (purple_account_get_check_mail (session->account) &&
+            session->passport_info.email_enabled == 1)
         {
             MsnTransaction *trans;
             trans = msn_transaction_new (cmdproc, "URL", "%s", "INBOX");

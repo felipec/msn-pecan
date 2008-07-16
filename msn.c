@@ -355,11 +355,9 @@ show_hotmail_inbox (PurplePluginAction *action)
     gc = (PurpleConnection *) action->context;
     session = gc->proto_data;
 
-    /** @todo what about people who don't want notifications but still check
-     * the email? */
-    if (!session->passport_info.mail_url)
+    if (session->passport_info.email_enabled != 1)
     {
-        purple_notify_error (gc, NULL,  _("This Hotmail account may not be active."), NULL);
+        purple_notify_error (gc, NULL,  _("This account's email is not enabled."), NULL);
         return;
     }
 
