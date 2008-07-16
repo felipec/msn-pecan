@@ -299,7 +299,7 @@ connect_cb (gpointer data,
         g_io_channel_set_encoding (channel, NULL, NULL);
         g_io_channel_set_line_term (channel, "\r\n", 2);
 
-        http_conn->timeout_id = g_timeout_add (2 * 1000, http_poll, http_conn);
+        http_conn->timeout_id = g_timeout_add_seconds (2, http_poll, http_conn);
         conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, conn);
 
         {
@@ -671,6 +671,15 @@ leave:
     return status;
 }
 
+static inline void
+reset_timer (PecanHttpServer *http_conn)
+{
+    if (http_conn->timeout_id)
+        g_source_remove (http_conn->timeout_id);
+
+    http_conn->timeout_id = g_timeout_add_seconds (2, http_poll, http_conn);
+}
+
 static GIOStatus
 foo_write (PecanNode *conn,
            PecanNode *prev,
@@ -751,6 +760,7 @@ foo_write (PecanNode *conn,
         http_conn->cur = prev;
         g_object_ref (G_OBJECT (http_conn->cur));
 
+        reset_timer (http_conn);
     }
     else
     {
