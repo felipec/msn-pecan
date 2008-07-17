@@ -196,7 +196,6 @@ msn_switchboard_new(MsnSession *session)
 void
 msn_switchboard_destroy(MsnSwitchBoard *swboard)
 {
-    MsnSession *session;
     MsnMessage *msg;
     GList *l;
 
@@ -253,8 +252,12 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
     for (l = swboard->users; l != NULL; l = l->next)
         g_free(l->data);
 
-    session = swboard->session;
-    session->switches = g_list_remove(session->switches, swboard);
+    /* Make sure nobody find this swboard again. */
+    {
+        MsnSession *session;
+        session = swboard->session;
+        session->switches = g_list_remove (session->switches, swboard);
+    }
 
     if (swboard->cmdproc)
         swboard->cmdproc->data = NULL;
@@ -1323,6 +1326,13 @@ void
 msn_switchboard_close(MsnSwitchBoard *swboard)
 {
     g_return_if_fail(swboard);
+
+    /* Make sure nobody find this swboard again. */
+    {
+        MsnSession *session;
+        session = swboard->session;
+        session->switches = g_list_remove (session->switches, swboard);
+    }
 
     if (swboard->error != MSN_SB_ERROR_NONE)
     {
