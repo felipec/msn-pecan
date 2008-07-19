@@ -21,7 +21,7 @@
 
 #ifdef PECAN_DEBUG
 
-#define PURPLE_DEBUG
+/* #define PURPLE_DEBUG */
 /* #define PECAN_DEBUG_FILE */
 
 #include <fcntl.h>
@@ -83,6 +83,9 @@ msn_base_log_helper (guint level,
 {
     gchar *tmp;
     va_list args;
+
+    if (level > PECAN_LOG_LEVEL_WARNING)
+        return;
 
     va_start (args, fmt);
 
