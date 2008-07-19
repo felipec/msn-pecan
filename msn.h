@@ -26,8 +26,6 @@
 #include "pecan_config.h"
 #include "pecan_printf.h" /** @todo remove this */
 
-#define MSN_BUF_LEN 8192
-
 #define USEROPT_MSNSERVER 3
 #define MSN_SERVER "messenger.hotmail.com"
 #define MSN_HTTPCONN_SERVER "gateway.messenger.hotmail.com"
