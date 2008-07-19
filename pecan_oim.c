@@ -23,6 +23,9 @@ struct OimRequest
     PecanParser *parser;
     guint parser_state;
     gsize payload;
+
+    gulong open_sig_handler;
+    PecanNode *conn;
 };
 
 static inline OimRequest *
@@ -43,6 +46,10 @@ oim_request_new (PecanOimSession *oim_session,
 static inline void
 oim_request_free (OimRequest *oim_request)
 {
+    if (oim_request->open_sig_handler)
+        g_signal_handler_disconnect (oim_request->conn, oim_request->open_sig_handler);
+
+    pecan_node_free (oim_request->conn);
     pecan_parser_free (oim_request->parser);
     g_free (oim_request->passport);
     g_free (oim_request->message_id);
@@ -69,7 +76,7 @@ pecan_oim_session_free (PecanOimSession *oim_session)
 
     {
         OimRequest *oim_request;
-        while ((oim_request = g_queue_pop_tail (oim_session->request_queue)))
+        while ((oim_request = g_queue_pop_head (oim_session->request_queue)))
         {
             oim_request_free (oim_request);
         }
@@ -81,7 +88,7 @@ pecan_oim_session_free (PecanOimSession *oim_session)
 
 static inline void
 oim_send_request (PecanNode *conn,
-                  const gchar *message_id)
+                  OimRequest *oim_request)
 {
     gchar *body;
     gchar *header;
@@ -106,7 +113,7 @@ oim_send_request (PecanNode *conn,
                             "</soap:Envelope>",
                             conn->session->passport_cookie.t,
                             conn->session->passport_cookie.p,
-                            message_id);
+                            oim_request->message_id);
 
     body_len = strlen (body);
 
@@ -126,6 +133,8 @@ oim_send_request (PecanNode *conn,
                               /* session->passport_info.mspauth, */
                               body);
 
+    g_free (body);
+
     pecan_debug ("header=[%s]", header);
     /* pecan_debug ("body=[%s]", body); */
 
@@ -134,6 +143,8 @@ oim_send_request (PecanNode *conn,
         pecan_node_write (conn, header, strlen (header), &len, NULL);
         pecan_debug ("write_len=%d", len);
     }
+
+    g_free (header);
 
     pecan_log ("end");
 }
@@ -146,7 +157,10 @@ open_cb (PecanNode *conn,
 
     pecan_log ("begin");
 
-    oim_send_request (conn, oim_request->message_id);
+    oim_send_request (conn, oim_request);
+
+    g_signal_handler_disconnect (conn, oim_request->open_sig_handler);
+    oim_request->open_sig_handler = 0;
 
     pecan_log ("end");
 }
@@ -156,7 +170,9 @@ static inline void oim_process_requests (PecanOimSession *oim_session);
 static inline void
 next_request (PecanOimSession *oim_session)
 {
-    g_queue_pop_head (oim_session->request_queue);
+    OimRequest *oim_request;
+    if (oim_request = g_queue_pop_head (oim_session->request_queue))
+        oim_request_free (oim_request);
     oim_process_requests (oim_session);
 }
 
@@ -182,11 +198,7 @@ read_cb (PecanNode *conn,
                 return;
 
             if (status != G_IO_STATUS_NORMAL)
-            {
-                pecan_node_close (conn);
-                pecan_node_free (conn);
                 goto leave;
-            }
 
             if (str)
             {
@@ -217,11 +229,7 @@ read_cb (PecanNode *conn,
             return;
 
         if (status != G_IO_STATUS_NORMAL)
-        {
-            pecan_node_close (conn);
-            pecan_node_free (conn);
             goto leave;
-        }
 
         if (str)
         {
@@ -243,12 +251,10 @@ read_cb (PecanNode *conn,
             g_free (tmp);
             g_free (str);
         }
-
-        pecan_node_close (conn);
-        pecan_node_free (conn);
     }
 
 leave:
+    pecan_node_close (conn);
     next_request (oim_request->oim_session);
 }
 
@@ -267,6 +273,7 @@ oim_process_requests (PecanOimSession *oim_session)
         PecanNode *conn;
 
         ssl_conn = pecan_ssl_conn_new ("oim", PECAN_NODE_NULL);
+
         conn = PECAN_NODE (ssl_conn);
         conn->session = oim_session->session;
 
@@ -275,7 +282,8 @@ oim_process_requests (PecanOimSession *oim_session)
 
         pecan_node_connect (conn, "rsi.hotmail.com", 443);
 
-        g_signal_connect (conn, "open", G_CALLBACK (open_cb), oim_request);
+        oim_request->conn = conn;
+        oim_request->open_sig_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), oim_request);
     }
 }
 
