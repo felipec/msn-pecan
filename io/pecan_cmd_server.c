@@ -89,7 +89,7 @@ parse_impl (PecanNode *base_conn,
             gsize bytes_read)
 {
     PecanCmdServer *cmd_conn;
-    gchar *cur, *end, *old_rx_buf;
+    gchar *cur, *next, *old_rx_buf;
     gint cur_len;
 
     pecan_log ("begin");
@@ -100,37 +100,38 @@ parse_impl (PecanNode *base_conn,
 
     buf[bytes_read] = '\0';
 
+    /* append buf to rx_buf */
     cmd_conn->rx_buf = g_realloc (cmd_conn->rx_buf, bytes_read + cmd_conn->rx_len + 1);
     memcpy (cmd_conn->rx_buf + cmd_conn->rx_len, buf, bytes_read + 1);
     cmd_conn->rx_len += bytes_read;
 
-    end = old_rx_buf = cmd_conn->rx_buf;
+    next = old_rx_buf = cmd_conn->rx_buf;
     cmd_conn->rx_buf = NULL;
 
     do
     {
-        cur = end;
+        cur = next;
 
         if (cmd_conn->payload_len)
         {
             if (cmd_conn->payload_len > cmd_conn->rx_len)
-                /* The payload is still not complete. */
+                /* The payload is incomplete. */
                 break;
 
             cur_len = cmd_conn->payload_len;
-            end += cur_len;
+            next += cur_len;
         }
         else
         {
-            end = strstr(cur, "\r\n");
+            next = strstr (cur, "\r\n");
 
-            if (end == NULL)
-                /* The command is still not complete. */
+            if (!next)
+                /* The command is incomplete. */
                 break;
 
-            *end = '\0';
-            end += 2;
-            cur_len = end - cur;
+            *next = '\0';
+            next += 2;
+            cur_len = next - cur;
         }
 
         cmd_conn->rx_len -= cur_len;
@@ -152,8 +153,6 @@ parse_impl (PecanNode *base_conn,
 
     if (cmd_conn->rx_len > 0)
         cmd_conn->rx_buf = g_memdup (cur, cmd_conn->rx_len);
-    else
-        cmd_conn->rx_buf = NULL;
 
     g_free (old_rx_buf);
 
