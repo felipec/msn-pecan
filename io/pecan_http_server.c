@@ -717,6 +717,7 @@ foo_write (PecanNode *conn,
                                           prev->hostname);
         }
 
+#if 0
         header = pecan_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
                                       "Accept: */*\r\n"
                                       "Accept-Language: en-us\r\n"
@@ -733,6 +734,27 @@ foo_write (PecanNode *conn,
                                       http_conn->gateway,
                                       auth ? auth : "",
                                       count);
+#else
+        header = g_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
+                                  "Accept: */*\r\n"
+                                  "Accept-Language: en-us\r\n"
+                                  "User-Agent: MSMSGS\r\n"
+                                  "Host: %s\r\n"
+                                  "Proxy-Connection: Keep-Alive\r\n"
+                                  "%s" /* Proxy auth */
+                                  "Connection: Keep-Alive\r\n"
+                                  "Pragma: no-cache\r\n"
+                                  "Content-Type: application/x-msn-messenger\r\n"
+                                  "Content-Length: %d\r\n\r\n"
+                                  "%.*s",
+                                  http_conn->gateway,
+                                  params,
+                                  http_conn->gateway,
+                                  auth ? auth : "",
+                                  count,
+                                  count,
+                                  buf);
+#endif
 
 #ifdef PECAN_DEBUG_HTTP
         pecan_debug ("header=[%s]", header);
@@ -741,12 +763,16 @@ foo_write (PecanNode *conn,
         g_free (params);
 
         status = pecan_stream_write_full (conn->stream, header, strlen (header), &bytes_written, &tmp_error);
+
+        g_free (header);
     }
 
+#if 0
     if (status == G_IO_STATUS_NORMAL)
     {
         status = pecan_stream_write_full (conn->stream, buf, count, &bytes_written, &tmp_error);
     }
+#endif
 
     if (status == G_IO_STATUS_NORMAL)
         status = pecan_stream_flush (conn->stream, &tmp_error);
