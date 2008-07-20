@@ -293,6 +293,7 @@ connect_cb (gpointer data,
     {
         GIOChannel *channel;
 
+        pecan_stream_free (conn->stream);
         conn->stream = pecan_stream_new (source);
         channel = conn->stream->channel;
 
@@ -552,6 +553,7 @@ read_impl (PecanNode *conn,
 
                         if (strcmp (token, "SessionID") == 0)
                         {
+                            g_free (http_conn->last_session_id);
                             http_conn->last_session_id = g_strdup (tokens_c[1]);
                         }
                         else if (strcmp (token, "GW-IP") == 0)
@@ -633,6 +635,7 @@ read_impl (PecanNode *conn,
 
                     if (child)
                     {
+                        g_free (child->foo_data);
                         child->foo_data = g_strdup (http_conn->last_session_id);
                     }
 

@@ -14,6 +14,8 @@ pecan_printf (const gchar *expect,
     va_end (args);
 
     g_printf ("[%s] %s\n", buffer, (strcmp (expect, buffer) == 0) ? "OK" : "fail" );
+
+    g_free (buffer);
 }
 
 int
