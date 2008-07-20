@@ -107,13 +107,14 @@ oim_send_request (PecanNode *conn,
                             "<soap:Body>"
                             "<GetMessage xmlns=\"http://www.hotmail.msn.com/ws/2004/09/oim/rsi\">"
                             "<messageId>%s</messageId>"
-                            "<alsoMarkAsRead>false</alsoMarkAsRead>"
+                            "<alsoMarkAsRead>%s</alsoMarkAsRead>"
                             "</GetMessage>"
                             "</soap:Body>"
                             "</soap:Envelope>",
                             conn->session->passport_cookie.t,
                             conn->session->passport_cookie.p,
-                            oim_request->message_id);
+                            oim_request->message_id,
+                            "true");
 
     body_len = strlen (body);
 
@@ -244,9 +245,8 @@ read_cb (PecanNode *conn,
                                             msn_session_get_account (oim_request->oim_session->session), 
                                             oim_request->passport);
             /** @todo get the right time. */
-            /** @todo remove the no_log before release */
             purple_conversation_write (conv, NULL, tmp,
-                                       PURPLE_MESSAGE_RECV | PURPLE_MESSAGE_DELAYED | PURPLE_MESSAGE_NO_LOG, time (NULL));
+                                       PURPLE_MESSAGE_RECV | PURPLE_MESSAGE_DELAYED, time (NULL));
 
             g_free (tmp);
             g_free (str);
