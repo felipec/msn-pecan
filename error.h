@@ -19,10 +19,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef _MSN_ERROR_H_
-#define _MSN_ERROR_H_
-
-#include "session.h"
+#ifndef MSN_ERROR_H
+#define MSN_ERROR_H
 
 /**
  * Returns the string representation of an error type.
@@ -32,14 +30,6 @@
  *
  * @return The string representation of the error type.
  */
-const char *msn_error_get_text(unsigned int type);
+const char *msn_error_get_text (unsigned int type);
 
-/**
- * Handles an error.
- *
- * @param session The current session.
- * @param type    The error type.
- */
-void msn_error_handle(MsnSession *session, unsigned int type);
-
-#endif /* _MSN_ERROR_H_ */
+#endif /* MSN_ERROR_H */
