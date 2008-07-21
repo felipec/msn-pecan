@@ -707,6 +707,7 @@ foo_write (PecanNode *conn,
     {
         gchar *params;
         gchar *header;
+        gchar *body = NULL;
         gchar *auth = NULL;
         gchar *session_id;
 
@@ -742,6 +743,7 @@ foo_write (PecanNode *conn,
                                       auth ? auth : "",
                                       count);
 #else
+        /** @todo investigate why this returns NULL sometimes. */
         header = g_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
                                   "Accept: */*\r\n"
                                   "Accept-Language: en-us\r\n"
@@ -752,28 +754,44 @@ foo_write (PecanNode *conn,
                                   "Connection: Keep-Alive\r\n"
                                   "Pragma: no-cache\r\n"
                                   "Content-Type: application/x-msn-messenger\r\n"
-                                  "Content-Length: %d\r\n\r\n"
-                                  "%.*s",
+                                  "Content-Length: %d\r\n\r\n",
                                   http_conn->gateway,
                                   params,
                                   http_conn->gateway,
                                   auth ? auth : "",
-                                  count,
-                                  count,
-                                  buf);
-#endif
+                                  count);
 
 #ifdef PECAN_DEBUG_HTTP
         pecan_debug ("header=[%s]", header);
 #endif
 
+        /** @todo man this is inefficient! */
+        if (header)
+        {
+            gchar *tmp;
+            tmp = g_strndup (buf, count);
+            body = g_strconcat (header, tmp, NULL);
+            g_free (tmp);
+            g_free (header);
+        }
+#endif
+
         g_free (params);
 
-        status = pecan_stream_write_full (conn->stream, header, strlen (header), &bytes_written, &tmp_error);
+        if (body)
+        {
+            status = pecan_stream_write_full (conn->stream, body, strlen (body), &bytes_written, &tmp_error);
 
-        g_free (header);
+            g_free (body);
+        }
+        else
+        {
+            pecan_error ("body is null!");
+            status = G_IO_STATUS_ERROR;
+        }
     }
 
+    /** @todo investigate why multiple g_io_channel_write has memory leaks. */
 #if 0
     if (status == G_IO_STATUS_NORMAL)
     {
