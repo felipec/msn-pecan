@@ -132,19 +132,13 @@ error_handler (MsnCmdProc *cmdproc,
                gint error)
 {
     MsnNotification *notification;
-    char *tmp;
+    gchar *reason;
 
     notification = cmdproc->data;
     g_return_if_fail (notification);
 
-    {
-        const gchar *reason;
-
-        reason = msn_error_get_text (error);
-
-        pecan_error ("connection error: (NS):reason=[%s]", reason);
-        tmp = pecan_strdup_printf (_("Error on notification server:\n%s"), reason);
-    }
+    reason = msn_error_get_text (error);
+    pecan_error ("connection error: (NS):reason=[%s]", reason);
 
     switch (error)
     {
@@ -153,10 +147,15 @@ error_handler (MsnCmdProc *cmdproc,
             /* non-fatal */
             break;
         default:
-            msn_session_set_error (notification->session, MSN_ERROR_SERVCONN, tmp);
+            {
+                char *tmp;
+                tmp = pecan_strdup_printf (_("Error on notification server:\n%s"), reason);
+                msn_session_set_error (notification->session, MSN_ERROR_SERVCONN, tmp);
+                g_free (tmp);
+            }
     }
 
-    g_free (tmp);
+    g_free (reason);
 }
 
 MsnNotification *

@@ -22,14 +22,15 @@
 #ifndef MSN_ERROR_H
 #define MSN_ERROR_H
 
+#include <glib.h>
+
 /**
- * Returns the string representation of an error type.
+ * Returns the string representation of an error id.
  *
- * @param type The error type.
- * @param debug Whether this should be treated as a debug log message or a user-visible error
+ * @param type The error id.
  *
- * @return The string representation of the error type.
+ * @return The string representation of the error id.
  */
-const char *msn_error_get_text (unsigned int type);
+gchar *msn_error_get_text (guint id);
 
 #endif /* MSN_ERROR_H */
