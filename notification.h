@@ -43,6 +43,8 @@ struct MsnNotification
     gulong open_handler;
     gulong close_handler;
     gulong error_handler;
+
+    gboolean closed;
 };
 
 void msn_notification_end (void);

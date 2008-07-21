@@ -115,6 +115,8 @@ close_cb (PecanNode *conn,
         }
     }
 
+    pecan_node_close (PECAN_NODE (notification->conn));
+    notification->closed = TRUE;
     msn_session_set_error (notification->session, MSN_ERROR_SERVCONN, tmp);
 
     g_free (tmp);
@@ -422,9 +424,11 @@ msn_notification_close(MsnNotification *notification)
 {
     g_return_if_fail(notification != NULL);
 
-    msn_cmdproc_send_quick(notification->cmdproc, "OUT", NULL, NULL);
-
-    pecan_node_close (PECAN_NODE (notification->conn));
+    if (!notification->closed)
+    {
+        msn_cmdproc_send_quick (notification->cmdproc, "OUT", NULL, NULL);
+        pecan_node_close (PECAN_NODE (notification->conn));
+    }
 }
 
 /**************************************************************************
