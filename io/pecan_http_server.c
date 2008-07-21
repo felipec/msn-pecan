@@ -313,6 +313,10 @@ connect_cb (gpointer data,
     {
         PecanNodeClass *class;
         class = g_type_class_peek (PECAN_NODE_TYPE);
+
+        conn->error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
+                                           error_message ? error_message : "Unable to connect");
+
         g_signal_emit (G_OBJECT (conn), class->error_sig, 0, conn);
     }
 

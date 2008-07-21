@@ -316,7 +316,8 @@ connect_cb (gpointer data,
     {
         /* pecan_error ("connection error: conn=%p,msg=[%s]", conn, error_message); */
         conn->error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
-                                           "Unable to connect");
+                                           error_message ? error_message : "Unable to connect");
+
         pecan_node_error (conn);
     }
 
