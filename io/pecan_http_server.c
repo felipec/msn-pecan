@@ -715,34 +715,16 @@ foo_write (PecanNode *conn,
 
         if (session_id)
         {
-            params = pecan_strdup_printf ("SessionID=%s",
-                                          session_id);
+            params = g_strdup_printf ("SessionID=%s",
+                                      session_id);
         }
         else
         {
-            params = pecan_strdup_printf ("Action=open&Server=%s&IP=%s",
-                                          prev->type == PECAN_NODE_NS ? "NS" : "SB",
-                                          prev->hostname);
+            params = g_strdup_printf ("Action=open&Server=%s&IP=%s",
+                                      prev->type == PECAN_NODE_NS ? "NS" : "SB",
+                                      prev->hostname);
         }
 
-#if 0
-        header = pecan_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
-                                      "Accept: */*\r\n"
-                                      "Accept-Language: en-us\r\n"
-                                      "User-Agent: MSMSGS\r\n"
-                                      "Host: %s\r\n"
-                                      "Proxy-Connection: Keep-Alive\r\n"
-                                      "%s" /* Proxy auth */
-                                      "Connection: Keep-Alive\r\n"
-                                      "Pragma: no-cache\r\n"
-                                      "Content-Type: application/x-msn-messenger\r\n"
-                                      "Content-Length: %d\r\n\r\n",
-                                      http_conn->gateway,
-                                      params,
-                                      http_conn->gateway,
-                                      auth ? auth : "",
-                                      count);
-#else
         /** @todo investigate why this returns NULL sometimes. */
         header = g_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
                                   "Accept: */*\r\n"
@@ -774,7 +756,6 @@ foo_write (PecanNode *conn,
             g_free (tmp);
             g_free (header);
         }
-#endif
 
         g_free (params);
 
