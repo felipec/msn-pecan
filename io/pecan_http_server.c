@@ -708,6 +708,7 @@ foo_write (PecanNode *conn,
         gchar *params;
         gchar *header;
         gchar *body = NULL;
+        gsize body_len;
         gchar *auth = NULL;
         gchar *session_id;
 
@@ -743,21 +744,23 @@ foo_write (PecanNode *conn,
                                   auth ? auth : "",
                                   count);
 
+        g_free (params);
+
 #ifdef PECAN_DEBUG_HTTP
         pecan_debug ("header=[%s]", header);
 #endif
 
-        /** @todo man this is inefficient! */
+        /** @todo this is inefficient */
         if (header)
         {
-            gchar *tmp;
-            tmp = g_strndup (buf, count);
-            body = g_strconcat (header, tmp, NULL);
-            g_free (tmp);
+            gsize header_len;
+            header_len = strlen (header);
+            body_len = header_len + count;
+            body = g_malloc (body_len);
+            memcpy (body, header, header_len);
+            memcpy (body + header_len, buf, count);
             g_free (header);
         }
-
-        g_free (params);
 
         if (body)
         {
@@ -767,6 +770,7 @@ foo_write (PecanNode *conn,
         }
         else
         {
+            /** @todo this shouldn't happen. */
             pecan_error ("body is null!");
             status = G_IO_STATUS_ERROR;
         }
