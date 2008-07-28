@@ -394,7 +394,7 @@ pecan_contact_add_group_id (PecanContact *contact,
 
     passport = pecan_contact_get_passport (contact);
 
-    pecan_debug ("passport=[%s],group_guid=[%s]", contact->passport, group_guid);
+    pecan_debug ("passport=[%s],group_guid=[%s]", passport, group_guid);
 
     if (group_guid)
     {
