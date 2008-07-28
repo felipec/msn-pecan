@@ -764,7 +764,7 @@ foo_write (PecanNode *conn,
 
         if (body)
         {
-            status = pecan_stream_write_full (conn->stream, body, strlen (body), &bytes_written, &tmp_error);
+            status = pecan_stream_write_full (conn->stream, body, body_len, &bytes_written, &tmp_error);
 
             g_free (body);
         }
