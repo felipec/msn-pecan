@@ -570,7 +570,7 @@ adc_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     list_id = msn_get_list_id(list);
 
-    if (list_id & MSN_LIST_FL)
+    if (list_id == MSN_LIST_FL)
         pecan_contact_set_guid (user, user_guid);
 
     msn_got_add_contact(session, user, list_id, group_guid);
