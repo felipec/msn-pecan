@@ -146,8 +146,6 @@ msn_switchboard_new(MsnSession *session)
     swboard->invites = g_queue_new();
     swboard->empty = TRUE;
 
-    session->switches = g_list_append(session->switches, swboard);
-
     {
         PecanNode *conn;
         swboard->conn = pecan_cmd_server_new ("switchboard server", PECAN_NODE_SB);
@@ -190,6 +188,8 @@ msn_switchboard_new(MsnSession *session)
         swboard->error_handler = g_signal_connect (conn, "error", G_CALLBACK (close_cb), swboard);
     }
 
+    session->switches = g_list_append(session->switches, swboard);
+
     return swboard;
 }
 
@@ -213,6 +213,13 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
     }
 
     swboard->destroying = TRUE;
+
+    /* Make sure nobody find this swboard again. */
+    {
+        MsnSession *session;
+        session = swboard->session;
+        session->switches = g_list_remove (session->switches, swboard);
+    }
 
     /* If it linked us is because its looking for trouble */
     while (swboard->slplinks != NULL)
@@ -251,13 +258,6 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
 
     for (l = swboard->users; l != NULL; l = l->next)
         g_free(l->data);
-
-    /* Make sure nobody find this swboard again. */
-    {
-        MsnSession *session;
-        session = swboard->session;
-        session->switches = g_list_remove (session->switches, swboard);
-    }
 
     if (swboard->cmdproc)
         swboard->cmdproc->data = NULL;
