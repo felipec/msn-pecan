@@ -221,6 +221,10 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
         session->switches = g_list_remove (session->switches, swboard);
     }
 
+    g_signal_handler_disconnect (swboard->conn, swboard->open_handler);
+    g_signal_handler_disconnect (swboard->conn, swboard->close_handler);
+    g_signal_handler_disconnect (swboard->conn, swboard->error_handler);
+
     /* If it linked us is because its looking for trouble */
     while (swboard->slplinks != NULL)
         msn_slplink_destroy(swboard->slplinks->data);
@@ -261,10 +265,6 @@ msn_switchboard_destroy(MsnSwitchBoard *swboard)
 
     if (swboard->cmdproc)
         swboard->cmdproc->data = NULL;
-
-    g_signal_handler_disconnect (swboard->conn, swboard->open_handler);
-    g_signal_handler_disconnect (swboard->conn, swboard->close_handler);
-    g_signal_handler_disconnect (swboard->conn, swboard->error_handler);
 
     /* make sure all the transactions are destroyed so no timeouts occur after
      * the switchboard is destroyed; the node can still be refed by someone
