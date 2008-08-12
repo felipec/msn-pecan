@@ -123,6 +123,7 @@ msn_session_set_username (MsnSession *session,
 {
     g_free (session->username);
     session->username = pecan_normalize (value);
+    pecan_contact_set_passport (session->user, session->username);
 }
 
 const gchar *
