@@ -313,9 +313,11 @@ void
 pecan_contact_set_buddy_icon (PecanContact *contact,
                               PecanBuffer *image)
 {
-    MsnObject *msnobj = pecan_contact_get_object (contact);
+    MsnObject *msnobj;
 
     g_return_if_fail (contact);
+
+    msnobj = pecan_contact_get_object (contact);
 
     if (!image)
     {

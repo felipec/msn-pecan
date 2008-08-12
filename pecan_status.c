@@ -145,7 +145,6 @@ pecan_update_status (MsnSession *session)
         return;
 
     pecan_set_status (session, util_status_from_account (session->account));
-
 }
 
 void
