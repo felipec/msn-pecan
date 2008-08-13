@@ -187,36 +187,28 @@ read_cb (PecanNode *conn,
 
     oim_request = data;
 
-    if (oim_request->parser_state < 2)
+    while (oim_request->parser_state < 2)
     {
-        while (TRUE)
+        gsize terminator_pos;
+
+        status = pecan_parser_read_line (oim_request->parser, &str, NULL, &terminator_pos, NULL);
+
+        if (status == G_IO_STATUS_AGAIN)
+            return;
+
+        if (status != G_IO_STATUS_NORMAL)
+            goto leave;
+
+        if (str)
         {
-            gsize terminator_pos;
+            str[terminator_pos] = '\0';
 
-            status = pecan_parser_read_line (oim_request->parser, &str, NULL, &terminator_pos, NULL);
+            /* now comes the content */
+            if (str[0] == '\0')
+                oim_request->parser_state++;
 
-            if (status == G_IO_STATUS_AGAIN)
-                return;
-
-            if (status != G_IO_STATUS_NORMAL)
-                goto leave;
-
-            if (str)
-            {
-                str[terminator_pos] = '\0';
-
-                /* now comes the content */
-                if (str[0] == '\0')
-                {
-                    g_free (str);
-                    break;
-                }
-
-                g_free (str);
-            }
+            g_free (str);
         }
-
-        oim_request->parser_state++;
     }
 
     /** @todo can we really be sure it's just one line? */
