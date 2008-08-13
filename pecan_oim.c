@@ -172,7 +172,7 @@ static inline void
 next_request (PecanOimSession *oim_session)
 {
     OimRequest *oim_request;
-    if (oim_request = g_queue_pop_head (oim_session->request_queue))
+    if ((oim_request = g_queue_pop_head (oim_session->request_queue)))
         oim_request_free (oim_request);
     oim_process_requests (oim_session);
 }
