@@ -1,3 +1,6 @@
+#define _XOPEN_SOURCE
+#include <time.h> /* for strptime */
+
 #include "pecan_oim_private.h"
 #include "io/pecan_ssl_conn.h"
 #include "io/pecan_parser.h"
@@ -22,6 +25,7 @@ struct OimRequest
     gchar *message_id;
     PecanParser *parser;
     guint parser_state;
+    guint32 date;
     gsize payload;
 
     gulong open_sig_handler;
@@ -203,6 +207,16 @@ read_cb (PecanNode *conn,
         {
             str[terminator_pos] = '\0';
 
+            if (oim_request->parser_state == 1)
+            {
+                if (strncmp (str, "Date: ", 6) == 0)
+                {
+                    struct tm time;
+                    strptime (str + 6, "%d %b %Y %T %z", &time);
+                    oim_request->date = mktime (&time);
+                }
+            }
+
             /* now comes the content */
             if (str[0] == '\0')
                 oim_request->parser_state++;
@@ -236,9 +250,9 @@ read_cb (PecanNode *conn,
             conv = purple_conversation_new (PURPLE_CONV_TYPE_IM,
                                             msn_session_get_account (oim_request->oim_session->session), 
                                             oim_request->passport);
-            /** @todo get the right time. */
+
             purple_conversation_write (conv, NULL, tmp,
-                                       PURPLE_MESSAGE_RECV | PURPLE_MESSAGE_DELAYED, time (NULL));
+                                       PURPLE_MESSAGE_RECV | PURPLE_MESSAGE_DELAYED, oim_request->date);
 
             g_free (tmp);
             g_free (str);
