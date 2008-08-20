@@ -1417,6 +1417,8 @@ initial_mdata_msg (MsnCmdProc *cmdproc,
 
                     if (end > start)
                     {
+                        gchar *read_set;
+
 #if 0
                         {
                             gchar *field;
@@ -1429,6 +1431,9 @@ initial_mdata_msg (MsnCmdProc *cmdproc,
                         }
 #endif
 
+                        read_set = pecan_get_xml_field ("RS", start, end);
+
+                        if (strcmp (read_set, "0") == 0)
                         {
                             gchar *passport;
                             gchar *message_id;
@@ -1445,6 +1450,7 @@ initial_mdata_msg (MsnCmdProc *cmdproc,
                             g_free (message_id);
                         }
 
+                        g_free (read_set);
                         start = end + strlen ("</M>");
                     }
                 }
