@@ -47,6 +47,12 @@ check_buffer: LIBS := $(GOBJECT_LIBS) $(CHECK_LIBS)
 
 checks += check_buffer
 
+check_parser: parser.o ../io/pecan_parser.o ../io/pecan_node.o ../io/pecan_stream.o ../pecan_log.o ../pecan_printf.o
+check_parser: CFLAGS := $(CFLAGS) $(GOBJECT_CFLAGS) $(CHECK_CFLAGS)
+check_parser: LIBS := $(GOBJECT_LIBS) $(CHECK_LIBS)
+
+checks += check_parser
+
 all: $(checks)
 
 check_%::
