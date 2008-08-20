@@ -27,5 +27,8 @@ struct MsnSession;
 
 PecanOimSession *pecan_oim_session_new (MsnSession *session);
 void pecan_oim_session_free (PecanOimSession *oim_session);
+void pecan_oim_session_request (PecanOimSession *oim_session,
+                                const gchar *passport,
+                                const gchar *message_id);
 
 #endif /* PECAN_OIM_H */
