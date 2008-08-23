@@ -135,7 +135,16 @@ read_cb (GIOChannel *source,
 
         if (http_conn->cur)
         {
-            pecan_node_parse (http_conn->cur, buf, bytes_read);
+            /* make sure the server is not sending the same buffer again */
+            /** @todo find out why this happens */
+            if (!(http_conn->old_buffer &&
+                  strncmp (buf, http_conn->old_buffer, bytes_read) == 0))
+            {
+                pecan_node_parse (http_conn->cur, buf, bytes_read);
+
+                g_free (http_conn->old_buffer);
+                http_conn->old_buffer = g_strndup (buf, bytes_read);
+            }
         }
 
         http_conn->waiting_response = FALSE;
@@ -859,6 +868,9 @@ dispose (GObject *obj)
     PecanHttpServer *http_conn = PECAN_HTTP_SERVER (obj);
 
     pecan_log ("begin");
+
+    g_free (http_conn->old_buffer);
+    http_conn->old_buffer = NULL;
 
     g_free (http_conn->gateway);
     http_conn->gateway = NULL;

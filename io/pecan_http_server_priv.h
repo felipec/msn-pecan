@@ -42,6 +42,7 @@ struct PecanHttpServer
 
     GHashTable *childs;
     PecanNode *cur;
+    gchar *old_buffer;
 };
 
 struct PecanHttpServerClass
