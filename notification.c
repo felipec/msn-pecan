@@ -891,13 +891,7 @@ sbp_cmd (MsnCmdProc *cmdproc,
         if (strcmp (type, "MFN") == 0)
         {
             if (session->server_alias)
-            {
                 pecan_contact_set_store_name (contact, value);
-            }
-            else
-            {
-                pecan_contact_set_friendly_name (contact, value);
-            }
         }
     }
 }

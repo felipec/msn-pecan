@@ -985,6 +985,9 @@ alias_buddy (PurpleConnection *gc,
     cmdproc = session->notification->cmdproc;
     contact = pecan_contactlist_find_contact (session->contactlist, name);
 
+    if (!session->server_alias)
+        return;
+
     if (alias && strlen (alias))
         alias = purple_url_encode (alias);
     else
