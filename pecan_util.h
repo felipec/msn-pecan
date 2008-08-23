@@ -25,6 +25,8 @@
 
 #include <glib.h>
 
+gchar *pecan_url_decode (const gchar *url);
+
 /**
  * Parses the MSN message formatting into a format compatible with Purple.
  *

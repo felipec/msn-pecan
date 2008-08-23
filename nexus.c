@@ -22,6 +22,7 @@
 
 #include "nexus.h"
 #include "pecan_log.h"
+#include "pecan_util.h"
 
 #include "session.h"
 #include "notification.h"
@@ -238,29 +239,31 @@ nexus_login_written_cb(gpointer data, gint source, PurpleInputCondition cond)
 	}
 	else if (strstr(nexus->read_buf, "HTTP/1.1 401 Unauthorized") != NULL)
 	{
-		const char *error;
+		const char *tmp;
+		gchar *error = NULL;
 
-		if ((error = strstr(nexus->read_buf, "WWW-Authenticate")) != NULL)
+		if ((tmp = strstr(nexus->read_buf, "WWW-Authenticate")) != NULL)
 		{
-			if ((error = strstr(error, "cbtxt=")) != NULL)
+			if ((tmp = strstr(tmp, "cbtxt=")) != NULL)
 			{
 				const char *c;
-				char *temp;
+				char *tmp2;
 
-				error += strlen("cbtxt=");
+				tmp += strlen("cbtxt=");
 
-				if ((c = strchr(error, '\n')) == NULL)
-					c = error + strlen(error);
+				if ((c = strchr(tmp, '\n')) == NULL)
+					c = tmp + strlen(tmp);
 
-				temp = g_strndup(error, c - error);
-				error = purple_url_decode(temp);
-				g_free(temp);
-				if ((temp = strstr(error, " Do one of the following or try again:")) != NULL)
-					*temp = '\0';
+				tmp2 = g_strndup(tmp, c - tmp);
+				error = pecan_url_decode(tmp2);
+				g_free(tmp2);
+				if ((tmp2 = strstr(error, " Do one of the following or try again:")) != NULL)
+					*tmp2 = '\0';
 			}
 		}
 
 		msn_session_set_error(session, MSN_ERROR_AUTH, error);
+		g_free(error);
 	}
 	else if (strstr(nexus->read_buf, "HTTP/1.1 503 Service Unavailable"))
 	{

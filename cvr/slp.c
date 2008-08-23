@@ -856,7 +856,12 @@ msn_emoticon_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 		}
 
 		smile = tokens[tok];
-		obj = msn_object_new_from_string(purple_url_decode(tokens[tok + 1]));
+		{
+			gchar *tmp;
+			tmp = pecan_url_decode (tokens[tok + 1]);
+			obj = msn_object_new_from_string(tmp);
+			g_free(tmp);
+		}
 
 		if (obj == NULL)
 			break;

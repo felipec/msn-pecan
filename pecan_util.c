@@ -40,6 +40,57 @@
 #define BUFSIZE 256
 #endif /* HAVE_LIBPURPLE */
 
+gchar *
+pecan_url_decode (const gchar *url)
+{
+    gchar *new;
+    const gchar *src;
+    gchar *dest;
+
+    /*
+       Thus, only alphanumerics, the special characters "$-_.+!*'(),", and
+       reserved characters used for their reserved purposes may be used
+       unencoded within a URL.
+       */
+
+    dest = new = g_malloc (strlen (url) + 1);
+    src = url;
+
+    while (*src != '\0')
+    {
+        if (*src == '%')
+        {
+            gint v1;
+            gint v2;
+
+            v1 = g_ascii_xdigit_value (src[1]);
+            v2 = g_ascii_xdigit_value (src[2]);
+
+            if ((v1 >= 0) && (v2 >= 0))
+            {
+                *dest = (v1 * 16) + v2;
+            }
+            else
+            {
+                /* Malformed */
+                g_free (new);
+                return NULL;
+            }
+            src += 3;
+        }
+        else
+        {
+            *dest = *src;
+            src++;
+        }
+        dest++;
+    }
+
+    *dest = '\0';
+
+    return new;
+}
+
 #ifdef HAVE_LIBPURPLE
 void
 msn_parse_format(const char *mime, char **pre_ret, char **post_ret)

@@ -32,6 +32,8 @@
 
 #include <string.h>
 
+#include "pecan_util.h"
+
 /* libpurple stuff. */
 #include "fix_purple_win32.h"
 #include <account.h>
@@ -82,14 +84,17 @@ prp_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
 	if (cmd->param_count == 2)
 	{
+		gchar *tmp;
+		tmp = pecan_url_decode (value);
 		if (!strcmp(type, "PHH"))
-			pecan_contact_set_home_phone(user, purple_url_decode(value));
+			pecan_contact_set_home_phone(user, tmp);
 		else if (!strcmp(type, "PHW"))
-			pecan_contact_set_work_phone(user, purple_url_decode(value));
+			pecan_contact_set_work_phone(user, tmp);
 		else if (!strcmp(type, "PHM"))
-			pecan_contact_set_mobile_phone(user, purple_url_decode(value));
+			pecan_contact_set_mobile_phone(user, tmp);
 		else if (!strcmp(type, "MFN"))
-			purple_connection_set_display_name(gc, purple_url_decode(value));
+			purple_connection_set_display_name(gc, tmp);
+		g_free (tmp);
 	}
 	else
 	{
@@ -106,10 +111,10 @@ static void
 lsg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
 	MsnSession *session = cmdproc->session;
-	const char *name;
+	char *name;
 	const gchar *group_guid;
 
-	name = purple_url_decode(cmd->params[0]);
+	name = pecan_url_decode(cmd->params[0]);
 	group_guid = cmd->params[1];
 
 	pecan_group_new(session->contactlist, name, group_guid);
@@ -119,6 +124,8 @@ lsg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 		PurpleGroup *g = purple_group_new(name);
 		purple_blist_add_group(g, NULL);
 	}
+
+	g_free (name);
 
 	/* Group of ungroupped buddies */
 	if (!group_guid)
@@ -142,7 +149,7 @@ lst_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 	MsnSession *session = cmdproc->session;
 	const gchar *passport = NULL;
 	PecanContact *user;
-	const gchar *friendly = NULL;
+	gchar *friendly = NULL;
         const gchar *user_guid = NULL;
 	int list_op = -1;
         gint type;
@@ -159,7 +166,7 @@ lst_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
                 passport = chopped_str;
             /* Check for Friendlyname. */
             else if (strncmp (cmd->params[i], "F=", 2) == 0)
-                friendly = purple_url_decode (chopped_str);
+                friendly = pecan_url_decode (chopped_str);
             /* Check for Contact GUID. */
             else if (strncmp (cmd->params[i], "C=", 2) == 0)
                 user_guid = chopped_str;
@@ -215,6 +222,8 @@ lst_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
             msn_got_lst_contact (session, user, friendly, list_op, NULL);
         }
 
+	g_free (friendly);
+
 	session->sync->num_users++;
 
         if (session->sync->num_users == session->sync->total_users)
@@ -249,12 +258,18 @@ bpr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 			if (!strcmp(value, "Y"))
 				user->mobile = TRUE;
 		}
-		else if (!strcmp(type, "PHH"))
-			pecan_contact_set_home_phone(user, purple_url_decode(value));
-		else if (!strcmp(type, "PHW"))
-			pecan_contact_set_work_phone(user, purple_url_decode(value));
-		else if (!strcmp(type, "PHM"))
-			pecan_contact_set_mobile_phone(user, purple_url_decode(value));
+		else
+		{
+			gchar *tmp;
+			tmp = pecan_url_decode (value);
+			if (!strcmp(type, "PHH"))
+				pecan_contact_set_home_phone(user, tmp);
+			else if (!strcmp(type, "PHW"))
+				pecan_contact_set_work_phone(user, tmp);
+			else if (!strcmp(type, "PHM"))
+				pecan_contact_set_mobile_phone(user, tmp);
+			g_free (tmp);
+		}
 	}
 }
 
