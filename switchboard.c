@@ -728,7 +728,7 @@ queue_msg(MsnSwitchBoard *swboard, MsnMessage *msg)
     g_return_if_fail(swboard);
     g_return_if_fail(msg     != NULL);
 
-    pecan_info ("appending message to queue");
+    pecan_debug ("appending message to queue");
 
     g_queue_push_tail(swboard->msg_queue, msg);
 
@@ -742,11 +742,11 @@ process_queue(MsnSwitchBoard *swboard)
 
     g_return_if_fail(swboard);
 
-    pecan_info ("processing queue");
+    pecan_debug ("processing queue");
 
     while ((msg = g_queue_pop_head(swboard->msg_queue)) != NULL)
     {
-        pecan_info ("sending message");
+        pecan_debug ("sending message");
         release_msg(swboard, msg);
         msn_message_unref(msg);
     }
@@ -1054,8 +1054,7 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
         /* If current_users is always ok as it should then there is no need to
          * check if this is a chat. */
         if (swboard->current_users <= 1)
-            pecan_info ("plain_msg: current_users=[%d]",
-                      swboard->current_users);
+            pecan_warning ("plain_msg: current_users=[%d]", swboard->current_users);
 
         serv_got_chat_in(gc, swboard->chat_id, passport, 0, body_final,
                          time(NULL));
@@ -1209,7 +1208,7 @@ cal_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
 
     if (error == 215)
     {
-        pecan_info ("already in switchboard");
+        pecan_warning ("already in switchboard");
         return;
     }
     else if (error == 217)
@@ -1217,8 +1216,7 @@ cal_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
         reason = MSN_SB_ERROR_USER_OFFLINE;
     }
 
-    pecan_warning ("command=[%s],error=%i",
-                 trans->command, error);
+    pecan_warning ("command=[%s],error=%i",  trans->command, error);
 
     cal_error_helper(trans, reason);
 }
@@ -1296,9 +1294,8 @@ xfr_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
     swboard = trans->data;
     g_return_if_fail (swboard);
 
-    pecan_info ("error=%i,user=[%s],trans=%p,command=[%s],reason=%i",
-              error, swboard->im_user, trans,
-              trans->command, reason);
+    pecan_error ("error=%i,user=[%s],trans=%p,command=[%s],reason=%i",
+                 error, swboard->im_user, trans, trans->command, reason);
 
     swboard_error_helper(swboard, reason, swboard->im_user);
 }

@@ -297,7 +297,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
 
     body_len = GUINT32_FROM_LE(body_len);
 
-    pecan_info ("body_len=%d", body_len);
+    pecan_debug ("body_len=%d", body_len);
 
     body = g_try_malloc(body_len);
 
@@ -315,7 +315,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
         return FALSE;
     }
 
-    pecan_info ("bytes_read=%d", len);
+    pecan_debug ("bytes_read=%d", len);
 
     if (len > 0)
     {

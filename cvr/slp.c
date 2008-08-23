@@ -658,7 +658,7 @@ msn_slp_sip_recv(MsnSlpLink *slplink, const char *body)
 
 	if (body == NULL)
 	{
-		pecan_info ("received bogus message");
+		pecan_warning ("received bogus message");
 		return NULL;
 	}
 
@@ -817,9 +817,8 @@ got_emoticon(MsnSlpCall *slpcall,
 		purple_conv_custom_smiley_write(conv, slpcall->data_info, data, size);
 		purple_conv_custom_smiley_close(conv, slpcall->data_info);
 	}
-#ifdef PECAN_DEBUG_UD
-	pecan_info ("got smiley: %s", slpcall->data_info);
-#endif
+
+	pecan_debug ("got smiley: %s", slpcall->data_info);
 }
 
 void
@@ -933,9 +932,7 @@ msn_release_buddy_icon_request(PecanContactList *contactlist)
 
 	g_return_if_fail(contactlist != NULL);
 
-#ifdef PECAN_DEBUG_UD
 	pecan_info ("releasing buddy icon request");
-#endif
 
 	if (contactlist->buddy_icon_window > 0)
 	{
@@ -956,10 +953,7 @@ msn_release_buddy_icon_request(PecanContactList *contactlist)
 		contactlist->buddy_icon_window--;
 		request_user_display(user);
 
-#ifdef PECAN_DEBUG_UD
-                pecan_info ("msn_release_buddy_icon_request(): buddy_icon_window-- yields =%d",
-                          contactlist->buddy_icon_window);
-#endif
+		pecan_log ("buddy_icon_window=%d", contactlist->buddy_icon_window);
 	}
 }
 
@@ -1009,10 +1003,8 @@ msn_queue_buddy_icon_request(PecanContact *user)
 		contactlist = user->contactlist;
 		queue = contactlist->buddy_icon_requests;
 
-#ifdef PECAN_DEBUG_UD
-                pecan_info ("queueing buddy icon request for %s (buddy_icon_window = %i)",
-                          user->passport, contactlist->buddy_icon_window);
-#endif
+		pecan_debug ("passport=[%s],buddy_icon_window=%i",
+			     user->passport, contactlist->buddy_icon_window);
 
 		g_queue_push_tail(queue, user);
 
@@ -1032,9 +1024,7 @@ got_user_display(MsnSlpCall *slpcall,
 	g_return_if_fail(slpcall != NULL);
 
 	info = slpcall->data_info;
-#ifdef PECAN_DEBUG_UD
-	pecan_info ("got User Display: %s", slpcall->slplink->remote_user);
-#endif
+	pecan_info ("passport=[%s]", slpcall->slplink->remote_user);
 
 	contactlist = slpcall->slplink->session->contactlist;
 	account = slpcall->slplink->session->account;
@@ -1050,9 +1040,7 @@ end_user_display(MsnSlpCall *slpcall, MsnSession *session)
 
 	g_return_if_fail(session != NULL);
 
-#ifdef PECAN_DEBUG_UD
-	pecan_info ("End User Display");
-#endif
+	pecan_debug ("foo");
 
 	contactlist = session->contactlist;
 
@@ -1086,10 +1074,7 @@ skip_request(PecanContactList *contactlist)
     /* Free one window slot */
     contactlist->buddy_icon_window++;
 
-#ifdef PECAN_DEBUG_UD
-    pecan_info ("request_user_display(): buddy_icon_window++ yields =%d",
-                contactlist->buddy_icon_window);
-#endif
+    pecan_log ("buddy_icon_window=%d", contactlist->buddy_icon_window);
 
     /* Request the next one */
     msn_release_buddy_icon_request(contactlist);
@@ -1133,9 +1118,7 @@ request_user_display(PecanContact *user)
 		gconstpointer data = NULL;
 		size_t len = 0;
 
-#ifdef PECAN_DEBUG_UD
-		pecan_info ("requesting our own user display");
-#endif
+		pecan_debug ("requesting our own user display");
 
 		my_obj = pecan_contact_get_object(msn_session_get_contact (session));
 

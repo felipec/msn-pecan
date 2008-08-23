@@ -264,8 +264,7 @@ msn_got_add_contact (MsnSession *session,
 
         gc = purple_account_get_connection (account);
 
-        pecan_info ("rever list add: [%s]",
-                  passport);
+        pecan_info ("reverse list add: [%s]", passport);
 
         /** @todo display a non-intrusive message */
 #if 0
@@ -335,8 +334,7 @@ msn_got_rem_contact (MsnSession *session,
     {
         PurpleConversation *convo;
 
-        pecan_info ("rever list rem: [%s]",
-                  passport);
+        pecan_info ("reverse list rem: [%s]", passport);
 
         convo = purple_find_conversation_with_account (PURPLE_CONV_TYPE_IM, passport, account);
         if (convo)

@@ -95,8 +95,7 @@ show_debug_cmd(MsnCmdProc *cmdproc, gboolean incoming, const char *command)
         show[len - 2] = '\0';
     }
 
-    pecan_debug ("%c: %03d: %s", tmp,
-               cmdproc->cmd_count, show);
+    pecan_info ("%c: %03d: %s", tmp, cmdproc->cmd_count, show);
 
     g_free(show);
 }

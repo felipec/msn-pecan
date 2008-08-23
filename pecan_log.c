@@ -84,7 +84,7 @@ msn_base_log_helper (guint level,
     gchar *tmp;
     va_list args;
 
-    if (level > PECAN_LOG_LEVEL_WARNING)
+    if (level > PECAN_LOG_LEVEL_INFO)
         return;
 
     va_start (args, fmt);
