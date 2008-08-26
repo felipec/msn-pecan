@@ -60,6 +60,9 @@ void pecan_contact_update (PecanContact *contact);
 
 gboolean pecan_contact_is_account (PecanContact *contact);
 
+void pecan_contact_set_client_id (PecanContact *contact, gulong client_id);
+gulong pecan_contact_get_client_id (PecanContact *contact);
+
 /**
  * Sets the new state of contact.
  *

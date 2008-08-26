@@ -727,6 +727,13 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     pecan_contact_set_friendly_name(user, friendly);
 
+    if (cmd->param_count >= 5)
+    {
+        gulong client_id;
+        client_id = atol (cmd->params[4]);
+        pecan_contact_set_client_id (user, client_id);
+    }
+
     if (session->protocol_ver >= 9 && cmd->param_count == 6)
     {
         gchar *tmp;

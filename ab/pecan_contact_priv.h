@@ -60,6 +60,7 @@ struct PecanContact
     MsnObject *msnobj; /**< The contact's MSN Object. */
 
     GHashTable *clientcaps; /**< The client's capabilities. */
+    gulong client_id;
 
     gint list_op;
 };

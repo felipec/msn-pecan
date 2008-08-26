@@ -166,6 +166,19 @@ pecan_contact_set_passport (PecanContact *contact,
 }
 
 void
+pecan_contact_set_client_id (PecanContact *contact,
+                             gulong client_id)
+{
+    contact->client_id = client_id;
+}
+
+gulong
+pecan_contact_get_client_id (PecanContact *contact)
+{
+    return contact->client_id;
+}
+
+void
 pecan_contact_set_friendly_name (PecanContact *contact,
                                  const gchar *name)
 {
