@@ -1,0 +1,678 @@
+# Dutch translation for pidgin-msn-pecan
+# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# This file is distributed under the same license as the pidgin-msn-pecan package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pidgin-msn-pecan\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2008-06-27 15:13+0300\n"
+"PO-Revision-Date: 2008-07-14 00:22+0000\n"
+"Last-Translator: Marco de Moulin <marco@point.nl>\n"
+"Language-Team: Dutch <nl@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Launchpad-Export-Date: 2008-08-26 17:40+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#: error.c:41
+msgid "Unable to parse message"
+msgstr "Kan het bericht niet analyseren"
+
+#: error.c:45
+msgid "Syntax Error (probably a client bug)"
+msgstr "Syntax fout (waarschijnlijk een fout in de client)"
+
+#: error.c:49
+msgid "Invalid e-mail address"
+msgstr "Ongeldig e-mail adres"
+
+#: error.c:52
+msgid "User does not exist"
+msgstr "Gebruiker bestaat niet"
+
+#: error.c:56
+msgid "Fully qualified domain name missing"
+msgstr "Geen geldige domeinnaam aanwezig"
+
+#: error.c:59
+msgid "Already logged in"
+msgstr "Al aangemeld"
+
+#: error.c:62
+msgid "Invalid screen name"
+msgstr "Ongeldige gebruikersnaam"
+
+#: error.c:65
+msgid "Invalid friendly name"
+msgstr "Ongeldige bijnaam"
+
+#: error.c:68
+msgid "List full"
+msgstr "Lijst is vol"
+
+#: error.c:71
+msgid "Already there"
+msgstr "Reeds aanwezig"
+
+#: error.c:74
+msgid "Not on list"
+msgstr "Niet in de lijst"
+
+#: error.c:77
+msgid "User is offline"
+msgstr "Gebruiker is offline"
+
+#: error.c:80
+#, fuzzy
+msgid "Already in the mode"
+msgstr "Reeds in deze modus"
+
+#: error.c:83
+msgid "Already in opposite list"
+msgstr "Reeds in de tegenovergestelde lijst"
+
+#: error.c:86
+msgid "Too many groups"
+msgstr "Te veel groepen"
+
+#: error.c:89
+msgid "Invalid group"
+msgstr "Ongeldige groep"
+
+#: error.c:92
+msgid "User not in group"
+msgstr "Gebruiker niet in groep"
+
+#: error.c:95
+msgid "Group name too long"
+msgstr "Groepsnaam is te lang"
+
+#: error.c:98
+msgid "Cannot remove group zero"
+msgstr "Kan groep nul niet verwijderen"
+
+#: error.c:102
+msgid "Tried to add a user to a group that doesn't exist"
+msgstr "Probeerde een contact aan een niet bestaande groep toe te voegen"
+
+#: error.c:106
+msgid "Switchboard failed"
+msgstr "Schakelserver fout"
+
+#: error.c:109
+msgid "Notify transfer failed"
+msgstr "Melding overzetten mislukt"
+
+#: error.c:113
+msgid "Required fields missing"
+msgstr "Niet alle verplichte velden zijn ingevuld"
+
+#: error.c:116
+msgid "Too many hits to a FND"
+msgstr "Te veel resultaten bij zoekopdracht"
+
+#: error.c:119
+msgid "Not logged in"
+msgstr "Niet aangemeld"
+
+#: error.c:123
+msgid "Service temporarily unavailable"
+msgstr "Service tijdelijk niet beschikbaar"
+
+#: error.c:126
+msgid "Database server error"
+msgstr "Database-server fout"
+
+#: error.c:129
+msgid "Command disabled"
+msgstr "Opdracht uitgeschakeld"
+
+#: error.c:132
+msgid "File operation error"
+msgstr "Bestandsfout"
+
+#: error.c:135
+msgid "Memory allocation error"
+msgstr "Geheugenfout"
+
+#: error.c:138
+msgid "Wrong CHL value sent to server"
+msgstr "Verkeerde CHL-waarde naar server gestuurd"
+
+#: error.c:142
+msgid "Server busy"
+msgstr "Server is bezig"
+
+#: error.c:145 error.c:158 error.c:213
+msgid "Server unavailable"
+msgstr "Server niet beschikbaar"
+
+#: error.c:148
+msgid "Peer notification server down"
+msgstr "Meldingsserver is off-line"
+
+#: error.c:151
+msgid "Database connect error"
+msgstr "Database verbindingsprobleem"
+
+#: error.c:155
+msgid "Server is going down (abandon ship)"
+msgstr "Server wordt uitgeschakeld (verlaat het schip!)"
+
+#: error.c:162
+msgid "Error creating connection"
+msgstr "Fout bij opzetten verbinding"
+
+#: error.c:166
+msgid "CVR parameters are either unknown or not allowed"
+msgstr "CVR-parameters zijn onbekend of niet toegestaan"
+
+#: error.c:169
+msgid "Unable to write"
+msgstr "Kan niet schrijven"
+
+#: error.c:172
+#, fuzzy
+msgid "Session overload"
+msgstr "Sessie overbelasting"
+
+#: error.c:175
+msgid "User is too active"
+msgstr "Gebruiker is te actief"
+
+#: error.c:178
+msgid "Too many sessions"
+msgstr "Te veel sessies"
+
+#: error.c:181
+msgid "Passport not verified"
+msgstr "Paspoort niet geverifieerd"
+
+#: error.c:184
+msgid "Bad friend file"
+msgstr "Onbegrijpelijk contactenbestand"
+
+#: error.c:187
+msgid "Not expected"
+msgstr "Niet verwacht"
+
+#: error.c:192
+msgid "Friendly name changes too rapidly"
+msgstr "Bijnaam verandert te snel"
+
+#: error.c:201
+msgid "Server too busy"
+msgstr "Server te druk bezig"
+
+#: error.c:205
+#, fuzzy
+msgid "Authentication failed"
+msgstr "Aanmelden is mislukt"
+
+#: error.c:208
+#, fuzzy
+msgid "Not allowed when hiding"
+msgstr "Niet toegestaan tijdens het verbergen"
+
+#: error.c:216
+msgid "Not accepting new users"
+msgstr "Nieuwe gebruikers worden niet geaccepteerd"
+
+#: error.c:220
+msgid "Kids Passport without parental consent"
+msgstr "Kinderpaspoort zonder toezegging van ouder"
+
+#: error.c:224
+#, fuzzy
+msgid "Passport account not yet verified"
+msgstr "Paspoort-account nog niet geverifieerd"
+
+#: error.c:227
+msgid "Bad ticket"
+msgstr "Slecht ticket"
+
+#: error.c:231
+#, c-format
+msgid "Unknown Error Code %d"
+msgstr "Onbekende foutcode %d"
+
+#: error.c:243
+#, c-format
+msgid "MSN Error: %s\n"
+msgstr "MSN Fout: %s\n"
+
+#: msn.c:114
+#, fuzzy
+msgid "Nudge"
+msgstr "Porren"
+
+#: msn.c:115
+#, fuzzy, c-format
+msgid "%s has nudged you!"
+msgstr "%s heeft je gepord!"
+
+#: msn.c:116
+#, fuzzy, c-format
+msgid "Nudging %s..."
+msgstr "%s aan het porren..."
+
+#: msn.c:251
+msgid "Set your friendly name."
+msgstr "Bijnaam instellen."
+
+#: msn.c:252
+msgid "This is the name that other MSN buddies will see you as."
+msgstr "Dit is de naam die uw contacten zullen zien."
+
+#: msn.c:255 msn.c:272 msn.c:289 msn.c:306
+msgid "OK"
+msgstr "OK"
+
+#: msn.c:256 msn.c:273 msn.c:290 msn.c:307 msn.c:328
+msgid "Cancel"
+msgstr "Annuleer"
+
+#: msn.c:270
+msgid "Set your home phone number."
+msgstr "Telefoonnummer voor thuis instellen."
+
+#: msn.c:287
+msgid "Set your work phone number."
+msgstr "Telefoonnummer voor werk instellen."
+
+#: msn.c:304
+msgid "Set your mobile phone number."
+msgstr "Mobiel telefoonnummer instellen."
+
+#: msn.c:319
+msgid "Allow MSN Mobile pages?"
+msgstr "MSN-mobile oproepen toestaan?"
+
+#: msn.c:320
+msgid ""
+"Do you want to allow or disallow people on your buddy list to send you MSN "
+"Mobile pages to your cell phone or other mobile device?"
+msgstr ""
+"Wilt u dat mensen op uw contactenlijst MSN-mobile oproepen kunnen sturen "
+"naar uw mobiele telefoon of ander mobiel apparaat?"
+
+#: msn.c:326
+msgid "Allow"
+msgstr "Toestaan"
+
+#: msn.c:327
+msgid "Disallow"
+msgstr "Weigeren"
+
+#: msn.c:344
+msgid "This Hotmail account may not be active."
+msgstr "Dit hotmailaccount is misschien niet in gebruik."
+
+#: msn.c:388
+msgid "Send a mobile message."
+msgstr "Een mobiel bericht versturen."
+
+#: msn.c:390
+#, fuzzy
+msgid "Page"
+msgstr "Oproepen"
+
+#: msn.c:391
+msgid "Close"
+msgstr "Sluiten"
+
+#: msn.c:545
+msgid "Status"
+msgstr "Status"
+
+#: msn.c:546
+msgid "Idle"
+msgstr "Inactief"
+
+#: msn.c:555
+msgid "Personal Message"
+msgstr "Persoonlijk bericht"
+
+#: msn.c:559
+msgid "Has you"
+msgstr "Heeft u"
+
+#: msn.c:560 msn.c:569
+msgid "Yes"
+msgstr "Ja"
+
+#: msn.c:560 msn.c:569
+msgid "No"
+msgstr "Nee"
+
+#: msn.c:568
+msgid "Blocked"
+msgstr "Geblokkeerd"
+
+#: msn.c:580
+msgid "Message"
+msgstr "Bericht"
+
+#: msn.c:592
+msgid "Be Right Back"
+msgstr "Zo terug"
+
+#: msn.c:593
+msgid "Busy"
+msgstr "Bezig"
+
+#: msn.c:594
+msgid "On the Phone"
+msgstr "Aan de telefoon"
+
+#: msn.c:595
+msgid "Out to Lunch"
+msgstr "Aan het lunchen"
+
+#: msn.c:626
+msgid "Set Friendly Name..."
+msgstr "Bijnaam instellen..."
+
+#: msn.c:631
+msgid "Set Home Phone Number..."
+msgstr "Telefoonnummer thuis instellen..."
+
+#: msn.c:635
+msgid "Set Work Phone Number..."
+msgstr "Telefoonnummer werk instellen..."
+
+#: msn.c:639
+msgid "Set Mobile Phone Number..."
+msgstr "Mobiel nummer instellen..."
+
+#: msn.c:645
+msgid "Enable/Disable Mobile Devices..."
+msgstr "Mobiele apparaten inschakelen/uitschakelen..."
+
+#: msn.c:650
+msgid "Allow/Disallow Mobile Pages..."
+msgstr "Mobiele oproepen toestaan/weigeren..."
+
+#: msn.c:661
+msgid "Open Hotmail Inbox"
+msgstr "Hotmail-inbox openen"
+
+#: msn.c:689
+msgid "Send to Mobile"
+msgstr "Verzenden naar mobiel"
+
+#: msn.c:698
+msgid "Initiate _Chat"
+msgstr "_Chat starten"
+
+#: msn.c:722
+msgid ""
+"SSL support is needed for MSN. Please install a supported SSL library."
+msgstr ""
+"SSL-ondersteuning is vereist voor MSN. Installeer een SSL-bibliotheek."
+
+#: msn.c:745
+msgid "Failed to connect to server."
+msgstr "Kan geen verbinding maken met de server."
+
+#: msn.c:1344
+msgid "Username"
+msgstr "Gebruikersnaam"
+
+#: msn.c:1349
+msgid "Profile URL"
+msgstr "Profiel URL"
+
+#: msn.c:1469 msn.c:1470
+msgid "WLM Protocol Plugin"
+msgstr "WLM Protocol Plugin"
+
+#: msn.c:1496
+msgid "Server"
+msgstr "Server"
+
+#: msn.c:1499
+msgid "Port"
+msgstr "Poort"
+
+#: msn.c:1502
+msgid "Use HTTP Method"
+msgstr "HTTP-methode gebruiken"
+
+#: msn.c:1505
+#, fuzzy
+msgid "Show custom smileys"
+msgstr "Eigen emoticons weergeven"
+
+#: msn.c:1508
+msgid "Use server-side alias"
+msgstr "Gebruik bijnaam op server"
+
+#: msn.c:1515
+#, fuzzy
+msgid "nudge: nudge a user to get their attention"
+msgstr "Porren: Een contact porren om de aandacht te krijgen"
+
+#: nexus.c:154
+#, fuzzy
+msgid "Unable to connect"
+msgstr "Kan geen verbinding maken"
+
+#: notification.c:106 notification.c:143
+#, fuzzy, c-format
+msgid ""
+"Error on notification server:\n"
+"%s"
+msgstr ""
+"Fout op notificatieserver:\n"
+"%s"
+
+#: notification.c:113
+#, fuzzy
+msgid ""
+"Error on notification server:\n"
+"Unknown"
+msgstr ""
+"Fout op notificatieserver:\n"
+"Onbekend"
+
+#: notification.c:264
+#, c-format
+msgid "%s is not a valid group."
+msgstr "%s is geen geldige groep."
+
+#: notification.c:269 session.c:357
+msgid "Unknown error."
+msgstr "Onbekende fout."
+
+#: notification.c:272
+#, c-format
+msgid "%s on %s (%s)"
+msgstr "%s op %s (%s)"
+
+#: notification.c:615
+#, c-format
+msgid "Unable to add user on %s (%s)"
+msgstr "Kan gebruiker niet toevoegen op %s (%s)"
+
+#: notification.c:619
+#, c-format
+msgid "Unable to block user on %s (%s)"
+msgstr "Kan gebruiker niet blokkeren op %s (%s)"
+
+#: notification.c:623
+#, c-format
+msgid "Unable to permit user on %s (%s)"
+msgstr "Kan gebruiker geen toestemming geven op %s (%s)"
+
+#: notification.c:967
+msgid "Unable to rename group"
+msgstr "Kan groep niet hernoemen"
+
+#: notification.c:1026
+msgid "Unable to delete group"
+msgstr "Kan groep niet verwijderen"
+
+#: notification.c:1508
+#, fuzzy, c-format
+msgid ""
+"The MSN server will shut down for maintenance in %d minute. You will "
+"automatically be signed out at that time.  Please finish any conversations "
+"in progress.\n"
+"\n"
+"After the maintenance has been completed, you will be able to successfully "
+"sign in."
+msgid_plural ""
+"The MSN server will shut down for maintenance in %d minutes. You will "
+"automatically be signed out at that time.  Please finish any conversations "
+"in progress.\n"
+"\n"
+"After the maintenance has been completed, you will be able to successfully "
+"sign in."
+msgstr[0] ""
+"De MSN-server zal over %d minuut voor onderhoud uitgeschakeld worden. U zult "
+"automatisch afgemeld worden op dat moment. Rond a.u.b. al uw gesprekken af.\n"
+"\n"
+"U kunt zich weer kunnen aanmelden als het onderhoud gepleegd is."
+msgstr[1] ""
+"De MSN-server zal over %d minuten voor onderhoud uitgeschakeld worden. U "
+"zult automatisch afgemeld worden op dat moment. Rond a.u.b. al uw gesprekken "
+"af.\n"
+"\n"
+"U kunt zich weer kunnen aanmelden als het onderhoud gepleegd is."
+
+#: session.c:326
+msgid "Our protocol is not supported by the server."
+msgstr "Ons protocol wordt niet ondersteund door de server."
+
+#: session.c:330
+msgid "Error parsing HTTP."
+msgstr "Fout bij analyseren HTTP."
+
+#: session.c:334
+#, fuzzy
+msgid "You have signed on from another location."
+msgstr "U bent op een andere locatie aangemeld."
+
+#: session.c:337
+#, fuzzy
+msgid ""
+"The MSN servers are temporarily unavailable. Please wait and try again."
+msgstr ""
+"De MSN-server is tijdelijk niet beschikbaar. Probeer het later nog eens."
+
+#: session.c:342
+msgid "The MSN servers are going down temporarily."
+msgstr "De MSN-servers worden tijdelijk uitgeschakeld."
+
+#: session.c:347
+#, fuzzy, c-format
+msgid "Unable to authenticate: %s"
+msgstr "Kan niet verificeren:  %s"
+
+#: session.c:349
+msgid "Unknown error"
+msgstr "Onbekende fout"
+
+#: session.c:352
+msgid ""
+"Your MSN buddy list is temporarily unavailable. Please wait and try again."
+msgstr ""
+"Uw MSN-contactenlijst is op dit moment niet beschikbaar. Probeer het later "
+"nog eens."
+
+#: session.c:372
+msgid "Connecting"
+msgstr "Bezig met verbinden"
+
+#: session.c:373 session.c:375
+msgid "Handshaking"
+msgstr "Verbinding aan het opzetten"
+
+#: session.c:374
+msgid "Transferring"
+msgstr "Aan het verzenden"
+
+#: session.c:376
+#, fuzzy
+msgid "Starting authentication"
+msgstr "Verificatie gestart"
+
+#: session.c:377
+msgid "Getting cookie"
+msgstr "Cookie opvragen"
+
+#: session.c:378
+msgid "Authenticating"
+msgstr "Naam en wachtwoord worden gecontroleerd"
+
+#: session.c:379
+msgid "Sending cookie"
+msgstr "Verzenden van cookie"
+
+#: session.c:380
+msgid "Retrieving buddy list"
+msgstr "Opvragen van contactenlijst"
+
+#: switchboard.c:539
+#, fuzzy
+msgid "Message may have not been sent because a timeout occurred:"
+msgstr ""
+"Bericht is mogelijk niet verstuurd doordat er een time-out is opgetreden:"
+
+#: switchboard.c:547
+msgid "Message could not be sent, not allowed while invisible:"
+msgstr ""
+"Kan bericht niet versturen, niet toegestaan wanneer u onzichtbaar bent:"
+
+#: switchboard.c:551
+msgid "Message could not be sent because the user is offline:"
+msgstr "Kan bericht niet versturen omdat de ander offline is:"
+
+#: switchboard.c:555
+msgid "Message could not be sent because a connection error occurred:"
+msgstr ""
+"Kan bericht niet versturen omdat er een verbindingsfout is opgetreden:"
+
+#: switchboard.c:559
+msgid "Message could not be sent because we are sending too quickly:"
+msgstr "Kan bericht niet versturen omdat we dit te snel doen:"
+
+#: switchboard.c:563
+msgid ""
+"Message could not be sent because we were unable to establish a session with "
+"the server. This is likely a server problem, try again in a few minutes:"
+msgstr ""
+"Bericht kon niet verstuurd worden omdat we geen sessie met de server konden "
+"opzetten. Dit is waarschijnlijk een probleem met de server. Probeer het over "
+"een paar minuten weer."
+
+#: switchboard.c:570
+msgid ""
+"Message could not be sent because an error with the switchboard occurred:"
+msgstr ""
+"Kan bericht niet versturen omdat er een fout op het switchboard is "
+"opgetreden:"
+
+#: switchboard.c:578
+msgid "Message may have not been sent because an unknown error occurred:"
+msgstr "Bericht is misschien niet verstuurd wegens een onbekende fout:"
+
+#: ab/pecan_contactlist.c:280
+#, c-format
+msgid "%s has added you to his or her buddy list."
+msgstr "%s heeft u aan zijn/haar contactenlijst toegevoegd."
+
+#: ab/pecan_contactlist.c:348
+#, c-format
+msgid "%s has removed you from his or her buddy list."
+msgstr "%s heeft u van zijn/haar contactenlijst verwijderd."
+
+#: ab/pecan_contactlist.c:839
+#, fuzzy, c-format
+msgid "Can't add to \"%s\"; it's a virtual group"
+msgstr "Kan \"%s\" niet toevoegen; is een virtuele groep"
