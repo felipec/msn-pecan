@@ -1,5 +1,6 @@
 CC=gcc
 XGETTEXT=xgettext
+MSGFMT=msgfmt
 
 PLATFORM=$(shell uname -s)
 
@@ -28,12 +29,14 @@ OTHER_WARNINGS=-D_FORTIFY_SOURCE=2 -fstack-protector -g3 -Wdisabled-optimization
 
 CFLAGS+=-Wall # $(EXTRA_WARNINGS)
 
-override CFLAGS+=-I. -DHAVE_LIBPURPLE -DPURPLE_DEBUG -D PLUGIN_NAME='msn-pecan'
+override CFLAGS+=-I. -D PACKAGE='"msn-pecan"' -DENABLE_NLS -DHAVE_LIBPURPLE -DPURPLE_DEBUG -D PLUGIN_NAME='msn-pecan'
 
 # For glib < 2.6 support (libpurple maniacs)
 FALLBACK_CFLAGS+=-I./fix_purple
 
 LDFLAGS:=-Wl,--no-undefined
+
+DATA_DIR=/usr/share
 
 purpledir=$(DESTDIR)/$(PURPLE_PREFIX)/lib/purple-2
 
@@ -80,6 +83,7 @@ endif
 sources = $(patsubst %.o,%.c,$(objects))
 
 PO_TEMPLATE = po/messages.pot
+CATALOGS = nl fi fr it sr es sv
 
 ifeq ($(PLATFORM),Darwin)
 	SHLIBEXT=dylib
@@ -167,3 +171,11 @@ install: $(lib)
 	mkdir -p $(purpledir)
 	install $(lib) $(purpledir)
 	# chcon -t textrel_shlib_t $(purpledir)/$(lib)
+
+%.mo:: %.po
+	$(MSGFMT) -c -o $@ $<
+
+install_locales: $(foreach e,$(CATALOGS),po/libmsn-pecan-$(e).mo)
+	for x in $(CATALOGS); do \
+	install po/libmsn-pecan-$$x.mo $(DATA_DIR)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
+	done
