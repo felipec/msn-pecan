@@ -1,0 +1,660 @@
+# Finnish translation for msn-pecan
+# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# This file is distributed under the same license as the msn-pecan package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: msn-pecan\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2008-06-27 15:13+0300\n"
+"PO-Revision-Date: 2008-08-23 09:42+0000\n"
+"Last-Translator: Simo Mattila <simo.h.mattila@gmail.com>\n"
+"Language-Team: Finnish <fi@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Launchpad-Export-Date: 2008-08-26 17:40+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#: error.c:41
+msgid "Unable to parse message"
+msgstr "Viestin jäsennys epäonnistui"
+
+#: error.c:45
+msgid "Syntax Error (probably a client bug)"
+msgstr "Syntaksivirhe (todennäköisesti ohjelmistovirhe)"
+
+#: error.c:49
+msgid "Invalid e-mail address"
+msgstr "Virheellinen sähköpostiosoite"
+
+#: error.c:52
+msgid "User does not exist"
+msgstr "Käyttäjää ei ole olemassa"
+
+#: error.c:56
+msgid "Fully qualified domain name missing"
+msgstr "Kelvollinen verkkoalueen nimi puuttu"
+
+#: error.c:59
+msgid "Already logged in"
+msgstr "Olet jo kirjautuneena sisään"
+
+#: error.c:62
+msgid "Invalid screen name"
+msgstr "Epäkelpo näyttönimi"
+
+#: error.c:65
+msgid "Invalid friendly name"
+msgstr "Epäkelpo lempinimi"
+
+#: error.c:68
+msgid "List full"
+msgstr "Lista on täynnä"
+
+#: error.c:71
+msgid "Already there"
+msgstr "On jo siellä"
+
+#: error.c:74
+msgid "Not on list"
+msgstr "Ei ole listalla"
+
+#: error.c:77
+msgid "User is offline"
+msgstr "Käyttäjä on poissa linjoilta"
+
+#: error.c:80
+msgid "Already in the mode"
+msgstr "Olet jo kyseisessä tilassa"
+
+#: error.c:83
+msgid "Already in opposite list"
+msgstr "On jo vastakkaisessa listassa"
+
+#: error.c:86
+msgid "Too many groups"
+msgstr "Liian monta ryhmää"
+
+#: error.c:89
+msgid "Invalid group"
+msgstr "Epäkelpo ryhmä"
+
+#: error.c:92
+msgid "User not in group"
+msgstr "Käyttäjä ei ole ryhmässä"
+
+#: error.c:95
+msgid "Group name too long"
+msgstr "Ryhmän nimi liian pitkä"
+
+#: error.c:98
+msgid "Cannot remove group zero"
+msgstr "Ei voida poistaa ryhmää nolla"
+
+#: error.c:102
+msgid "Tried to add a user to a group that doesn't exist"
+msgstr "Yritettiin lisätä käyttäjää ryhmään jota ei ole"
+
+#: error.c:106
+msgid "Switchboard failed"
+msgstr "Kytkentä epäonnistui"
+
+#: error.c:109
+msgid "Notify transfer failed"
+msgstr "Siirrosta tiedottaminen epäonnistui"
+
+#: error.c:113
+msgid "Required fields missing"
+msgstr "Vaadittuja kenttiä puuttuu"
+
+#: error.c:116
+msgid "Too many hits to a FND"
+msgstr "Liian monta osumaa FND:hen"
+
+#: error.c:119
+msgid "Not logged in"
+msgstr "Ei ole kirjautunut sisään"
+
+#: error.c:123
+msgid "Service temporarily unavailable"
+msgstr "Palvelu on tilapäisesti pois käytöstä"
+
+#: error.c:126
+msgid "Database server error"
+msgstr "Tietokantapalvelimen virhe"
+
+#: error.c:129
+msgid "Command disabled"
+msgstr "Komento poistettu käytöstä"
+
+#: error.c:132
+msgid "File operation error"
+msgstr "Tiedostonkäsittelyvirhe"
+
+#: error.c:135
+msgid "Memory allocation error"
+msgstr "Muistinvarausvirhe"
+
+#: error.c:138
+msgid "Wrong CHL value sent to server"
+msgstr "Väärä CHL-arvo lähetetty palvelimelle"
+
+#: error.c:142
+msgid "Server busy"
+msgstr "Palvelin on kiireinen"
+
+#: error.c:145 error.c:158 error.c:213
+msgid "Server unavailable"
+msgstr "Palvelin ei ole käytössä"
+
+#: error.c:148
+msgid "Peer notification server down"
+msgstr "Vastapään ilmoituspalvelin ei toiminnassa"
+
+#: error.c:151
+msgid "Database connect error"
+msgstr "Tietokantayhteysvirhe"
+
+#: error.c:155
+msgid "Server is going down (abandon ship)"
+msgstr "Palvelin on menossa alas (Jättäkää laiva)"
+
+#: error.c:162
+msgid "Error creating connection"
+msgstr "Virhe luotaessa yhteyttä"
+
+#: error.c:166
+msgid "CVR parameters are either unknown or not allowed"
+msgstr "CVR-parametrit ovat joko tuntemattomat tai ne eivät ole sallittuja"
+
+#: error.c:169
+msgid "Unable to write"
+msgstr "Ei pystyty kirjoittamaan"
+
+#: error.c:172
+msgid "Session overload"
+msgstr "Istuntio ylikuormittui"
+
+#: error.c:175
+msgid "User is too active"
+msgstr "Käyttäjä on liian aktiivinen"
+
+#: error.c:178
+msgid "Too many sessions"
+msgstr "Liian monta istuntoa"
+
+#: error.c:181
+msgid "Passport not verified"
+msgstr "Passport-tiliä ei ole varmistettu"
+
+#: error.c:184
+msgid "Bad friend file"
+msgstr "Virheellinen tuttavatiedosto"
+
+#: error.c:187
+msgid "Not expected"
+msgstr "Odottamaton"
+
+#: error.c:192
+msgid "Friendly name changes too rapidly"
+msgstr "Tuttavanimi vaihtuu liian usein"
+
+#: error.c:201
+msgid "Server too busy"
+msgstr "Palvelimella liikaa ruuhkaa"
+
+#: error.c:205
+msgid "Authentication failed"
+msgstr "Varmennus epäonnistui"
+
+#: error.c:208
+msgid "Not allowed when hiding"
+msgstr "Ei sallittu näkymättömänä"
+
+#: error.c:216
+msgid "Not accepting new users"
+msgstr "Ei hyväksytä uusia käyttäjiä"
+
+#: error.c:220
+msgid "Kids Passport without parental consent"
+msgstr "Kids Passport ilman vanhempien suostumusta"
+
+#: error.c:224
+msgid "Passport account not yet verified"
+msgstr "Passport-tiliä ei ole vahvistettu"
+
+#: error.c:227
+msgid "Bad ticket"
+msgstr ""
+
+#: error.c:231
+#, c-format
+msgid "Unknown Error Code %d"
+msgstr "Tuntematon virhekoodi %d"
+
+#: error.c:243
+#, c-format
+msgid "MSN Error: %s\n"
+msgstr "MSN-virhe: %s\n"
+
+#: msn.c:114
+msgid "Nudge"
+msgstr "Heräte"
+
+#: msn.c:115
+#, c-format
+msgid "%s has nudged you!"
+msgstr "%s on lähettäny herätteen"
+
+#: msn.c:116
+#, c-format
+msgid "Nudging %s..."
+msgstr "Herätetään tuttavaa %s"
+
+#: msn.c:251
+msgid "Set your friendly name."
+msgstr "Aseta näyttönimi"
+
+#: msn.c:252
+msgid "This is the name that other MSN buddies will see you as."
+msgstr "Tämä on nimi jona MSN-tuttavasi sinut näkevät."
+
+#: msn.c:255 msn.c:272 msn.c:289 msn.c:306
+msgid "OK"
+msgstr "OK"
+
+#: msn.c:256 msn.c:273 msn.c:290 msn.c:307 msn.c:328
+msgid "Cancel"
+msgstr "Peruuta"
+
+#: msn.c:270
+msgid "Set your home phone number."
+msgstr "Aseta kotipuhelinnumerosi"
+
+#: msn.c:287
+msgid "Set your work phone number."
+msgstr "Aseta työpuhelinnumerosi"
+
+#: msn.c:304
+msgid "Set your mobile phone number."
+msgstr "Aseta matkapuhelinnumerosi"
+
+#: msn.c:319
+msgid "Allow MSN Mobile pages?"
+msgstr "Salli MSN-mobiilihaut"
+
+#: msn.c:320
+msgid ""
+"Do you want to allow or disallow people on your buddy list to send you MSN "
+"Mobile pages to your cell phone or other mobile device?"
+msgstr ""
+"Haluatko sallia tai estää henkilöitä tuttavissasi lähettämästä MSN- "
+"mobiilihakuja matkapuhelimeesi tai muuhun mobiililaitteeseen?"
+
+#: msn.c:326
+msgid "Allow"
+msgstr "Salli"
+
+#: msn.c:327
+msgid "Disallow"
+msgstr "Estä"
+
+#: msn.c:344
+msgid "This Hotmail account may not be active."
+msgstr "Tämä Hotmail-tili ei välttämättä ole aktiivinen."
+
+#: msn.c:388
+msgid "Send a mobile message."
+msgstr "Lähetä mobiiliviestinä"
+
+#: msn.c:390
+msgid "Page"
+msgstr "Sivu"
+
+#: msn.c:391
+msgid "Close"
+msgstr "Sulje"
+
+#: msn.c:545
+msgid "Status"
+msgstr "Tila"
+
+#: msn.c:546
+msgid "Idle"
+msgstr "Jouten"
+
+#: msn.c:555
+msgid "Personal Message"
+msgstr "Henkilökohtainen viesti"
+
+#: msn.c:559
+msgid "Has you"
+msgstr "Olet hänen listallaan"
+
+#: msn.c:560 msn.c:569
+msgid "Yes"
+msgstr "Kyllä"
+
+#: msn.c:560 msn.c:569
+msgid "No"
+msgstr "Ei"
+
+#: msn.c:568
+msgid "Blocked"
+msgstr "Estetty"
+
+#: msn.c:580
+msgid "Message"
+msgstr "Viesti"
+
+#: msn.c:592
+msgid "Be Right Back"
+msgstr "Palaan pian"
+
+#: msn.c:593
+msgid "Busy"
+msgstr "Varattu"
+
+#: msn.c:594
+msgid "On the Phone"
+msgstr "Puhelimessa"
+
+#: msn.c:595
+msgid "Out to Lunch"
+msgstr "Lounaalla"
+
+#: msn.c:626
+msgid "Set Friendly Name..."
+msgstr "Aseta näyttönimi..."
+
+#: msn.c:631
+msgid "Set Home Phone Number..."
+msgstr "Aseta kotipuhelinnumero..."
+
+#: msn.c:635
+msgid "Set Work Phone Number..."
+msgstr "Aseta työpuhelinnumero..."
+
+#: msn.c:639
+msgid "Set Mobile Phone Number..."
+msgstr "Aseta matkapuhelinnumero..."
+
+#: msn.c:645
+msgid "Enable/Disable Mobile Devices..."
+msgstr "Salli/Estä mobiililaitteet"
+
+#: msn.c:650
+msgid "Allow/Disallow Mobile Pages..."
+msgstr "Salli/Estä mobiilihaut..."
+
+#: msn.c:661
+msgid "Open Hotmail Inbox"
+msgstr "Avaa Hotmailin saapuneet-kansio"
+
+#: msn.c:689
+msgid "Send to Mobile"
+msgstr "Lähetä mobiililaitteeseen"
+
+#: msn.c:698
+msgid "Initiate _Chat"
+msgstr "Aloita _ryhmäkeskustelu"
+
+#: msn.c:722
+msgid ""
+"SSL support is needed for MSN. Please install a supported SSL library."
+msgstr "MSN vaatii SSL-tuen. Asenna tuettu SSL-kirjasto."
+
+#: msn.c:745
+msgid "Failed to connect to server."
+msgstr "Palvelimeen ei saatu yhteyttä."
+
+#: msn.c:1344
+msgid "Username"
+msgstr "Käyttäjänimi:"
+
+#: msn.c:1349
+msgid "Profile URL"
+msgstr "Profiilin URL"
+
+#: msn.c:1469 msn.c:1470
+msgid "WLM Protocol Plugin"
+msgstr "WLM protokollaliitännäinen"
+
+#: msn.c:1496
+msgid "Server"
+msgstr "Palvelin"
+
+#: msn.c:1499
+msgid "Port"
+msgstr "Portti"
+
+#: msn.c:1502
+msgid "Use HTTP Method"
+msgstr "Käytä HTTP-yhteystapaa"
+
+#: msn.c:1505
+msgid "Show custom smileys"
+msgstr "Näytä omat hymiöt"
+
+#: msn.c:1508
+msgid "Use server-side alias"
+msgstr "Käytä palvelinpuolen lempinimeä"
+
+#: msn.c:1515
+msgid "nudge: nudge a user to get their attention"
+msgstr "Heräte: Herätä tuttava"
+
+#: nexus.c:154
+msgid "Unable to connect"
+msgstr "Ei voida yhdistää"
+
+#: notification.c:106 notification.c:143
+#, c-format
+msgid ""
+"Error on notification server:\n"
+"%s"
+msgstr ""
+"Virhe ilmoituspalvelimella:\n"
+"%s"
+
+#: notification.c:113
+msgid ""
+"Error on notification server:\n"
+"Unknown"
+msgstr ""
+"Virhe ilmoituspalvelimella:\n"
+"Tuntematon virhe"
+
+#: notification.c:264
+#, c-format
+msgid "%s is not a valid group."
+msgstr "%s ei ole kelvollinen ryhmä."
+
+#: notification.c:269 session.c:357
+msgid "Unknown error."
+msgstr "Tuntematon virhe."
+
+#: notification.c:272
+#, c-format
+msgid "%s on %s (%s)"
+msgstr "%s tilillä %s (%s)"
+
+#: notification.c:615
+#, c-format
+msgid "Unable to add user on %s (%s)"
+msgstr "Ei voitu lisätä käyttäjää %s (%s)"
+
+#: notification.c:619
+#, c-format
+msgid "Unable to block user on %s (%s)"
+msgstr "Ei voitu estää käyttäjää %s (%s)"
+
+#: notification.c:623
+#, c-format
+msgid "Unable to permit user on %s (%s)"
+msgstr "Ei voida sallia käyttäjää %s (%s)"
+
+#: notification.c:967
+msgid "Unable to rename group"
+msgstr "Ryhmän uudelleen nimeäminen epäonnistui"
+
+#: notification.c:1026
+msgid "Unable to delete group"
+msgstr "Ei voitu postaa ryhmää"
+
+#: notification.c:1508
+#, c-format
+msgid ""
+"The MSN server will shut down for maintenance in %d minute. You will "
+"automatically be signed out at that time.  Please finish any conversations "
+"in progress.\n"
+"\n"
+"After the maintenance has been completed, you will be able to successfully "
+"sign in."
+msgid_plural ""
+"The MSN server will shut down for maintenance in %d minutes. You will "
+"automatically be signed out at that time.  Please finish any conversations "
+"in progress.\n"
+"\n"
+"After the maintenance has been completed, you will be able to successfully "
+"sign in."
+msgstr[0] ""
+"MSN-palvelin ajetaan alas huoltotoimenpiteitä varten %d minuutissa. "
+"Yhteytesi katkaistaan silloin automaattisesti. Ole hyvä ja lopeta käynnissä "
+"olevat keskustelut.\n"
+"\n"
+"Kun huolto on suoritettu voit taas kirjautua palveluun."
+msgstr[1] ""
+"MSN-palvelin ajetaan alas huoltotoimenpiteitä varten %d minuutissa. "
+"Yhteytesi katkaistaan silloin automaattisesti. Ole hyvä ja lopeta "
+"käynnissäolevat keskustelut.\n"
+"\n"
+"Kun huolto on suoritettu voit taas kirjautua palveluun."
+
+#: session.c:326
+msgid "Our protocol is not supported by the server."
+msgstr "Palvelin ei tue yhteyskäytäntöä."
+
+#: session.c:330
+msgid "Error parsing HTTP."
+msgstr "Virhe jäsennettäessä HTTP:tä."
+
+#: session.c:334
+msgid "You have signed on from another location."
+msgstr "Olet kirjautunut sisään toisesta paikasta."
+
+#: session.c:337
+msgid ""
+"The MSN servers are temporarily unavailable. Please wait and try again."
+msgstr ""
+"MSN-palvelimet ovat väliaikaisesti tavoittamattomissa. Odota ja yritä "
+"uudelleen."
+
+#: session.c:342
+msgid "The MSN servers are going down temporarily."
+msgstr "MSN-palvelimet ajetaan alas väliaikaisesti."
+
+#: session.c:347
+#, c-format
+msgid "Unable to authenticate: %s"
+msgstr "Ei voida tunnistautua: %s"
+
+#: session.c:349
+msgid "Unknown error"
+msgstr "Tuntematon virhe"
+
+#: session.c:352
+msgid ""
+"Your MSN buddy list is temporarily unavailable. Please wait and try again."
+msgstr ""
+"MSN-tuttavalista on väliaikaisesti pois käytöstä. Yritä myöhemmin uudelleen."
+
+#: session.c:372
+msgid "Connecting"
+msgstr "Yhdistetään"
+
+#: session.c:373 session.c:375
+msgid "Handshaking"
+msgstr "Kättely"
+
+#: session.c:374
+msgid "Transferring"
+msgstr "Siirtää"
+
+#: session.c:376
+msgid "Starting authentication"
+msgstr "Aloitetaan tunnistautuminen"
+
+#: session.c:377
+msgid "Getting cookie"
+msgstr "Haetaan evästettä"
+
+#: session.c:378
+msgid "Authenticating"
+msgstr "Tunnistaudutaan"
+
+#: session.c:379
+msgid "Sending cookie"
+msgstr "Lähetetään evästettä"
+
+#: session.c:380
+msgid "Retrieving buddy list"
+msgstr "Noudetaan tuttavalistaa"
+
+#: switchboard.c:539
+msgid "Message may have not been sent because a timeout occurred:"
+msgstr "Viestiä ei välttämättä lähetetty koska tapahtui aikakatkaisu:"
+
+#: switchboard.c:547
+msgid "Message could not be sent, not allowed while invisible:"
+msgstr "Viestien lähetys ei ole sallittu näkymättömänä:"
+
+#: switchboard.c:551
+msgid "Message could not be sent because the user is offline:"
+msgstr "Viestiä ei voitu lähettää koska käyttäjä on poissa linjoilta:"
+
+#: switchboard.c:555
+msgid "Message could not be sent because a connection error occurred:"
+msgstr "Viestiä ei voitu lähettää yhteysvirheen vuoksi:"
+
+#: switchboard.c:559
+msgid "Message could not be sent because we are sending too quickly:"
+msgstr "Viestiä ei voitu lähettää koska viestejä lähetetään liian nopeasti:"
+
+#: switchboard.c:563
+msgid ""
+"Message could not be sent because we were unable to establish a session with "
+"the server. This is likely a server problem, try again in a few minutes:"
+msgstr ""
+"Viestiä ei voitu lähettää koska istuntoa palvelimen kanssa ei voitu "
+"muodostaa. Tämä on luultavasti ongelma palvelimella, yritä uudelleen "
+"muutaman minuutin päästä:"
+
+#: switchboard.c:570
+msgid ""
+"Message could not be sent because an error with the switchboard occurred:"
+msgstr ""
+"Viestiä ei voitu lähettää kytkentäpalvelimen kanssa tapahtuneen virheen "
+"vuoksi:"
+
+#: switchboard.c:578
+msgid "Message may have not been sent because an unknown error occurred:"
+msgstr "Viestiä ei voitu lähettää tuntemattoman virheen vuoksi:"
+
+#: ab/pecan_contactlist.c:280
+#, c-format
+msgid "%s has added you to his or her buddy list."
+msgstr "Käyttäjä %s on lisännyt sinut tuttavalistalleen."
+
+#: ab/pecan_contactlist.c:348
+#, c-format
+msgid "%s has removed you from his or her buddy list."
+msgstr "%s on poistanut sinut tuttavalistaltaan."
+
+#: ab/pecan_contactlist.c:839
+#, c-format
+msgid "Can't add to \"%s\"; it's a virtual group"
+msgstr ""
