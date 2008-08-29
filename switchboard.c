@@ -45,8 +45,6 @@
 #include "pecan_log.h"
 #include "pecan_locale.h"
 
-#include "error.h"
-
 #include <string.h>
 
 /* libpurple stuff. */

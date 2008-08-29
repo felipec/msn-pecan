@@ -19,8 +19,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
-#ifndef MSN_ERROR_H
-#define MSN_ERROR_H
+#ifndef PECAN_ERROR_H
+#define PECAN_ERROR_H
 
 #include <glib.h>
 
@@ -31,6 +31,6 @@
  *
  * @return The string representation of the error id.
  */
-gchar *msn_error_get_text (guint id);
+gchar *pecan_error_to_string (guint id);
 
-#endif /* MSN_ERROR_H */
+#endif /* PECAN_ERROR_H */

@@ -41,7 +41,6 @@ plugin_dir=$(prefix)/lib/purple-2
 data_dir=$(prefix)/share
 
 objects = \
-	  error.o \
 	  msn.o \
 	  nexus.o \
 	  notification.o \
@@ -52,6 +51,7 @@ objects = \
 	  pecan_log.o \
 	  pecan_printf.o \
 	  pecan_util.o \
+	  pecan_error.o \
 	  pecan_status.o \
 	  pecan_oim.o \
 	  cmd/cmdproc.o \

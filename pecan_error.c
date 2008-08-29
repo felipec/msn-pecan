@@ -20,14 +20,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#include "error.h"
+#include "pecan_error.h"
 #include "pecan_log.h"
 #include "pecan_locale.h"
 
 #include <glib.h>
 
 char *
-msn_error_get_text (guint id)
+pecan_error_to_string (guint id)
 {
     char *msg;
 
