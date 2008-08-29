@@ -29,10 +29,14 @@
 
 #include "session_private.h"
 
+#include "msn_intl.h"
+
+#include <errno.h> /* for EAGAIN */
+#include <string.h> /* for strncpy, strlen, strchr */
+
 /* libpurple stuff. */
 #include "fix_purple_win32.h"
 #include <sslconn.h>
-#include "internal.h"
 
 /**************************************************************************
  * Main

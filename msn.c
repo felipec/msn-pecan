@@ -39,6 +39,10 @@
 
 #include "ab/pecan_contact_priv.h"
 
+#include "msn_intl.h"
+
+#include <string.h> /* For strcmp, strstr, strlen */
+
 #if defined(PECAN_CVR)
 #include "cvr/slplink.h"
 #endif /* defined(PECAN_CVR) */
@@ -56,7 +60,6 @@
 #include <prpl.h>
 #include <util.h>
 #include <prefs.h>
-#include "internal.h"
 
 #define _Q(x) #x
 #define Q(x) _Q(x)
@@ -97,7 +100,7 @@ static const gchar *
 normalize (const PurpleAccount *account,
            const gchar *str)
 {
-    static gchar buf[BUF_LEN];
+    static gchar buf[0x800];
     gchar *tmp;
     tmp = pecan_normalize (str);
     strncpy (buf, tmp, sizeof (buf));
@@ -824,7 +827,7 @@ send_im (PurpleConnection *gc,
         g_free (msgformat);
         g_free (msgtext);
 
-        return -E2BIG;
+        return -7; /* E2BIG */
     }
 
     {
@@ -1263,7 +1266,7 @@ chat_send (PurpleConnection *gc,
     swboard = msn_session_find_swboard_with_id (session, id);
 
     if (!swboard)
-        return -EINVAL;
+        return -22; /* EINVAL */
 
     if (!swboard->ready)
         return 0;
@@ -1278,7 +1281,7 @@ chat_send (PurpleConnection *gc,
         g_free (msgformat);
         g_free (msgtext);
 
-        return -E2BIG;
+        return -7; /* E2BIG */
     }
 
     msg = msn_message_new_plain (msgtext);
@@ -1543,7 +1546,7 @@ static PurplePluginInfo info =
     N_("WLM Protocol Plugin"), /**< summary */
     N_("WLM Protocol Plugin"), /**< description */
     "Felipe Contreras <felipe.contreras@gmail.com>", /**< author */
-    PURPLE_WEBSITE, /**< homepage */
+    "http://code.google.com/p/msn-pecan/", /**< homepage */
 
     load, /**< load */
     unload, /**< unload */
