@@ -22,6 +22,7 @@
 
 #include "notification.h"
 #include "pecan_log.h"
+#include "pecan_locale.h"
 #include "sync.h"
 #include "nexus.h"
 
@@ -48,8 +49,6 @@
 
 #include "error.h" /* for error_get_text */
 #include "pecan_util.h" /* for parse_socket */
-
-#include "msn_intl.h"
 
 #include <glib/gstdio.h>
 

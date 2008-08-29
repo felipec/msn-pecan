@@ -25,6 +25,7 @@
 #include "pecan_contactlist_priv.h"
 #include "pecan_contact_priv.h"
 #include "pecan_log.h"
+#include "pecan_locale.h"
 
 /** @todo this is disabled for testing only */
 #ifdef HAVE_LIBPURPLE
@@ -34,8 +35,6 @@
 #include "pecan_util.h"
 
 #include <string.h>
-
-#include "msn_intl.h"
 
 #define MSN_NULL_GROUP_NAME "Non-Grouped"
 

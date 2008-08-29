@@ -22,9 +22,9 @@
 
 #include "error.h"
 #include "pecan_log.h"
+#include "pecan_locale.h"
 
 #include <glib.h>
-#include "msn_intl.h"
 
 char *
 msn_error_get_text (guint id)

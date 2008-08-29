@@ -28,6 +28,7 @@
 #include "pecan_util.h"
 #include "pecan_status.h"
 #include "pecan_log.h"
+#include "pecan_locale.h"
 
 #include "switchboard.h"
 #include "notification.h"
@@ -38,8 +39,6 @@
 #include "cmd/msg.h"
 
 #include "ab/pecan_contact_priv.h"
-
-#include "msn_intl.h"
 
 #include <string.h> /* For strcmp, strstr, strlen */
 

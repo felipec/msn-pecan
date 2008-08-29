@@ -22,6 +22,7 @@
 
 #include "session_private.h"
 #include "pecan_log.h"
+#include "pecan_locale.h"
 #include "notification.h"
 #include "pecan_status.h"
 #include "pecan_util.h"
@@ -37,7 +38,6 @@
 
 #include <glib/gstdio.h>
 #include <string.h>
-#include "msn_intl.h"
 
 /* libpurple stuff. */
 #include "fix_purple_win32.h"

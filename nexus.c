@@ -22,14 +22,13 @@
 
 #include "nexus.h"
 #include "pecan_log.h"
+#include "pecan_locale.h"
 #include "pecan_util.h"
 
 #include "session.h"
 #include "notification.h"
 
 #include "session_private.h"
-
-#include "msn_intl.h"
 
 #include <errno.h> /* for EAGAIN */
 #include <string.h> /* for strncpy, strlen, strchr */
