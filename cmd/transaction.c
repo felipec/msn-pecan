@@ -25,6 +25,10 @@
 
 #include <string.h> /* For strlen. */
 
+#ifdef HAVE_LIBPURPLE
+#include "fix_purple.h"
+#endif /* HAVE_LIBPURPLE */
+
 MsnTransaction *
 msn_transaction_new (MsnCmdProc *cmdproc,
                      const gchar *command,

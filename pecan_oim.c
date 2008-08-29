@@ -12,9 +12,12 @@
 
 #include "pecan_log.h"
 
+#ifdef HAVE_LIBPURPLE
 /* libpurple stuff. */
+#include "fix_purple_win32.h"
 #include <util.h> /* for base64_dec */
 #include <conversation.h> /* for conversation_new */
+#endif /* HAVE_LIBPURPLE */
 
 typedef struct OimRequest OimRequest;
 
@@ -209,12 +212,17 @@ read_cb (PecanNode *conn,
 
             if (oim_request->parser_state == 1)
             {
+#ifndef G_OS_WIN32
                 if (strncmp (str, "Date: ", 6) == 0)
                 {
                     struct tm time;
                     strptime (str + 6, "%d %b %Y %T %z", &time);
                     oim_request->date = mktime (&time);
                 }
+#else
+                /** @todo find a way to parse the date in win32 */
+                oim_request->date = time (NULL);
+#endif
             }
 
             /* now comes the content */

@@ -36,6 +36,8 @@
 #include "session.h"
 
 #ifdef HAVE_LIBPURPLE
+#include "fix_purple.h"
+
 /* libpurple stuff. */
 #include "fix_purple_win32.h"
 #include <proxy.h>
