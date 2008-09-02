@@ -625,7 +625,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 	}
 	else if (slpmsg->size)
 	{
-		if ((offset + len) > slpmsg->size)
+		if (offset > (slpmsg->size - len))
 		{
 			pecan_error ("oversized slpmsg");
 			g_return_if_reached();
