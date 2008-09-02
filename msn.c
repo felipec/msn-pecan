@@ -67,6 +67,9 @@ typedef struct
 
 } MsnMobileData;
 
+/* exports */
+void msn_set_friendly_name (PurpleConnection *gc, const gchar *entry);
+
 static void msn_set_prp(PurpleConnection *gc, const char *type, const char *entry);
 
 static gboolean

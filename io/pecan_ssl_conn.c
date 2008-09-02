@@ -132,10 +132,10 @@ pecan_ssl_conn_free (PecanSslConn *conn)
 
 void
 pecan_ssl_conn_set_read_cb (PecanSslConn *ssl_conn,
-                            PecanSslConnReadCb read_cb,
+                            PecanSslConnReadCb cb,
                             gpointer data)
 {
-    ssl_conn->read_cb = read_cb;
+    ssl_conn->read_cb = cb;
     ssl_conn->read_cb_data = data;
 }
 
