@@ -36,9 +36,9 @@ FALLBACK_CFLAGS+=-I./fix_purple
 
 LDFLAGS:=-Wl,--no-undefined
 
-DATA_DIR=/usr/share
-
-purpledir=$(DESTDIR)/$(PURPLE_PREFIX)/lib/purple-2
+prefix=$(DESTDIR)/$(PURPLE_PREFIX)
+plugin_dir=$(prefix)/lib/purple-2
+data_dir=$(prefix)/share
 
 objects = \
 	  error.o \
@@ -100,16 +100,16 @@ endif
 endif
 
 ifdef STATIC
-	lib=libmsn-pecan.a
+	plugin=libmsn-pecan.a
 	override CFLAGS += -DPURPLE_STATIC_PRPL
 else
-	lib=libmsn-pecan.$(SHLIBEXT)
+	plugin=libmsn-pecan.$(SHLIBEXT)
 	override CFLAGS += -fPIC
 endif
 
 .PHONY: all clean
 
-all: $(lib)
+all: $(plugin)
 
 version := $(shell ./get-version.sh)
 
@@ -122,9 +122,9 @@ P = @printf "[%s] $@\n" # <- space before hash is important!!!
 Q = @
 endif
 
-$(lib): $(objects)
-$(lib): CFLAGS := $(CFLAGS) $(PURPLE_CFLAGS) $(GOBJECT_CFLAGS) $(FALLBACK_CFLAGS) -D VERSION='"$(version)"'
-$(lib): LIBS := $(PURPLE_LIBS) $(GOBJECT_LIBS)
+$(plugin): $(objects)
+$(plugin): CFLAGS := $(CFLAGS) $(PURPLE_CFLAGS) $(GOBJECT_CFLAGS) $(FALLBACK_CFLAGS) -D VERSION='"$(version)"'
+$(plugin): LIBS := $(PURPLE_LIBS) $(GOBJECT_LIBS)
 
 %.dylib::
 	$(P)DYLIB
@@ -147,7 +147,8 @@ $(lib): LIBS := $(PURPLE_LIBS) $(GOBJECT_LIBS)
 	$(Q)$(CC) $(CFLAGS) -Wp,-MMD,$(dir $@).$(notdir $@).d -o $@ -c $<
 
 clean:
-	rm -f $(lib) $(objects)
+	find -name '*.mo' -delete
+	rm -f $(plugin) $(objects)
 
 depend:
 	makedepend -Y -- $(CFLAGS) -- $(sources)
@@ -170,15 +171,15 @@ dist:
 	rm -r msn-pecan-$(version)
 	bzip2 /tmp/msn-pecan-$(version).tar
 
-install: $(lib)
-	mkdir -p $(purpledir)
-	install $(lib) $(purpledir)
-	# chcon -t textrel_shlib_t $(purpledir)/$(lib)
+install: $(plugin)
+	mkdir -p $(plugin_dir)
+	install $(plugin) $(plugin_dir)
+	# chcon -t textrel_shlib_t $(plugin_dir)/$(plugin)
 
 %.mo:: %.po
 	$(MSGFMT) -c -o $@ $<
 
 install_locales: $(foreach e,$(CATALOGS),po/libmsn-pecan-$(e).mo)
 	for x in $(CATALOGS); do \
-	install po/libmsn-pecan-$$x.mo $(DATA_DIR)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
+	install -D po/libmsn-pecan-$$x.mo $(data_dir)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
 	done
