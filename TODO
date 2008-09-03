@@ -1,3 +1,8 @@
+== Miscellaneous ==
+
+ * remove sync.c, it only complicates things. Also, there's issues with the
+   initial login (new account).
+
 == GObjectification ==
 
 The objective is that all of the important structures in msn-pecan are
