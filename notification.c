@@ -819,9 +819,11 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     pecan_contact_set_state(user, state);
     pecan_contact_update(user);
 
+#if 0
     /* store the friendly name on the server. */
     if (!session->server_alias)
         msn_cmdproc_send (cmdproc, "SBP", "%s %s %s", pecan_contact_get_guid (user), "MFN", friendly);
+#endif
 
     g_free (friendly);
 }
