@@ -16,9 +16,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#define PECAN_SOCKET
+
 #include "pecan_node_priv.h"
 #include "pecan_stream.h"
 #include "pecan_log.h"
+#ifdef PECAN_SOCKET
+#include "pecan_socket.h"
+#endif /* PECAN_SOCKET */
 
 #include "session.h" /* for libpurple account */
 
@@ -283,6 +288,56 @@ pecan_node_parse (PecanNode *conn,
 
 /* PecanNode stuff. */
 
+#ifdef PECAN_SOCKET
+static void
+connect_cb (PecanSocket *sock,
+            gboolean success,
+	    gpointer user_data)
+{
+    PecanNode *conn;
+
+    pecan_log ("begin");
+
+    conn = PECAN_NODE (user_data);
+    conn->connect_data = NULL;
+
+    g_object_ref (conn);
+
+    if (success)
+    {
+        GIOChannel *channel;
+
+        conn->stream = pecan_stream_new (sock->fd);
+        channel = conn->stream->channel;
+
+        g_io_channel_set_encoding (channel, NULL, NULL);
+        g_io_channel_set_buffered (channel, FALSE);
+
+        pecan_info ("connected: conn=%p,channel=%p", conn, channel);
+        conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, conn);
+#if 0
+        g_io_add_watch (channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, close_cb, conn);
+#endif
+    }
+    else
+    {
+	conn->error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
+					   "Unable to connect");
+
+        pecan_node_error (conn);
+    }
+
+    {
+        PecanNodeClass *class;
+        class = g_type_class_peek (PECAN_NODE_TYPE);
+        g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
+    }
+
+    g_object_unref (conn);
+
+    pecan_log ("end");
+}
+#else
 static void
 connect_cb (gpointer data,
             gint source,
@@ -332,6 +387,7 @@ connect_cb (gpointer data,
 
     pecan_log ("end");
 }
+#endif /* PECAN_SOCKET */
 
 static void
 connect_impl (PecanNode *conn,
@@ -360,10 +416,14 @@ connect_impl (PecanNode *conn,
     {
         pecan_node_close (conn);
 
+#ifdef PECAN_SOCKET
+	pecan_socket_connect (hostname, port, connect_cb, conn);
+#else
 #ifdef HAVE_LIBPURPLE
         conn->connect_data = purple_proxy_connect (NULL, msn_session_get_account (conn->session),
                                                    hostname, port, connect_cb, conn);
 #endif /* HAVE_LIBPURPLE */
+#endif /* PECAN_SOCKET */
     }
 
     pecan_log ("end");
@@ -391,6 +451,7 @@ close_impl (PecanNode *conn)
         pecan_warning ("not connected: conn=%p", conn);
     }
 
+#ifndef PECAN_SOCKET
 #ifdef HAVE_LIBPURPLE
     if (conn->connect_data)
     {
@@ -398,6 +459,7 @@ close_impl (PecanNode *conn)
         conn->connect_data = NULL;
     }
 #endif /* HAVE_LIBPURPLE */
+#endif /* !PECAN_SOCKET */
 
     if (conn->read_watch)
     {
