@@ -459,13 +459,6 @@ pecan_contactlist_new (MsnSession *session)
     contactlist->group_guids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
     contactlist->null_group = pecan_group_new (contactlist, MSN_NULL_GROUP_NAME, NULL);
 
-    contactlist->buddy_icon_requests = g_queue_new ();
-
-    /* buddy_icon_window is the number of allowed simultaneous buddy icon requests.
-     * XXX With smarter rate limiting code, we could allow more at once... 5 was the limit set when
-     * we weren't retrieiving any more than 5 per MSN session. */
-    contactlist->buddy_icon_window = 1;
-
     return contactlist;
 }
 
@@ -476,13 +469,6 @@ pecan_contactlist_destroy (PecanContactList *contactlist)
     g_hash_table_destroy (contactlist->contact_names);
     g_hash_table_destroy (contactlist->group_guids);
     g_hash_table_destroy (contactlist->group_names);
-
-    g_queue_free (contactlist->buddy_icon_requests);
-
-#ifdef HAVE_LIBPURPLE
-    if (contactlist->buddy_icon_request_timer)
-        purple_timeout_remove (contactlist->buddy_icon_request_timer);
-#endif /* HAVE_LIBPURPLE */
 
     g_free (contactlist);
 }

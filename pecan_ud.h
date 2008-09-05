@@ -1,10 +1,6 @@
 /**
  * Copyright (C) 2007-2008 Felipe Contreras
  *
- * Purple is the legal property of its developers, whose names are too numerous
- * to list here.  Please refer to the COPYRIGHT file distributed with this
- * source distribution.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -20,30 +16,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#ifndef PECAN_CONTACTLIST_PRIV_H
-#define PECAN_CONTACTLIST_PRIV_H
+#ifndef PECAN_UD_H
+#define PECAN_UD_H
+
+typedef struct PecanUdManager PecanUdManager;
 
 #include <glib.h>
+#include "session.h"
+#include "ab/pecan_contact.h"
+#include "cvr/pecan_slp_object.h"
 
-#include "pecan_group.h"
-
-typedef struct
+struct PecanUdManager
 {
-    gchar *who;
-    gchar *old_group_guid;
-} MsnMoveBuddy;
-
-struct MsnSesion;
-
-struct PecanContactList
-{
-    struct MsnSession *session;
-
-    GHashTable *contact_names;
-    GHashTable *contact_guids;
-    GHashTable *group_names;
-    GHashTable *group_guids;
-    PecanGroup *null_group;
+    MsnSession *session;
+    GQueue *requests;
+    gint window;
+    guint timer;
 };
 
-#endif /* PECAN_CONTACTLIST_PRIV_H */
+PecanUdManager *pecan_ud_manager_new (MsnSession *session);
+void pecan_ud_manager_free (PecanUdManager *udm);
+void pecan_ud_manager_contact_set_object (PecanContact *contact, MsnObject *obj);
+
+#endif /* PECAN_UD_H */

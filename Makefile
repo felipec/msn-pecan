@@ -59,6 +59,7 @@ objects = \
 	  pecan_error.o \
 	  pecan_status.o \
 	  pecan_oim.o \
+	  pecan_ud.o \
 	  cmd/cmdproc.o \
 	  cmd/command.o \
 	  cmd/history.o \

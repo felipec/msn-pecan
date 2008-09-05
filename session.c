@@ -26,6 +26,7 @@
 #include "notification.h"
 #include "pecan_status.h"
 #include "pecan_util.h"
+#include "pecan_ud.h"
 
 #if defined(PECAN_CVR)
 #include "cvr/slplink.h"
@@ -74,6 +75,7 @@ msn_session_new(PurpleAccount *account)
 	session->conv_seq = 1;
 
 	session->oim_session = pecan_oim_session_new (session);
+	session->udm = pecan_ud_manager_new (session);
 
 	return session;
 }
@@ -85,6 +87,7 @@ msn_session_destroy(MsnSession *session)
 
 	session->destroying = TRUE;
 
+        pecan_ud_manager_free (session->udm);
         pecan_oim_session_free (session->oim_session);
 
 	if (session->connected)

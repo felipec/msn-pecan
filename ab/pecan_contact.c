@@ -539,11 +539,8 @@ pecan_contact_set_object (PecanContact *contact,
 
     contact->msnobj = obj;
 
-#ifdef HAVE_LIBPURPLE
-    /** @todo only request this when the object is a Display Picture. */
-    if (contact->list_op & MSN_LIST_FL_OP)
-        msn_queue_buddy_icon_request (contact);
-#endif /* HAVE_LIBPURPLE */
+    /** @todo make this a hook. */
+    pecan_ud_manager_contact_set_object (contact, obj);
 }
 #endif /* defined(PECAN_CVR) */
 
