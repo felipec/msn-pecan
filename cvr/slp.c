@@ -937,18 +937,13 @@ msn_release_buddy_icon_request(PecanContactList *contactlist)
 	if (contactlist->buddy_icon_window > 0)
 	{
 		GQueue *queue;
-		PurpleAccount *account;
-		const char *username;
 
 		queue = contactlist->buddy_icon_requests;
 
-		if (g_queue_is_empty(contactlist->buddy_icon_requests))
+		if (g_queue_is_empty(queue))
 			return;
 
 		user = g_queue_pop_head(queue);
-
-		account  = contactlist->session->account;
-		username = user->passport;
 
 		contactlist->buddy_icon_window--;
 		request_user_display(user);
@@ -1017,7 +1012,6 @@ static void
 got_user_display(MsnSlpCall *slpcall,
 				 const guchar *data, gsize size)
 {
-	PecanContactList *contactlist;
 	const char *info;
 	PurpleAccount *account;
 
@@ -1026,7 +1020,6 @@ got_user_display(MsnSlpCall *slpcall,
 	info = slpcall->data_info;
 	pecan_info ("passport=[%s]", slpcall->slplink->remote_user);
 
-	contactlist = slpcall->slplink->session->contactlist;
 	account = slpcall->slplink->session->account;
 
 	purple_buddy_icons_set_for_user(account, slpcall->slplink->remote_user,
