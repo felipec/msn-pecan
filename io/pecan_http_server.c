@@ -409,7 +409,10 @@ close_impl (PecanNode *conn)
         }
     }
 
+#if 0
+    /** @todo check that there aren't recursive frees. */
     g_hash_table_remove_all (http_conn->childs);
+#endif
 
     PECAN_NODE_CLASS (parent_class)->close (conn);
 
