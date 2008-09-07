@@ -51,10 +51,12 @@ pecan_ud_manager_free (PecanUdManager *udm)
 {
     g_queue_free (udm->requests);
 
+#ifdef PECAN_UDM_TIMED
 #ifdef HAVE_LIBPURPLE
     if (udm->timer)
         purple_timeout_remove (udm->timer);
 #endif /* HAVE_LIBPURPLE */
+#endif /* PECAN_UDM_TIMED */
 
     g_free (udm);
 }
@@ -93,6 +95,7 @@ userdisplay_ok (MsnSlpCall *slpcall,
 #endif /* HAVE_LIBPURPLE */
 }
 
+#ifdef PECAN_UDM_TIMED
 /*
  * Called on a timeout from userdisplay_fail().
  * Frees a buddy icon window slow and dequeues the next buddy icon request if
@@ -114,6 +117,7 @@ timeout (gpointer data)
 
     return FALSE;
 }
+#endif /* PECAN_UDM_TIMED */
 
 static void
 userdisplay_fail (MsnSlpCall *slpcall,
@@ -131,6 +135,7 @@ userdisplay_fail (MsnSlpCall *slpcall,
     if (session->destroying)
         return;
 
+#ifdef PECAN_UDM_TIMED
     /* Delay before freeing a buddy icon window slot and requesting the next icon, if appropriate.
      * If we don't delay, we'll rapidly hit the MSN equivalent of AIM's rate limiting; the server will
      * send us an error 800 like so:
@@ -154,6 +159,9 @@ userdisplay_fail (MsnSlpCall *slpcall,
     /* Wait before freeing our window slot and requesting the next icon. */
     udm->timer = purple_timeout_add (USERDISPLAY_DELAY, timeout, udm);
 #endif /* HAVE_LIBPURPLE */
+#else
+    skip_request (udm);
+#endif /* PECAN_UDM_TIMED */
 }
 
 static void

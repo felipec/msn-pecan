@@ -26,12 +26,16 @@ typedef struct PecanUdManager PecanUdManager;
 #include "ab/pecan_contact.h"
 #include "cvr/pecan_slp_object.h"
 
+/* #define PECAN_UDM_TIMED */
+
 struct PecanUdManager
 {
     MsnSession *session;
     GQueue *requests;
     gint window;
+#ifdef PECAN_UDM_TIMED
     guint timer;
+#endif /* PECAN_UDM_TIMED */
 };
 
 PecanUdManager *pecan_ud_manager_new (MsnSession *session);
