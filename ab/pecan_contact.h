@@ -278,4 +278,6 @@ MsnObject *pecan_contact_get_object (const PecanContact *contact);
  */
 GHashTable *pecan_contact_get_client_caps (const PecanContact *contact);
 
+gboolean pecan_contact_can_receive (PecanContact *contact);
+
 #endif /* PECAN_CONTACT_H */
