@@ -233,10 +233,13 @@ release (PecanUdManager *udm)
 
         user = g_queue_pop_head (queue);
 
-        udm->window--;
-        request (user);
+        if (!pecan_contact_can_receive (user))
+            return;
 
+        udm->window--;
         pecan_log ("window=%d", udm->window);
+
+        request (user);
     }
 }
 
