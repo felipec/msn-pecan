@@ -193,12 +193,12 @@ msn_directconn_write(MsnDirectConn *directconn,
     body_len = GUINT32_TO_LE(len);
 
     /* Let's write the length of the data. */
-    status = pecan_node_write (directconn->conn, (gchar *) &body_len, sizeof(body_len), &tmp, NULL);
+    status = pecan_stream_write (directconn->stream, (gchar *) &body_len, sizeof(body_len), &tmp, NULL);
 
     if (status == G_IO_STATUS_NORMAL)
     {
         /* Let's write the data. */
-        status = pecan_node_write (directconn->conn, data, len, &tmp, NULL);
+        status = pecan_stream_write (directconn->stream, data, len, &tmp, NULL);
     }
 
     if (status == G_IO_STATUS_NORMAL)
@@ -221,7 +221,7 @@ msn_directconn_write(MsnDirectConn *directconn,
     }
     else
     {
-        pecan_node_error(directconn->conn);
+        /* pecan_node_error(directconn->conn); */
         msn_directconn_destroy(directconn);
     }
 
@@ -289,7 +289,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     directconn = data;
 
     /* Let's read the length of the data. */
-    if (pecan_stream_read_full (source, (gchar *) &body_len, sizeof(body_len), &len, NULL) != G_IO_STATUS_NORMAL)
+    if (pecan_stream_read_full (directconn->stream, (gchar *) &body_len, sizeof(body_len), &len, NULL) != G_IO_STATUS_NORMAL)
     {
         msn_directconn_destroy(directconn);
         return FALSE;
@@ -309,7 +309,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     }
 
     /* Let's read the data. */
-    if (pecan_stream_read_full (source, body, body_len, &len, NULL) != G_IO_STATUS_NORMAL)
+    if (pecan_stream_read_full (directconn->stream, body, body_len, &len, NULL) != G_IO_STATUS_NORMAL)
     {
         msn_directconn_destroy(directconn);
         return FALSE;
@@ -369,10 +369,13 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
 
     if (fd > 0)
     {
-        GIOChannel *channel = g_io_channel_unix_new (fd);
+        GIOChannel *channel;
 
         /* directconn->conn = pecan_node_new (channel); */
         directconn->connected = TRUE;
+
+        directconn->stream = pecan_stream_new (fd);
+        channel = directconn->stream->channel;
 
         pecan_info ("connected: %p", channel);
         directconn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, directconn);
@@ -474,6 +477,13 @@ msn_directconn_destroy(MsnDirectConn *directconn)
 {
     pecan_log ("begin");
 
+    if (directconn->stream)
+    {
+        pecan_info ("stream shutdown: %p", directconn->stream);
+        pecan_stream_free (directconn->stream);
+        directconn->stream = NULL;
+    }
+
     if (directconn->connect_data != NULL)
         purple_proxy_connect_cancel(directconn->connect_data);
 
@@ -482,8 +492,6 @@ msn_directconn_destroy(MsnDirectConn *directconn)
         g_source_remove (directconn->read_watch);
         directconn->read_watch = 0;
     }
-
-    pecan_node_free (directconn->conn);
 
     if (directconn->nonce != NULL)
         g_free(directconn->nonce);

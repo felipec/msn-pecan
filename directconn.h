@@ -29,6 +29,7 @@ typedef struct MsnDirectConn MsnDirectConn;
 #include "cvr/slp.h"
 
 #include "cmd/msg.h"
+#include "io/pecan_stream.h"
 
 struct PecanNode;
 struct _PurpleProxyConnectData;
@@ -50,7 +51,7 @@ struct MsnDirectConn
 
     int c;
     struct _PurpleProxyConnectData *connect_data;
-    struct PecanNode *conn;
+    PecanStream *stream;
 };
 
 MsnDirectConn *msn_directconn_new(MsnSlpLink *slplink);
