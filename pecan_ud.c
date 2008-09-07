@@ -42,7 +42,7 @@ pecan_ud_manager_new (MsnSession *session)
     udm = g_new0 (PecanUdManager, 1);
     udm->session = session;
     udm->requests = g_queue_new ();
-    udm->window = 1;
+    udm->window = 5;
     return udm;
 }
 
