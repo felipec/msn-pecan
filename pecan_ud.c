@@ -220,7 +220,7 @@ release (PecanUdManager *udm)
 
     pecan_info ("releasing ud");
 
-    if (udm->window > 0)
+    while (udm->window > 0)
     {
         GQueue *queue;
 
