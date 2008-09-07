@@ -64,7 +64,6 @@ skip_request (PecanUdManager *udm)
 {
     /* Free one window slot */
     udm->window++;
-
     pecan_log ("window=%d", udm->window);
 
     /* Request the next one */
@@ -106,6 +105,7 @@ timeout (gpointer data)
 
     /* Free one window slot */
     udm->window++;
+    pecan_log ("window=%d", udm->window);
 
     /* Clear the tag for our former request timer */
     udm->timer = 0;
@@ -142,6 +142,7 @@ userdisplay_fail (MsnSlpCall *slpcall,
     {
         /* Free the window slot used by this previous request */
         udm->window++;
+        pecan_log ("window=%d", udm->window);
 
 #ifdef HAVE_LIBPURPLE
         /* Clear our pending timeout */
