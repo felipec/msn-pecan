@@ -740,6 +740,7 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     user = pecan_contactlist_find_contact(session->contactlist, passport);
 
+    pecan_contact_set_state(user, state);
     pecan_contact_set_friendly_name(user, friendly);
 
     if (cmd->param_count >= 5)
@@ -760,7 +761,6 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     }
 #endif /* defined(PECAN_CVR) */
 
-    pecan_contact_set_state(user, state);
     pecan_contact_update(user);
 
     g_free (friendly);
