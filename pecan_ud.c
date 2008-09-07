@@ -274,17 +274,17 @@ queue (PecanUdManager *udm,
        PecanContact *contact)
 {
     pecan_debug ("passport=[%s],window=%u",
-		 contact->passport, udm->window);
+                 contact->passport, udm->window);
 
     g_queue_push_tail (udm->requests, contact);
 
     if (udm->window > 0)
-	release (udm);
+        release (udm);
 }
 
 void
 pecan_ud_manager_contact_set_object (PecanContact *contact,
-				     MsnObject *obj)
+                                     MsnObject *obj)
 {
     MsnSession *session;
 
@@ -292,21 +292,21 @@ pecan_ud_manager_contact_set_object (PecanContact *contact,
 
     /** @todo only request this when the object is a Display Picture. */
     if (!(contact->list_op & MSN_LIST_FL_OP))
-	return;
+        return;
 
     session = contact->contactlist->session;
     if (!obj)
     {
 #ifdef HAVE_LIBPURPLE
-	purple_buddy_icons_set_for_user (session->account, contact->passport, NULL, 0, NULL);
+        purple_buddy_icons_set_for_user (session->account, contact->passport, NULL, 0, NULL);
 #endif /* HAVE_LIBPURPLE */
-	return;
+        return;
     }
 
 #ifdef HAVE_LIBPURPLE
     if (!ud_cached (session->account, obj))
     {
-	queue (session->udm, contact);
+        queue (session->udm, contact);
     }
 #endif /* HAVE_LIBPURPLE */
 }
