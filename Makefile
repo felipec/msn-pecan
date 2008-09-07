@@ -36,6 +36,9 @@ ifdef CVR
 override CFLAGS+=-DPECAN_CVR
 endif
 
+# extra debugging
+override CFLAGS+=-DPECAN_DEBUG_SLP
+
 # For glib < 2.6 support (libpurple maniacs)
 FALLBACK_CFLAGS+=-I./fix_purple
 

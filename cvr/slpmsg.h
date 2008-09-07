@@ -36,8 +36,6 @@ struct MsnMessage;
 
 #include <glib/gstdio.h>
 
-#define PECAN_DEBUG_SLP
-
 /**
  * A SLP Message  This contains everything that we will need to send a SLP
  * Message even if has to be sent in several parts.
