@@ -26,7 +26,9 @@ typedef struct PecanStream PecanStream;
 struct PecanStream
 {
     GIOChannel *channel;
+#ifdef PECAN_DUMP_FILE
     gboolean dump;
+#endif /* PECAN_DUMP_FILE */
 };
 
 PecanStream *pecan_stream_new (gint source);

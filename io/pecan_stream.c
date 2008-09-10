@@ -27,7 +27,9 @@ pecan_stream_new (gint fd)
     PecanStream *stream;
     stream = g_new (PecanStream, 1);
     stream->channel = g_io_channel_unix_new (fd);
+#ifdef PECAN_DUMP_FILE
     stream->dump = FALSE;
+#endif /* PECAN_DUMP_FILE */
     return stream;
 }
 
@@ -68,8 +70,10 @@ pecan_stream_read (PecanStream *stream,
     status = g_io_channel_read_chars (stream->channel, buf, count,
                                       &tmp_bytes_read, &tmp_error);
 
+#ifdef PECAN_DUMP_FILE
     if (stream->dump)
         msn_dump_file (buf, tmp_bytes_read);
+#endif /* PECAN_DUMP_FILE */
 
 #if defined(PECAN_STREAM_RANDOM_ERRORS)
 skip:
@@ -112,8 +116,10 @@ pecan_stream_write (PecanStream *stream,
     status = g_io_channel_write_chars (stream->channel, buf, count,
                                        &tmp_bytes_written, &tmp_error);
 
+#ifdef PECAN_DUMP_FILE
     if (stream->dump)
         msn_dump_file (buf, tmp_bytes_written);
+#endif /* PECAN_DUMP_FILE */
 
 #if defined(PECAN_STREAM_RANDOM_ERRORS)
 skip:
@@ -153,8 +159,10 @@ pecan_stream_read_full (PecanStream *stream,
         if (status == G_IO_STATUS_AGAIN)
             continue;
 
+#ifdef PECAN_DUMP_FILE
         if (stream->dump)
             msn_dump_file (buf, tmp_bytes_read);
+#endif /* PECAN_DUMP_FILE */
 
         if (tmp_error)
         {
@@ -193,8 +201,10 @@ pecan_stream_write_full (PecanStream *stream,
         if (status == G_IO_STATUS_AGAIN)
             continue;
 
+#ifdef PECAN_DUMP_FILE
         if (stream->dump)
             msn_dump_file (buf, tmp_bytes_written);
+#endif /* PECAN_DUMP_FILE */
 
         if (tmp_error)
         {
@@ -245,8 +255,10 @@ pecan_stream_read_line (PecanStream *stream,
 
     status = g_io_channel_read_line (stream->channel, str_return, length, terminator_pos, &tmp_error);
 
+#ifdef PECAN_DUMP_FILE
     if (stream->dump)
         msn_dump_file (*str_return, strlen (*str_return));
+#endif /* PECAN_DUMP_FILE */
 
     if (tmp_error)
     {

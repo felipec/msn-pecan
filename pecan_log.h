@@ -52,7 +52,9 @@ enum PecanLogLevel
 typedef enum PecanLogLevel PecanLogLevel;
 
 void msn_base_log_helper (PecanLogLevel level, const gchar *file, const gchar *function, gint line, const gchar *fmt, ...);
+#ifdef PECAN_DUMP_FILE
 void msn_dump_file (const gchar *buffer, gsize len);
+#endif /* PECAN_DUMP_FILE */
 
 #define pecan_print(...) g_print (__VA_ARGS__);
 

@@ -49,6 +49,7 @@ log_level_to_string (PecanLogLevel level)
     }
 }
 
+#ifdef PECAN_DUMP_FILE
 void
 msn_dump_file (const gchar *buffer,
                gsize len)
@@ -72,6 +73,7 @@ msn_dump_file (const gchar *buffer,
         close (fd);
     }
 }
+#endif /* PECAN_DUMP_FILE */
 
 void
 msn_base_log_helper (guint level,
