@@ -266,6 +266,8 @@ static void
 got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 			   const char *euf_guid, const char *context)
 {
+	pecan_debug ("euf_guid=[%s]", euf_guid);
+
 	if (!strcmp(euf_guid, "A4268EEC-FEC5-49E5-95C3-F126696BDBF6"))
 	{
 		/* Emoticon or UserDisplay */
@@ -302,6 +304,7 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 			g_return_if_reached();
 		}
 
+		/* image is owned by a local object, not obj */
 		image = msn_object_get_image (obj);
 		if (!image)
 		{
@@ -311,6 +314,13 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 		}
 
 		msn_object_destroy(obj);
+
+		{
+			gchar *tmp;
+			tmp = msn_object_to_string (obj);
+			pecan_info ("object requested: %s", tmp);
+			g_free (tmp);
+		}
 
 		slpsession = msn_slplink_find_slp_session(slplink,
 												  slpcall->session_id);
@@ -426,6 +436,8 @@ got_invite(MsnSlpCall *slpcall,
 	MsnSlpLink *slplink;
 
 	slplink = slpcall->slplink;
+
+        pecan_log ("type=%s", type);
 
 	if (!strcmp(type, "application/x-msnmsgr-sessionreqbody"))
 	{
@@ -549,6 +561,8 @@ got_ok(MsnSlpCall *slpcall,
 {
 	g_return_if_fail(slpcall != NULL);
 	g_return_if_fail(type    != NULL);
+
+        pecan_log ("type=%s", type);
 
 	if (!strcmp(type, "application/x-msnmsgr-sessionreqbody"))
 	{
