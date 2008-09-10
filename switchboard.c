@@ -1081,6 +1081,72 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     g_free(body_final);
 }
 
+void
+msn_handwritten_msg_show(MsnSwitchBoard *swboard, const char* msgid, const char* data, char* passport)
+{
+    guchar *guc;
+    size_t body_len;
+    PurpleAccount *account;
+    
+    account = swboard->session->account;
+    guc = purple_base64_decode(data, &body_len);
+    if (!guc || !body_len) 
+        return;
+    
+    /*Grab the convo for this sboard. If there isn't one and it's an IM 
+        then create it, otherwise the smileys won't work*/
+    if (swboard->conv == NULL)
+    {
+        if (swboard->current_users > 1) 
+            swboard->conv = purple_find_chat(account->gc, swboard->chat_id);
+        else
+        {
+            swboard->conv = purple_find_conversation_with_account(PURPLE_CONV_TYPE_IM,
+                                    passport, account);
+            if (swboard->conv == NULL)
+                swboard->conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, passport);
+        }
+    }
+    swboard->flag |= MSN_SB_FLAG_IM;
+
+    /*Create the image as a custom smiley in the conversation with the GUID of the message that 
+        the image arrived in as the smiley text.*/
+    if (purple_conv_custom_smiley_add(swboard->conv, msgid, 0, "", 0)) {
+        purple_conv_custom_smiley_write(swboard->conv, msgid, guc, body_len);
+        purple_conv_custom_smiley_close(swboard->conv, msgid);
+    }
+    
+    /*And put the GUID into the convo window so that it will display...*/
+    if (swboard->current_users > 1 ||
+        ((swboard->conv != NULL) &&
+         purple_conversation_get_type(swboard->conv) == PURPLE_CONV_TYPE_CHAT))
+        serv_got_chat_in(account->gc, swboard->chat_id, passport, 0, msgid,
+                         time(NULL));
+    else
+        serv_got_im(account->gc, passport, msgid, 0, time(NULL));
+
+    g_free(guc);
+}
+
+/*only called from chats. Handwritten messages for IMs come as a SLP message*/
+static void
+msn_handwritten_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
+{
+    char *passport, *bodydup;
+    const char *body, *msgid;
+    size_t body_len;
+    
+    passport = msg->remote_user;
+    msgid = msn_message_get_attr(msg, "Message-ID");
+
+    pecan_debug ("Displaying handwritten message from message %s", msgid);
+
+    body = msn_message_get_bin_data(msg, &body_len);
+    bodydup = g_strndup(body+7, body_len-7);
+    msn_handwritten_msg_show(cmdproc->data, msgid, bodydup, passport);
+    g_free(bodydup);
+}
+
 static void
 control_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 {
@@ -1430,6 +1496,8 @@ msn_switchboard_init(void)
 #endif /* defined(PECAN_CVR) */
     msn_table_add_msg_type(cbs_table, "text/x-msnmsgr-datacast",
                            nudge_msg);
+    msn_table_add_msg_type(cbs_table, "image/gif",
+                           msn_handwritten_msg);
 #if 0
     msn_table_add_msg_type(cbs_table, "text/x-msmmsginvite",
                            msn_invite_msg);
