@@ -567,7 +567,8 @@ got_ok(MsnSlpCall *slpcall,
 	if (!strcmp(type, "application/x-msnmsgr-sessionreqbody"))
 	{
 #ifdef MSN_DIRECTCONN
-		if (slpcall->type == MSN_SLPCALL_DC)
+		if (slpcall->slplink->session->use_directconn &&
+                    slpcall->type == MSN_SLPCALL_DC)
 		{
 			/* First let's try a DirectConnection. */
 

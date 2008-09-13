@@ -94,6 +94,7 @@ struct MsnSession
     guint inbox_unread_count; /* The number of unread e-mails on the inbox. */
     PecanOimSession *oim_session;
     PecanUdManager *udm;
+    gboolean use_directconn;
 };
 
 #endif /* MSN_SESSION_PRIVATE_H */

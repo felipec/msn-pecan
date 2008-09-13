@@ -1583,6 +1583,9 @@ init_plugin (PurplePlugin *plugin)
 
         option = purple_account_option_bool_new (_("Use server-side alias"), "server_alias", FALSE);
         prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
+
+        option = purple_account_option_bool_new (_("Use direct connections"), "use_directconn", FALSE);
+        prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
     }
 
     purple_cmd_register ("nudge", "", PURPLE_CMD_P_PRPL,
