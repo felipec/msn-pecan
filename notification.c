@@ -751,13 +751,16 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     }
 
 #if defined(PECAN_CVR)
-    if (session->protocol_ver >= 9 && cmd->param_count == 6)
+    if (session->use_userdisplay)
     {
-        gchar *tmp;
-        tmp = pecan_url_decode (cmd->params[5]);
-        msnobj = msn_object_new_from_string (tmp);
-        pecan_contact_set_object(user, msnobj);
-        g_free (tmp);
+        if (cmd->param_count == 6)
+        {
+            gchar *tmp;
+            tmp = pecan_url_decode (cmd->params[5]);
+            msnobj = msn_object_new_from_string (tmp);
+            pecan_contact_set_object(user, msnobj);
+            g_free (tmp);
+        }
     }
 #endif /* defined(PECAN_CVR) */
 
@@ -812,17 +815,20 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     pecan_contact_set_friendly_name(user, friendly);
 
 #if defined(PECAN_CVR)
-    if (cmd->param_count == 5)
+    if (session->use_userdisplay)
     {
-        gchar *tmp;
-        tmp = pecan_url_decode(cmd->params[4]);
-        msnobj = msn_object_new_from_string(tmp);
-        pecan_contact_set_object(user, msnobj);
-        g_free (tmp);
-    }
-    else
-    {
-        pecan_contact_set_object(user, NULL);
+        if (cmd->param_count == 5)
+        {
+            gchar *tmp;
+            tmp = pecan_url_decode(cmd->params[4]);
+            msnobj = msn_object_new_from_string(tmp);
+            pecan_contact_set_object(user, msnobj);
+            g_free (tmp);
+        }
+        else
+        {
+            pecan_contact_set_object(user, NULL);
+        }
     }
 #endif /* defined(PECAN_CVR) */
 

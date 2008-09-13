@@ -95,6 +95,7 @@ struct MsnSession
     PecanOimSession *oim_session;
     PecanUdManager *udm;
     gboolean use_directconn;
+    gboolean use_userdisplay;
 };
 
 #endif /* MSN_SESSION_PRIVATE_H */

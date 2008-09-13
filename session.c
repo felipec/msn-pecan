@@ -56,6 +56,7 @@ msn_session_new(PurpleAccount *account)
         session->http_method = purple_account_get_bool (account, "http_method", FALSE);
         session->server_alias = purple_account_get_bool (account, "server_alias", FALSE);
         session->use_directconn = purple_account_get_bool (account, "use_directconn", FALSE);
+        session->use_userdisplay = purple_account_get_bool (account, "use_userdisplay", FALSE);
 
 #if 0
         if (session->http_method)
