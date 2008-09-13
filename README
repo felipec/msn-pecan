@@ -7,6 +7,8 @@ code.
 Features include:
 
  * Support for personal messages
+ * Support for offline messaging (read-only)
+ * Support for handwritten messages (read-only)
  * Server-side storage for display names (private alias)
  * Partial direct connection support (p2p transfers)
  * Improved network IO (using GIOChannel)
