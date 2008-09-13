@@ -1081,6 +1081,7 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     g_free(body_final);
 }
 
+#if defined(PECAN_CVR)
 void
 msn_handwritten_msg_show(MsnSwitchBoard *swboard, const char* msgid, const char* data, char* passport)
 {
@@ -1146,6 +1147,7 @@ msn_handwritten_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     msn_handwritten_msg_show(cmdproc->data, msgid, bodydup, passport);
     g_free(bodydup);
 }
+#endif /* defined(PECAN_CVR) */
 
 static void
 control_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
@@ -1493,11 +1495,11 @@ msn_switchboard_init(void)
                            msn_emoticon_msg);
     msn_table_add_msg_type(cbs_table, "text/x-mms-animemoticon",
                            msn_emoticon_msg);
+    msn_table_add_msg_type(cbs_table, "image/gif",
+                           msn_handwritten_msg);
 #endif /* defined(PECAN_CVR) */
     msn_table_add_msg_type(cbs_table, "text/x-msnmsgr-datacast",
                            nudge_msg);
-    msn_table_add_msg_type(cbs_table, "image/gif",
-                           msn_handwritten_msg);
 #if 0
     msn_table_add_msg_type(cbs_table, "text/x-msmmsginvite",
                            msn_invite_msg);

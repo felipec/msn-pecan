@@ -30,6 +30,8 @@
 #include "pecan_util.h"
 #include "pecan_printf.h"
 
+#include <string.h>
+
 #ifdef MSN_DIRECTCONN
 #include "directconn.h"
 #endif /* MSN_DIRECTCONN */
@@ -232,14 +234,14 @@ msn_slp_process_msg(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
 	{
 		char *body_str;
 
-		body_str = g_strndup(body, body_len);
-		/*Handwritten messages are just dumped down the line with no MSNObject*/
+		/* Handwritten messages are just dumped down the line with no MSNObject */
 		if (slpmsg->session_id==64)
 		{
 			const char *start;
 			char *msgid;
 			int charsize;
-			/*Just to be evil they put a 0 in the string just before the data you want, and then convert to utf-16*/
+			/* Just to be evil they put a 0 in the string just before the data you want,
+			and then convert to utf-16 */
 			body_str = g_utf16_to_utf8((gunichar2*)body, body_len/2, NULL, NULL, NULL);
 			start = (char*)body+(strlen(body_str)+1)*2;
 			charsize = (body_len/2)-(strlen(body_str)+1);
@@ -250,7 +252,7 @@ msn_slp_process_msg(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
 			g_free(msgid); 
 		} else
 		{
-			body_str = g_strndup((const char *)body, body_len);
+			body_str = g_strndup(body, body_len);
 			slpcall = msn_slp_sip_recv(slplink, body_str);
 		}
 		g_free(body_str);
