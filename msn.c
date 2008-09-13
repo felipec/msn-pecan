@@ -1523,7 +1523,6 @@ static PurplePluginProtocolInfo prpl_info =
 #ifdef LIBPURPLE_NEW_API
     sizeof (PurplePluginProtocolInfo), /* struct_size */
 #endif
-
     /* padding */
     NULL
 };
