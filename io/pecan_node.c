@@ -16,8 +16,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#define PECAN_SOCKET
-
 #include "pecan_node_priv.h"
 #include "pecan_stream.h"
 #include "pecan_log.h"

@@ -80,7 +80,6 @@ objects = \
 	  io/pecan_cmd_server.o \
 	  io/pecan_http_server.o \
 	  io/pecan_ssl_conn.o \
-	  io/pecan_socket.o \
 	  fix_purple.o
 
 ifdef CVR
@@ -90,6 +89,11 @@ objects += cvr/slp.o \
 	   cvr/slpmsg.o \
 	   cvr/slpsession.o \
 	   cvr/pecan_slp_object.o
+endif
+
+ifdef SOCKET
+objects += io/pecan_socket.o
+override CFLAGS += -DPECAN_SOCKET
 endif
 
 ifdef DIRECTCONN
