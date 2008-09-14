@@ -27,6 +27,7 @@
 #include "ab/pecan_contactlist_priv.h"
 
 #ifdef HAVE_LIBPURPLE
+#include "fix_purple.h"
 #include <account.h>
 #endif /* HAVE_LIBPURPLE */
 

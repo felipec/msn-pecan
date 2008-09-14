@@ -33,6 +33,18 @@ struct _PurpleConnection;
 
 #endif /* !GLIB_CHECK_VERSION(2,3,1) */
 
+#ifndef G_GNUC_NULL_TERMINATED
+#	if     __GNUC__ >= 4
+#		define G_GNUC_NULL_TERMINATED __attribute__((__sentinel__))
+#	else
+#		define G_GNUC_NULL_TERMINATED
+#	endif
+#endif
+
+#if !GLIB_CHECK_VERSION(2,16,0)
+int g_strcmp0 (const char *str1, const char *str2);
+#endif /* !GLIB_CHECK_VERSION(2,16,0) */
+
 #if !GLIB_CHECK_VERSION(2,14,0)
 static inline guint
 g_timeout_add_seconds (guint interval,
