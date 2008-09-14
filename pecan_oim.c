@@ -129,7 +129,7 @@ oim_send_request (PecanNode *conn,
                               "Accept: */*\r\n"
                               "SOAPAction: \"http://www.hotmail.msn.com/ws/2004/09/oim/rsi/GetMessage\"\r\n"
                               "Content-Type: text/xml; charset=utf-8\r\n"
-                              "Content-Length: %d\r\n"
+                              "Content-Length: %" G_GSIZE_FORMAT "\r\n"
                               "User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)\r\n"
                               "Host: %s\r\n"
                               "Connection: Keep-Alive\r\n"
