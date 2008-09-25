@@ -51,6 +51,9 @@
 /* libpurple stuff. */
 #include "fix_purple_win32.h"
 #include <account.h>
+#if defined(LIBPURPLE_NEW_API)
+#include <smiley.h>
+#endif /* defined(LIBPURPLE_NEW_API) */
 
 /* ms to delay between sending buddy icon requests to the server. */
 #define BUDDY_ICON_DELAY 20000
@@ -297,15 +300,37 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 		type = msn_object_get_type(obj);
 		g_free(msnobj_data);
 
+#if defined(LIBPURPLE_NEW_API)
+		if ((type != MSN_OBJECT_USERTILE) && (type != MSN_OBJECT_EMOTICON))
+#else
 		if (!(type == MSN_OBJECT_USERTILE))
+#endif /* defined(LIBPURPLE_NEW_API) */
 		{
 			pecan_error ("Wrong object?");
 			msn_object_destroy(obj);
 			g_return_if_reached();
 		}
 
+#if defined(LIBPURPLE_NEW_API)
+		if (type == MSN_OBJECT_EMOTICON)
+		{
+			PurpleStoredImage *img;
+			char *path;
+			path = g_build_filename(purple_smileys_get_storing_dir(), msn_object_get_location(obj), NULL);
+			img = purple_imgstore_new_from_file(path);
+			image = pecan_buffer_new_memdup ((const gpointer)
+				purple_imgstore_get_data (img), purple_imgstore_get_size (img));
+			purple_imgstore_unref(img);
+			g_free(path);
+		}
+		else
+		{
+			image = msn_object_get_image(obj);
+		}
+#else
 		/* image is owned by a local object, not obj */
 		image = msn_object_get_image (obj);
+#endif /* defined(LIBPURPLE_NEW_API) */
 		if (!image)
 		{
                     pecan_error ("Wrong object");
