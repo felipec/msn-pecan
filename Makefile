@@ -1,17 +1,17 @@
-CC = gcc
-XGETTEXT = xgettext
-MSGFMT = msgfmt
+CC := gcc
+XGETTEXT := xgettext
+MSGFMT := msgfmt
 
-PLATFORM = $(shell uname -s)
+PLATFORM := $(shell uname -s)
 
-PURPLE_CFLAGS = `pkg-config --cflags purple`
-PURPLE_LIBS = `pkg-config --libs purple`
-PURPLE_PREFIX = `pkg-config --variable=prefix purple`
+PURPLE_CFLAGS := $(shell pkg-config --cflags purple)
+PURPLE_LIBS := $(shell pkg-config --libs purple)
+PURPLE_PREFIX := $(shell pkg-config --variable=prefix purple)
 
-GOBJECT_CFLAGS = `pkg-config --cflags gobject-2.0`
-GOBJECT_LIBS = `pkg-config --libs gobject-2.0`
+GOBJECT_CFLAGS := $(shell pkg-config --cflags gobject-2.0)
+GOBJECT_LIBS := $(shell pkg-config --libs gobject-2.0)
 
-CVR = y
+CVR := y
 
 ifdef DEBUG
 CFLAGS += -ggdb
@@ -19,15 +19,15 @@ else
 CFLAGS += -O2
 endif
 
-EXTRA_WARNINGS = -Wall -Wextra -Wformat-nonliteral -Wcast-align -Wpointer-arith \
-		 -Wbad-function-cast -Wmissing-prototypes -Wstrict-prototypes \
-		 -Wmissing-declarations -Winline -Wundef -Wnested-externs -Wcast-qual \
-		 -Wshadow -Wwrite-strings -Wno-unused-parameter -Wfloat-equal -ansi -std=c99
+EXTRA_WARNINGS := -Wall -Wextra -Wformat-nonliteral -Wcast-align -Wpointer-arith \
+	-Wbad-function-cast -Wmissing-prototypes -Wstrict-prototypes \
+	-Wmissing-declarations -Winline -Wundef -Wnested-externs -Wcast-qual \
+	-Wshadow -Wwrite-strings -Wno-unused-parameter -Wfloat-equal -ansi -std=c99
 
-SIMPLE_WARNINGS = -Wextra -ansi -std=c99 -Wno-unused-parameter
+SIMPLE_WARNINGS := -Wextra -ansi -std=c99 -Wno-unused-parameter
 
-OTHER_WARNINGS = -D_FORTIFY_SOURCE=2 -fstack-protector -g3 -Wdisabled-optimization \
-		 -Wendif-labels -Wformat=2 -Wstack-protector -Wswitch
+OTHER_WARNINGS := -D_FORTIFY_SOURCE=2 -fstack-protector -g3 -Wdisabled-optimization \
+	-Wendif-labels -Wformat=2 -Wstack-protector -Wswitch
 
 CFLAGS += -Wall # $(EXTRA_WARNINGS)
 
@@ -42,45 +42,45 @@ endif
 override CFLAGS += -DPECAN_DEBUG_SLP
 
 # For glib < 2.6 support (libpurple maniacs)
-FALLBACK_CFLAGS += -I./fix_purple
+FALLBACK_CFLAGS := -I./fix_purple
 
 LDFLAGS := -Wl,--no-undefined
 
-prefix = $(DESTDIR)/$(PURPLE_PREFIX)
-plugin_dir = $(prefix)/lib/purple-2
-data_dir = $(prefix)/share
+prefix := $(DESTDIR)/$(PURPLE_PREFIX)
+plugin_dir := $(prefix)/lib/purple-2
+data_dir := $(prefix)/share
 
-objects = msn.o \
-	  nexus.o \
-	  notification.o \
-	  page.o \
-	  session.o \
-	  switchboard.o \
-	  sync.o \
-	  pecan_log.o \
-	  pecan_printf.o \
-	  pecan_util.o \
-	  pecan_error.o \
-	  pecan_status.o \
-	  pecan_oim.o \
-	  pecan_ud.o \
-	  cmd/cmdproc.o \
-	  cmd/command.o \
-	  cmd/history.o \
-	  cmd/msg.o \
-	  cmd/table.o \
-	  cmd/transaction.o \
-	  io/pecan_buffer.o \
-	  io/pecan_parser.o \
-	  ab/pecan_group.o \
-	  ab/pecan_contact.o \
-	  ab/pecan_contactlist.o \
-	  io/pecan_stream.o \
-	  io/pecan_node.o \
-	  io/pecan_cmd_server.o \
-	  io/pecan_http_server.o \
-	  io/pecan_ssl_conn.o \
-	  fix_purple.o
+objects := msn.o \
+	   nexus.o \
+	   notification.o \
+	   page.o \
+	   session.o \
+	   switchboard.o \
+	   sync.o \
+	   pecan_log.o \
+	   pecan_printf.o \
+	   pecan_util.o \
+	   pecan_error.o \
+	   pecan_status.o \
+	   pecan_oim.o \
+	   pecan_ud.o \
+	   cmd/cmdproc.o \
+	   cmd/command.o \
+	   cmd/history.o \
+	   cmd/msg.o \
+	   cmd/table.o \
+	   cmd/transaction.o \
+	   io/pecan_buffer.o \
+	   io/pecan_parser.o \
+	   ab/pecan_group.o \
+	   ab/pecan_contact.o \
+	   ab/pecan_contactlist.o \
+	   io/pecan_stream.o \
+	   io/pecan_node.o \
+	   io/pecan_cmd_server.o \
+	   io/pecan_http_server.o \
+	   io/pecan_ssl_conn.o \
+	   fix_purple.o
 
 ifdef CVR
 objects += cvr/slp.o \
@@ -101,10 +101,10 @@ objects += directconn.o
 override CFLAGS += -DMSN_DIRECTCONN
 endif
 
-sources = $(patsubst %.o,%.c,$(objects))
+sources := $(objects:.o=.c)
 
-PO_TEMPLATE = po/messages.pot
-CATALOGS = nl fi fr it sr es sv
+PO_TEMPLATE := po/messages.pot
+CATALOGS := nl fi fr it sr es sv
 
 ifeq ($(PLATFORM),Darwin)
 	SHLIBEXT=dylib
@@ -118,10 +118,10 @@ endif
 endif
 
 ifdef STATIC
-	plugin=libmsn-pecan.a
+	plugin := libmsn-pecan.a
 	override CFLAGS += -DPURPLE_STATIC_PRPL
 else
-	plugin=libmsn-pecan.$(SHLIBEXT)
+	plugin := libmsn-pecan.$(SHLIBEXT)
 	override CFLAGS += -fPIC
 endif
 
