@@ -102,6 +102,7 @@ override CFLAGS += -DMSN_DIRECTCONN
 endif
 
 sources := $(objects:.o=.c)
+deps := $(objects:.o=.d)
 
 PO_TEMPLATE := po/messages.pot
 CATALOGS := nl fi fr it sr es sv
@@ -162,14 +163,11 @@ $(plugin): LIBS := $(PURPLE_LIBS) $(GOBJECT_LIBS)
 
 %.o:: %.c
 	$(P)CC
-	$(Q)$(CC) $(CFLAGS) -Wp,-MMD,$(dir $@).$(notdir $@).d -o $@ -c $<
+	$(Q)$(CC) $(CFLAGS) -MMD -o $@ -c $<
 
 clean:
 	find -name '*.mo' -delete
-	rm -f $(plugin) $(objects)
-
-depend:
-	makedepend -Y -- $(CFLAGS) -- $(sources)
+	rm -f $(plugin) $(objects) $(deps)
 
 po:
 	mkdir -p $@
@@ -201,3 +199,5 @@ install_locales: $(foreach e,$(CATALOGS),po/libmsn-pecan-$(e).mo)
 	for x in $(CATALOGS); do \
 	install -D po/libmsn-pecan-$$x.mo $(data_dir)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
 	done
+
+-include $(deps)
