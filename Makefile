@@ -1,56 +1,56 @@
-CC=gcc
-XGETTEXT=xgettext
-MSGFMT=msgfmt
+CC = gcc
+XGETTEXT = xgettext
+MSGFMT = msgfmt
 
-PLATFORM=$(shell uname -s)
+PLATFORM = $(shell uname -s)
 
-PURPLE_CFLAGS=`pkg-config --cflags purple`
-PURPLE_LIBS=`pkg-config --libs purple`
-PURPLE_PREFIX=`pkg-config --variable=prefix purple`
+PURPLE_CFLAGS = `pkg-config --cflags purple`
+PURPLE_LIBS = `pkg-config --libs purple`
+PURPLE_PREFIX = `pkg-config --variable=prefix purple`
 
-GOBJECT_CFLAGS=`pkg-config --cflags gobject-2.0`
-GOBJECT_LIBS=`pkg-config --libs gobject-2.0`
+GOBJECT_CFLAGS = `pkg-config --cflags gobject-2.0`
+GOBJECT_LIBS = `pkg-config --libs gobject-2.0`
 
 CVR = y
 
 ifdef DEBUG
-CFLAGS+=-ggdb
+CFLAGS += -ggdb
 else
-CFLAGS+=-O2
+CFLAGS += -O2
 endif
 
-EXTRA_WARNINGS=-Wall -Wextra -Wformat-nonliteral -Wcast-align -Wpointer-arith \
-	       -Wbad-function-cast -Wmissing-prototypes -Wstrict-prototypes \
-	       -Wmissing-declarations -Winline -Wundef -Wnested-externs -Wcast-qual \
-	       -Wshadow -Wwrite-strings -Wno-unused-parameter -Wfloat-equal -ansi -std=c99
+EXTRA_WARNINGS = -Wall -Wextra -Wformat-nonliteral -Wcast-align -Wpointer-arith \
+		 -Wbad-function-cast -Wmissing-prototypes -Wstrict-prototypes \
+		 -Wmissing-declarations -Winline -Wundef -Wnested-externs -Wcast-qual \
+		 -Wshadow -Wwrite-strings -Wno-unused-parameter -Wfloat-equal -ansi -std=c99
 
-SIMPLE_WARNINGS=-Wextra -ansi -std=c99 -Wno-unused-parameter
+SIMPLE_WARNINGS = -Wextra -ansi -std=c99 -Wno-unused-parameter
 
-OTHER_WARNINGS=-D_FORTIFY_SOURCE=2 -fstack-protector -g3 -Wdisabled-optimization \
-	       -Wendif-labels -Wformat=2 -Wstack-protector -Wswitch
+OTHER_WARNINGS = -D_FORTIFY_SOURCE=2 -fstack-protector -g3 -Wdisabled-optimization \
+		 -Wendif-labels -Wformat=2 -Wstack-protector -Wswitch
 
-CFLAGS+=-Wall # $(EXTRA_WARNINGS)
+CFLAGS += -Wall # $(EXTRA_WARNINGS)
 
-override CFLAGS+=-I. -D PACKAGE='"libmsn-pecan"' -DENABLE_NLS -DHAVE_LIBPURPLE -DPURPLE_DEBUG -DLIBPURPLE_NEW_API \
+override CFLAGS += -I. -D PACKAGE='"libmsn-pecan"' -DENABLE_NLS -DHAVE_LIBPURPLE -DPURPLE_DEBUG -DLIBPURPLE_NEW_API \
 	-D PLUGIN_NAME='msn-pecan'
+
 ifdef CVR
-override CFLAGS+=-DPECAN_CVR
+override CFLAGS += -DPECAN_CVR
 endif
 
 # extra debugging
-override CFLAGS+=-DPECAN_DEBUG_SLP
+override CFLAGS += -DPECAN_DEBUG_SLP
 
 # For glib < 2.6 support (libpurple maniacs)
-FALLBACK_CFLAGS+=-I./fix_purple
+FALLBACK_CFLAGS += -I./fix_purple
 
-LDFLAGS:=-Wl,--no-undefined
+LDFLAGS := -Wl,--no-undefined
 
-prefix=$(DESTDIR)/$(PURPLE_PREFIX)
-plugin_dir=$(prefix)/lib/purple-2
-data_dir=$(prefix)/share
+prefix = $(DESTDIR)/$(PURPLE_PREFIX)
+plugin_dir = $(prefix)/lib/purple-2
+data_dir = $(prefix)/share
 
-objects = \
-	  msn.o \
+objects = msn.o \
 	  nexus.o \
 	  notification.o \
 	  page.o \
