@@ -125,7 +125,7 @@ else
 	override CFLAGS += -fPIC
 endif
 
-.PHONY: all clean
+.PHONY: clean
 
 all: $(plugin)
 
@@ -158,7 +158,7 @@ $(plugin): LIBS := $(PURPLE_LIBS) $(GOBJECT_LIBS)
 
 %.a::
 	$(P)ARCHIVE
-	$(AR) rcs $@ $^
+	$(Q)(AR) rcs $@ $^
 
 %.o:: %.c
 	$(P)CC
