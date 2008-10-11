@@ -29,11 +29,9 @@
 
 /* libpurple stuff. */
 #include <imgstore.h>
-#if defined(LIBPURPLE_NEW_API)
 /* for custom emoticon sending */
 #include <cipher.h>
 #include <util.h>
-#endif /* defined(LIBPURPLE_NEW_API) */
 
 #define GET_STRING_TAG(field, id) \
     if ((tag = strstr(str, id "=\"")) != NULL) \
@@ -115,7 +113,6 @@ msn_object_new_from_string(const gchar *str)
     return obj;
 }
 
-#if defined(LIBPURPLE_NEW_API)
 MsnObject *
 msn_object_new_from_image (PecanBuffer *image,
                            const char *location,
@@ -179,7 +176,6 @@ msn_object_new_from_image (PecanBuffer *image,
 
     return msnobj;
 }
-#endif /* defined(LIBPURPLE_NEW_API) */
 
 void
 msn_object_destroy(MsnObject *obj)

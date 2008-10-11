@@ -44,9 +44,6 @@
 
 #if defined(PECAN_CVR)
 #include "cvr/slplink.h"
-#if defined(LIBPURPLE_NEW_API)
-#include <smiley.h>
-#endif /* defined(LIBPURPLE_NEW_API) */
 #endif /* defined(PECAN_CVR) */
 
 /* libpurple stuff. */
@@ -63,6 +60,12 @@
 #include <util.h>
 #include <prefs.h>
 
+#if defined(PECAN_CVR)
+#if PURPLE_VERSION_CHECK(2,5,0)
+#include <smiley.h>
+#endif /* PURPLE_VERSION_CHECK(2,5,0) */
+#endif /* defined(PECAN_CVR) */
+
 #define _Q(x) #x
 #define Q(x) _Q(x)
 #define PLUGIN_ID "prpl-" Q(PLUGIN_NAME)
@@ -74,13 +77,13 @@ typedef struct
 
 } MsnMobileData;
 
-#if defined(LIBPURPLE_NEW_API)
+#if PURPLE_VERSION_CHECK(2,5,0)
 typedef struct
 {
 	char *smile;
 	MsnObject *obj;
 } MsnEmoticon;
-#endif /* defined(LIBPURPLE_NEW_API) */
+#endif /* PURPLE_VERSION_CHECK(2,5,0) */
 
 /* exports */
 void msn_set_friendly_name (PurpleConnection *gc, const gchar *entry);
@@ -780,9 +783,10 @@ login (PurpleAccount *account)
                  PURPLE_CONNECTION_NO_BGCOLOR | \
                  PURPLE_CONNECTION_NO_FONTSIZE | \
                  PURPLE_CONNECTION_NO_URLDESC;
-#if defined(LIBPURPLE_NEW_API)
+
+#if PURPLE_VERSION_CHECK(2,5,0)
     gc->flags |= PURPLE_CONNECTION_ALLOW_CUSTOM_SMILEY;
-#endif /* defined(LIBPURPLE_NEW_API) */
+#endif /* PURPLE_VERSION_CHECK(2,5,0) */
 
     msn_session_set_login_step (session, PECAN_LOGIN_STEP_START);
 
@@ -808,7 +812,7 @@ logout (PurpleConnection *gc)
 }
 
 #if defined(PECAN_CVR)
-#if defined(LIBPURPLE_NEW_API)
+#if PURPLE_VERSION_CHECK(2,5,0)
 static GString*
 msn_msg_emoticon_add(GString *current, MsnEmoticon *emoticon)
 {
@@ -907,7 +911,7 @@ msn_msg_grab_emoticons(const char *msg, const char *username)
 
 	return list;
 }
-#endif /* defined(LIBPURPLE_NEW_API) */
+#endif /* PURPLE_VERSION_CHECK(2,5,0) */
 #endif /* defined(PECAN_CVR) */
 
 static gint
@@ -965,7 +969,7 @@ send_im (PurpleConnection *gc,
             swboard = msn_session_get_swboard (session, who, MSN_SB_FLAG_IM);
 
 #if defined(PECAN_CVR)
-#if defined(LIBPURPLE_NEW_API)
+#if PURPLE_VERSION_CHECK(2,5,0)
             const char *username;
 
             username = msn_session_get_username (session);
@@ -993,7 +997,7 @@ send_im (PurpleConnection *gc,
                     g_string_free(emoticons, TRUE);
                 }
             }
-#endif /* defined(LIBPURPLE_NEW_API) */
+#endif /* PURPLE_VERSION_CHECK(2,5,0) */
 #endif /* defined(PECAN_CVR) */
 
             msn_switchboard_send_msg (swboard, msg, TRUE);
@@ -1670,9 +1674,9 @@ static PurplePluginProtocolInfo prpl_info =
     NULL, /* unregister_user */
     msn_send_attention, /* send_attention */
     msn_attention_types, /* attention_types */
-#ifdef LIBPURPLE_NEW_API
+#if PURPLE_VERSION_CHECK(2,5,0)
     sizeof (PurplePluginProtocolInfo), /* struct_size */
-#endif
+#endif /* PURPLE_VERSION_CHECK(2,5,0) */
     /* padding */
     NULL
 };

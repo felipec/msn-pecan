@@ -55,7 +55,6 @@ MsnObject *msn_object_new(void);
  */
 MsnObject *msn_object_new_from_string(const gchar *str);
 
-#if defined(LIBPURPLE_NEW_API)
 /**
  * Creates a MsnObject structure from a stored image
  *
@@ -70,7 +69,6 @@ MsnObject *msn_object_new_from_image (PecanBuffer *image,
                                       const char *location,
                                       const char *creator,
                                       MsnObjectType type);
-#endif /* defined(LIBPURPLE_NEW_API) */
 
 /**
  * Destroys an MsnObject structure.

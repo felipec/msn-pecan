@@ -51,9 +51,10 @@
 /* libpurple stuff. */
 #include "fix_purple_win32.h"
 #include <account.h>
-#if defined(LIBPURPLE_NEW_API)
+#include <version.h>
+#if PURPLE_VERSION_CHECK(2,5,0)
 #include <smiley.h>
-#endif /* defined(LIBPURPLE_NEW_API) */
+#endif /* PURPLE_VERSION_CHECK(2,5,0) */
 
 /* ms to delay between sending buddy icon requests to the server. */
 #define BUDDY_ICON_DELAY 20000
@@ -305,7 +306,7 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 			/* image is owned by a local object, not obj */
 			image = msn_object_get_image(obj);
 		}
-#if defined(LIBPURPLE_NEW_API)
+#if PURPLE_VERSION_CHECK(2,5,0)
 		else if (type == MSN_OBJECT_EMOTICON)
 		{
 			PurpleStoredImage *img;
@@ -317,7 +318,7 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 			purple_imgstore_unref(img);
 			g_free(path);
 		}
-#endif /* defined(LIBPURPLE_NEW_API) */
+#endif /* PURPLE_VERSION_CHECK(2,5,0) */
 		else
 		{
 			pecan_error ("Wrong object?");
