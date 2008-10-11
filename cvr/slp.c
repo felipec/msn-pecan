@@ -300,19 +300,13 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 		type = msn_object_get_type(obj);
 		g_free(msnobj_data);
 
-#if defined(LIBPURPLE_NEW_API)
-		if ((type != MSN_OBJECT_USERTILE) && (type != MSN_OBJECT_EMOTICON))
-#else
-		if (!(type == MSN_OBJECT_USERTILE))
-#endif /* defined(LIBPURPLE_NEW_API) */
+		if (type == MSN_OBJECT_USERTILE)
 		{
-			pecan_error ("Wrong object?");
-			msn_object_destroy(obj);
-			g_return_if_reached();
+			/* image is owned by a local object, not obj */
+			image = msn_object_get_image(obj);
 		}
-
 #if defined(LIBPURPLE_NEW_API)
-		if (type == MSN_OBJECT_EMOTICON)
+		else if (type == MSN_OBJECT_EMOTICON)
 		{
 			PurpleStoredImage *img;
 			char *path;
@@ -323,14 +317,14 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 			purple_imgstore_unref(img);
 			g_free(path);
 		}
+#endif /* defined(LIBPURPLE_NEW_API) */
 		else
 		{
-			image = msn_object_get_image(obj);
+			pecan_error ("Wrong object?");
+			msn_object_destroy(obj);
+			g_return_if_reached();
 		}
-#else
-		/* image is owned by a local object, not obj */
-		image = msn_object_get_image (obj);
-#endif /* defined(LIBPURPLE_NEW_API) */
+
 		if (!image)
 		{
                     pecan_error ("Wrong object");
