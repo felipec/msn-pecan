@@ -962,11 +962,9 @@ send_im (PurpleConnection *gc,
 
 #if defined(PECAN_CVR)
 #if defined(LIBPURPLE_NEW_API)
-            PurpleAccount *account;
             const char *username;
 
-            account = purple_connection_get_account(gc);
-            username = purple_account_get_username(account);
+            username = msn_session_get_username (session);
 
             if (g_ascii_strcasecmp (who, username) != 0)
             {
@@ -974,8 +972,8 @@ send_im (PurpleConnection *gc,
                 GSList *smileys;
                 GString *emoticons = NULL;
 
-                purple_debug_info("msn", "send via switchboard\n");
-                smileys = msn_msg_grab_emoticons(message, username);
+                pecan_debug ("send via switchboard");
+                smileys = msn_msg_grab_emoticons (message, username);
 
                 while (smileys)
                 {
