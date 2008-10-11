@@ -117,7 +117,7 @@ msn_object_new_from_string(const gchar *str)
 
 #if defined(LIBPURPLE_NEW_API)
 MsnObject *
-msn_object_new_from_image (PurpleStoredImage *image,
+msn_object_new_from_image (PecanBuffer *image,
                            const char *location,
                            const char *creator,
                            MsnObjectType type)
@@ -125,10 +125,7 @@ msn_object_new_from_image (PurpleStoredImage *image,
     MsnObject *msnobj;
 
     PurpleCipherContext *ctx;
-    PecanBuffer *img;
     char *buf;
-    gconstpointer data;
-    size_t size;
     char *base64;
     unsigned char digest[20];
 
@@ -137,9 +134,6 @@ msn_object_new_from_image (PurpleStoredImage *image,
     if (!image)
         return msnobj;
 
-    size = purple_imgstore_get_size (image);
-    data = purple_imgstore_get_data (image);
-
     /* New object */
     msnobj = msn_object_new ();
     msn_object_set_local (msnobj);
@@ -147,22 +141,20 @@ msn_object_new_from_image (PurpleStoredImage *image,
     msn_object_set_location (msnobj, location);
     msn_object_set_creator (msnobj, creator);
 
-    img = pecan_buffer_new_memdup ((const gpointer) purple_imgstore_get_data (image),
-                                   purple_imgstore_get_size (image));
-    msn_object_set_image (msnobj, img);
+    msn_object_set_image (msnobj, image);
 
     /* Compute the SHA1D field. */
     memset (digest, 0, sizeof (digest));
 
     ctx = purple_cipher_context_new_by_name ("sha1", NULL);
-    purple_cipher_context_append (ctx, data, size);
+    purple_cipher_context_append (ctx, (const gpointer) image->data, image->len);
     purple_cipher_context_digest (ctx, sizeof (digest), digest, NULL);
 
     base64 = purple_base64_encode (digest, sizeof (digest));
     msn_object_set_sha1d (msnobj, base64);
     g_free (base64);
 
-    msn_object_set_size (msnobj, size);
+    msn_object_set_size (msnobj, image->len);
 
     /* Compute the SHA1C field. */
     buf = g_strdup_printf ("Creator%sSize%dType%dLocation%sFriendly%sSHA1D%s",

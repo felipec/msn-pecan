@@ -29,10 +29,6 @@ typedef struct MsnObject MsnObject;
 
 #include "io/pecan_buffer.h"
 
-#if defined(LIBPURPLE_NEW_API)
-#include <imgstore.h>
-#endif /* defined(LIBPURPLE_NEW_API) */
-
 typedef enum
 {
     MSN_OBJECT_UNKNOWN = -1, /**< Unknown object */
@@ -70,7 +66,7 @@ MsnObject *msn_object_new_from_string(const gchar *str);
  *
  * @return A new MsnObject structure
  */
-MsnObject *msn_object_new_from_image (PurpleStoredImage *image,
+MsnObject *msn_object_new_from_image (PecanBuffer *image,
                                       const char *location,
                                       const char *creator,
                                       MsnObjectType type);

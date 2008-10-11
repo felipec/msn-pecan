@@ -882,6 +882,7 @@ msn_msg_grab_emoticons(const char *msg, const char *username)
 
 	for (; smileys; smileys = g_list_delete_link(smileys, smileys))
 	{
+            PecanBuffer *buffer;
             smiley = smileys->data;
 
             ptr = g_strstr_len(msg, length, purple_smiley_get_shortcut(smiley));
@@ -890,13 +891,16 @@ msn_msg_grab_emoticons(const char *msg, const char *username)
                 continue;
 
             image = purple_smiley_get_stored_image(smiley);
+            buffer = pecan_buffer_new_memdup ((const gpointer) purple_imgstore_get_data (image),
+                                              purple_imgstore_get_size (image));
 
             emoticon = g_new0(MsnEmoticon, 1);
             emoticon->smile = g_strdup(purple_smiley_get_shortcut(smiley));
-	    emoticon->obj = msn_object_new_from_image(image,
-						      purple_imgstore_get_filename(image),
-						      username, MSN_OBJECT_EMOTICON);
+            emoticon->obj = msn_object_new_from_image(buffer,
+                                                      purple_imgstore_get_filename(image),
+                                                      username, MSN_OBJECT_EMOTICON);
 
+            pecan_buffer_free (buffer);
             purple_imgstore_unref(image);
             list = g_slist_prepend(list, emoticon);
 	}
