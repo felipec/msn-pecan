@@ -318,8 +318,8 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 			char *path;
 			path = g_build_filename(purple_smileys_get_storing_dir(), msn_object_get_location(obj), NULL);
 			img = purple_imgstore_new_from_file(path);
-			image = pecan_buffer_new_memdup ((const gpointer)
-				purple_imgstore_get_data (img), purple_imgstore_get_size (img));
+			image = pecan_buffer_new_memdup ((const gpointer) purple_imgstore_get_data (img),
+							 purple_imgstore_get_size (img));
 			purple_imgstore_unref(img);
 			g_free(path);
 		}

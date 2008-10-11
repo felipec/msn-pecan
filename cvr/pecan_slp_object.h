@@ -63,15 +63,17 @@ MsnObject *msn_object_new_from_string(const gchar *str);
 /**
  * Creates a MsnObject structure from a stored image
  *
- * @param image	The image associated to object
- * @param location	The object location as stored in MsnObject
- * @param creator	The creator of the object
- * @param type		The type of the object
+ * @param image The image associated to object
+ * @param location The object location as stored in MsnObject
+ * @param creator The creator of the object
+ * @param type The type of the object
  *
  * @return A new MsnObject structure
  */
-MsnObject *msn_object_new_from_image(PurpleStoredImage *image,
-		const char *location, const char *creator, MsnObjectType type);
+MsnObject *msn_object_new_from_image (PurpleStoredImage *image,
+                                      const char *location,
+                                      const char *creator,
+                                      MsnObjectType type);
 #endif /* defined(LIBPURPLE_NEW_API) */
 
 /**
