@@ -1188,15 +1188,74 @@ clientcaps_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 }
 
 static void
-nudge_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
+got_unsupported_datacast_inform_user (MsnCmdProc *cmdproc,
+                                      MsnMessage *msg,
+                                      char *str)
 {
     PurpleAccount *account;
+    MsnSwitchBoard *swboard;
     const char *user;
+
+    account = cmdproc->session->account;
+    swboard = cmdproc->data;
+    user = msg->remote_user;
+
+    /* Grab the conv for this swboard. If there isn't one and it's an IM then create it,
+    otherwise the smileys won't work, this needs to be fixed. */
+    if (!swboard->conv)
+    {
+        if (swboard->current_users > 1)
+            swboard->conv = purple_find_chat(account->gc, swboard->chat_id);
+        else
+        {
+            swboard->conv = purple_find_conversation_with_account(PURPLE_CONV_TYPE_IM,
+                                                                  user, account);
+            if (!swboard->conv)
+                swboard->conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, user);
+        }
+    }
+    swboard->flag |= MSN_SB_FLAG_IM;
+
+    purple_conversation_write(swboard->conv, NULL, str, PURPLE_MESSAGE_SYSTEM, time(NULL));
+}
+
+static void
+datacast_msg (MsnCmdProc *cmdproc,
+              MsnMessage *msg)
+{
+    PurpleAccount *account;
+    GHashTable *body;
+    const char *id, *user;
+    body = msn_message_get_hashtable_from_body(msg);
+
+    id = g_hash_table_lookup(body, "ID");
 
     account = cmdproc->session->account;
     user = msg->remote_user;
 
-    serv_got_attention(account->gc, user, MSN_NUDGE);
+    if (strcmp (id, "1") == 0)
+    {
+        serv_got_attention(account->gc, user, MSN_NUDGE);
+    }
+    else if (strcmp (id, "2") == 0)
+    {
+        char *str;
+        str = g_strdup_printf("%s sent you a wink, but it isn't supported yet, so it cannot be viewed.", user);
+        got_unsupported_datacast_inform_user(cmdproc, msg, str);
+        g_free(str);
+    }
+    else if (strcmp (id, "3") == 0)
+    {
+        char *str;
+        str = g_strdup_printf("%s sent you a voice clip, but it isn't supported yet, so it cannot be played.", user);
+        got_unsupported_datacast_inform_user(cmdproc, msg, str);
+        g_free (str);
+    }
+    else
+    {
+        pecan_warning ("Got unknown datacast with ID %s.\n", id);
+        serv_got_attention(account->gc, user, MSN_NUDGE);
+    }
 }
 
 /**************************************************************************
@@ -1499,7 +1558,7 @@ msn_switchboard_init(void)
                            msn_handwritten_msg);
 #endif /* defined(PECAN_CVR) */
     msn_table_add_msg_type(cbs_table, "text/x-msnmsgr-datacast",
-                           nudge_msg);
+                           datacast_msg);
 #if 0
     msn_table_add_msg_type(cbs_table, "text/x-msmmsginvite",
                            msn_invite_msg);
