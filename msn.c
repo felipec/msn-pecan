@@ -904,7 +904,6 @@ msn_msg_grab_emoticons(const char *msg, const char *username)
                                                       purple_imgstore_get_filename(image),
                                                       username, MSN_OBJECT_EMOTICON);
 
-            pecan_buffer_free (buffer);
             purple_imgstore_unref(image);
             list = g_slist_prepend(list, emoticon);
 	}
