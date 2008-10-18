@@ -1000,6 +1000,9 @@ send_im (PurpleConnection *gc,
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
 #endif /* defined(PECAN_CVR) */
 
+            if (flags & PURPLE_MESSAGE_AUTO_RESP)
+                msn_message_set_flag (msg, 'U');
+
             msn_switchboard_send_msg (swboard, msg, TRUE);
         }
 

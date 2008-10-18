@@ -532,7 +532,7 @@ msg_error_helper(MsnCmdProc *cmdproc, MsnMessage *msg, MsnMsgErrorType error)
     /* This is not good, and should be fixed somewhere else. */
     g_return_if_fail (swboard);
 
-    if (msg->type == MSN_MSG_TEXT)
+    if (msg->type == MSN_MSG_TEXT && msn_message_get_flag (msg) != 'U')
     {
         const char *format, *str_reason;
         char *body_str, *body_enc, *pre, *post;
