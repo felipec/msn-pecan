@@ -210,6 +210,17 @@ msn_set_prp(PurpleConnection *gc, const char *type, const char *entry)
 }
 
 static void
+msn_set_personal_message_cb (PurpleConnection *gc, const gchar *entry)
+{
+	MsnSession *session;
+
+	session = gc->proto_data;
+	purple_account_set_string(session->account, "personal_message", entry);
+
+	pecan_update_personal_message (session);
+}
+
+static void
 msn_set_home_phone_cb(PurpleConnection *gc, const char *entry)
 {
 	msn_set_prp(gc, "PHH", entry);
@@ -293,6 +304,26 @@ msn_show_set_friendly_name(PurplePluginAction *action)
 						 "see you as."),
 					   purple_connection_get_display_name(gc), FALSE, FALSE, NULL,
 					   _("OK"), G_CALLBACK(msn_act_id),
+					   _("Cancel"), NULL,
+					   purple_connection_get_account(gc), NULL, NULL,
+					   gc);
+}
+
+static void
+msn_show_set_personal_message (PurplePluginAction *action)
+{
+	PurpleConnection *gc;
+	MsnSession *session;
+
+	gc = (PurpleConnection *) action->context;
+	session = gc->proto_data;
+
+	purple_request_input(gc, NULL, _("Set your personal message."),
+					   _("This is the message that other MSN buddies will "
+						 "see under your name."),
+					   purple_account_get_string (session->account, "personal_message", ""),
+					   FALSE, FALSE, NULL,
+					   _("OK"), G_CALLBACK(msn_set_personal_message_cb),
 					   _("Cancel"), NULL,
 					   purple_connection_get_account(gc), NULL, NULL,
 					   gc);
@@ -616,28 +647,34 @@ tooltip_text (PurpleBuddy *buddy,
 }
 
 static inline PurpleStatusType *
-util_gen_state (PurpleStatusPrimitive primitive,
+util_gen_state (gboolean *use_status_messages,
+                PurpleStatusPrimitive primitive,
                 const gchar *id,
                 const gchar *name)
 {
-    return purple_status_type_new_with_attrs (primitive,
-                                              id, name, TRUE, TRUE, FALSE,
-                                              "message", _("Message"), purple_value_new (PURPLE_TYPE_STRING),
-                                              NULL);
+    if (use_status_messages)
+        return purple_status_type_new_with_attrs (primitive,
+                                                  id, name, TRUE, TRUE, FALSE,
+                                                  "message", _("Message"), purple_value_new (PURPLE_TYPE_STRING),
+                                                  NULL);
+    else
+        return purple_status_type_new_full (primitive,
+                                            id, name, TRUE, TRUE, FALSE);
 }
 
 static GList *
 status_types (PurpleAccount *account)
 {
     GList *types = NULL;
+    gboolean = purple_account_get_bool (account, "use_status_messages", FALSE)
 
     /* visible states */
-    types = g_list_append (types, util_gen_state (PURPLE_STATUS_AVAILABLE, NULL, NULL));
-    types = g_list_append (types, util_gen_state (PURPLE_STATUS_AWAY, NULL, NULL));
-    types = g_list_append (types, util_gen_state (PURPLE_STATUS_AWAY, "brb", _("Be Right Back")));
-    types = g_list_append (types, util_gen_state (PURPLE_STATUS_UNAVAILABLE, "busy", _("Busy")));
-    types = g_list_append (types, util_gen_state (PURPLE_STATUS_UNAVAILABLE, "phone", _("On the Phone")));
-    types = g_list_append (types, util_gen_state (PURPLE_STATUS_AWAY, "lunch", _("Out to Lunch")));
+    types = g_list_append (types, util_gen_state (use_status_messages, PURPLE_STATUS_AVAILABLE, NULL, NULL));
+    types = g_list_append (types, util_gen_state (use_status_messages, PURPLE_STATUS_AWAY, NULL, NULL));
+    types = g_list_append (types, util_gen_state (use_status_messages, PURPLE_STATUS_AWAY, "brb", _("Be Right Back")));
+    types = g_list_append (types, util_gen_state (use_status_messages, PURPLE_STATUS_UNAVAILABLE, "busy", _("Busy")));
+    types = g_list_append (types, util_gen_state (use_status_messages, PURPLE_STATUS_UNAVAILABLE, "phone", _("On the Phone")));
+    types = g_list_append (types, util_gen_state (use_status_messages, PURPLE_STATUS_AWAY, "lunch", _("Out to Lunch")));
 
     {
         PurpleStatusType *status;
@@ -668,9 +705,18 @@ msn_actions(PurplePlugin *plugin, gpointer context)
 	GList *m = NULL;
 	PurplePluginAction *act;
 
+        session = gc->proto_data;
+
 	act = purple_plugin_action_new(_("Set Friendly Name..."),
 								 msn_show_set_friendly_name);
 	m = g_list_append(m, act);
+
+	if (!purple_account_get_bool (session->account, "use_status_messages", FALSE))
+	{
+		act = purple_plugin_action_new(_("Set Personal Message..."),
+						msn_show_set_personal_message);
+		m = g_list_append(m, act);
+	}
 	m = g_list_append(m, NULL);
 
 	act = purple_plugin_action_new(_("Set Home Phone Number..."),
@@ -696,7 +742,6 @@ msn_actions(PurplePlugin *plugin, gpointer context)
 			msn_show_set_mobile_pages);
 	m = g_list_append(m, act);
 
-        session = gc->proto_data;
 	user = msn_session_get_username(session);
 
 	if ((strstr(user, "@hotmail.") != NULL) ||
@@ -1065,7 +1110,8 @@ set_status (PurpleAccount *account,
     {
         session = gc->proto_data;
         pecan_update_status (session);
-        pecan_update_personal_message (session);
+        if (purple_account_get_bool (account, "use_status_messages", FALSE))
+            pecan_update_personal_message (session);
     }
 }
 
@@ -1731,6 +1777,9 @@ init_plugin (PurplePlugin *plugin)
         prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
 
         option = purple_account_option_bool_new (_("Use HTTP Method"), "http_method", FALSE);
+        prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
+
+        option = purple_account_option_bool_new (_("Use a personal message for each status (status messages)"), 						"use_status_messages", FALSE);
         prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
 
         option = purple_account_option_bool_new (_("Show custom smileys"), "custom_smileys", TRUE);

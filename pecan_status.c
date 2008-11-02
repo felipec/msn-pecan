@@ -166,6 +166,16 @@ pecan_update_personal_message (MsnSession *session)
     if (!session->logged_in)
         return;
 
+    if (!purple_account_get_bool (session->account, "use_status_messages", FALSE))
+    {
+        const gchar *msg;
+
+        msg = purple_account_get_string (session->account, "personal_message", "");
+        pecan_set_personal_message (session, (gchar*) msg);
+
+        return;
+    }
+
     status = purple_account_get_active_status (session->account);
     formatted_msg = purple_status_get_attr_string (status, "message");
 
