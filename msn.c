@@ -647,7 +647,7 @@ tooltip_text (PurpleBuddy *buddy,
 }
 
 static inline PurpleStatusType *
-util_gen_state (gboolean *use_status_messages,
+util_gen_state (gboolean use_status_messages,
                 PurpleStatusPrimitive primitive,
                 const gchar *id,
                 const gchar *name)
@@ -666,7 +666,7 @@ static GList *
 status_types (PurpleAccount *account)
 {
     GList *types = NULL;
-    gboolean = purple_account_get_bool (account, "use_status_messages", FALSE)
+    gboolean use_status_messages = purple_account_get_bool (account, "use_status_messages", FALSE);
 
     /* visible states */
     types = g_list_append (types, util_gen_state (use_status_messages, PURPLE_STATUS_AVAILABLE, NULL, NULL));
