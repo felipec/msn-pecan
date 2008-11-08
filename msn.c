@@ -1779,7 +1779,7 @@ init_plugin (PurplePlugin *plugin)
         option = purple_account_option_bool_new (_("Use HTTP Method"), "http_method", FALSE);
         prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
 
-        option = purple_account_option_bool_new (_("Use independent personal messages"), "use_independent_pm", FALSE);
+        option = purple_account_option_bool_new (_("Use independent personal messages"), "use_independent_pm", TRUE);
         prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
 
         option = purple_account_option_bool_new (_("Show custom smileys"), "custom_smileys", TRUE);
