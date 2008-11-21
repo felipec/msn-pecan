@@ -666,7 +666,10 @@ static GList *
 status_types (PurpleAccount *account)
 {
     GList *types = NULL;
-    gboolean use_independent_pm = purple_account_get_bool (account, "use_independent_pm", FALSE);
+    gboolean use_independent_pm;
+
+    /* will always pick the default (the account optios are not loaded yet). */
+    use_independent_pm = purple_account_get_bool (account, "use_independent_pm", FALSE);
 
     /* visible states */
     types = g_list_append (types, util_gen_state (use_independent_pm, PURPLE_STATUS_AVAILABLE, NULL, NULL));
