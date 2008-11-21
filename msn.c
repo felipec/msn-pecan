@@ -669,7 +669,7 @@ status_types (PurpleAccount *account)
     gboolean use_independent_pm;
 
     /* will always pick the default (the account optios are not loaded yet). */
-    use_independent_pm = purple_account_get_bool (account, "use_independent_pm", FALSE);
+    use_independent_pm = purple_account_get_bool (account, "use_independent_pm", TRUE);
 
     /* visible states */
     types = g_list_append (types, util_gen_state (use_independent_pm, PURPLE_STATUS_AVAILABLE, NULL, NULL));
@@ -714,7 +714,7 @@ msn_actions(PurplePlugin *plugin, gpointer context)
 								 msn_show_set_friendly_name);
 	m = g_list_append(m, act);
 
-	if (purple_account_get_bool (session->account, "use_independent_pm", FALSE))
+	if (purple_account_get_bool (session->account, "use_independent_pm", TRUE))
 	{
 		act = purple_plugin_action_new(_("Set Personal Message..."),
 						msn_show_set_personal_message);
@@ -1113,7 +1113,7 @@ set_status (PurpleAccount *account,
     {
         session = gc->proto_data;
         pecan_update_status (session);
-        if (!purple_account_get_bool (account, "use_independent_pm", FALSE))
+        if (!purple_account_get_bool (account, "use_independent_pm", TRUE))
             pecan_update_personal_message (session);
     }
 }

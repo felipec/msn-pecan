@@ -163,7 +163,7 @@ pecan_update_personal_message (MsnSession *session)
     if (!session->logged_in)
         return;
 
-    if (purple_account_get_bool (session->account, "use_independent_pm", FALSE))
+    if (purple_account_get_bool (session->account, "use_independent_pm", TRUE))
     {
         const gchar *msg;
 
