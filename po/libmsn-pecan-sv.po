@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: msn-pecan\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2008-06-27 15:13+0300\n"
-"PO-Revision-Date: 2008-08-16 17:14+0000\n"
+"PO-Revision-Date: 2008-08-31 14:59+0000\n"
 "Last-Translator: Erik Fredriksen <tapiren86@gmail.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2008-08-26 17:40+0000\n"
+"X-Launchpad-Export-Date: 2008-11-25 00:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: error.c:41
@@ -207,9 +207,8 @@ msgid "Server too busy"
 msgstr "Servern är för upptagen"
 
 #: error.c:205
-#, fuzzy
 msgid "Authentication failed"
-msgstr "Autentisering misslyckades"
+msgstr "Behörighetskontroll misslyckades"
 
 #: error.c:208
 msgid "Not allowed when hiding"
@@ -242,7 +241,6 @@ msgid "MSN Error: %s\n"
 msgstr "MSN-fel: %s\n"
 
 #: msn.c:114
-#, fuzzy
 msgid "Nudge"
 msgstr "Vibba"
 
@@ -261,9 +259,8 @@ msgid "Set your friendly name."
 msgstr "Ange smeknamn."
 
 #: msn.c:252
-#, fuzzy
 msgid "This is the name that other MSN buddies will see you as."
-msgstr "Detta är det namn som andra MSN-användare kommer att se."
+msgstr "Detta är det namn som andra MSN-kompisar kommer att se."
 
 #: msn.c:255 msn.c:272 msn.c:289 msn.c:306
 msgid "OK"
@@ -286,17 +283,15 @@ msgid "Set your mobile phone number."
 msgstr "Ange ditt mobiltelefonnummer."
 
 #: msn.c:319
-#, fuzzy
 msgid "Allow MSN Mobile pages?"
 msgstr "Tillåt MSN-mobilsökning?"
 
 #: msn.c:320
-#, fuzzy
 msgid ""
 "Do you want to allow or disallow people on your buddy list to send you MSN "
 "Mobile pages to your cell phone or other mobile device?"
 msgstr ""
-"Vill du tillåta personer i din kontaktlista att skicka MSN-mobilsökningar "
+"Vill du tillåta kompisar i din kompislista att skicka MSN-mobilsökningar "
 "till din mobiltelefon eller annan mobil enhet?"
 
 #: msn.c:326
@@ -308,16 +303,14 @@ msgid "Disallow"
 msgstr "Tillåt inte"
 
 #: msn.c:344
-#, fuzzy
 msgid "This Hotmail account may not be active."
-msgstr "Detta Hotmailkonto är kanske inte aktivt."
+msgstr "Detta Hotmail-konto är kanske inte aktivt."
 
 #: msn.c:388
 msgid "Send a mobile message."
 msgstr "Skicka ett mobilmeddelande."
 
 #: msn.c:390
-#, fuzzy
 msgid "Page"
 msgstr "Sida"
 
@@ -410,7 +403,6 @@ msgid "Initiate _Chat"
 msgstr "Starta _chatt"
 
 #: msn.c:722
-#, fuzzy
 msgid ""
 "SSL support is needed for MSN. Please install a supported SSL library."
 msgstr ""
@@ -429,9 +421,8 @@ msgid "Profile URL"
 msgstr "Profil-URL"
 
 #: msn.c:1469 msn.c:1470
-#, fuzzy
 msgid "WLM Protocol Plugin"
-msgstr "WLM Protokollinsticksmodul"
+msgstr ""
 
 #: msn.c:1496
 msgid "Server"
@@ -653,16 +644,16 @@ msgstr ""
 "Meddelandet kunde kanske inte skickas på grund av att ett okänt fel uppstod:"
 
 #: ab/pecan_contactlist.c:280
-#, fuzzy, c-format
+#, c-format
 msgid "%s has added you to his or her buddy list."
 msgstr "%s har lagt till dig till sin kontaktlista."
 
 #: ab/pecan_contactlist.c:348
-#, fuzzy, c-format
+#, c-format
 msgid "%s has removed you from his or her buddy list."
-msgstr "%s har tagit bort dig från sin kontaktlista."
+msgstr "%s har tagit bort dig från sin kompislista."
 
 #: ab/pecan_contactlist.c:839
-#, fuzzy, c-format
+#, c-format
 msgid "Can't add to \"%s\"; it's a virtual group"
 msgstr "Kan inte lägga till i \"%s\" - det är en fiktiv grupp."
