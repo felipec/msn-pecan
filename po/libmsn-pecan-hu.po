@@ -1,0 +1,663 @@
+# Hungarian translation for msn-pecan
+# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# This file is distributed under the same license as the msn-pecan package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: msn-pecan\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2008-06-27 15:13+0300\n"
+"PO-Revision-Date: 2008-07-27 16:06+0000\n"
+"Last-Translator: drummingdemon <drummingdemon@citromail.hu>\n"
+"Language-Team: Hungarian <hu@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Launchpad-Export-Date: 2008-11-25 00:48+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#: error.c:41
+msgid "Unable to parse message"
+msgstr "Az üzenetet nem sikerült értelmezni"
+
+#: error.c:45
+msgid "Syntax Error (probably a client bug)"
+msgstr "Szintaktikai hiba (valószínűleg klienshiba)"
+
+#: error.c:49
+msgid "Invalid e-mail address"
+msgstr "Érvénytelen e-mail cím"
+
+#: error.c:52
+msgid "User does not exist"
+msgstr "A felhasználó nem létezik"
+
+#: error.c:56
+msgid "Fully qualified domain name missing"
+msgstr "A teljesen minősített tartománynév hiányzik"
+
+#: error.c:59
+msgid "Already logged in"
+msgstr "Már be van jelentkezve"
+
+#: error.c:62
+msgid "Invalid screen name"
+msgstr "Érvénytelen felhasználónév"
+
+#: error.c:65
+msgid "Invalid friendly name"
+msgstr "Érvénytelen becenév"
+
+#: error.c:68
+msgid "List full"
+msgstr "Lista megtelt"
+
+#: error.c:71
+msgid "Already there"
+msgstr "Már rajta van"
+
+#: error.c:74
+msgid "Not on list"
+msgstr "Nincs a listán"
+
+#: error.c:77
+msgid "User is offline"
+msgstr "A felhasználó nem érhető el"
+
+#: error.c:80
+msgid "Already in the mode"
+msgstr "Már be van állítva ez az állapot"
+
+#: error.c:83
+msgid "Already in opposite list"
+msgstr "Az ellentétes listán már szerepel"
+
+#: error.c:86
+msgid "Too many groups"
+msgstr "Túl sok csoport"
+
+#: error.c:89
+msgid "Invalid group"
+msgstr "Érvénytelen csoport"
+
+#: error.c:92
+msgid "User not in group"
+msgstr "A felhasználó nincs a csoportban"
+
+#: error.c:95
+msgid "Group name too long"
+msgstr "A csoportnév túl hosszú"
+
+#: error.c:98
+msgid "Cannot remove group zero"
+msgstr "A nulla csoportot nem lehet eltávolítani"
+
+#: error.c:102
+msgid "Tried to add a user to a group that doesn't exist"
+msgstr "Nem létező csoporthoz próbált meg felvenni egy felhasználót"
+
+#: error.c:106
+msgid "Switchboard failed"
+msgstr "A közvetítés sikertelen"
+
+#: error.c:109
+msgid "Notify transfer failed"
+msgstr "A figyelmeztetés átvitele meghiúsult"
+
+#: error.c:113
+msgid "Required fields missing"
+msgstr "Szükséges mezők hiányoznak"
+
+#: error.c:116
+msgid "Too many hits to a FND"
+msgstr "Túl sok találat az FND-hez"
+
+#: error.c:119
+msgid "Not logged in"
+msgstr "Nem vagy bejelentkezve"
+
+#: error.c:123
+msgid "Service temporarily unavailable"
+msgstr "A szolgáltatás átmenetileg nem érhető el"
+
+#: error.c:126
+msgid "Database server error"
+msgstr "Adatbáziskiszolgáló-hiba"
+
+#: error.c:129
+msgid "Command disabled"
+msgstr "Parancs letiltva"
+
+#: error.c:132
+msgid "File operation error"
+msgstr "Fájlművelet-hiba"
+
+#: error.c:135
+msgid "Memory allocation error"
+msgstr "Memóriafoglalási hiba"
+
+#: error.c:138
+msgid "Wrong CHL value sent to server"
+msgstr "Hibás CHL érték lett küldve a kiszolgálónak"
+
+#: error.c:142
+msgid "Server busy"
+msgstr "A kiszolgáló foglalt"
+
+#: error.c:145 error.c:158 error.c:213
+msgid "Server unavailable"
+msgstr "A kiszolgáló nem érhető el"
+
+#: error.c:148
+msgid "Peer notification server down"
+msgstr "A partnerértesítő kiszolgáló nem üzemel"
+
+#: error.c:151
+msgid "Database connect error"
+msgstr "Adatbázis-kapcsolódási hiba"
+
+#: error.c:155
+msgid "Server is going down (abandon ship)"
+msgstr "A kiszolgáló leáll (jelentkezzen ki)"
+
+#: error.c:162
+msgid "Error creating connection"
+msgstr "Hiba történt a kapcsolat létrehozásakor"
+
+#: error.c:166
+msgid "CVR parameters are either unknown or not allowed"
+msgstr "Ismeretlen vagy nem engedélyezett CVR paraméterek"
+
+#: error.c:169
+msgid "Unable to write"
+msgstr "Nem sikerült az írás-művelet"
+
+#: error.c:172
+msgid "Session overload"
+msgstr "Folyamat túlterhelve"
+
+#: error.c:175
+msgid "User is too active"
+msgstr "A felhasználó túl aktív"
+
+#: error.c:178
+msgid "Too many sessions"
+msgstr "Túl sok folyamat"
+
+#: error.c:181
+msgid "Passport not verified"
+msgstr ".Net Passport (MSN igazolvány) nincs ellenőrizve"
+
+#: error.c:184
+msgid "Bad friend file"
+msgstr "Hibás barát-fájl"
+
+#: error.c:187
+msgid "Not expected"
+msgstr "Váratlan"
+
+#: error.c:192
+msgid "Friendly name changes too rapidly"
+msgstr "A felhasználónév túl gyorsan változik"
+
+#: error.c:201
+msgid "Server too busy"
+msgstr "A kiszolgáló túl elfoglalt"
+
+#: error.c:205
+msgid "Authentication failed"
+msgstr "A felhasználóazonosítás sikertelen"
+
+#: error.c:208
+msgid "Not allowed when hiding"
+msgstr "Rejtve kapcsolódás állapotban nem  engedélyezett"
+
+#: error.c:216
+msgid "Not accepting new users"
+msgstr "Nem fogad el új felhasználókat"
+
+#: error.c:220
+msgid "Kids Passport without parental consent"
+msgstr "Gyermekek Passport-ja (MSN igazolvány) szülői beleegyezés nélkül"
+
+#: error.c:224
+msgid "Passport account not yet verified"
+msgstr "Passport fiók (MSN igazolvány) még nincs ellenőrizve"
+
+#: error.c:227
+msgid "Bad ticket"
+msgstr "Rossz jegy"
+
+#: error.c:231
+#, c-format
+msgid "Unknown Error Code %d"
+msgstr "Ismeretlen hibakód %d"
+
+#: error.c:243
+#, c-format
+msgid "MSN Error: %s\n"
+msgstr "MSN hiba: %s\n"
+
+#: msn.c:114
+msgid "Nudge"
+msgstr "Bökés"
+
+#: msn.c:115
+#, c-format
+msgid "%s has nudged you!"
+msgstr "%s megbökte!"
+
+#: msn.c:116
+#, c-format
+msgid "Nudging %s..."
+msgstr "%s bökése..."
+
+#: msn.c:251
+msgid "Set your friendly name."
+msgstr "Becenév beállítása."
+
+#: msn.c:252
+msgid "This is the name that other MSN buddies will see you as."
+msgstr "Ezen a néven fogják Önt látni az MSN partnerei."
+
+#: msn.c:255 msn.c:272 msn.c:289 msn.c:306
+msgid "OK"
+msgstr "Rendben"
+
+#: msn.c:256 msn.c:273 msn.c:290 msn.c:307 msn.c:328
+msgid "Cancel"
+msgstr "Mégsem"
+
+#: msn.c:270
+msgid "Set your home phone number."
+msgstr "Otthoni telefonszám beállítása."
+
+#: msn.c:287
+msgid "Set your work phone number."
+msgstr "Munkahelyi telefonszám beállítása."
+
+#: msn.c:304
+msgid "Set your mobile phone number."
+msgstr "Mobiltelefonszám beállítása."
+
+#: msn.c:319
+msgid "Allow MSN Mobile pages?"
+msgstr "Engedélyezi az MSN mobil oldalakat?"
+
+#: msn.c:320
+msgid ""
+"Do you want to allow or disallow people on your buddy list to send you MSN "
+"Mobile pages to your cell phone or other mobile device?"
+msgstr ""
+"Engedélyezi vagy megtiltja a listán szereplő partnereinek, hogy mobil "
+"oldalakat küldjenek a mobiltelefonjára vagy más mobil eszközre?"
+
+#: msn.c:326
+msgid "Allow"
+msgstr "Engedélyez"
+
+#: msn.c:327
+msgid "Disallow"
+msgstr "letiltás"
+
+#: msn.c:344
+msgid "This Hotmail account may not be active."
+msgstr "Lehetséges, hogy ez a Hotmail fiók nem aktív."
+
+#: msn.c:388
+msgid "Send a mobile message."
+msgstr "Mobilüzenet küldése."
+
+#: msn.c:390
+msgid "Page"
+msgstr "Oldal"
+
+#: msn.c:391
+msgid "Close"
+msgstr "Bezárás"
+
+#: msn.c:545
+msgid "Status"
+msgstr "Állapot"
+
+#: msn.c:546
+msgid "Idle"
+msgstr "Tétlen"
+
+#: msn.c:555
+msgid "Personal Message"
+msgstr "Személyes üzenet"
+
+#: msn.c:559
+msgid "Has you"
+msgstr "Szerepel-e a listáján"
+
+#: msn.c:560 msn.c:569
+msgid "Yes"
+msgstr "Igen"
+
+#: msn.c:560 msn.c:569
+msgid "No"
+msgstr "Nem"
+
+#: msn.c:568
+msgid "Blocked"
+msgstr "Tiltott"
+
+#: msn.c:580
+msgid "Message"
+msgstr "Üzenet"
+
+#: msn.c:592
+msgid "Be Right Back"
+msgstr "Rögtön jövök"
+
+#: msn.c:593
+msgid "Busy"
+msgstr "Elfoglalt"
+
+#: msn.c:594
+msgid "On the Phone"
+msgstr "Telefonálok"
+
+#: msn.c:595
+msgid "Out to Lunch"
+msgstr "Ebédelni mentem"
+
+#: msn.c:626
+msgid "Set Friendly Name..."
+msgstr "Becenév beállítása..."
+
+#: msn.c:631
+msgid "Set Home Phone Number..."
+msgstr "Otthoni telefonszám beállítása..."
+
+#: msn.c:635
+msgid "Set Work Phone Number..."
+msgstr "Munkahelyi telefonszám beállítása..."
+
+#: msn.c:639
+msgid "Set Mobile Phone Number..."
+msgstr "Mobiltelefonszám beállítása..."
+
+#: msn.c:645
+msgid "Enable/Disable Mobile Devices..."
+msgstr "Mobileszközök engedélyezése/tiltása..."
+
+#: msn.c:650
+msgid "Allow/Disallow Mobile Pages..."
+msgstr "Mobiloldalak engedélyezése/tiltása..."
+
+#: msn.c:661
+msgid "Open Hotmail Inbox"
+msgstr "Hotmail bejövő levelek megnyitása"
+
+#: msn.c:689
+msgid "Send to Mobile"
+msgstr "Küldés mobiltelefonra"
+
+#: msn.c:698
+msgid "Initiate _Chat"
+msgstr "Csevegés ke_zdeményezése"
+
+#: msn.c:722
+msgid ""
+"SSL support is needed for MSN. Please install a supported SSL library."
+msgstr ""
+"Az MSN használatához SSL támogatás szükséges. Telepítsen egy támogatott SSL "
+"könyvtárat."
+
+#: msn.c:745
+msgid "Failed to connect to server."
+msgstr "Nem sikerült a kiszolgálóhoz kapcsolódni."
+
+#: msn.c:1344
+msgid "Username"
+msgstr "Felhasználónév"
+
+#: msn.c:1349
+msgid "Profile URL"
+msgstr "Profil URL-je"
+
+#: msn.c:1469 msn.c:1470
+msgid "WLM Protocol Plugin"
+msgstr "Windows Live Messenger Protokoll bővítmény"
+
+#: msn.c:1496
+msgid "Server"
+msgstr "Kiszolgáló"
+
+#: msn.c:1499
+msgid "Port"
+msgstr "Port"
+
+#: msn.c:1502
+msgid "Use HTTP Method"
+msgstr "HTTP eljárás használata"
+
+#: msn.c:1505
+msgid "Show custom smileys"
+msgstr "Egyéni hangulatjelek megjelenítése"
+
+#: msn.c:1508
+msgid "Use server-side alias"
+msgstr "Kiszolgálón tárolt név használata"
+
+#: msn.c:1515
+msgid "nudge: nudge a user to get their attention"
+msgstr "nudge: felhasználó megbökése figyelemfelhívási céllal"
+
+#: nexus.c:154
+msgid "Unable to connect"
+msgstr "Nem lehet csatlakozni"
+
+#: notification.c:106 notification.c:143
+#, c-format
+msgid ""
+"Error on notification server:\n"
+"%s"
+msgstr ""
+"Az üzenetküldő kiszolgálón hiba:\n"
+"%s"
+
+#: notification.c:113
+msgid ""
+"Error on notification server:\n"
+"Unknown"
+msgstr ""
+"Az üzenetküldő kiszolgálón hiba:\n"
+"Ismeretlen"
+
+#: notification.c:264
+#, c-format
+msgid "%s is not a valid group."
+msgstr "%s érvénytelen csoport."
+
+#: notification.c:269 session.c:357
+msgid "Unknown error."
+msgstr "Ismeretlen hiba."
+
+#: notification.c:272
+#, c-format
+msgid "%s on %s (%s)"
+msgstr "%s ezen: %s (%s)"
+
+#: notification.c:615
+#, c-format
+msgid "Unable to add user on %s (%s)"
+msgstr "Nem lehet felhasználót felvenni ehhez: %s (%s)"
+
+#: notification.c:619
+#, c-format
+msgid "Unable to block user on %s (%s)"
+msgstr "Nem lehet letiltani a felhasználót ezen: %s (%s)"
+
+#: notification.c:623
+#, c-format
+msgid "Unable to permit user on %s (%s)"
+msgstr "Nem lehet engedélyezni a felhasználót ezen: %s (%s)"
+
+#: notification.c:967
+msgid "Unable to rename group"
+msgstr "Nem lehet átnevezni a csoportot"
+
+#: notification.c:1026
+msgid "Unable to delete group"
+msgstr "Nem lehet törölni a csoportot"
+
+#: notification.c:1508
+#, c-format
+msgid ""
+"The MSN server will shut down for maintenance in %d minute. You will "
+"automatically be signed out at that time.  Please finish any conversations "
+"in progress.\n"
+"\n"
+"After the maintenance has been completed, you will be able to successfully "
+"sign in."
+msgid_plural ""
+"The MSN server will shut down for maintenance in %d minutes. You will "
+"automatically be signed out at that time.  Please finish any conversations "
+"in progress.\n"
+"\n"
+"After the maintenance has been completed, you will be able to successfully "
+"sign in."
+msgstr[0] ""
+"Az MSN kiszolgáló karbantartás miatt le fog állni %d percben belül. Ekkor "
+"automatikusan ki lesz jelentkeztetve, Kérjük fejezze be a folyamatban lévő "
+"társalgásait.\n"
+"\n"
+"A karbantartás befejeződése után sikeresen be tud majd jelentkezni."
+msgstr[1] ""
+"Az MSN kiszolgáló karbantartás miatt le fog állni %d percben belül. Ekkor "
+"automatikusan ki lesz jelentkeztetve, Kérjük fejezze be a folyamatban lévő "
+"társalgásait.\n"
+"\n"
+"A karbantartás befejeződése után sikeresen be tud majd jelentkezni."
+
+#: session.c:326
+msgid "Our protocol is not supported by the server."
+msgstr "A protokollt nem támogatja a kiszolgáló."
+
+#: session.c:330
+msgid "Error parsing HTTP."
+msgstr "Hiba a HTTP feldolgozása közben."
+
+#: session.c:334
+msgid "You have signed on from another location."
+msgstr "Ön be van jelentkezve egy másik helyről."
+
+#: session.c:337
+msgid ""
+"The MSN servers are temporarily unavailable. Please wait and try again."
+msgstr ""
+"Az MSN kiszolgálók átmenetileg nem érhetőek el. Kérem várjon és próbálja "
+"újra később."
+
+#: session.c:342
+msgid "The MSN servers are going down temporarily."
+msgstr "Az MSN kiszolgálók átmenetileg leállnak."
+
+#: session.c:347
+#, c-format
+msgid "Unable to authenticate: %s"
+msgstr "Nem sikerült a hitelesítés: %s"
+
+#: session.c:349
+msgid "Unknown error"
+msgstr "Ismeretlen hiba"
+
+#: session.c:352
+msgid ""
+"Your MSN buddy list is temporarily unavailable. Please wait and try again."
+msgstr ""
+"Az Ön MSN partnerlistája átmenetileg nem érhető el. Kérem várjon és próbálja "
+"újra később."
+
+#: session.c:372
+msgid "Connecting"
+msgstr "Kapcsolódás"
+
+#: session.c:373 session.c:375
+msgid "Handshaking"
+msgstr "Kapcsolatfelvétel"
+
+#: session.c:374
+msgid "Transferring"
+msgstr "Átvitel folyamatban"
+
+#: session.c:376
+msgid "Starting authentication"
+msgstr "Hitelesítés megkezdése"
+
+#: session.c:377
+msgid "Getting cookie"
+msgstr "Süti letöltése"
+
+#: session.c:378
+msgid "Authenticating"
+msgstr "Hitelesítés"
+
+#: session.c:379
+msgid "Sending cookie"
+msgstr "Süti küldése"
+
+#: session.c:380
+msgid "Retrieving buddy list"
+msgstr "Partnerlista fogadása"
+
+#: switchboard.c:539
+msgid "Message may have not been sent because a timeout occurred:"
+msgstr ""
+"Időtúllépés következett be, emiatt az üzenet lehet, hogy nem lett elküldve:"
+
+#: switchboard.c:547
+msgid "Message could not be sent, not allowed while invisible:"
+msgstr "Az üzenet nem küldhető el, rejtve kapcsolódva ez nem engedélyezett:"
+
+#: switchboard.c:551
+msgid "Message could not be sent because the user is offline:"
+msgstr "Az üzenet nem küldhető el, mivel a felhasználó kijelentkezett:"
+
+#: switchboard.c:555
+msgid "Message could not be sent because a connection error occurred:"
+msgstr "Az üzenet kapcsolódási hiba miatt nem küldhető el:"
+
+#: switchboard.c:559
+msgid "Message could not be sent because we are sending too quickly:"
+msgstr "Az üzenet nem küldhető el, mivel túl gyorsan küldi:"
+
+#: switchboard.c:563
+msgid ""
+"Message could not be sent because we were unable to establish a session with "
+"the server. This is likely a server problem, try again in a few minutes:"
+msgstr ""
+"Az üzenet nem küldhető el, mivel nem hozható létre munkamenet a "
+"kiszolgálóval. Ez valószínűleg kiszolgálóhiba, pár perc múlva próbálkozzon "
+"újra:"
+
+#: switchboard.c:570
+msgid ""
+"Message could not be sent because an error with the switchboard occurred:"
+msgstr ""
+"Az üzenet nem küldhető el, mivel hiba lépett fel a közvetítés közben:"
+
+#: switchboard.c:578
+msgid "Message may have not been sent because an unknown error occurred:"
+msgstr "Az üzenet ismeretlen hiba miatt lehet, hogy nem lett elküldve:"
+
+#: ab/pecan_contactlist.c:280
+#, c-format
+msgid "%s has added you to his or her buddy list."
+msgstr "%s felvette Önt a partnerlistájára."
+
+#: ab/pecan_contactlist.c:348
+#, c-format
+msgid "%s has removed you from his or her buddy list."
+msgstr "%s eltávolította Önt a partnerlistájáról."
+
+#: ab/pecan_contactlist.c:839
+#, c-format
+msgid "Can't add to \"%s\"; it's a virtual group"
+msgstr "Nem adható hozzá a(z) \"%s\", hiszen virtuális csoport"
