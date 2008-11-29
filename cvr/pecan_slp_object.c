@@ -27,11 +27,15 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef HAVE_LIBPURPLE
+#include "fix_purple.h"
+
 /* libpurple stuff. */
 #include <imgstore.h>
 /* for custom emoticon sending */
 #include <cipher.h>
 #include <util.h>
+#endif /* HAVE_LIBPURPLE */
 
 #define GET_STRING_TAG(field, id) \
     if ((tag = strstr(str, id "=\"")) != NULL) \
