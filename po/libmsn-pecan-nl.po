@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pidgin-msn-pecan\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2008-06-27 15:13+0300\n"
-"PO-Revision-Date: 2008-07-14 00:22+0000\n"
+"PO-Revision-Date: 2008-09-07 19:57+0000\n"
 "Last-Translator: Marco de Moulin <marco@point.nl>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2008-08-26 17:40+0000\n"
+"X-Launchpad-Export-Date: 2008-11-25 00:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: error.c:41
@@ -67,7 +67,6 @@ msgid "User is offline"
 msgstr "Gebruiker is offline"
 
 #: error.c:80
-#, fuzzy
 msgid "Already in the mode"
 msgstr "Reeds in deze modus"
 
@@ -176,7 +175,6 @@ msgid "Unable to write"
 msgstr "Kan niet schrijven"
 
 #: error.c:172
-#, fuzzy
 msgid "Session overload"
 msgstr "Sessie overbelasting"
 
@@ -209,14 +207,12 @@ msgid "Server too busy"
 msgstr "Server te druk bezig"
 
 #: error.c:205
-#, fuzzy
 msgid "Authentication failed"
 msgstr "Aanmelden is mislukt"
 
 #: error.c:208
-#, fuzzy
 msgid "Not allowed when hiding"
-msgstr "Niet toegestaan tijdens het verbergen"
+msgstr "Niet toegestaan als u  onzichtbaar bent"
 
 #: error.c:216
 msgid "Not accepting new users"
@@ -227,7 +223,6 @@ msgid "Kids Passport without parental consent"
 msgstr "Kinderpaspoort zonder toezegging van ouder"
 
 #: error.c:224
-#, fuzzy
 msgid "Passport account not yet verified"
 msgstr "Paspoort-account nog niet geverifieerd"
 
@@ -246,17 +241,16 @@ msgid "MSN Error: %s\n"
 msgstr "MSN Fout: %s\n"
 
 #: msn.c:114
-#, fuzzy
 msgid "Nudge"
 msgstr "Porren"
 
 #: msn.c:115
-#, fuzzy, c-format
+#, c-format
 msgid "%s has nudged you!"
 msgstr "%s heeft je gepord!"
 
 #: msn.c:116
-#, fuzzy, c-format
+#, c-format
 msgid "Nudging %s..."
 msgstr "%s aan het porren..."
 
@@ -317,7 +311,6 @@ msgid "Send a mobile message."
 msgstr "Een mobiel bericht versturen."
 
 #: msn.c:390
-#, fuzzy
 msgid "Page"
 msgstr "Oproepen"
 
@@ -444,7 +437,6 @@ msgid "Use HTTP Method"
 msgstr "HTTP-methode gebruiken"
 
 #: msn.c:1505
-#, fuzzy
 msgid "Show custom smileys"
 msgstr "Eigen emoticons weergeven"
 
@@ -453,17 +445,15 @@ msgid "Use server-side alias"
 msgstr "Gebruik bijnaam op server"
 
 #: msn.c:1515
-#, fuzzy
 msgid "nudge: nudge a user to get their attention"
 msgstr "Porren: Een contact porren om de aandacht te krijgen"
 
 #: nexus.c:154
-#, fuzzy
 msgid "Unable to connect"
 msgstr "Kan geen verbinding maken"
 
 #: notification.c:106 notification.c:143
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Error on notification server:\n"
 "%s"
@@ -472,7 +462,6 @@ msgstr ""
 "%s"
 
 #: notification.c:113
-#, fuzzy
 msgid ""
 "Error on notification server:\n"
 "Unknown"
@@ -518,7 +507,7 @@ msgid "Unable to delete group"
 msgstr "Kan groep niet verwijderen"
 
 #: notification.c:1508
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "The MSN server will shut down for maintenance in %d minute. You will "
 "automatically be signed out at that time.  Please finish any conversations "
@@ -554,12 +543,10 @@ msgid "Error parsing HTTP."
 msgstr "Fout bij analyseren HTTP."
 
 #: session.c:334
-#, fuzzy
 msgid "You have signed on from another location."
 msgstr "U bent op een andere locatie aangemeld."
 
 #: session.c:337
-#, fuzzy
 msgid ""
 "The MSN servers are temporarily unavailable. Please wait and try again."
 msgstr ""
@@ -570,7 +557,7 @@ msgid "The MSN servers are going down temporarily."
 msgstr "De MSN-servers worden tijdelijk uitgeschakeld."
 
 #: session.c:347
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to authenticate: %s"
 msgstr "Kan niet verificeren:  %s"
 
@@ -598,7 +585,6 @@ msgid "Transferring"
 msgstr "Aan het verzenden"
 
 #: session.c:376
-#, fuzzy
 msgid "Starting authentication"
 msgstr "Verificatie gestart"
 
@@ -619,7 +605,6 @@ msgid "Retrieving buddy list"
 msgstr "Opvragen van contactenlijst"
 
 #: switchboard.c:539
-#, fuzzy
 msgid "Message may have not been sent because a timeout occurred:"
 msgstr ""
 "Bericht is mogelijk niet verstuurd doordat er een time-out is opgetreden:"
@@ -673,6 +658,6 @@ msgid "%s has removed you from his or her buddy list."
 msgstr "%s heeft u van zijn/haar contactenlijst verwijderd."
 
 #: ab/pecan_contactlist.c:839
-#, fuzzy, c-format
+#, c-format
 msgid "Can't add to \"%s\"; it's a virtual group"
 msgstr "Kan \"%s\" niet toevoegen; is een virtuele groep"
