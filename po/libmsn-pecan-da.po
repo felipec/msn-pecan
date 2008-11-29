@@ -1,0 +1,655 @@
+# Danish translation for msn-pecan
+# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# This file is distributed under the same license as the msn-pecan package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: msn-pecan\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2008-06-27 15:13+0300\n"
+"PO-Revision-Date: 2008-10-14 20:34+0000\n"
+"Last-Translator: Peter Skov <Unknown>\n"
+"Language-Team: Danish <da@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Launchpad-Export-Date: 2008-11-25 00:48+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#: error.c:41
+msgid "Unable to parse message"
+msgstr "Kunne ikke fortolke beskeden."
+
+#: error.c:45
+msgid "Syntax Error (probably a client bug)"
+msgstr ""
+
+#: error.c:49
+msgid "Invalid e-mail address"
+msgstr "Ugyldig e-mail adresse"
+
+#: error.c:52
+msgid "User does not exist"
+msgstr "Bruger eksisterer ikke"
+
+#: error.c:56
+msgid "Fully qualified domain name missing"
+msgstr "Fuldt kvalificeret domænenavn mangler"
+
+#: error.c:59
+msgid "Already logged in"
+msgstr "Allerede logget ind"
+
+#: error.c:62
+msgid "Invalid screen name"
+msgstr "Ugyldigt skærmnavn"
+
+#: error.c:65
+msgid "Invalid friendly name"
+msgstr "Ugyldigt synligt navn"
+
+#: error.c:68
+msgid "List full"
+msgstr "Liste fuld"
+
+#: error.c:71
+msgid "Already there"
+msgstr "Allerede der"
+
+#: error.c:74
+msgid "Not on list"
+msgstr "Ikke på liste"
+
+#: error.c:77
+msgid "User is offline"
+msgstr "Bruger er offline"
+
+#: error.c:80
+msgid "Already in the mode"
+msgstr ""
+
+#: error.c:83
+msgid "Already in opposite list"
+msgstr "Allerede i den modsatte liste"
+
+#: error.c:86
+msgid "Too many groups"
+msgstr "For mange grupper"
+
+#: error.c:89
+msgid "Invalid group"
+msgstr "Ugyldig gruppe"
+
+#: error.c:92
+msgid "User not in group"
+msgstr "Bruger ikke i gruppe"
+
+#: error.c:95
+msgid "Group name too long"
+msgstr "Gruppenavn for langt"
+
+#: error.c:98
+msgid "Cannot remove group zero"
+msgstr "Kan ikke fjerne gruppe nul"
+
+#: error.c:102
+msgid "Tried to add a user to a group that doesn't exist"
+msgstr "Prøvede at tilføje en ven til en gruppe der ikke eksisterer"
+
+#: error.c:106
+msgid "Switchboard failed"
+msgstr "Switchboard fejlede"
+
+#: error.c:109
+msgid "Notify transfer failed"
+msgstr "Påmindelse om overførsel fejlede"
+
+#: error.c:113
+msgid "Required fields missing"
+msgstr "Krævede felter manglende"
+
+#: error.c:116
+msgid "Too many hits to a FND"
+msgstr "For mange hits til en FND"
+
+#: error.c:119
+msgid "Not logged in"
+msgstr "Ikke logget ind"
+
+#: error.c:123
+msgid "Service temporarily unavailable"
+msgstr "Tjeneste midlertidigt utilgængelig"
+
+#: error.c:126
+msgid "Database server error"
+msgstr "Database server fejl"
+
+#: error.c:129
+msgid "Command disabled"
+msgstr "Kommando slået fra"
+
+#: error.c:132
+msgid "File operation error"
+msgstr "Filhåndterings fejl"
+
+#: error.c:135
+msgid "Memory allocation error"
+msgstr "Hukommelses-allokerings fejl"
+
+#: error.c:138
+msgid "Wrong CHL value sent to server"
+msgstr "Forkert CHL værdi sendt til server"
+
+#: error.c:142
+msgid "Server busy"
+msgstr "Server optaget"
+
+#: error.c:145 error.c:158 error.c:213
+msgid "Server unavailable"
+msgstr "Server ikke tilgængelig"
+
+#: error.c:148
+msgid "Peer notification server down"
+msgstr "\"Peer Notification\"-server nede"
+
+#: error.c:151
+msgid "Database connect error"
+msgstr "Fejl ved forbindelse til database"
+
+#: error.c:155
+msgid "Server is going down (abandon ship)"
+msgstr ""
+
+#: error.c:162
+msgid "Error creating connection"
+msgstr "Fejl ved oprettelse af forbindelse"
+
+#: error.c:166
+msgid "CVR parameters are either unknown or not allowed"
+msgstr "CVR parametre er enten ukendte eller ikke tilladte"
+
+#: error.c:169
+msgid "Unable to write"
+msgstr "Kunne ikke skrive"
+
+#: error.c:172
+msgid "Session overload"
+msgstr "Overbelastet session"
+
+#: error.c:175
+msgid "User is too active"
+msgstr "Bruger er for aktiv"
+
+#: error.c:178
+msgid "Too many sessions"
+msgstr "For mange sessioner"
+
+#: error.c:181
+msgid "Passport not verified"
+msgstr "Passport konto endnu ikke godkendt"
+
+#: error.c:184
+msgid "Bad friend file"
+msgstr "Fejl i vennefil"
+
+#: error.c:187
+msgid "Not expected"
+msgstr "Ikke forventet"
+
+#: error.c:192
+msgid "Friendly name changes too rapidly"
+msgstr "Synligt navn ændres for ofte"
+
+#: error.c:201
+msgid "Server too busy"
+msgstr "Server for travl"
+
+#: error.c:205
+msgid "Authentication failed"
+msgstr "Godkendelse mislykkedes"
+
+#: error.c:208
+msgid "Not allowed when hiding"
+msgstr ""
+
+#: error.c:216
+msgid "Not accepting new users"
+msgstr "Accepterer ikke nye brugere"
+
+#: error.c:220
+msgid "Kids Passport without parental consent"
+msgstr "Børne-passport uden forældre godkendelse"
+
+#: error.c:224
+msgid "Passport account not yet verified"
+msgstr "Passport konto endnu ikke godkendt"
+
+#: error.c:227
+msgid "Bad ticket"
+msgstr "Fejl fra server: \"Bad ticket\""
+
+#: error.c:231
+#, c-format
+msgid "Unknown Error Code %d"
+msgstr "Ukendt fejlkode %d"
+
+#: error.c:243
+#, c-format
+msgid "MSN Error: %s\n"
+msgstr "MSN Fejl: %s\n"
+
+#: msn.c:114
+msgid "Nudge"
+msgstr "Vink"
+
+#: msn.c:115
+#, c-format
+msgid "%s has nudged you!"
+msgstr ""
+
+#: msn.c:116
+#, c-format
+msgid "Nudging %s..."
+msgstr ""
+
+#: msn.c:251
+msgid "Set your friendly name."
+msgstr "Sæt dit synlige navn."
+
+#: msn.c:252
+msgid "This is the name that other MSN buddies will see you as."
+msgstr "Dette er navnet som dine andre MSN venner vil se dig som."
+
+#: msn.c:255 msn.c:272 msn.c:289 msn.c:306
+msgid "OK"
+msgstr ""
+
+#: msn.c:256 msn.c:273 msn.c:290 msn.c:307 msn.c:328
+msgid "Cancel"
+msgstr "Annullér"
+
+#: msn.c:270
+msgid "Set your home phone number."
+msgstr "Sæt hjemmetelefonnummer."
+
+#: msn.c:287
+msgid "Set your work phone number."
+msgstr "Sæt arbejdstelefonnummer."
+
+#: msn.c:304
+msgid "Set your mobile phone number."
+msgstr "Sæt mobiltelefonnummer."
+
+#: msn.c:319
+msgid "Allow MSN Mobile pages?"
+msgstr "Tillad MSN mobiltelefon sider?"
+
+#: msn.c:320
+msgid ""
+"Do you want to allow or disallow people on your buddy list to send you MSN "
+"Mobile pages to your cell phone or other mobile device?"
+msgstr ""
+"Vil du tillade eller nægte folk på din venneliste at sende dig MSN "
+"mobiltelefon sider til din mobiltelefon eller andre mobilenheder?"
+
+#: msn.c:326
+msgid "Allow"
+msgstr "Tillad"
+
+#: msn.c:327
+msgid "Disallow"
+msgstr "Tillad ikke"
+
+#: msn.c:344
+msgid "This Hotmail account may not be active."
+msgstr "Denne Hotmail konto er måske ikke aktiv."
+
+#: msn.c:388
+msgid "Send a mobile message."
+msgstr "Send en mobilbesked."
+
+#: msn.c:390
+msgid "Page"
+msgstr "Side"
+
+#: msn.c:391
+msgid "Close"
+msgstr "Luk"
+
+#: msn.c:545
+msgid "Status"
+msgstr "Status"
+
+#: msn.c:546
+msgid "Idle"
+msgstr "Inaktiv"
+
+#: msn.c:555
+msgid "Personal Message"
+msgstr "Personlig meddelelse"
+
+#: msn.c:559
+msgid "Has you"
+msgstr "Har dig"
+
+#: msn.c:560 msn.c:569
+msgid "Yes"
+msgstr ""
+
+#: msn.c:560 msn.c:569
+msgid "No"
+msgstr "Nej"
+
+#: msn.c:568
+msgid "Blocked"
+msgstr "Blokeret"
+
+#: msn.c:580
+msgid "Message"
+msgstr "Meddelelse"
+
+#: msn.c:592
+msgid "Be Right Back"
+msgstr "Straks tilbage"
+
+#: msn.c:593
+msgid "Busy"
+msgstr "Optaget"
+
+#: msn.c:594
+msgid "On the Phone"
+msgstr "Snakker i telefon"
+
+#: msn.c:595
+msgid "Out to Lunch"
+msgstr "Ude til frokost"
+
+#: msn.c:626
+msgid "Set Friendly Name..."
+msgstr "Sæt synligt navn..."
+
+#: msn.c:631
+msgid "Set Home Phone Number..."
+msgstr "Sæt hjemmetelefonnummer..."
+
+#: msn.c:635
+msgid "Set Work Phone Number..."
+msgstr "Sæt arbejdstelefonnummer..."
+
+#: msn.c:639
+msgid "Set Mobile Phone Number..."
+msgstr "Sæt mobiltelefonnummer..."
+
+#: msn.c:645
+msgid "Enable/Disable Mobile Devices..."
+msgstr "Aktivér/Deaktivér mobiltelefoner..."
+
+#: msn.c:650
+msgid "Allow/Disallow Mobile Pages..."
+msgstr "Tillad/Nægt mobiltelefon sider..."
+
+#: msn.c:661
+msgid "Open Hotmail Inbox"
+msgstr "Åbn Hotmail indbakke"
+
+#: msn.c:689
+msgid "Send to Mobile"
+msgstr "Send til mobiltelefon"
+
+#: msn.c:698
+msgid "Initiate _Chat"
+msgstr "Åbn _Chat"
+
+#: msn.c:722
+msgid ""
+"SSL support is needed for MSN. Please install a supported SSL library."
+msgstr ""
+
+#: msn.c:745
+msgid "Failed to connect to server."
+msgstr "Kunne ikke forbinde til server."
+
+#: msn.c:1344
+msgid "Username"
+msgstr "Brugernavn"
+
+#: msn.c:1349
+msgid "Profile URL"
+msgstr "Profil URL"
+
+#: msn.c:1469 msn.c:1470
+msgid "WLM Protocol Plugin"
+msgstr ""
+
+#: msn.c:1496
+msgid "Server"
+msgstr "Server"
+
+#: msn.c:1499
+msgid "Port"
+msgstr "Port"
+
+#: msn.c:1502
+msgid "Use HTTP Method"
+msgstr "Brug HTTP-metode"
+
+#: msn.c:1505
+msgid "Show custom smileys"
+msgstr "Vis brugerdefinerede smileys"
+
+#: msn.c:1508
+msgid "Use server-side alias"
+msgstr ""
+
+#: msn.c:1515
+msgid "nudge: nudge a user to get their attention"
+msgstr "vink: vink en bruger for at få deres opmærksomhed"
+
+#: nexus.c:154
+msgid "Unable to connect"
+msgstr "Kunne ikke forbinde."
+
+#: notification.c:106 notification.c:143
+#, c-format
+msgid ""
+"Error on notification server:\n"
+"%s"
+msgstr ""
+
+#: notification.c:113
+msgid ""
+"Error on notification server:\n"
+"Unknown"
+msgstr ""
+
+#: notification.c:264
+#, c-format
+msgid "%s is not a valid group."
+msgstr "%s er ikke en gyldig gruppe."
+
+#: notification.c:269 session.c:357
+msgid "Unknown error."
+msgstr "Ukendt fejl."
+
+#: notification.c:272
+#, c-format
+msgid "%s on %s (%s)"
+msgstr "%s på %s (%s)"
+
+#: notification.c:615
+#, c-format
+msgid "Unable to add user on %s (%s)"
+msgstr "Kunne ikke tilføje brugeren på %s (%s)"
+
+#: notification.c:619
+#, c-format
+msgid "Unable to block user on %s (%s)"
+msgstr "Kunne ikke blokere bruger på %s (%s)"
+
+#: notification.c:623
+#, c-format
+msgid "Unable to permit user on %s (%s)"
+msgstr "Kunne ikke tillade bruger på %s (%s)"
+
+#: notification.c:967
+msgid "Unable to rename group"
+msgstr "Kunne ikke omdøbe gruppe"
+
+#: notification.c:1026
+msgid "Unable to delete group"
+msgstr "Kunne ikke slette gruppe"
+
+#: notification.c:1508
+#, c-format
+msgid ""
+"The MSN server will shut down for maintenance in %d minute. You will "
+"automatically be signed out at that time.  Please finish any conversations "
+"in progress.\n"
+"\n"
+"After the maintenance has been completed, you will be able to successfully "
+"sign in."
+msgid_plural ""
+"The MSN server will shut down for maintenance in %d minutes. You will "
+"automatically be signed out at that time.  Please finish any conversations "
+"in progress.\n"
+"\n"
+"After the maintenance has been completed, you will be able to successfully "
+"sign in."
+msgstr[0] ""
+"MSN-serveren vil blive lukket ned for vedligeholdelse om %d minut. Du vil "
+"automatisk blive logget af på det tidspunkt. Færdiggør alle igangværende "
+"samtaler.\n"
+"\n"
+"Efter vedligeholdelsen er blevet gennemført, kan du logge ind igen."
+msgstr[1] ""
+"MSN-serveren vil blive lukket ned for vedligeholdelse om %d minutter. Du vil "
+"automatisk blive logget af på det tidspunkt. Færdiggør alle igangværende "
+"samtaler.\n"
+"\n"
+"Efter vedligeholdelsen er blevet gennemført, kan du logge ind igen."
+
+#: session.c:326
+msgid "Our protocol is not supported by the server."
+msgstr "Vores protokol understøttes ikke af denne server."
+
+#: session.c:330
+msgid "Error parsing HTTP."
+msgstr "Fejl ved fortolkning af HTTP."
+
+#: session.c:334
+msgid "You have signed on from another location."
+msgstr "Du er logget ind fra en anden maskine."
+
+#: session.c:337
+msgid ""
+"The MSN servers are temporarily unavailable. Please wait and try again."
+msgstr ""
+"MSN serverne er midlertidigt utilgængelige. Vent og forsøg igen senere."
+
+#: session.c:342
+msgid "The MSN servers are going down temporarily."
+msgstr "MSN serverne lukkes midlertidigt."
+
+#: session.c:347
+#, c-format
+msgid "Unable to authenticate: %s"
+msgstr "Kunne ikke godkende: %s"
+
+#: session.c:349
+msgid "Unknown error"
+msgstr "Ukendt fejl"
+
+#: session.c:352
+msgid ""
+"Your MSN buddy list is temporarily unavailable. Please wait and try again."
+msgstr ""
+"Din MSN venneliste er midlertidigt utilgængelig. Vent og førsøg igen senere."
+
+#: session.c:372
+msgid "Connecting"
+msgstr "Forbinder"
+
+#: session.c:373 session.c:375
+msgid "Handshaking"
+msgstr "Håndtryk"
+
+#: session.c:374
+msgid "Transferring"
+msgstr "Overfører"
+
+#: session.c:376
+msgid "Starting authentication"
+msgstr "Starter godkendelse"
+
+#: session.c:377
+msgid "Getting cookie"
+msgstr "Henter cookie"
+
+#: session.c:378
+msgid "Authenticating"
+msgstr "Godkender"
+
+#: session.c:379
+msgid "Sending cookie"
+msgstr "Sender cookie"
+
+#: session.c:380
+msgid "Retrieving buddy list"
+msgstr "Modtager venneliste"
+
+#: switchboard.c:539
+msgid "Message may have not been sent because a timeout occurred:"
+msgstr ""
+"Besked er måske ikke blevet sendt på grund af et tidsudløb der overskred "
+"grænsen:"
+
+#: switchboard.c:547
+msgid "Message could not be sent, not allowed while invisible:"
+msgstr "Beskeden blev ikke sendt, da det ikke er tilladt som usynlig:"
+
+#: switchboard.c:551
+msgid "Message could not be sent because the user is offline:"
+msgstr "Beskeden blev ikke sendt, da brugeren er logget af:"
+
+#: switchboard.c:555
+msgid "Message could not be sent because a connection error occurred:"
+msgstr "Beskeden kunne ikke sendes, fordi en forbindelsesfejl opstod:"
+
+#: switchboard.c:559
+msgid "Message could not be sent because we are sending too quickly:"
+msgstr "Besked kunne ikke sendes, fordi vi sender for hurtigt:"
+
+#: switchboard.c:563
+msgid ""
+"Message could not be sent because we were unable to establish a session with "
+"the server. This is likely a server problem, try again in a few minutes:"
+msgstr ""
+"Beskeden kunne ikke sendes fordi vi ikke kunne få forbindelse til serveren. "
+"Dette er højst sandsynligt et server problem, prøv igen om et par minutter."
+
+#: switchboard.c:570
+msgid ""
+"Message could not be sent because an error with the switchboard occurred:"
+msgstr ""
+"Beskeden kunne ikke sendes, da der opstod en fejl ved omstillingstavlen:"
+
+#: switchboard.c:578
+msgid "Message may have not been sent because an unknown error occurred:"
+msgstr "Beskeden er måske ikke blevet sendt, da en ukendt fejl er opstået:"
+
+#: ab/pecan_contactlist.c:280
+#, c-format
+msgid "%s has added you to his or her buddy list."
+msgstr "%s har tilføjet dig til hans eller hendes venneliste."
+
+#: ab/pecan_contactlist.c:348
+#, c-format
+msgid "%s has removed you from his or her buddy list."
+msgstr "%s har fjernet dig fra hans eller hendes venneliste."
+
+#: ab/pecan_contactlist.c:839
+#, c-format
+msgid "Can't add to \"%s\"; it's a virtual group"
+msgstr ""
