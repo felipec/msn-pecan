@@ -1,0 +1,642 @@
+# Simplified Chinese translation for msn-pecan
+# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# This file is distributed under the same license as the msn-pecan package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: msn-pecan\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2008-06-27 15:13+0300\n"
+"PO-Revision-Date: 2008-07-18 07:37+0000\n"
+"Last-Translator: Tao Wei <Unknown>\n"
+"Language-Team: Simplified Chinese <zh_CN@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Launchpad-Export-Date: 2008-11-25 00:48+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#: error.c:41
+msgid "Unable to parse message"
+msgstr "无法处理消息"
+
+#: error.c:45
+msgid "Syntax Error (probably a client bug)"
+msgstr "错误（可能为客户端问题）"
+
+#: error.c:49
+msgid "Invalid e-mail address"
+msgstr "无效的电子邮件地址"
+
+#: error.c:52
+msgid "User does not exist"
+msgstr "用户不存在"
+
+#: error.c:56
+msgid "Fully qualified domain name missing"
+msgstr "缺少全称域名"
+
+#: error.c:59
+msgid "Already logged in"
+msgstr "已登录"
+
+#: error.c:62
+msgid "Invalid screen name"
+msgstr "无效的昵称"
+
+#: error.c:65
+msgid "Invalid friendly name"
+msgstr "友好的名称无效"
+
+#: error.c:68
+msgid "List full"
+msgstr "列表已满"
+
+#: error.c:71
+msgid "Already there"
+msgstr "已列出"
+
+#: error.c:74
+msgid "Not on list"
+msgstr "未列出"
+
+#: error.c:77
+msgid "User is offline"
+msgstr "用户离线"
+
+#: error.c:80
+msgid "Already in the mode"
+msgstr "已在该模式中"
+
+#: error.c:83
+msgid "Already in opposite list"
+msgstr "已在相对列表"
+
+#: error.c:86
+msgid "Too many groups"
+msgstr "组太多"
+
+#: error.c:89
+msgid "Invalid group"
+msgstr "无效的组"
+
+#: error.c:92
+msgid "User not in group"
+msgstr "用户未在组中"
+
+#: error.c:95
+msgid "Group name too long"
+msgstr "组名太长"
+
+#: error.c:98
+msgid "Cannot remove group zero"
+msgstr "无法删除零组"
+
+#: error.c:102
+msgid "Tried to add a user to a group that doesn't exist"
+msgstr "试图向不存在的组中添加联系人"
+
+#: error.c:106
+msgid "Switchboard failed"
+msgstr "切换板失败"
+
+#: error.c:109
+msgid "Notify transfer failed"
+msgstr "通知传送失败"
+
+#: error.c:113
+msgid "Required fields missing"
+msgstr "缺少必需域"
+
+#: error.c:116
+msgid "Too many hits to a FND"
+msgstr "FND 的次数太多"
+
+#: error.c:119
+msgid "Not logged in"
+msgstr "未登入"
+
+#: error.c:123
+msgid "Service temporarily unavailable"
+msgstr "服务暂时不可用"
+
+#: error.c:126
+msgid "Database server error"
+msgstr "数据库服务器错误"
+
+#: error.c:129
+msgid "Command disabled"
+msgstr "命令被禁用"
+
+#: error.c:132
+msgid "File operation error"
+msgstr "文件操作错误"
+
+#: error.c:135
+msgid "Memory allocation error"
+msgstr "内存分配错误"
+
+#: error.c:138
+msgid "Wrong CHL value sent to server"
+msgstr "给服务器发送的 CHL 值错误"
+
+#: error.c:142
+msgid "Server busy"
+msgstr "服务器忙"
+
+#: error.c:145 error.c:158 error.c:213
+msgid "Server unavailable"
+msgstr "服务器不可用"
+
+#: error.c:148
+msgid "Peer notification server down"
+msgstr "通知服务器已关闭"
+
+#: error.c:151
+msgid "Database connect error"
+msgstr "数据库连接错误"
+
+#: error.c:155
+msgid "Server is going down (abandon ship)"
+msgstr "服务器即将下线"
+
+#: error.c:162
+msgid "Error creating connection"
+msgstr "创建连接出错"
+
+#: error.c:166
+msgid "CVR parameters are either unknown or not allowed"
+msgstr "CVR 参数未知或不允许"
+
+#: error.c:169
+msgid "Unable to write"
+msgstr "无法写入"
+
+#: error.c:172
+msgid "Session overload"
+msgstr "会话过载"
+
+#: error.c:175
+msgid "User is too active"
+msgstr "用户过于活跃"
+
+#: error.c:178
+msgid "Too many sessions"
+msgstr "会话过多"
+
+#: error.c:181
+msgid "Passport not verified"
+msgstr "Passport 未验证"
+
+#: error.c:184
+msgid "Bad friend file"
+msgstr "无效的好友文件"
+
+#: error.c:187
+msgid "Not expected"
+msgstr "未期待"
+
+#: error.c:192
+msgid "Friendly name changes too rapidly"
+msgstr "友好的名称更改太频繁"
+
+#: error.c:201
+msgid "Server too busy"
+msgstr "服务器忙"
+
+#: error.c:205
+msgid "Authentication failed"
+msgstr "认证失败"
+
+#: error.c:208
+msgid "Not allowed when hiding"
+msgstr "隐身时不允许"
+
+#: error.c:216
+msgid "Not accepting new users"
+msgstr "不接受新用户"
+
+#: error.c:220
+msgid "Kids Passport without parental consent"
+msgstr "没有父母在的儿童护照"
+
+#: error.c:224
+msgid "Passport account not yet verified"
+msgstr "Passport 账户尚未验证"
+
+#: error.c:227
+msgid "Bad ticket"
+msgstr "无效的票证"
+
+#: error.c:231
+#, c-format
+msgid "Unknown Error Code %d"
+msgstr "未知的错误代码 %d"
+
+#: error.c:243
+#, c-format
+msgid "MSN Error: %s\n"
+msgstr "MSN 错误: %s\n"
+
+#: msn.c:114
+msgid "Nudge"
+msgstr "闪屏震动"
+
+#: msn.c:115
+#, c-format
+msgid "%s has nudged you!"
+msgstr "%s 发来了闪屏震动！"
+
+#: msn.c:116
+#, c-format
+msgid "Nudging %s..."
+msgstr "正在闪屏震动 %s..."
+
+#: msn.c:251
+msgid "Set your friendly name."
+msgstr "设置您的友好名称。"
+
+#: msn.c:252
+msgid "This is the name that other MSN buddies will see you as."
+msgstr "这是其他 MSN 好友看到的名字。"
+
+#: msn.c:255 msn.c:272 msn.c:289 msn.c:306
+msgid "OK"
+msgstr "确定"
+
+#: msn.c:256 msn.c:273 msn.c:290 msn.c:307 msn.c:328
+msgid "Cancel"
+msgstr "取消"
+
+#: msn.c:270
+msgid "Set your home phone number."
+msgstr "设置您的家庭电话号码。"
+
+#: msn.c:287
+msgid "Set your work phone number."
+msgstr "设置您的工作电话号码。"
+
+#: msn.c:304
+msgid "Set your mobile phone number."
+msgstr "设置您的移动电话号码。"
+
+#: msn.c:319
+msgid "Allow MSN Mobile pages?"
+msgstr "允许 MSN 移动寻呼吗？"
+
+#: msn.c:320
+msgid ""
+"Do you want to allow or disallow people on your buddy list to send you MSN "
+"Mobile pages to your cell phone or other mobile device?"
+msgstr "在您的允许之下，您的好友可以给您的移动电话或其它移动设备发送 MSN 移动寻呼。您想要允许还是禁止这一功能？"
+
+#: msn.c:326
+msgid "Allow"
+msgstr "允许"
+
+#: msn.c:327
+msgid "Disallow"
+msgstr "禁止"
+
+#: msn.c:344
+msgid "This Hotmail account may not be active."
+msgstr "此 Hotmail 账户可能未激活。"
+
+#: msn.c:388
+msgid "Send a mobile message."
+msgstr "发送移动消息。"
+
+#: msn.c:390
+msgid "Page"
+msgstr "页面"
+
+#: msn.c:391
+msgid "Close"
+msgstr "关闭"
+
+#: msn.c:545
+msgid "Status"
+msgstr "状态"
+
+#: msn.c:546
+msgid "Idle"
+msgstr "发呆"
+
+#: msn.c:555
+msgid "Personal Message"
+msgstr "私人信息"
+
+#: msn.c:559
+msgid "Has you"
+msgstr "有你"
+
+#: msn.c:560 msn.c:569
+msgid "Yes"
+msgstr "是"
+
+#: msn.c:560 msn.c:569
+msgid "No"
+msgstr "否"
+
+#: msn.c:568
+msgid "Blocked"
+msgstr "被屏蔽"
+
+#: msn.c:580
+msgid "Message"
+msgstr "消息"
+
+#: msn.c:592
+msgid "Be Right Back"
+msgstr "马上回来"
+
+#: msn.c:593
+msgid "Busy"
+msgstr "忙"
+
+#: msn.c:594
+msgid "On the Phone"
+msgstr "电话中"
+
+#: msn.c:595
+msgid "Out to Lunch"
+msgstr "外出就餐"
+
+#: msn.c:626
+msgid "Set Friendly Name..."
+msgstr "设置友好的名称..."
+
+#: msn.c:631
+msgid "Set Home Phone Number..."
+msgstr "设置家庭电话号码..."
+
+#: msn.c:635
+msgid "Set Work Phone Number..."
+msgstr "设置工作电话号码..."
+
+#: msn.c:639
+msgid "Set Mobile Phone Number..."
+msgstr "设置移动电话号码..."
+
+#: msn.c:645
+msgid "Enable/Disable Mobile Devices..."
+msgstr "启用/禁用移动设备..."
+
+#: msn.c:650
+msgid "Allow/Disallow Mobile Pages..."
+msgstr "允许/禁止移动寻呼..."
+
+#: msn.c:661
+msgid "Open Hotmail Inbox"
+msgstr "打开 Hotmail 收件箱"
+
+#: msn.c:689
+msgid "Send to Mobile"
+msgstr "发送到移动设备"
+
+#: msn.c:698
+msgid "Initiate _Chat"
+msgstr "发起聊天(_C)"
+
+#: msn.c:722
+msgid ""
+"SSL support is needed for MSN. Please install a supported SSL library."
+msgstr "MSN 需要 SSL 支持。请安装被支持的 SSL 库。"
+
+#: msn.c:745
+msgid "Failed to connect to server."
+msgstr "连接服务器失败。"
+
+#: msn.c:1344
+msgid "Username"
+msgstr "用户名"
+
+#: msn.c:1349
+msgid "Profile URL"
+msgstr "配置文件 URL"
+
+#: msn.c:1469 msn.c:1470
+msgid "WLM Protocol Plugin"
+msgstr "WLM 协议插件"
+
+#: msn.c:1496
+msgid "Server"
+msgstr "服务器"
+
+#: msn.c:1499
+msgid "Port"
+msgstr "端口"
+
+#: msn.c:1502
+msgid "Use HTTP Method"
+msgstr "使用 HTTP 方式"
+
+#: msn.c:1505
+msgid "Show custom smileys"
+msgstr "显示自定义表情"
+
+#: msn.c:1508
+msgid "Use server-side alias"
+msgstr "使用服务器端别名"
+
+#: msn.c:1515
+msgid "nudge: nudge a user to get their attention"
+msgstr "nudge：发送闪屏震动引起注意"
+
+#: nexus.c:154
+msgid "Unable to connect"
+msgstr "无法连接"
+
+#: notification.c:106 notification.c:143
+#, c-format
+msgid ""
+"Error on notification server:\n"
+"%s"
+msgstr ""
+"通知服务器出错：\n"
+"%s"
+
+#: notification.c:113
+msgid ""
+"Error on notification server:\n"
+"Unknown"
+msgstr ""
+"通知服务器出错：\n"
+"未知"
+
+#: notification.c:264
+#, c-format
+msgid "%s is not a valid group."
+msgstr "%s 不是有效的组名。"
+
+#: notification.c:269 session.c:357
+msgid "Unknown error."
+msgstr "未知错误。"
+
+#: notification.c:272
+#, c-format
+msgid "%s on %s (%s)"
+msgstr "%s 在 %s (%s)"
+
+#: notification.c:615
+#, c-format
+msgid "Unable to add user on %s (%s)"
+msgstr "无法在 %s(%s) 上添加用户"
+
+#: notification.c:619
+#, c-format
+msgid "Unable to block user on %s (%s)"
+msgstr "无法屏蔽 %s (%s) 上的用户"
+
+#: notification.c:623
+#, c-format
+msgid "Unable to permit user on %s (%s)"
+msgstr "无法允许 %s (%s) 上的用户"
+
+#: notification.c:967
+msgid "Unable to rename group"
+msgstr "无法重命名组"
+
+#: notification.c:1026
+msgid "Unable to delete group"
+msgstr "无法删除组"
+
+#: notification.c:1508
+#, c-format
+msgid ""
+"The MSN server will shut down for maintenance in %d minute. You will "
+"automatically be signed out at that time.  Please finish any conversations "
+"in progress.\n"
+"\n"
+"After the maintenance has been completed, you will be able to successfully "
+"sign in."
+msgid_plural ""
+"The MSN server will shut down for maintenance in %d minutes. You will "
+"automatically be signed out at that time.  Please finish any conversations "
+"in progress.\n"
+"\n"
+"After the maintenance has been completed, you will be able to successfully "
+"sign in."
+msgstr[0] ""
+"MSN 服务器将于 %d 分钟后下线维护。届时您将被自动登出。请尽快结束现行对话。\n"
+"\n"
+"维护完成后您才能继续登入。"
+
+#: session.c:326
+msgid "Our protocol is not supported by the server."
+msgstr "服务器不支持此协议。"
+
+#: session.c:330
+msgid "Error parsing HTTP."
+msgstr "解析 HTTP 出错。"
+
+#: session.c:334
+msgid "You have signed on from another location."
+msgstr "您在其它位置用此用户名登入了。"
+
+#: session.c:337
+msgid ""
+"The MSN servers are temporarily unavailable. Please wait and try again."
+msgstr "MSN 服务器临时不可用。请稍候再试一次。"
+
+#: session.c:342
+msgid "The MSN servers are going down temporarily."
+msgstr "MSN 服务器目前维护中。"
+
+#: session.c:347
+#, c-format
+msgid "Unable to authenticate: %s"
+msgstr "无法通过身份验证: %s"
+
+#: session.c:349
+msgid "Unknown error"
+msgstr "未知错误"
+
+#: session.c:352
+msgid ""
+"Your MSN buddy list is temporarily unavailable. Please wait and try again."
+msgstr "您的 MSN 好友列表暂时不可用。请稍候再试一次。"
+
+#: session.c:372
+msgid "Connecting"
+msgstr "连接中"
+
+#: session.c:373 session.c:375
+msgid "Handshaking"
+msgstr "握手"
+
+#: session.c:374
+msgid "Transferring"
+msgstr "文件传送中"
+
+#: session.c:376
+msgid "Starting authentication"
+msgstr "开始身份验证"
+
+#: session.c:377
+msgid "Getting cookie"
+msgstr "获得 cookie"
+
+#: session.c:378
+msgid "Authenticating"
+msgstr "正在认证"
+
+#: session.c:379
+msgid "Sending cookie"
+msgstr "发送 cookie"
+
+#: session.c:380
+msgid "Retrieving buddy list"
+msgstr "获取好友列表"
+
+#: switchboard.c:539
+msgid "Message may have not been sent because a timeout occurred:"
+msgstr "发生超时，消息可能未发出："
+
+#: switchboard.c:547
+msgid "Message could not be sent, not allowed while invisible:"
+msgstr "消息未发出，隐身时不允许："
+
+#: switchboard.c:551
+msgid "Message could not be sent because the user is offline:"
+msgstr "消息未发出，因为用户离线："
+
+#: switchboard.c:555
+msgid "Message could not be sent because a connection error occurred:"
+msgstr "消息未发出，因为发生了连接错误："
+
+#: switchboard.c:559
+msgid "Message could not be sent because we are sending too quickly:"
+msgstr "消息未发出，因为发送的频率太高："
+
+#: switchboard.c:563
+msgid ""
+"Message could not be sent because we were unable to establish a session with "
+"the server. This is likely a server problem, try again in a few minutes:"
+msgstr "无法与服务器建立连接，消息无法发送。这可能是服务器的问题，请稍候重试。"
+
+#: switchboard.c:570
+msgid ""
+"Message could not be sent because an error with the switchboard occurred:"
+msgstr "消息未发出，因为切换板发生了错误："
+
+#: switchboard.c:578
+msgid "Message may have not been sent because an unknown error occurred:"
+msgstr "消息可能未发出，因为发生了未知错误："
+
+#: ab/pecan_contactlist.c:280
+#, c-format
+msgid "%s has added you to his or her buddy list."
+msgstr "%s 已将您添加为好友。"
+
+#: ab/pecan_contactlist.c:348
+#, c-format
+msgid "%s has removed you from his or her buddy list."
+msgstr "%s 已经将您从好友名单中删除。"
+
+#: ab/pecan_contactlist.c:839
+#, c-format
+msgid "Can't add to \"%s\"; it's a virtual group"
+msgstr "无法将“%s”添加为好友，它是个虚拟组"
