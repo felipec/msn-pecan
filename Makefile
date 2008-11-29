@@ -14,9 +14,9 @@ GOBJECT_LIBS := $(shell pkg-config --libs gobject-2.0)
 CVR := y
 
 ifdef DEBUG
-CFLAGS += -ggdb
+  CFLAGS += -ggdb
 else
-CFLAGS += -O2
+  CFLAGS += -O2
 endif
 
 EXTRA_WARNINGS := -Wall -Wextra -Wformat-nonliteral -Wcast-align -Wpointer-arith \
@@ -34,7 +34,7 @@ CFLAGS += -Wall # $(EXTRA_WARNINGS)
 override CFLAGS += -I. -D PACKAGE='"libmsn-pecan"' -DENABLE_NLS -DHAVE_LIBPURPLE -DPURPLE_DEBUG -D PLUGIN_NAME='msn-pecan'
 
 ifdef CVR
-override CFLAGS += -DPECAN_CVR
+  override CFLAGS += -DPECAN_CVR
 endif
 
 # extra debugging
@@ -82,22 +82,22 @@ objects := msn.o \
 	   fix_purple.o
 
 ifdef CVR
-objects += cvr/slp.o \
-	   cvr/slpcall.o \
-	   cvr/slplink.o \
-	   cvr/slpmsg.o \
-	   cvr/slpsession.o \
-	   cvr/pecan_slp_object.o
+  objects += cvr/slp.o \
+	     cvr/slpcall.o \
+	     cvr/slplink.o \
+	     cvr/slpmsg.o \
+	     cvr/slpsession.o \
+	     cvr/pecan_slp_object.o
 endif
 
 ifdef SOCKET
-objects += io/pecan_socket.o
-override CFLAGS += -DPECAN_SOCKET
+  objects += io/pecan_socket.o
+  override CFLAGS += -DPECAN_SOCKET
 endif
 
 ifdef DIRECTCONN
-objects += directconn.o
-override CFLAGS += -DMSN_DIRECTCONN
+  objects += directconn.o
+  override CFLAGS += -DMSN_DIRECTCONN
 endif
 
 sources := $(objects:.o=.c)
@@ -107,22 +107,22 @@ PO_TEMPLATE := po/messages.pot
 CATALOGS := nl fi fr it sr es sv
 
 ifeq ($(PLATFORM),Darwin)
-	SHLIBEXT=dylib
+  SHLIBEXT := dylib
 else
 ifeq ($(PLATFORM),win32)
-	SHLIBEXT=dll
-	LDFLAGS:=-Wl,--enable-auto-image-base -Wl,--exclude-libs=libintl.a
+  SHLIBEXT := dll
+  LDFLAGS := -Wl,--enable-auto-image-base -Wl,--exclude-libs=libintl.a
 else
-	SHLIBEXT=so
+  SHLIBEXT := so
 endif
 endif
 
 ifdef STATIC
-	plugin := libmsn-pecan.a
-	override CFLAGS += -DPURPLE_STATIC_PRPL
+  plugin := libmsn-pecan.a
+  override CFLAGS += -DPURPLE_STATIC_PRPL
 else
-	plugin := libmsn-pecan.$(SHLIBEXT)
-	override CFLAGS += -fPIC
+  plugin := libmsn-pecan.$(SHLIBEXT)
+  override CFLAGS += -fPIC
 endif
 
 .PHONY: clean
@@ -133,11 +133,11 @@ version := $(shell ./get-version.sh)
 
 # from Lauri Leukkunen's build system
 ifdef V
-Q = 
-P = @printf "" # <- space before hash is important!!!
+  Q = 
+  P = @printf "" # <- space before hash is important!!!
 else
-P = @printf "[%s] $@\n" # <- space before hash is important!!!
-Q = @
+  P = @printf "[%s] $@\n" # <- space before hash is important!!!
+  Q = @
 endif
 
 $(plugin): $(objects)
