@@ -131,7 +131,7 @@ msn_base_log_helper (guint level,
                 purple_level = PURPLE_DEBUG_MISC; break;
         }
 
-        purple_debug (purple_level, "msn", "%s:%d:%s() %s\n", file, line, function, tmp);
+        purple_debug (purple_level, "msn-pecan", "%s:%d:%s() %s\n", file, line, function, tmp);
     }
 #else
     pecan_print ("%s %s:%d:%s() %s\n",
