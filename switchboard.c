@@ -1094,8 +1094,8 @@ msn_handwritten_msg_show(MsnSwitchBoard *swboard, const char* msgid, const char*
     if (!guc || !body_len) 
         return;
     
-    /*Grab the convo for this sboard. If there isn't one and it's an IM 
-        then create it, otherwise the smileys won't work*/
+    /* Grab the conv for this swboard. If there isn't one and it's an IM then create it,
+    otherwise the smileys won't work, this needs to be fixed. */
     if (swboard->conv == NULL)
     {
         if (swboard->current_users > 1) 
@@ -1110,14 +1110,11 @@ msn_handwritten_msg_show(MsnSwitchBoard *swboard, const char* msgid, const char*
     }
     swboard->flag |= MSN_SB_FLAG_IM;
 
-    /*Create the image as a custom smiley in the conversation with the GUID of the message that 
-        the image arrived in as the smiley text.*/
     if (purple_conv_custom_smiley_add(swboard->conv, msgid, 0, "", 0)) {
         purple_conv_custom_smiley_write(swboard->conv, msgid, guc, body_len);
         purple_conv_custom_smiley_close(swboard->conv, msgid);
     }
     
-    /*And put the GUID into the convo window so that it will display...*/
     if (swboard->current_users > 1 ||
         ((swboard->conv != NULL) &&
          purple_conversation_get_type(swboard->conv) == PURPLE_CONV_TYPE_CHAT))
@@ -1129,7 +1126,6 @@ msn_handwritten_msg_show(MsnSwitchBoard *swboard, const char* msgid, const char*
     g_free(guc);
 }
 
-/*only called from chats. Handwritten messages for IMs come as a SLP message*/
 static void
 msn_handwritten_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 {
@@ -1139,8 +1135,6 @@ msn_handwritten_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     
     passport = msg->remote_user;
     msgid = msn_message_get_attr(msg, "Message-ID");
-
-    pecan_debug ("Displaying handwritten message from message %s", msgid);
 
     body = msn_message_get_bin_data(msg, &body_len);
     bodydup = g_strndup(body+7, body_len-7);
@@ -1170,35 +1164,23 @@ control_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 }
 
 static void
-clientcaps_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
-{
-#if 0
-    MsnSession *session;
-    MsnSwitchBoard *swboard;
-    PecanContact *user;
-    GHashTable *clientcaps;
-    const char *value;
-
-    char *passport = msg->sender;
-
-    session = cmdproc->session;
-
-    clientcaps = msn_message_get_hashtable_from_body(msg);
-#endif
-}
-
-static void
-got_unsupported_datacast_inform_user (MsnCmdProc *cmdproc,
-                                      MsnMessage *msg,
-                                      char *str)
+got_datacast_inform_user (MsnCmdProc *cmdproc,
+                          const char *passport,
+                          char *str)
 {
     PurpleAccount *account;
     MsnSwitchBoard *swboard;
-    const char *user;
+    PecanContact contact;
+    const char *friendly_name;
 
     account = cmdproc->session->account;
     swboard = cmdproc->data;
-    user = msg->remote_user;
+    contact = pecan_contactlist_find_contact(cmdproc->session->contactlist, passport);
+    friendly_name = pecan_contact_get_friendly_name(contact);
+    if (!friendly_name)
+        friendly_name = passport;
+
+    str = g_strdup_printf("%s %s", friendly_name, str);
 
     /* Grab the conv for this swboard. If there isn't one and it's an IM then create it,
     otherwise the smileys won't work, this needs to be fixed. */
@@ -1209,9 +1191,9 @@ got_unsupported_datacast_inform_user (MsnCmdProc *cmdproc,
         else
         {
             swboard->conv = purple_find_conversation_with_account(PURPLE_CONV_TYPE_IM,
-                                                                  user, account);
+                                                                  passport, account);
             if (!swboard->conv)
-                swboard->conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, user);
+                swboard->conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, passport);
         }
     }
     swboard->flag |= MSN_SB_FLAG_IM;
@@ -1225,36 +1207,30 @@ datacast_msg (MsnCmdProc *cmdproc,
 {
     PurpleAccount *account;
     GHashTable *body;
-    const char *id, *user;
+    const char *id, *passport;
     body = msn_message_get_hashtable_from_body(msg);
 
     id = g_hash_table_lookup(body, "ID");
 
     account = cmdproc->session->account;
-    user = msg->remote_user;
+    passport = msg->remote_user;
 
     if (strcmp (id, "1") == 0)
     {
-        serv_got_attention(account->gc, user, MSN_NUDGE);
+        serv_got_attention(account->gc, passport, MSN_NUDGE);
     }
     else if (strcmp (id, "2") == 0)
     {
-        char *str;
-        str = g_strdup_printf("%s sent you a wink, but it isn't supported yet, so it cannot be viewed.", user);
-        got_unsupported_datacast_inform_user(cmdproc, msg, str);
-        g_free(str);
+        /* winks */
     }
     else if (strcmp (id, "3") == 0)
     {
-        char *str;
-        str = g_strdup_printf("%s sent you a voice clip, but it isn't supported yet, so it cannot be played.", user);
-        got_unsupported_datacast_inform_user(cmdproc, msg, str);
-        g_free (str);
+        /* voice clips */
     }
     else
     {
-        pecan_warning ("Got unknown datacast with ID %s.\n", id);
-        serv_got_attention(account->gc, user, MSN_NUDGE);
+        pecan_warning ("got unknown datacast with ID %s\n", id);
+        serv_got_attention(account->gc, passport, MSN_NUDGE);
     }
 }
 
