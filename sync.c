@@ -45,12 +45,13 @@ static void
 blp_cmd (MsnCmdProc *cmdproc,
          MsnCommand *cmd)
 {
-    PurpleConnection *gc = cmdproc->session->account->gc;
+    PurpleAccount *account;
     const char *list_name;
 
     list_name = cmd->params[0];
+    account = msn_session_get_user_data (cmdproc->session);
 
-    if (!g_ascii_strcasecmp (list_name, "AL"))
+    if (g_ascii_strcasecmp (list_name, "AL") == 0)
     {
         /*
          * If the current setting is AL, messages from users who
@@ -58,7 +59,7 @@ blp_cmd (MsnCmdProc *cmdproc,
          *
          * In other words, deny some.
          */
-        gc->account->perm_deny = PURPLE_PRIVACY_DENY_USERS;
+        account->perm_deny = PURPLE_PRIVACY_DENY_USERS;
     }
     else
     {
@@ -67,7 +68,7 @@ blp_cmd (MsnCmdProc *cmdproc,
          *
          * In other words, permit some.
          */
-        gc->account->perm_deny = PURPLE_PRIVACY_ALLOW_USERS;
+        account->perm_deny = PURPLE_PRIVACY_ALLOW_USERS;
     }
 }
 
@@ -76,7 +77,6 @@ prp_cmd (MsnCmdProc *cmdproc,
          MsnCommand *cmd)
 {
     MsnSession *session = cmdproc->session;
-    PurpleConnection *gc = session->account->gc;
     const gchar *type, *value;
     PecanContact *user;
 
@@ -95,7 +95,13 @@ prp_cmd (MsnCmdProc *cmdproc,
         else if (strcmp (type, "PHM") == 0)
             pecan_contact_set_mobile_phone (user, tmp);
         else if (strcmp (type, "MFN") == 0)
-            purple_connection_set_display_name (gc, tmp);
+        {
+            PurpleAccount *account;
+            PurpleConnection *connection;
+            account = msn_session_get_user_data (session);
+            connection = purple_account_get_connection (account);
+            purple_connection_set_display_name (connection, tmp);
+        }
         g_free (tmp);
     }
     else

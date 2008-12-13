@@ -66,15 +66,9 @@ typedef enum
 
 #include "switchboard.h"
 
-/**
- * Creates a new MSN session.
- *
- * @param account The account.
- *
- * @return The new MSN session.
- */
 MsnSession *
-msn_session_new (struct _PurpleAccount *account);
+msn_session_new (const gchar *username,
+                 const gchar *password);
 
 /**
  * Destroys an MSN session.
@@ -103,15 +97,15 @@ msn_session_get_password (MsnSession *session);
 PecanContact *
 msn_session_get_contact (MsnSession *session);
 
-/**
- * Gets the session account.
- *
- * @param The MSN session.
- *
- * @return The libpurple account.
- */
-struct _PurpleAccount *
-msn_session_get_account (MsnSession *session);
+void
+msn_session_set_user_data (MsnSession *session,
+                           void *user_data);
+
+void *
+msn_session_get_user_data (MsnSession *session);
+
+void *
+msn_session_get_user_name (MsnSession *session);
 
 /**
  * Connects to and initiates an MSN session.

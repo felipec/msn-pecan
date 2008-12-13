@@ -38,7 +38,6 @@ struct MsnNotification;
 struct MsnNexus;
 struct MsnSync;
 
-struct _PurpleAccount;
 struct _PurpleConversation;
 
 struct MsnSession
@@ -46,10 +45,8 @@ struct MsnSession
     gchar *username;
     gchar *password;
 
-    struct _PurpleAccount *account;
+    void *user_data;
     PecanContact *user;
-
-    guint protocol_ver;
 
     MsnLoginStep login_step; /**< The current step in the login process. */
 

@@ -256,7 +256,7 @@ read_cb (PecanNode *conn,
             tmp = (gchar *) purple_base64_decode (str, NULL);
             pecan_debug ("oim: passport=[%s],msg=[%s]", oim_request->passport, tmp);
             conv = purple_conversation_new (PURPLE_CONV_TYPE_IM,
-                                            msn_session_get_account (oim_request->oim_session->session), 
+                                            msn_session_get_user_data (oim_request->oim_session->session), 
                                             oim_request->passport);
 
             purple_conversation_write (conv, NULL, tmp,

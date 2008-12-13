@@ -202,7 +202,7 @@ connect_impl (PecanNode *conn,
     pecan_node_close (conn);
 
 #ifdef HAVE_LIBPURPLE
-    ssl_conn->ssl_data = purple_ssl_connect (msn_session_get_account (conn->session),
+    ssl_conn->ssl_data = purple_ssl_connect (msn_session_get_user_data (conn->session),
                                              hostname, port, connect_cb, NULL, ssl_conn);
 #endif /* HAVE_LIBPURPLE */
 

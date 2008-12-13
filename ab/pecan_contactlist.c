@@ -238,7 +238,7 @@ msn_got_add_contact (MsnSession *session,
     PurpleAccount *account;
     const gchar *passport;
 
-    account = session->account;
+    account = msn_session_get_user_data (session);
 
     passport = pecan_contact_get_passport (contact);
 
@@ -305,7 +305,7 @@ msn_got_rem_contact (MsnSession *session,
     PurpleAccount *account;
     const gchar *passport;
 
-    account = session->account;
+    account = msn_session_get_user_data (session);
 
     passport = pecan_contact_get_passport (contact);
 
@@ -372,7 +372,7 @@ msn_got_lst_contact (MsnSession *session,
     PurpleAccount *account;
     const gchar *passport;
 
-    account = session->account;
+    account = msn_session_get_user_data (session);
 
     passport = pecan_contact_get_passport (contact);
 

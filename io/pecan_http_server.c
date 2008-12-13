@@ -359,7 +359,7 @@ connect_impl (PecanNode *conn,
             hostname = http_conn->gateway;
         port = 80;
         pecan_debug ("conn=%p,hostname=%s,port=%d", conn, hostname, port);
-        conn->connect_data = purple_proxy_connect (NULL, msn_session_get_account (conn->session),
+        conn->connect_data = purple_proxy_connect (NULL, msn_session_get_user_data (conn->session),
                                                    hostname, port, connect_cb, conn);
         return;
     }

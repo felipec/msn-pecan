@@ -88,7 +88,7 @@ userdisplay_ok (MsnSlpCall *slpcall,
 #ifdef HAVE_LIBPURPLE
     {
         PurpleAccount *account;
-        account = slpcall->slplink->session->account;
+        account = msn_session_get_user_data (slpcall->slplink->session);
 
         purple_buddy_icons_set_for_user (account, slpcall->slplink->remote_user,
                                          g_memdup (data, size), size, info);
@@ -175,7 +175,7 @@ request (PecanContact *user)
     const char *info;
 
     session = user->contactlist->session;
-    account = session->account;
+    account = msn_session_get_user_data (session);
 
     slplink = msn_session_get_slplink (session, user->passport);
 
@@ -307,13 +307,13 @@ pecan_ud_manager_contact_set_object (PecanContact *contact,
     if (!obj)
     {
 #ifdef HAVE_LIBPURPLE
-        purple_buddy_icons_set_for_user (session->account, contact->passport, NULL, 0, NULL);
+        purple_buddy_icons_set_for_user (msn_session_get_user_data (session), contact->passport, NULL, 0, NULL);
 #endif /* HAVE_LIBPURPLE */
         return;
     }
 
 #ifdef HAVE_LIBPURPLE
-    if (!ud_cached (session->account, obj))
+    if (!ud_cached (msn_session_get_user_data (session), obj))
     {
         queue (session->udm, contact);
     }

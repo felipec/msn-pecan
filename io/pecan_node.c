@@ -418,7 +418,7 @@ connect_impl (PecanNode *conn,
 	pecan_socket_connect (hostname, port, connect_cb, conn);
 #else
 #ifdef HAVE_LIBPURPLE
-        conn->connect_data = purple_proxy_connect (NULL, msn_session_get_account (conn->session),
+        conn->connect_data = purple_proxy_connect (NULL, msn_session_get_user_data (conn->session),
                                                    hostname, port, connect_cb, conn);
 #endif /* HAVE_LIBPURPLE */
 #endif /* PECAN_SOCKET */

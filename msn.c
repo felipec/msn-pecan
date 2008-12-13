@@ -216,7 +216,7 @@ msn_set_personal_message_cb (PurpleConnection *gc, const gchar *entry)
 	MsnSession *session;
 
 	session = gc->proto_data;
-	purple_account_set_string(session->account, "personal_message", entry);
+	purple_account_set_string(session->user_data, "personal_message", entry);
 
 	pecan_update_personal_message (session);
 }
@@ -324,7 +324,7 @@ msn_show_set_personal_message (PurplePluginAction *action)
 	purple_request_input(gc, NULL, _("Set your personal message."),
 					   _("This is the message that other MSN buddies will "
 						 "see under your name."),
-					   purple_account_get_string (session->account, "personal_message", ""),
+					   purple_account_get_string (session->user_data, "personal_message", ""),
 					   FALSE, FALSE, NULL,
 					   _("OK"), G_CALLBACK(msn_set_personal_message_cb),
 					   _("Cancel"), NULL,
@@ -718,7 +718,8 @@ msn_actions(PurplePlugin *plugin, gpointer context)
 					msn_show_set_personal_message);
 	m = g_list_append(m, act);
 #endif /* PECAN_USE_PSM */
-	m = g_list_append(m, NULL);
+
+        m = g_list_append(m, NULL);
 
 	act = purple_plugin_action_new(_("Set Home Phone Number..."),
 								 msn_show_set_home_phone);
@@ -821,7 +822,8 @@ login (PurpleAccount *account)
     host = purple_account_get_string (account, "server", MSN_SERVER);
     port = purple_account_get_int (account, "port", MSN_PORT);
 
-    session = msn_session_new (account);
+    session = msn_session_new (purple_account_get_username (account),
+                               purple_account_get_password (account));
 
     gc->proto_data = session;
     gc->flags |= PURPLE_CONNECTION_HTML | \
@@ -834,8 +836,11 @@ login (PurpleAccount *account)
     gc->flags |= PURPLE_CONNECTION_ALLOW_CUSTOM_SMILEY;
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
 
-    msn_session_set_username (session, purple_account_get_username (account));
-    msn_session_set_password (session, purple_account_get_password (account));
+    session->user_data = account;
+    session->http_method = purple_account_get_bool (account, "http_method", FALSE);
+    session->server_alias = purple_account_get_bool (account, "server_alias", FALSE);
+    session->use_directconn = purple_account_get_bool (account, "use_directconn", FALSE);
+    session->use_userdisplay = purple_account_get_bool (account, "use_userdisplay", FALSE);
 
     if (!msn_session_connect (session, host, port))
         purple_connection_error (gc, _("Failed to connect to server."));

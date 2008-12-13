@@ -252,7 +252,7 @@ group_error_helper(MsnSession *session, const char *msg, const gchar *group_guid
     char *reason = NULL;
     char *title = NULL;
 
-    account = session->account;
+    account = msn_session_get_user_data (session);
     gc = purple_account_get_connection(account);
 
     if (error == 224)
@@ -312,7 +312,7 @@ usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     PurpleConnection *gc;
 
     session = cmdproc->session;
-    account = session->account;
+    account = msn_session_get_user_data (session);
     gc = purple_account_get_connection(account);
 
     if (!g_ascii_strcasecmp(cmd->params[1], "OK"))
@@ -602,7 +602,7 @@ adc_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
     char **params;
 
     session = cmdproc->session;
-    account = session->account;
+    account = msn_session_get_user_data (session);
     gc = purple_account_get_connection(account);
     params = g_strsplit(trans->params, " ", 0);
 
@@ -720,7 +720,7 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     gchar *friendly;
 
     session = cmdproc->session;
-    account = session->account;
+    account = msn_session_get_user_data (session);
     gc = purple_account_get_connection(account);
 
     state    = cmd->params[1];
@@ -786,7 +786,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     gchar *friendly;
 
     session = cmdproc->session;
-    account = session->account;
+    account = msn_session_get_user_data (session);
     gc = purple_account_get_connection(account);
 
     state    = cmd->params[0];
@@ -946,11 +946,15 @@ static void
 prp_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSession *session = cmdproc->session;
-    PurpleConnection *gc = session->account->gc;
+    PurpleConnection *gc;
+    PurpleAccount *account;
     const gchar *type, *value;
     PecanContact *user;
 
     g_return_if_fail(cmd->param_count >= 3);
+
+    account = msn_session_get_user_data (session);
+    gc = purple_account_get_connection (account);
 
     type = cmd->params[1];
     user = msn_session_get_contact (session);
@@ -1166,13 +1170,15 @@ url_cmd (MsnCmdProc *cmdproc,
 {
     MsnSession *session;
     PurpleConnection *connection;
+    PurpleAccount *account;
     const gchar *rru;
     const gchar *url;
     gchar creds[64];
     glong tmp_timestamp;
 
     session = cmdproc->session;
-    connection = purple_account_get_connection (session->account);
+    account = msn_session_get_user_data (session);
+    connection = purple_account_get_connection (account);
 
     rru = cmd->params[1];
     url = cmd->params[2];
@@ -1232,7 +1238,7 @@ url_cmd (MsnCmdProc *cmdproc,
         return;
     }
 
-    if (purple_account_get_check_mail (session->account))
+    if (purple_account_get_check_mail (account))
     {
         static gboolean is_initial = TRUE;
 
@@ -1375,11 +1381,9 @@ initial_mdata_msg (MsnCmdProc *cmdproc,
                    MsnMessage *msg)
 {
     MsnSession *session;
-    PurpleConnection *gc;
     GHashTable *table;
 
     session = cmdproc->session;
-    gc = session->account->gc;
 
     if (strcmp (msg->remote_user, "Hotmail"))
     {
@@ -1470,10 +1474,16 @@ initial_mdata_msg (MsnCmdProc *cmdproc,
             } while (start);
         }
 
-        if (purple_account_get_check_mail (session->account) &&
-            session->passport_info.email_enabled == 1)
         {
-            msn_cmdproc_send (cmdproc, "URL", "%s", "INBOX");
+            PurpleAccount *account;
+
+            account = msn_session_get_user_data (session);
+
+            if (purple_account_get_check_mail (account) &&
+                session->passport_info.email_enabled == 1)
+            {
+                msn_cmdproc_send (cmdproc, "URL", "%s", "INBOX");
+            }
         }
     }
 
@@ -1484,14 +1494,14 @@ static void
 email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 {
     MsnSession *session;
-    PurpleConnection *gc;
+    PurpleAccount *account;
     GHashTable *table;
     char *from, *subject, *tmp;
 
     session = cmdproc->session;
-    gc = session->account->gc;
+    account = msn_session_get_user_data (session);
 
-    if (!purple_account_get_check_mail (session->account))
+    if (!purple_account_get_check_mail (account))
         return;
 
     if (strcmp(msg->remote_user, "Hotmail"))
@@ -1519,12 +1529,16 @@ email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     if (tmp != NULL)
         subject = purple_mime_decode_field(tmp);
 
-    /** @todo go to the extact email */
-    purple_notify_email(gc,
-                        (subject != NULL ? subject : ""),
-                        (from != NULL ?  from : ""),
-                        msn_session_get_username (session),
-                        session->passport_info.mail_url, NULL, NULL);
+    {
+        PurpleConnection *connection;
+        connection = purple_account_get_connection (account);
+        /** @todo go to the extact email */
+        purple_notify_email (connection,
+                             (subject ? subject : ""),
+                             (from ?  from : ""),
+                             msn_session_get_username (session),
+                             session->passport_info.mail_url, NULL, NULL);
+    }
 
     g_free(from);
     g_free(subject);
@@ -1575,7 +1589,13 @@ system_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
         }
 
         if (*buf != '\0')
-            purple_notify_info(cmdproc->session->account->gc, NULL, buf, NULL);
+        {
+            PurpleAccount *account;
+            PurpleConnection *connection;
+            account = msn_session_get_user_data (cmdproc->session);
+            connection = purple_account_get_connection (account);
+            purple_notify_info (connection, NULL, buf, NULL);
+        }
     }
 
     g_hash_table_destroy(table);

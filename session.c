@@ -45,18 +45,15 @@
 #include <account.h>
 
 MsnSession *
-msn_session_new (PurpleAccount *account)
+msn_session_new (const gchar *username,
+                 const gchar *password)
 {
     MsnSession *session;
 
-    g_return_val_if_fail (account, NULL);
-
     session = g_new0 (MsnSession, 1);
 
-    session->http_method = purple_account_get_bool (account, "http_method", FALSE);
-    session->server_alias = purple_account_get_bool (account, "server_alias", FALSE);
-    session->use_directconn = purple_account_get_bool (account, "use_directconn", FALSE);
-    session->use_userdisplay = purple_account_get_bool (account, "use_userdisplay", FALSE);
+    session->username = g_strdup (username);
+    session->password = g_strdup (password);
 
 #if 0
     if (session->http_method)
@@ -68,13 +65,11 @@ msn_session_new (PurpleAccount *account)
     }
 #endif
 
-    session->account = account;
     session->notification = msn_notification_new (session);
     session->contactlist = pecan_contactlist_new (session);
 
     session->user = pecan_contact_new (NULL);
 
-    session->protocol_ver = 9;
     session->conv_seq = 1;
 
     session->oim_session = pecan_oim_session_new (session);
@@ -86,7 +81,8 @@ msn_session_new (PurpleAccount *account)
 void
 msn_session_destroy (MsnSession *session)
 {
-    g_return_if_fail (session);
+    if (!session)
+        return;
 
     session->destroying = TRUE;
 
@@ -134,27 +130,10 @@ msn_session_destroy (MsnSession *session)
     g_free (session);
 }
 
-void
-msn_session_set_username (MsnSession *session,
-                          const gchar *value)
-{
-    g_free (session->username);
-    session->username = pecan_normalize (value);
-    pecan_contact_set_passport (session->user, session->username);
-}
-
 const gchar *
 msn_session_get_username (MsnSession *session)
 {
     return session->username;
-}
-
-void
-msn_session_set_password (MsnSession *session,
-                          const gchar *value)
-{
-    g_free (session->password);
-    session->password = g_strdup (value);
 }
 
 const gchar *
@@ -170,11 +149,17 @@ msn_session_get_contact (MsnSession *session)
     return session->user;
 }
 
-PurpleAccount *
-msn_session_get_account (MsnSession *session)
+void
+msn_session_set_user_data (MsnSession *session,
+                           void *user_data)
 {
-    g_return_val_if_fail (session, NULL);
-    return session->account;
+    session->user_data = user_data;
+}
+
+void *
+msn_session_get_user_data (MsnSession *session)
+{
+    return session->user_data;
 }
 
 gboolean
@@ -315,17 +300,19 @@ msn_session_warning (MsnSession *session,
                      const gchar *fmt,
                      ...)
 {
-    PurpleConnection *gc;
+    PurpleAccount *account;
+    PurpleConnection *connection;
     gchar *tmp;
     va_list args;
 
-    gc = purple_account_get_connection (session->account);
+    account = msn_session_get_user_data (session);
+    connection = purple_account_get_connection (account);
 
     va_start (args, fmt);
 
     tmp = g_strdup_vprintf (fmt, args);
 
-    purple_notify_error (gc, NULL, tmp, NULL);
+    purple_notify_error (connection, NULL, tmp, NULL);
 
     g_free (tmp);
 
@@ -337,11 +324,12 @@ msn_session_set_error (MsnSession *session,
                        MsnErrorType error,
                        const char *info)
 {
-    PurpleConnection *gc;
+    PurpleAccount *account;
+    PurpleConnection *connection;
     char *msg;
 
-    gc = purple_account_get_connection (session->account);
-    g_return_if_fail (gc);
+    account = msn_session_get_user_data (session);
+    connection = purple_account_get_connection (account);
 
     switch (error)
     {
@@ -356,7 +344,7 @@ msn_session_set_error (MsnSession *session,
             msg = g_strdup (_("Error parsing HTTP."));
             break;
         case MSN_ERROR_SIGN_OTHER:
-            gc->wants_to_die = TRUE;
+            connection->wants_to_die = TRUE;
             msg = g_strdup (_("You have signed on from another location."));
             break;
         case MSN_ERROR_SERV_UNAVAILABLE:
@@ -369,10 +357,9 @@ msn_session_set_error (MsnSession *session,
                               "temporarily."));
             break;
         case MSN_ERROR_AUTH:
-            gc->wants_to_die = TRUE;
+            connection->wants_to_die = TRUE;
             msg = pecan_strdup_printf (_("Unable to authenticate: %s"),
-                                       !info ?
-                                       _("Unknown error") : info);
+                                       info ? info : _("Unknown error"));
             break;
         case MSN_ERROR_BAD_BLIST:
             msg = g_strdup (_("Your MSN buddy list is temporarily "
@@ -386,7 +373,7 @@ msn_session_set_error (MsnSession *session,
 
     msn_session_disconnect (session);
 
-    purple_connection_error (gc, msg);
+    purple_connection_error (connection, msg);
 
     g_free (msg);
 }
@@ -395,16 +382,14 @@ void
 msn_session_finish_login (MsnSession *session)
 {
     PurpleAccount *account;
-    PurpleConnection *gc;
     PurpleStoredImage *img;
 
     if (session->logged_in)
         return;
 
-    account = session->account;
-    gc = purple_account_get_connection (account);
+    account = msn_session_get_user_data (session);
 
-    img = purple_buddy_icons_find_account_icon (session->account);
+    img = purple_buddy_icons_find_account_icon (account);
 
     {
         PecanBuffer *image;
@@ -421,7 +406,11 @@ msn_session_finish_login (MsnSession *session)
     pecan_update_status (session);
     pecan_update_personal_message (session);
 
-    purple_connection_set_state (gc, PURPLE_CONNECTED);
+    {
+        PurpleConnection *connection;
+        connection = purple_account_get_connection (account);
+        purple_connection_set_state (connection, PURPLE_CONNECTED);
+    }
 
     pecan_contactlist_check_pending (session->contactlist);
 }

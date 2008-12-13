@@ -108,13 +108,15 @@ pecan_set_personal_message (MsnSession *session,
 
 #ifdef HAVE_LIBPURPLE
 static inline PecanStatusType
-util_status_from_account (PurpleAccount *account)
+util_status_from_session (MsnSession *session)
 {
+    PurpleAccount *account;
     PecanStatusType msnstatus;
     PurplePresence *presence;
     PurpleStatus *status;
     const gchar *status_id;
 
+    account = msn_session_get_user_data (session);
     presence = purple_account_get_presence (account);
     status = purple_presence_get_active_status (presence);
     status_id = purple_status_get_id (status);
@@ -152,27 +154,30 @@ pecan_update_status (MsnSession *session)
     if (!session->logged_in)
         return;
 
-    pecan_set_status (session, util_status_from_account (session->account));
+    pecan_set_status (session, util_status_from_session (session));
 }
 
 void
 pecan_update_personal_message (MsnSession *session)
 {
+    PurpleAccount *account;
     g_return_if_fail (session);
 
     if (!session->logged_in)
         return;
 
+    account = msn_session_get_user_data (session);
+
 #ifndef PECAN_USE_PSM
     const gchar *msg;
 
-    msg = purple_account_get_string (session->account, "personal_message", "");
+    msg = purple_account_get_string (account, "personal_message", "");
     pecan_set_personal_message (session, (gchar *) msg);
 #else
     PurpleStatus *status;
     const gchar *formatted_msg;
 
-    status = purple_account_get_active_status (session->account);
+    status = purple_account_get_active_status (account);
     formatted_msg = purple_status_get_attr_string (status, "message");
 
     if (formatted_msg)

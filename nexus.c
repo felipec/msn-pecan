@@ -236,7 +236,7 @@ nexus_login_written_cb(gpointer data, gint source, PurpleInputCondition cond)
 		g_free(nexus->login_host);
 		nexus->login_host = g_strdup(location);
 
-		nexus->gsc = purple_ssl_connect(session->account,
+		nexus->gsc = purple_ssl_connect(msn_session_get_user_data (session),
 				nexus->login_host, PURPLE_SSL_DEFAULT_PORT,
 				login_connect_cb, login_error_cb, nexus);
 	}
@@ -475,7 +475,7 @@ nexus_connect_written_cb(gpointer data, gint source, PurpleInputCondition cond)
 	purple_ssl_close(nexus->gsc);
 
 	/* Now begin the connection to the login server. */
-	nexus->gsc = purple_ssl_connect(nexus->session->account,
+	nexus->gsc = purple_ssl_connect(msn_session_get_user_data (nexus->session),
 			nexus->login_host, PURPLE_SSL_DEFAULT_PORT,
 			login_connect_cb, login_error_cb, nexus);
 }
@@ -514,7 +514,7 @@ nexus_connect_cb(gpointer data, PurpleSslConnection *gsc,
 void
 msn_nexus_connect(MsnNexus *nexus)
 {
-	nexus->gsc = purple_ssl_connect(nexus->session->account,
+	nexus->gsc = purple_ssl_connect(msn_session_get_user_data (nexus->session),
 			"nexus.passport.com", PURPLE_SSL_DEFAULT_PORT,
 			nexus_connect_cb, login_error_cb, nexus);
 }

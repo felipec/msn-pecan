@@ -378,7 +378,7 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 		char *file_name;
 		gunichar2 *uni_name;
 
-		account = slpcall->slplink->session->account;
+		account = msn_session_get_user_data (slpcall->slplink->session);
 
 		slpcall->cb = msn_xfer_completed_cb;
 		slpcall->end_cb = msn_xfer_end_cb;
@@ -835,14 +835,14 @@ got_emoticon(MsnSlpCall *slpcall,
 {
 
 	PurpleConversation *conv;
-	PurpleConnection *gc;
+	PurpleAccount *account;
 	const char *who;
 
-	gc = slpcall->slplink->session->account->gc;
+        account = msn_session_get_user_data (slpcall->slplink->session);
 	who = slpcall->slplink->remote_user;
 
-	if ((conv = purple_find_conversation_with_account(PURPLE_CONV_TYPE_ANY, who, gc->account))) {
-
+	if ((conv = purple_find_conversation_with_account(PURPLE_CONV_TYPE_ANY, who, account)))
+        {
 		/* FIXME: it would be better if we wrote the data as we received it
 		   instead of all at once, calling write multiple times and
 		   close once at the very end
@@ -865,13 +865,15 @@ msn_emoticon_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 	const char *body, *who, *sha1;
 	guint tok;
 	size_t body_len;
+        PurpleAccount *account;
 
 	PurpleConversation *conv;
 
 	session = cmdproc->session;
+        account = msn_session_get_user_data (session);
 
-	if (!purple_account_get_bool(session->account, "custom_smileys", TRUE))
-		return;
+        if  (!purple_account_get_bool (account, "custom_smileys", TRUE))
+            return;
 
 	body = msn_message_get_bin_data(msg, &body_len);
 	body_str = g_strndup(body, body_len);
@@ -903,8 +905,7 @@ msn_emoticon_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
 		slplink = msn_session_get_slplink(session, who);
 
-		conv = purple_find_conversation_with_account(PURPLE_CONV_TYPE_ANY, who,
-													 session->account);
+		conv = purple_find_conversation_with_account (PURPLE_CONV_TYPE_ANY, who, account);
 
 		/* If the conversation doesn't exist then this is a custom smiley
 		 * used in the first message in a MSN conversation: we need to create
@@ -912,9 +913,8 @@ msn_emoticon_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 		 * This happens because every GtkIMHtml has its own smiley tree: if
 		 * the conversation doesn't exist then we cannot associate the new
 		 * smiley with its GtkIMHtml widget. */
-		if (!conv) {
-			conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, session->account, who);
-		}
+		if (!conv)
+                    conv = purple_conversation_new (PURPLE_CONV_TYPE_IM, account, who);
 
 		if (purple_conv_custom_smiley_add(conv, smile, "sha1", sha1, TRUE)) {
 			msn_slplink_request_object(slplink, smile, got_emoticon, NULL, obj);
