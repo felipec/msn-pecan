@@ -45,93 +45,93 @@
 #include <account.h>
 
 MsnSession *
-msn_session_new(PurpleAccount *account)
+msn_session_new (PurpleAccount *account)
 {
-	MsnSession *session;
+    MsnSession *session;
 
-	g_return_val_if_fail(account != NULL, NULL);
+    g_return_val_if_fail (account, NULL);
 
-	session = g_new0(MsnSession, 1);
+    session = g_new0 (MsnSession, 1);
 
-        session->http_method = purple_account_get_bool (account, "http_method", FALSE);
-        session->server_alias = purple_account_get_bool (account, "server_alias", FALSE);
-        session->use_directconn = purple_account_get_bool (account, "use_directconn", FALSE);
-        session->use_userdisplay = purple_account_get_bool (account, "use_userdisplay", FALSE);
+    session->http_method = purple_account_get_bool (account, "http_method", FALSE);
+    session->server_alias = purple_account_get_bool (account, "server_alias", FALSE);
+    session->use_directconn = purple_account_get_bool (account, "use_directconn", FALSE);
+    session->use_userdisplay = purple_account_get_bool (account, "use_userdisplay", FALSE);
 
 #if 0
-        if (session->http_method)
-        {
-            PecanNode *foo;
-            foo = PECAN_NODE (pecan_http_server_new ("foo server"));
-            foo->session = session;
-            session->http_conn = foo;
-        }
+    if (session->http_method)
+    {
+        PecanNode *foo;
+        foo = PECAN_NODE (pecan_http_server_new ("foo server"));
+        foo->session = session;
+        session->http_conn = foo;
+    }
 #endif
 
-	session->account = account;
-	session->notification = msn_notification_new(session);
-	session->contactlist = pecan_contactlist_new(session);
+    session->account = account;
+    session->notification = msn_notification_new (session);
+    session->contactlist = pecan_contactlist_new (session);
 
-	session->user = pecan_contact_new (NULL);
+    session->user = pecan_contact_new (NULL);
 
-	session->protocol_ver = 9;
-	session->conv_seq = 1;
+    session->protocol_ver = 9;
+    session->conv_seq = 1;
 
-	session->oim_session = pecan_oim_session_new (session);
-	session->udm = pecan_ud_manager_new (session);
+    session->oim_session = pecan_oim_session_new (session);
+    session->udm = pecan_ud_manager_new (session);
 
-	return session;
+    return session;
 }
 
 void
-msn_session_destroy(MsnSession *session)
+msn_session_destroy (MsnSession *session)
 {
-	g_return_if_fail(session != NULL);
+    g_return_if_fail (session);
 
-	session->destroying = TRUE;
+    session->destroying = TRUE;
 
-        pecan_ud_manager_free (session->udm);
-        pecan_oim_session_free (session->oim_session);
+    pecan_ud_manager_free (session->udm);
+    pecan_oim_session_free (session->oim_session);
 
-	if (session->connected)
-		msn_session_disconnect(session);
+    if (session->connected)
+        msn_session_disconnect (session);
 
-	if (session->notification != NULL)
-		msn_notification_destroy(session->notification);
+    if (session->notification)
+        msn_notification_destroy (session->notification);
 
-	while (session->switches != NULL)
-		msn_switchboard_destroy(session->switches->data);
+    while (session->switches)
+        msn_switchboard_destroy (session->switches->data);
 
 #if defined(PECAN_CVR)
-	while (session->slplinks != NULL)
-		msn_slplink_destroy(session->slplinks->data);
+    while (session->slplinks)
+        msn_slplink_destroy (session->slplinks->data);
 #endif /* defined(PECAN_CVR) */
 
-	pecan_contactlist_destroy(session->contactlist);
+    pecan_contactlist_destroy (session->contactlist);
 
-	g_free(session->passport_info.kv);
-	g_free(session->passport_info.sid);
-	g_free(session->passport_info.mspauth);
-	g_free(session->passport_info.client_ip);
+    g_free (session->passport_info.kv);
+    g_free (session->passport_info.sid);
+    g_free (session->passport_info.mspauth);
+    g_free (session->passport_info.client_ip);
 
-        g_free (session->passport_info.mail_url);
+    g_free (session->passport_info.mail_url);
 
-	g_free (session->passport_cookie.t);
-	g_free (session->passport_cookie.p);
+    g_free (session->passport_cookie.t);
+    g_free (session->passport_cookie.p);
 
-	if (session->sync != NULL)
-		msn_sync_destroy(session->sync);
+    if (session->sync)
+        msn_sync_destroy (session->sync);
 
-	if (session->nexus != NULL)
-		msn_nexus_destroy(session->nexus);
+    if (session->nexus)
+        msn_nexus_destroy (session->nexus);
 
-	if (session->user != NULL)
-		pecan_contact_free(session->user);
+    if (session->user)
+        pecan_contact_free (session->user);
 
-	g_free (session->username);
-	g_free (session->password);
+    g_free (session->username);
+    g_free (session->password);
 
-	g_free(session);
+    g_free (session);
 }
 
 void
@@ -178,130 +178,136 @@ msn_session_get_account (MsnSession *session)
 }
 
 gboolean
-msn_session_connect(MsnSession *session, const char *host, int port)
+msn_session_connect (MsnSession *session,
+                     const char *host,
+                     int port)
 {
-	g_return_val_if_fail(session != NULL, FALSE);
-	g_return_val_if_fail(!session->connected, TRUE);
+    g_return_val_if_fail (session, FALSE);
+    g_return_val_if_fail (!session->connected, TRUE);
 
-	session->connected = TRUE;
+    session->connected = TRUE;
 
-	if (session->notification == NULL)
-	{
-		pecan_error ("this shouldn't happen");
-		g_return_val_if_reached(FALSE);
-	}
+    if (!session->notification)
+    {
+        pecan_error ("this shouldn't happen");
+        g_return_val_if_reached (FALSE);
+    }
 
-	if (msn_notification_connect(session->notification, host, port))
-	{
-		return TRUE;
-	}
+    if (msn_notification_connect (session->notification, host, port))
+    {
+        return TRUE;
+    }
 
-	return FALSE;
+    return FALSE;
 }
 
 void
-msn_session_disconnect(MsnSession *session)
+msn_session_disconnect (MsnSession *session)
 {
-	g_return_if_fail(session != NULL);
-	g_return_if_fail(session->connected);
+    g_return_if_fail (session);
+    g_return_if_fail (session->connected);
 
-	session->connected = FALSE;
+    session->connected = FALSE;
 
-	while (session->switches != NULL)
-		msn_switchboard_close(session->switches->data);
+    while (session->switches)
+        msn_switchboard_close (session->switches->data);
 
-	if (session->notification != NULL)
-		msn_notification_close(session->notification);
+    if (session->notification)
+        msn_notification_close (session->notification);
 
-        if (session->http_conn)
-            pecan_node_close (session->http_conn);
+    if (session->http_conn)
+        pecan_node_close (session->http_conn);
 }
 
 /* TODO: This must go away when conversation is redesigned */
 MsnSwitchBoard *
-msn_session_find_swboard(const MsnSession *session, const gchar *username)
+msn_session_find_swboard (const MsnSession *session,
+                          const gchar *username)
 {
-	GList *l;
+    GList *l;
 
-	g_return_val_if_fail(session  != NULL, NULL);
-	g_return_val_if_fail(username != NULL, NULL);
+    g_return_val_if_fail (session, NULL);
+    g_return_val_if_fail (username, NULL);
 
-	for (l = session->switches; l != NULL; l = l->next)
-	{
-		MsnSwitchBoard *swboard;
+    for (l = session->switches; l; l = l->next)
+    {
+        MsnSwitchBoard *swboard;
 
-		swboard = l->data;
+        swboard = l->data;
 
-		if ((swboard->im_user != NULL) && !strcmp(username, swboard->im_user))
-			return swboard;
-	}
+        if (swboard->im_user && strcmp (username, swboard->im_user) == 0)
+            return swboard;
+    }
 
-	return NULL;
+    return NULL;
 }
 
 MsnSwitchBoard *
-msn_session_find_swboard_with_conv(const MsnSession *session, const PurpleConversation *conv)
+msn_session_find_swboard_with_conv (const MsnSession *session,
+                                    const PurpleConversation *conv)
 {
-	GList *l;
+    GList *l;
 
-	g_return_val_if_fail(session  != NULL, NULL);
-	g_return_val_if_fail(conv != NULL, NULL);
+    g_return_val_if_fail (session, NULL);
+    g_return_val_if_fail (conv, NULL);
 
-	for (l = session->switches; l != NULL; l = l->next)
-	{
-		MsnSwitchBoard *swboard;
+    for (l = session->switches; l; l = l->next)
+    {
+        MsnSwitchBoard *swboard;
 
-		swboard = l->data;
+        swboard = l->data;
 
-		if (swboard->conv == conv)
-			return swboard;
-	}
+        if (swboard->conv == conv)
+            return swboard;
+    }
 
-	return NULL;
+    return NULL;
 }
 
 MsnSwitchBoard *
-msn_session_find_swboard_with_id(const MsnSession *session, int chat_id)
+msn_session_find_swboard_with_id (const MsnSession *session,
+                                  int chat_id)
 {
-	GList *l;
+    GList *l;
 
-	g_return_val_if_fail(session != NULL, NULL);
-	g_return_val_if_fail(chat_id >= 0,    NULL);
+    g_return_val_if_fail (session, NULL);
+    g_return_val_if_fail (chat_id >= 0,    NULL);
 
-	for (l = session->switches; l != NULL; l = l->next)
-	{
-		MsnSwitchBoard *swboard;
+    for (l = session->switches; l; l = l->next)
+    {
+        MsnSwitchBoard *swboard;
 
-		swboard = l->data;
+        swboard = l->data;
 
-		if (swboard->chat_id == chat_id)
-			return swboard;
-	}
+        if (swboard->chat_id == chat_id)
+            return swboard;
+    }
 
-	return NULL;
+    return NULL;
 }
 
 MsnSwitchBoard *
-msn_session_get_swboard(MsnSession *session, const char *username,
-						MsnSBFlag flag)
+msn_session_get_swboard (MsnSession *session,
+                         const char *username,
+                         MsnSBFlag flag)
 {
-	MsnSwitchBoard *swboard;
+    MsnSwitchBoard *swboard;
 
-	g_return_val_if_fail(session != NULL, NULL);
+    g_return_val_if_fail (session, NULL);
 
-	swboard = msn_session_find_swboard(session, username);
+    swboard = msn_session_find_swboard (session, username);
 
-	if (swboard == NULL)
-	{
-		swboard = msn_switchboard_new(session);
-		swboard->im_user = g_strdup(username);
-		msn_switchboard_request(swboard);
-		msn_switchboard_request_add_user(swboard, username);
-	}
+    if (!swboard)
+    {
+        swboard = msn_switchboard_new (session);
+        swboard->im_user = g_strdup (username);
+        msn_switchboard_request (swboard);
+        msn_switchboard_request_add_user (swboard, username);
+    }
 
-	swboard->flag |= flag;
+    swboard->flag |= flag;
 
-	return swboard;
+    return swboard;
 }
 
 void
@@ -327,94 +333,95 @@ msn_session_warning (MsnSession *session,
 }
 
 void
-msn_session_set_error(MsnSession *session, MsnErrorType error,
-					  const char *info)
+msn_session_set_error (MsnSession *session,
+                       MsnErrorType error,
+                       const char *info)
 {
-	PurpleConnection *gc;
-	char *msg;
+    PurpleConnection *gc;
+    char *msg;
 
-	gc = purple_account_get_connection(session->account);
-        g_return_if_fail (gc);
+    gc = purple_account_get_connection (session->account);
+    g_return_if_fail (gc);
 
-	switch (error)
-	{
-		case MSN_ERROR_SERVCONN:
-			msg = g_strdup(info);
-			break;
-		case MSN_ERROR_UNSUPPORTED_PROTOCOL:
-			msg = g_strdup(_("Our protocol is not supported by the "
-							 "server."));
-			break;
-		case MSN_ERROR_HTTP_MALFORMED:
-			msg = g_strdup(_("Error parsing HTTP."));
-			break;
-		case MSN_ERROR_SIGN_OTHER:
-			gc->wants_to_die = TRUE;
-			msg = g_strdup(_("You have signed on from another location."));
-			break;
-		case MSN_ERROR_SERV_UNAVAILABLE:
-			msg = g_strdup(_("The MSN servers are temporarily "
-							 "unavailable. Please wait and try "
-							 "again."));
-			break;
-		case MSN_ERROR_SERV_DOWN:
-			msg = g_strdup(_("The MSN servers are going down "
-							 "temporarily."));
-			break;
-		case MSN_ERROR_AUTH:
-			gc->wants_to_die = TRUE;
-                        msg = pecan_strdup_printf(_("Unable to authenticate: %s"),
-                                                  (info == NULL ) ?
-                                                  _("Unknown error") : info);
-			break;
-		case MSN_ERROR_BAD_BLIST:
-			msg = g_strdup(_("Your MSN buddy list is temporarily "
-							 "unavailable. Please wait and try "
-							 "again."));
-			break;
-		default:
-			msg = g_strdup(_("Unknown error."));
-			break;
-	}
+    switch (error)
+    {
+        case MSN_ERROR_SERVCONN:
+            msg = g_strdup (info);
+            break;
+        case MSN_ERROR_UNSUPPORTED_PROTOCOL:
+            msg = g_strdup (_("Our protocol is not supported by the "
+                              "server."));
+            break;
+        case MSN_ERROR_HTTP_MALFORMED:
+            msg = g_strdup (_("Error parsing HTTP."));
+            break;
+        case MSN_ERROR_SIGN_OTHER:
+            gc->wants_to_die = TRUE;
+            msg = g_strdup (_("You have signed on from another location."));
+            break;
+        case MSN_ERROR_SERV_UNAVAILABLE:
+            msg = g_strdup (_("The MSN servers are temporarily "
+                              "unavailable. Please wait and try "
+                              "again."));
+            break;
+        case MSN_ERROR_SERV_DOWN:
+            msg = g_strdup (_("The MSN servers are going down "
+                              "temporarily."));
+            break;
+        case MSN_ERROR_AUTH:
+            gc->wants_to_die = TRUE;
+            msg = pecan_strdup_printf (_("Unable to authenticate: %s"),
+                                       !info ?
+                                       _("Unknown error") : info);
+            break;
+        case MSN_ERROR_BAD_BLIST:
+            msg = g_strdup (_("Your MSN buddy list is temporarily "
+                              "unavailable. Please wait and try "
+                              "again."));
+            break;
+        default:
+            msg = g_strdup (_("Unknown error."));
+            break;
+    }
 
-	msn_session_disconnect(session);
+    msn_session_disconnect (session);
 
-	purple_connection_error(gc, msg);
+    purple_connection_error (gc, msg);
 
-	g_free(msg);
+    g_free (msg);
 }
 
 void
-msn_session_finish_login(MsnSession *session)
+msn_session_finish_login (MsnSession *session)
 {
-	PurpleAccount *account;
-	PurpleConnection *gc;
-	PurpleStoredImage *img;
+    PurpleAccount *account;
+    PurpleConnection *gc;
+    PurpleStoredImage *img;
 
-	if (session->logged_in)
-		return;
+    if (session->logged_in)
+        return;
 
-	account = session->account;
-	gc = purple_account_get_connection(account);
+    account = session->account;
+    gc = purple_account_get_connection (account);
 
-	img = purple_buddy_icons_find_account_icon(session->account);
+    img = purple_buddy_icons_find_account_icon (session->account);
 
-        {
-            PecanBuffer *image;
-            image = pecan_buffer_new_memdup ((const gpointer) purple_imgstore_get_data (img),
-                                             purple_imgstore_get_size (img));
-            pecan_contact_set_buddy_icon (session->user, image);
-        }
+    {
+        PecanBuffer *image;
+        image = pecan_buffer_new_memdup ((const gpointer) purple_imgstore_get_data (img),
+                                         purple_imgstore_get_size (img));
+        pecan_contact_set_buddy_icon (session->user, image);
+    }
 
-	purple_imgstore_unref(img);
+    purple_imgstore_unref (img);
 
-	session->logged_in = TRUE;
+    session->logged_in = TRUE;
 
-        /** @todo move this to msn.c */
-	pecan_update_status (session);
-	pecan_update_personal_message (session);
+    /** @todo move this to msn.c */
+    pecan_update_status (session);
+    pecan_update_personal_message (session);
 
-	purple_connection_set_state(gc, PURPLE_CONNECTED);
+    purple_connection_set_state (gc, PURPLE_CONNECTED);
 
-        pecan_contactlist_check_pending (session->contactlist);
+    pecan_contactlist_check_pending (session->contactlist);
 }
