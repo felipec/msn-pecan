@@ -209,16 +209,6 @@ msn_session_set_error (MsnSession *session,
                        const gchar *info);
 
 /**
- * Sets the current step in the login proccess.
- *
- * @param session The MSN session.
- * @param step The current step.
- */
-void
-msn_session_set_login_step (MsnSession *session,
-                            MsnLoginStep step);
-
-/**
  * Finish the login proccess.
  *
  * @param session The MSN session.

@@ -834,8 +834,6 @@ login (PurpleAccount *account)
     gc->flags |= PURPLE_CONNECTION_ALLOW_CUSTOM_SMILEY;
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
 
-    msn_session_set_login_step (session, PECAN_LOGIN_STEP_START);
-
     msn_session_set_username (session, purple_account_get_username (account));
     msn_session_set_password (session, purple_account_get_password (account));
 

@@ -345,8 +345,6 @@ login_connect_cb(gpointer data, PurpleSslConnection *gsc,
 	session = nexus->session;
 	g_return_if_fail(session != NULL);
 
-	msn_session_set_login_step(session, PECAN_LOGIN_STEP_GET_COOKIE);
-
 	username =
 		g_strdup(purple_url_encode(msn_session_get_username(session)));
 
@@ -499,8 +497,6 @@ nexus_connect_cb(gpointer data, PurpleSslConnection *gsc,
 
 	session = nexus->session;
 	g_return_if_fail(session != NULL);
-
-	msn_session_set_login_step(session, PECAN_LOGIN_STEP_AUTH);
 
 	nexus->write_buf = g_strdup("GET /rdr/pprdr.asp\r\n\r\n");
 	nexus->written_len = 0;

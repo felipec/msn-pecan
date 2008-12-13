@@ -384,48 +384,6 @@ msn_session_set_error(MsnSession *session, MsnErrorType error,
 	g_free(msg);
 }
 
-static const char *
-get_login_step_text(MsnSession *session)
-{
-	const char *steps_text[] = {
-		_("Connecting"),
-		_("Handshaking"),
-		_("Transferring"),
-		_("Handshaking"),
-		_("Starting authentication"),
-		_("Getting cookie"),
-		_("Authenticating"),
-		_("Sending cookie"),
-		_("Retrieving buddy list")
-	};
-
-	return steps_text[session->login_step];
-}
-
-void
-msn_session_set_login_step(MsnSession *session, MsnLoginStep step)
-{
-	PurpleConnection *gc;
-
-	/* Prevent the connection progress going backwards, eg. if we get
-	 * transferred several times during login */
-	if (session->login_step > step)
-		return;
-
-	/* If we're already logged in, we're probably here because of a
-	 * mid-session XFR from the notification server, so we don't want to
-	 * popup the connection progress dialog */
-	if (session->logged_in)
-		return;
-
-	gc = session->account->gc;
-
-	session->login_step = step;
-
-	purple_connection_update_progress(gc, get_login_step_text(session), step,
-									PECAN_LOGIN_STEPS);
-}
-
 void
 msn_session_finish_login(MsnSession *session)
 {

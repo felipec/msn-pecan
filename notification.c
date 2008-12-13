@@ -81,11 +81,6 @@ open_cb (PecanNode *conn,
     session = conn->session;
     cmd_conn = CMD_PECAN_NODE (conn);
 
-    if (session->login_step == PECAN_LOGIN_STEP_START)
-        msn_session_set_login_step (session, PECAN_LOGIN_STEP_HANDSHAKE);
-    else
-        msn_session_set_login_step (session, PECAN_LOGIN_STEP_HANDSHAKE2);
-
     msn_cmdproc_send (cmd_conn->cmdproc, "VER", "MSNP12 CVR0");
 
     pecan_log ("end");
@@ -291,8 +286,6 @@ msn_got_login_params(MsnSession *session, const char *login_params)
 
     cmdproc = session->notification->cmdproc;
 
-    msn_session_set_login_step(session, PECAN_LOGIN_STEP_AUTH_END);
-
     {
         gchar **tokens;
         tokens = g_strsplit (login_params, "&", 2);
@@ -325,8 +318,6 @@ usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     if (!g_ascii_strcasecmp(cmd->params[1], "OK"))
     {
         /* OK */
-        msn_session_set_login_step(session, PECAN_LOGIN_STEP_SYN);
-
         msn_cmdproc_send(cmdproc, "SYN", "%s %s", "0", "0");
     }
     else if (!g_ascii_strcasecmp(cmd->params[1], "TWN"))
@@ -349,8 +340,6 @@ usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         }
 
         g_strfreev(elems);
-
-        msn_session_set_login_step(session, PECAN_LOGIN_STEP_AUTH_START);
 
         msn_nexus_connect(session->nexus);
     }
@@ -1322,8 +1311,6 @@ xfr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         MsnSession *session;
 
         session = cmdproc->session;
-
-        msn_session_set_login_step(session, PECAN_LOGIN_STEP_TRANSFER);
 
         msn_notification_connect(session->notification, host, port);
     }
