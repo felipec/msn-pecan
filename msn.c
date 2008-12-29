@@ -647,12 +647,12 @@ tooltip_text (PurpleBuddy *buddy,
 }
 
 static inline PurpleStatusType *
-util_gen_state (gboolean use_independent_pm,
+util_gen_state (gboolean use_psm,
                 PurpleStatusPrimitive primitive,
                 const gchar *id,
                 const gchar *name)
 {
-    if (use_independent_pm)
+    if (use_psm)
         return purple_status_type_new_full (primitive,
                                             id, name, TRUE, TRUE, FALSE);
     else
@@ -666,18 +666,18 @@ static GList *
 status_types (PurpleAccount *account)
 {
     GList *types = NULL;
-    gboolean use_independent_pm;
+    gboolean use_psm;
 
     /* will always pick the default (the account optios are not loaded yet). */
-    use_independent_pm = purple_account_get_bool (account, "use_independent_pm", TRUE);
+    use_psm = purple_account_get_bool (account, "use_psm", TRUE);
 
     /* visible states */
-    types = g_list_append (types, util_gen_state (use_independent_pm, PURPLE_STATUS_AVAILABLE, NULL, NULL));
-    types = g_list_append (types, util_gen_state (use_independent_pm, PURPLE_STATUS_AWAY, NULL, NULL));
-    types = g_list_append (types, util_gen_state (use_independent_pm, PURPLE_STATUS_AWAY, "brb", _("Be Right Back")));
-    types = g_list_append (types, util_gen_state (use_independent_pm, PURPLE_STATUS_UNAVAILABLE, "busy", _("Busy")));
-    types = g_list_append (types, util_gen_state (use_independent_pm, PURPLE_STATUS_UNAVAILABLE, "phone", _("On the Phone")));
-    types = g_list_append (types, util_gen_state (use_independent_pm, PURPLE_STATUS_AWAY, "lunch", _("Out to Lunch")));
+    types = g_list_append (types, util_gen_state (use_psm, PURPLE_STATUS_AVAILABLE, NULL, NULL));
+    types = g_list_append (types, util_gen_state (use_psm, PURPLE_STATUS_AWAY, NULL, NULL));
+    types = g_list_append (types, util_gen_state (use_psm, PURPLE_STATUS_AWAY, "brb", _("Be Right Back")));
+    types = g_list_append (types, util_gen_state (use_psm, PURPLE_STATUS_UNAVAILABLE, "busy", _("Busy")));
+    types = g_list_append (types, util_gen_state (use_psm, PURPLE_STATUS_UNAVAILABLE, "phone", _("On the Phone")));
+    types = g_list_append (types, util_gen_state (use_psm, PURPLE_STATUS_AWAY, "lunch", _("Out to Lunch")));
 
     {
         PurpleStatusType *status;
@@ -714,7 +714,7 @@ msn_actions(PurplePlugin *plugin, gpointer context)
 								 msn_show_set_friendly_name);
 	m = g_list_append(m, act);
 
-	if (purple_account_get_bool (session->account, "use_independent_pm", TRUE))
+	if (purple_account_get_bool (session->account, "use_psm", TRUE))
 	{
 		act = purple_plugin_action_new(_("Set Personal Message..."),
 						msn_show_set_personal_message);
@@ -1113,7 +1113,7 @@ set_status (PurpleAccount *account,
     {
         session = gc->proto_data;
         pecan_update_status (session);
-        if (!purple_account_get_bool (account, "use_independent_pm", TRUE))
+        if (!purple_account_get_bool (account, "use_psm", TRUE))
             pecan_update_personal_message (session);
     }
 }
@@ -1782,7 +1782,7 @@ init_plugin (PurplePlugin *plugin)
         option = purple_account_option_bool_new (_("Use HTTP Method"), "http_method", FALSE);
         prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
 
-        option = purple_account_option_bool_new (_("Use independent personal messages"), "use_independent_pm", TRUE);
+        option = purple_account_option_bool_new (_("Use personal status messages"), "use_psm", TRUE);
         prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
 
         option = purple_account_option_bool_new (_("Show custom smileys"), "custom_smileys", TRUE);
