@@ -1164,44 +1164,6 @@ control_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 }
 
 static void
-got_datacast_inform_user (MsnCmdProc *cmdproc,
-                          const char *passport,
-                          char *str)
-{
-    PurpleAccount *account;
-    MsnSwitchBoard *swboard;
-    PecanContact contact;
-    const char *friendly_name;
-
-    account = cmdproc->session->account;
-    swboard = cmdproc->data;
-    contact = pecan_contactlist_find_contact(cmdproc->session->contactlist, passport);
-    friendly_name = pecan_contact_get_friendly_name(contact);
-    if (!friendly_name)
-        friendly_name = passport;
-
-    str = g_strdup_printf("%s %s", friendly_name, str);
-
-    /* Grab the conv for this swboard. If there isn't one and it's an IM then create it,
-    otherwise the smileys won't work, this needs to be fixed. */
-    if (!swboard->conv)
-    {
-        if (swboard->current_users > 1)
-            swboard->conv = purple_find_chat(account->gc, swboard->chat_id);
-        else
-        {
-            swboard->conv = purple_find_conversation_with_account(PURPLE_CONV_TYPE_IM,
-                                                                  passport, account);
-            if (!swboard->conv)
-                swboard->conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, passport);
-        }
-    }
-    swboard->flag |= MSN_SB_FLAG_IM;
-
-    purple_conversation_write(swboard->conv, NULL, str, PURPLE_MESSAGE_SYSTEM, time(NULL));
-}
-
-static void
 datacast_msg (MsnCmdProc *cmdproc,
               MsnMessage *msg)
 {
@@ -1519,10 +1481,6 @@ msn_switchboard_init(void)
                            plain_msg);
     msn_table_add_msg_type(cbs_table, "text/x-msmsgscontrol",
                            control_msg);
-    msn_table_add_msg_type(cbs_table, "text/x-clientcaps",
-                           clientcaps_msg);
-    msn_table_add_msg_type(cbs_table, "text/x-clientinfo",
-                           clientcaps_msg);
 #if defined(PECAN_CVR)
     msn_table_add_msg_type(cbs_table, "application/x-msnmsgrp2p",
                            msn_p2p_msg);
