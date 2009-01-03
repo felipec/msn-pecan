@@ -3,8 +3,7 @@ EXTRA_DIST = directconn.c \
 
 pkgdir = $(libdir)/purple-$(PURPLE_MAJOR_VERSION)
 
-MSNSOURCES = error.c \
-	     msn.c \
+MSNSOURCES = msn.c \
 	     nexus.c \
 	     notification.c \
 	     page.c \
@@ -14,7 +13,10 @@ MSNSOURCES = error.c \
 	     pecan_log.c \
 	     pecan_printf.c \
 	     pecan_util.c \
+	     pecan_error.c \
 	     pecan_status.c \
+	     pecan_oim.c \
+	     pecan_ud.c \
 	     cmd/cmdproc.c \
 	     cmd/command.c \
 	     cmd/history.c \
@@ -22,6 +24,7 @@ MSNSOURCES = error.c \
 	     cmd/table.c \
 	     cmd/transaction.c \
 	     io/pecan_buffer.c \
+	     io/pecan_parser.c \
 	     ab/pecan_group.c \
 	     ab/pecan_contact.c \
 	     ab/pecan_contactlist.c \
@@ -29,6 +32,7 @@ MSNSOURCES = error.c \
 	     io/pecan_node.c \
 	     io/pecan_cmd_server.c \
 	     io/pecan_http_server.c \
+	     io/pecan_ssl_conn.c \
 	     cvr/slp.c \
 	     cvr/slpcall.c \
 	     cvr/slplink.c \
@@ -46,9 +50,9 @@ libmsn_pecan_la_LDFLAGS = -module -avoid-version
 if STATIC_MSN
 
 st = -DPURPLE_STATIC_PRPL
-noinst_LIBRARIES = libmsn_pecan.a
-libmsn_pecan_a_SOURCES = $(MSNSOURCES)
-libmsn_pecan_a_CFLAGS = $(AM_CFLAGS)
+noinst_LTLIBRARIES = libmsn_pecan.la
+libmsn_pecan_la_SOURCES = $(MSNSOURCES)
+libmsn_pecan_la_CFLAGS = $(AM_CFLAGS)
 
 else
 
@@ -64,6 +68,9 @@ AM_CPPFLAGS = \
 	      -I$(top_builddir)/libpurple \
 	      $(GLIB_CFLAGS) \
 	      $(DEBUG_CFLAGS) \
-	      -D HAVE_LIBPURPLE \
-	      -D PLUGIN_NAME='msn_pecan' \
-	      -D VERSION='"$(version)"'
+	      -DHAVE_LIBPURPLE \
+	      -DPURPLE_DEBUG \
+	      -DPECAN_CVR \
+	      -DPECAN_DEBUG_SLP \
+	      -DPLUGIN_NAME='msn_pecan' \
+	      -DVERSION='"$(version)"'
