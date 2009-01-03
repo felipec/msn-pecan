@@ -43,7 +43,7 @@ override CFLAGS += -DPECAN_DEBUG_SLP
 # For glib < 2.6 support (libpurple maniacs)
 FALLBACK_CFLAGS := -I./fix_purple
 
-LDFLAGS := -Wl,--no-undefined
+LDFLAGS := -Wl,--no-undefined,-lm
 
 prefix := $(DESTDIR)/$(PURPLE_PREFIX)
 plugin_dir := $(prefix)/lib/purple-2
@@ -88,6 +88,13 @@ ifdef CVR
 	     cvr/slpmsg.o \
 	     cvr/slpsession.o \
 	     cvr/pecan_slp_object.o
+
+  objects += utils/libsiren/common.o \
+	     utils/libsiren/dct4.o \
+	     utils/libsiren/decoder.o \
+	     utils/libsiren/huffman.o \
+	     utils/libsiren/rmlt.o \
+	     utils/siren7_decoder.o
 endif
 
 ifdef SOCKET

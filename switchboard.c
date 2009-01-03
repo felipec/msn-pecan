@@ -28,6 +28,7 @@
 
 #if defined(PECAN_CVR)
 #include "cvr/slplink.h"
+#include "utils/siren7_decoder.h"
 #endif /* defined(PECAN_CVR) */
 
 #include "session_private.h"
@@ -1180,6 +1181,76 @@ control_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     }
 }
 
+#if defined(PECAN_CVR)
+static void
+got_datacast_inform_user (MsnCmdProc *cmdproc,
+                          const char *passport,
+                          char *str)
+{
+    PurpleAccount *account;
+    MsnSwitchBoard *swboard;
+    PecanContact *contact;
+    const char *friendly_name;
+
+    account = cmdproc->session->account;
+    swboard = cmdproc->data;
+    contact = pecan_contactlist_find_contact(cmdproc->session->contactlist, passport);
+    friendly_name = pecan_contact_get_friendly_name(contact);
+    if (!friendly_name)
+        friendly_name = passport;
+
+    str = g_strdup_printf("%s %s", friendly_name, str);
+
+    /* Grab the conv for this swboard. If there isn't one and it's an IM then create it,
+    otherwise the smileys won't work, this needs to be fixed. */
+    if (!swboard->conv)
+    {
+        if (swboard->current_users > 1)
+            swboard->conv = purple_find_chat(account->gc, swboard->chat_id);
+        else
+        {
+            swboard->conv = purple_find_conversation_with_account(PURPLE_CONV_TYPE_IM,
+                                                                  passport, account);
+            if (!swboard->conv)
+                swboard->conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, passport);
+        }
+    }
+    swboard->flag |= MSN_SB_FLAG_IM;
+
+    purple_conversation_write(swboard->conv, NULL, str, PURPLE_MESSAGE_SYSTEM, time(NULL));
+}
+
+static void
+got_voice_clip(MsnSlpCall *slpcall, const guchar *data, gsize size)
+{
+    FILE *f;
+    char *file, *str;
+
+    if ((f = purple_mkstemp(&file, TRUE)))
+    {
+        char *decoded_file = malloc(sizeof(file)+13);
+
+        fwrite(data, size, 1, f);
+        fclose(f);
+
+        strcpy(decoded_file, file);
+        strcat(decoded_file, "_decoded.wav");
+
+        decode_wav_using_siren7 (file, decoded_file);
+
+        str = g_strdup_printf("sent you a voice clip. Click <a href='file://%s'>here</a> to play it.", decoded_file);
+        got_datacast_inform_user(slpcall->slplink->swboard->cmdproc, slpcall->slplink->remote_user, str);
+
+        g_free(str);
+    } else {
+        pecan_error ("couldn't create temporany file to store the received voice clip!\n");
+
+        str = g_strdup_printf("sent you a voice clip, but it cannot be played due to an error happened while storing the file.");
+        got_datacast_inform_user(slpcall->slplink->swboard->cmdproc, slpcall->slplink->remote_user, str);
+    }
+}
+#endif /* defined(PECAN_CVR) */
+
 static void
 datacast_msg (MsnCmdProc *cmdproc,
               MsnMessage *msg)
@@ -1204,7 +1275,19 @@ datacast_msg (MsnCmdProc *cmdproc,
     }
     else if (strcmp (id, "3") == 0)
     {
-        /* voice clips */
+#if defined(PECAN_CVR)
+        const char *data;
+        MsnSlpLink *slplink;
+        MsnObject *obj;
+
+        data = g_hash_table_lookup(body, "Data");
+        obj = msn_object_new_from_string(data);
+        slplink = msn_session_get_slplink(cmdproc->session, passport);
+
+        msn_slplink_request_object(slplink, data, got_voice_clip, NULL, obj);
+            
+        msn_object_destroy(obj);
+#endif /* defined(PECAN_CVR) */
     }
     else
     {

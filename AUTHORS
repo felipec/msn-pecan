@@ -13,6 +13,9 @@ Original patch to add support for handwritten messages (read-only):
  * Chris Stafford
  * Gal Topper
 
+Original patch to add support for voice clips (receive-only):
+ * Chris Stafford
+
 Translators:
  * Marco de Moulin <marco@point.nl> (Dutch)
  * Simo Mattila <simo.h.mattila@gmail.com> (Finnish)
