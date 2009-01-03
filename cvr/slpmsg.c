@@ -49,7 +49,7 @@ msn_slpmsg_new(MsnSlpLink *slplink)
 	slpmsg = g_new0(MsnSlpMessage, 1);
 
 #ifdef PECAN_DEBUG_SLPMSG
-	purple_debug_info("msn", "slpmsg new (%p)\n", slpmsg);
+	pecan_info ("slpmsg new (%p)\n", slpmsg);
 #endif
 
 	slpmsg->slplink = slplink;
@@ -69,7 +69,7 @@ msn_slpmsg_destroy(MsnSlpMessage *slpmsg)
 	g_return_if_fail(slpmsg != NULL);
 
 #ifdef PECAN_DEBUG_SLPMSG
-	purple_debug_info("msn", "slpmsg destroy (%p)\n", slpmsg);
+	pecan_info ("slpmsg destroy (%p)\n", slpmsg);
 #endif
 
 	slplink = slpmsg->slplink;
@@ -95,7 +95,7 @@ msn_slpmsg_destroy(MsnSlpMessage *slpmsg)
 		MsnMessage *msg = cur->data;
 
 #ifdef PECAN_DEBUG_SLPMSG
-		purple_debug_info("msn", "Unlink slpmsg callbacks.\n");
+		pecan_info ("Unlink slpmsg callbacks.\n");
 #endif
 
 		msg->ack_cb = NULL;
