@@ -792,7 +792,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 #if defined(PECAN_CVR)
     MsnObject *msnobj;
 #endif /* defined(PECAN_CVR) */
-    int clientid;
+    unsigned long clientid;
     const char *state, *passport;
     gchar *friendly;
 
@@ -832,7 +832,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     }
 #endif /* defined(PECAN_CVR) */
 
-    clientid = atoi(cmd->params[3]);
+    clientid = strtoul (cmd->params[3], NULL, 10);
     user->mobile = (clientid & MSN_CLIENT_CAP_MSNMOBILE);
 
     pecan_contact_set_state(user, state);
