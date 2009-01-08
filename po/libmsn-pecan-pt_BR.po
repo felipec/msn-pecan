@@ -1,0 +1,647 @@
+# Portuguese (brazil) translation for msn-pecan
+# This file is distributed under the same license as the msn-pecan package.
+# FIRST AUTHOR <deadcow@archlinux.com.br>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: msn-pecan\n"
+"Report-Msgid-Bugs-To: Thiago Silva <deadcow@archlinux.com.br>\n"
+"POT-Creation-Date: 2009-01-07 15:13+0300\n"
+"PO-Revision-Date: 2009-01-07 21:08-0300\n"
+"Last-Translator: deadcow (Thiago Silva) <deadcow@archlinux.com.br>\n"
+"Language-Team: Portuguese - pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Launchpad-Export-Date: 2008-11-25 00:48+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#: error.c:41
+msgid "Unable to parse message"
+msgstr "Impossivel interpretar a mensagem"
+
+#: error.c:45
+msgid "Syntax Error (probably a client bug)"
+msgstr "Erro de sintaxe (provavelmente um erro de cliente)"
+
+#: error.c:49
+msgid "Invalid e-mail address"
+msgstr "Endereço de e-mail inválido"
+
+#: error.c:52
+msgid "User does not exist"
+msgstr "O usuário não existe"
+
+#: error.c:56
+msgid "Fully qualified domain name missing"
+msgstr "Falta um endereço de dominio completo"
+
+#: error.c:59
+msgid "Already logged in"
+msgstr "Já está conectado"
+
+#: error.c:62
+msgid "Invalid screen name"
+msgstr "Nome de usuário invalido"
+
+#: error.c:65
+msgid "Invalid friendly name"
+msgstr "Apelido inválido"
+
+#: error.c:68
+msgid "List full"
+msgstr "Lista cheia"
+
+#: error.c:71
+msgid "Already there"
+msgstr "Já está ali"
+
+#: error.c:74
+msgid "Not on list"
+msgstr "Não está na lista"
+
+#: error.c:77
+msgid "User is offline"
+msgstr "O usuário está desconectado"
+
+#: error.c:80
+msgid "Already in the mode"
+msgstr "Já está neste modo"
+
+#: error.c:83
+msgid "Already in opposite list"
+msgstr "Já se encontra na lista contrária"
+
+#: error.c:86
+msgid "Too many groups"
+msgstr "Muitos grupos"
+
+#: error.c:89
+msgid "Invalid group"
+msgstr "Grupo inválido"
+
+#: error.c:92
+msgid "User not in group"
+msgstr "O usuário não está no grupo"
+
+#: error.c:95
+msgid "Group name too long"
+msgstr "Nome de grupo muito grande"
+
+#: error.c:98
+msgid "Cannot remove group zero"
+msgstr "Impossivel remover o grupo zero"
+
+#: error.c:102
+msgid "Tried to add a user to a group that doesn't exist"
+msgstr "Tentou adicionar um usuário a um grupo não existente"
+
+#: error.c:106
+msgid "Switchboard failed"
+msgstr "Falha no Switchboard"
+
+#: error.c:109
+msgid "Notify transfer failed"
+msgstr "Falha na notificação de transferencia"
+
+#: error.c:113
+msgid "Required fields missing"
+msgstr "Faltam campos obrigatórios"
+
+#: error.c:116
+msgid "Too many hits to a FND"
+msgstr "Muitos resultados de um FND"
+
+#: error.c:119
+msgid "Not logged in"
+msgstr "Desconectado"
+
+#: error.c:123
+msgid "Service temporarily unavailable"
+msgstr "Serviço temporariamente indisponivel"
+
+#: error.c:126
+msgid "Database server error"
+msgstr "Erro na base de dados"
+
+#: error.c:129
+msgid "Command disabled"
+msgstr "Comando desabilitado"
+
+#: error.c:132
+msgid "File operation error"
+msgstr "Erro na operação de arquivos"
+
+#: error.c:135
+msgid "Memory allocation error"
+msgstr "Erro na alocação de memória"
+
+#: error.c:138
+msgid "Wrong CHL value sent to server"
+msgstr "Valor CHL erroneamente enviado ao servidor"
+
+#: error.c:142
+msgid "Server busy"
+msgstr "Servidor ocupado"
+
+#: error.c:145
+#: error.c:158
+#: error.c:213
+msgid "Server unavailable"
+msgstr "Servidor não disponivel"
+
+#: error.c:148
+msgid "Peer notification server down"
+msgstr "Servidor de notificação fora do ar"
+
+#: error.c:151
+msgid "Database connect error"
+msgstr "Erro de conexão a base de dados"
+
+#: error.c:155
+msgid "Server is going down (abandon ship)"
+msgstr "O servidor está sendo desativado (Salve-se quem puder)"
+
+#: error.c:162
+msgid "Error creating connection"
+msgstr "Erro criando a conexão"
+
+#: error.c:166
+msgid "CVR parameters are either unknown or not allowed"
+msgstr "Parametros CVR desconhecidos ou não permitidos"
+
+#: error.c:169
+msgid "Unable to write"
+msgstr "Impossivel escrever"
+
+#: error.c:172
+msgid "Session overload"
+msgstr "Sessão sobrecarregada"
+
+#: error.c:175
+msgid "User is too active"
+msgstr "Usuario muito ativo"
+
+#: error.c:178
+msgid "Too many sessions"
+msgstr "Muitas sessões"
+
+#: error.c:181
+msgid "Passport not verified"
+msgstr "Passport não verificado"
+
+#: error.c:184
+msgid "Bad friend file"
+msgstr "Arquivo de amigo inválido"
+
+#: error.c:187
+msgid "Not expected"
+msgstr "Não esperado"
+
+#: error.c:192
+msgid "Friendly name changes too rapidly"
+msgstr "Mudança de nomes de amigos muito rapida"
+
+#: error.c:201
+msgid "Server too busy"
+msgstr "Servidor ocupado"
+
+#: error.c:205
+msgid "Authentication failed"
+msgstr "Falha na autenticação"
+
+#: error.c:208
+msgid "Not allowed when hiding"
+msgstr "Não permitido no estado invisivel"
+
+#: error.c:216
+msgid "Not accepting new users"
+msgstr "Não aceitando novos usuários"
+
+#: error.c:220
+msgid "Kids Passport without parental consent"
+msgstr "Passport de menores sem o consentimento dos pais"
+
+#: error.c:224
+msgid "Passport account not yet verified"
+msgstr "Conta Passport ainda não verificada"
+
+#: error.c:227
+msgid "Bad ticket"
+msgstr "Ticket inválido"
+
+#: error.c:231
+#, c-format
+msgid "Unknown Error Code %d"
+msgstr "Código de erro desconhecido %d"
+
+#: error.c:243
+#, c-format
+msgid "MSN Error: %s\n"
+msgstr "Erro de MSN: %s\n"
+
+#: msn.c:114
+msgid "Nudge"
+msgstr "Chamar a atenção"
+
+#: msn.c:115
+#, c-format
+msgid "%s has nudged you!"
+msgstr "%s está lhe chamando a atenção!"
+
+#: msn.c:116
+#, c-format
+msgid "Nudging %s..."
+msgstr "Chamando a atenção de %s..."
+
+#: msn.c:251
+msgid "Set your friendly name."
+msgstr "Insira seu apelido."
+
+#: msn.c:252
+msgid "This is the name that other MSN buddies will see you as."
+msgstr "Este é seu nome visto por seus amigos."
+
+#: msn.c:255
+#: msn.c:272
+#: msn.c:289
+#: msn.c:306
+msgid "OK"
+msgstr "Aceitar"
+
+#: msn.c:256
+#: msn.c:273
+#: msn.c:290
+#: msn.c:307
+#: msn.c:328
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: msn.c:270
+msgid "Set your home phone number."
+msgstr "Insira seu numero de telefone de casa"
+
+#: msn.c:287
+msgid "Set your work phone number."
+msgstr "Insira seu numero de telefone de trabalho"
+
+#: msn.c:304
+msgid "Set your mobile phone number."
+msgstr "Insira seu numero de celular"
+
+#: msn.c:319
+msgid "Allow MSN Mobile pages?"
+msgstr "Permitir paginas do MSN Mobile?"
+
+#: msn.c:320
+msgid "Do you want to allow or disallow people on your buddy list to send you MSN Mobile pages to your cell phone or other mobile device?"
+msgstr "Quer permitir ou bloquear pessoas de sua lista de amigos de enviar mensagens através do MSN Mobile para seu celular?"
+
+#: msn.c:326
+msgid "Allow"
+msgstr "Permitir"
+
+#: msn.c:327
+msgid "Disallow"
+msgstr "Bloquear"
+
+#: msn.c:344
+msgid "This Hotmail account may not be active."
+msgstr "Esta conta Hotmail pode não estar ativa."
+
+#: msn.c:388
+msgid "Send a mobile message."
+msgstr "Enviar uma mensagem de celular"
+
+#: msn.c:390
+msgid "Page"
+msgstr "Página"
+
+#: msn.c:391
+msgid "Close"
+msgstr "Fechar"
+
+#: msn.c:545
+msgid "Status"
+msgstr "Estado"
+
+#: msn.c:546
+msgid "Idle"
+msgstr "Inativo"
+
+#: msn.c:555
+msgid "Personal Message"
+msgstr "Mensagem pessoal"
+
+#: msn.c:559
+msgid "Has you"
+msgstr "Tem você"
+
+#: msn.c:560
+#: msn.c:569
+msgid "Yes"
+msgstr "Sim"
+
+#: msn.c:560
+#: msn.c:569
+msgid "No"
+msgstr "Não"
+
+#: msn.c:568
+msgid "Blocked"
+msgstr "Bloqueado"
+
+#: msn.c:580
+msgid "Message"
+msgstr "Mensagem"
+
+#: msn.c:592
+msgid "Be Right Back"
+msgstr "Volto já"
+
+#: msn.c:593
+msgid "Busy"
+msgstr "Ocupado"
+
+#: msn.c:594
+msgid "On the Phone"
+msgstr "No telefone"
+
+#: msn.c:595
+msgid "Out to Lunch"
+msgstr "Saiu para comer"
+
+#: msn.c:626
+msgid "Set Friendly Name..."
+msgstr "Insira seu apelido..."
+
+#: msn.c:631
+msgid "Set Home Phone Number..."
+msgstr "Insira seu numero de telefone de casa..."
+
+#: msn.c:635
+msgid "Set Work Phone Number..."
+msgstr "Insira seu numero de telefone de trabalho..."
+
+#: msn.c:639
+msgid "Set Mobile Phone Number..."
+msgstr "Insira seu numero de telefone celular..."
+
+#: msn.c:645
+msgid "Enable/Disable Mobile Devices..."
+msgstr "Permitir/Bloquear dispositivos móveis..."
+
+#: msn.c:650
+msgid "Allow/Disallow Mobile Pages..."
+msgstr "Permitir/Bloquear páginas Mobile"
+
+#: msn.c:661
+msgid "Open Hotmail Inbox"
+msgstr "Abrir caixa de entrada do Hotmail"
+
+#: msn.c:689
+msgid "Send to Mobile"
+msgstr "Enviar a um Mobile"
+
+#: msn.c:698
+msgid "Initiate _Chat"
+msgstr "Iniciar _Chat"
+
+#: msn.c:722
+msgid "SSL support is needed for MSN. Please install a supported SSL library."
+msgstr "É necessário o suporte a SSL para o MSN. Por favor instale a biblioteca necessária SSL."
+
+#: msn.c:745
+msgid "Failed to connect to server."
+msgstr "Impossivel conectar-se ao servidor."
+
+#: msn.c:1344
+msgid "Username"
+msgstr "Nome de usuário"
+
+#: msn.c:1349
+msgid "Profile URL"
+msgstr "URL do Perfil"
+
+#: msn.c:1469
+#: msn.c:1470
+msgid "WLM Protocol Plugin"
+msgstr "Plugin de Protocolo WLM"
+
+#: msn.c:1496
+msgid "Server"
+msgstr "Servidor"
+
+#: msn.c:1499
+msgid "Port"
+msgstr "Porta"
+
+#: msn.c:1502
+msgid "Use HTTP Method"
+msgstr "Usar método HTTP"
+
+#: msn.c:1505
+msgid "Show custom smileys"
+msgstr "Exibir Smileys customizados"
+
+#: msn.c:1508
+msgid "Use server-side alias"
+msgstr "Usar apelidos do servidor"
+
+#: msn.c:1515
+msgid "nudge: nudge a user to get their attention"
+msgstr "Atenção: Envia um sinal de atenção ao seu amigo."
+
+#: nexus.c:154
+msgid "Unable to connect"
+msgstr "Não é possivel se conectar"
+
+#: notification.c:106
+#: notification.c:143
+#, c-format
+msgid ""
+"Error on notification server:\n"
+"%s"
+msgstr ""
+"Erro no servidor de notificacão:\n"
+"%s"
+
+#: notification.c:113
+msgid ""
+"Error on notification server:\n"
+"Unknown"
+msgstr ""
+"Erro no servidor de notificacão:\n"
+"Desconhecido"
+
+#: notification.c:264
+#, c-format
+msgid "%s is not a valid group."
+msgstr "%s não é um nome de grupo válido"
+
+#: notification.c:269
+#: session.c:357
+msgid "Unknown error."
+msgstr "Erro desconhecido."
+
+#: notification.c:272
+#, c-format
+msgid "%s on %s (%s)"
+msgstr "%s em %s (%s)"
+
+#: notification.c:615
+#, c-format
+msgid "Unable to add user on %s (%s)"
+msgstr "Impossivel adiconar usuário em %s (%s)"
+
+#: notification.c:619
+#, c-format
+msgid "Unable to block user on %s (%s)"
+msgstr "Impossivel bloquear usuário em %s (%s)"
+
+#: notification.c:623
+#, c-format
+msgid "Unable to permit user on %s (%s)"
+msgstr "Impossivel desbloquear usuário em %s (%s)."
+
+#: notification.c:967
+msgid "Unable to rename group"
+msgstr "Impossivel de renomear grupo"
+
+#: notification.c:1026
+msgid "Unable to delete group"
+msgstr "Impossivel deletar grupo"
+
+#: notification.c:1508
+#, c-format
+msgid ""
+"The MSN server will shut down for maintenance in %d minute. You will automatically be signed out at that time.  Please finish any conversations in progress.\n"
+"\n"
+"After the maintenance has been completed, you will be able to successfully sign in."
+msgid_plural ""
+"The MSN server will shut down for maintenance in %d minutes. You will automatically be signed out at that time.  Please finish any conversations in progress.\n"
+"\n"
+"After the maintenance has been completed, you will be able to successfully sign in."
+msgstr[0] ""
+"O servidor de MSN irá se desconectar para manutenção em %d minutos.Você será desconectado automaticamente. Por favor, termine qualquer conversação ativa.\n"
+"\n"
+"Após a manutenção estiver completada, você poderá se conectar novamente."
+msgstr[1] ""
+"O servidor de MSN irá se desconectar para manutenção em %d minutos.Você será desconectado automaticamente. Por favor, termine qualquer conversação ativa.\n"
+"\n"
+"Após a manutenção estiver completada, você poderá se conectar novamente."
+
+#: session.c:326
+msgid "Our protocol is not supported by the server."
+msgstr "Nosso protocolo não é suportado pelo servidor."
+
+#: session.c:330
+msgid "Error parsing HTTP."
+msgstr "Erro interpretando HTTP."
+
+#: session.c:334
+msgid "You have signed on from another location."
+msgstr "Você se conectou através de outra localidade."
+
+#: session.c:337
+msgid "The MSN servers are temporarily unavailable. Please wait and try again."
+msgstr "Os servidores MSN estão temporariamente indisponiveis, por favor aguarde e tente mais tarde."
+
+#: session.c:342
+msgid "The MSN servers are going down temporarily."
+msgstr "Os servidores MSN estão sendo desligados temporariamente."
+
+#: session.c:347
+#, c-format
+msgid "Unable to authenticate: %s"
+msgstr "Impossivel de autenticar: %s"
+
+#: session.c:349
+msgid "Unknown error"
+msgstr "Erro desconhecido"
+
+#: session.c:352
+msgid "Your MSN buddy list is temporarily unavailable. Please wait and try again."
+msgstr "Sua lista de amigos está temporariamente indisponivel, por favor aguarde e tente mais tarde."
+
+#: session.c:372
+msgid "Connecting"
+msgstr "Conectando"
+
+#: session.c:373
+#: session.c:375
+msgid "Handshaking"
+msgstr "Sincronizando"
+
+#: session.c:374
+msgid "Transferring"
+msgstr "Transferindo"
+
+#: session.c:376
+msgid "Starting authentication"
+msgstr "Iniciando autenticação"
+
+#: session.c:377
+msgid "Getting cookie"
+msgstr "Obtendo cookie"
+
+#: session.c:378
+msgid "Authenticating"
+msgstr "Autenticando"
+
+#: session.c:379
+msgid "Sending cookie"
+msgstr "Enviando cookie"
+
+#: session.c:380
+msgid "Retrieving buddy list"
+msgstr "Obtendo lista de amigos"
+
+#: switchboard.c:539
+msgid "Message may have not been sent because a timeout occurred:"
+msgstr "A mensagem pode nao ter sido enviada porque o tempo expirou:"
+
+#: switchboard.c:547
+msgid "Message could not be sent, not allowed while invisible:"
+msgstr "A mensagem não pode ser enviada, não permitido no modo invisivel:"
+
+#: switchboard.c:551
+msgid "Message could not be sent because the user is offline:"
+msgstr "A mensagem não pode ser enviada porque o usuário esta desconectado:"
+
+#: switchboard.c:555
+msgid "Message could not be sent because a connection error occurred:"
+msgstr "A mensagem não pode ser enviada porque ocorreu um erro de conexão:"
+
+#: switchboard.c:559
+msgid "Message could not be sent because we are sending too quickly:"
+msgstr "A mensagem não pode ser enviada porque estamos enviando muito rapido: "
+
+#: switchboard.c:563
+msgid "Message could not be sent because we were unable to establish a session with the server. This is likely a server problem, try again in a few minutes:"
+msgstr "A mensagem não pode ser enviada porque não foi possivel estabelecer uma sessão com o servidor. É possivel que seja um erro no servidor, Por favor tente novamente em alguns minutos."
+
+#: switchboard.c:570
+msgid "Message could not be sent because an error with the switchboard occurred:"
+msgstr "A mensagem não pode ser enviada porque ocorreu um erro no Switchboard:"
+
+#: switchboard.c:578
+msgid "Message may have not been sent because an unknown error occurred:"
+msgstr "A mensagem não pode ser enviada porque ocorreu um erro desconhecido:"
+
+#: ab/pecan_contactlist.c:280
+#, c-format
+msgid "%s has added you to his or her buddy list."
+msgstr "O usuário %s adicionou você a sua lista de amigos."
+
+#: ab/pecan_contactlist.c:348
+#, c-format
+msgid "%s has removed you from his or her buddy list."
+msgstr "O usuário %s removeu você de sua lista de amigos."
+
+#: ab/pecan_contactlist.c:839
+#, c-format
+msgid "Can't add to \"%s\"; it's a virtual group"
+msgstr "Impossivel adicionar ao \"%s\"; é um grupo virtual"
+
