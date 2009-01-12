@@ -653,13 +653,13 @@ util_gen_state (gboolean use_psm,
                 const gchar *name)
 {
     if (use_psm)
-        return purple_status_type_new_full (primitive,
-                                            id, name, TRUE, TRUE, FALSE);
-    else
         return purple_status_type_new_with_attrs (primitive,
                                                   id, name, TRUE, TRUE, FALSE,
                                                   "message", _("Message"), purple_value_new (PURPLE_TYPE_STRING),
                                                   NULL);
+    else
+        return purple_status_type_new_full (primitive,
+                                            id, name, TRUE, TRUE, FALSE);
 }
 
 static GList *
@@ -669,7 +669,7 @@ status_types (PurpleAccount *account)
     gboolean use_psm;
 
     /* will always pick the default (the account optios are not loaded yet). */
-    use_psm = purple_account_get_bool (account, "use_psm", TRUE);
+    use_psm = purple_account_get_bool (account, "use_psm", FALSE);
 
     /* visible states */
     types = g_list_append (types, util_gen_state (use_psm, PURPLE_STATUS_AVAILABLE, NULL, NULL));
@@ -714,7 +714,7 @@ msn_actions(PurplePlugin *plugin, gpointer context)
 								 msn_show_set_friendly_name);
 	m = g_list_append(m, act);
 
-	if (purple_account_get_bool (session->account, "use_psm", TRUE))
+	if (!purple_account_get_bool (session->account, "use_psm", FALSE))
 	{
 		act = purple_plugin_action_new(_("Set Personal Message..."),
 						msn_show_set_personal_message);
@@ -1113,7 +1113,7 @@ set_status (PurpleAccount *account,
     {
         session = gc->proto_data;
         pecan_update_status (session);
-        if (!purple_account_get_bool (account, "use_psm", TRUE))
+        if (purple_account_get_bool (account, "use_psm", FALSE))
             pecan_update_personal_message (session);
     }
 }
@@ -1782,7 +1782,7 @@ init_plugin (PurplePlugin *plugin)
         option = purple_account_option_bool_new (_("Use HTTP Method"), "http_method", FALSE);
         prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
 
-        option = purple_account_option_bool_new (_("Use personal status messages"), "use_psm", TRUE);
+        option = purple_account_option_bool_new (_("Use personal status messages"), "use_psm", FALSE);
         prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
 
         option = purple_account_option_bool_new (_("Show custom smileys"), "custom_smileys", TRUE);
