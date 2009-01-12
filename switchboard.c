@@ -24,6 +24,7 @@
 #include "session.h"
 #include "switchboard.h"
 #include "notification.h"
+#include "fix_purple.h"
 
 #if defined(PECAN_CVR)
 #include "cvr/slplink.h"
@@ -998,10 +999,12 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 {
     PurpleConnection *gc;
     MsnSwitchBoard *swboard;
+    PurpleBuddy *buddy;
     const char *body;
     char *body_str;
     char *body_enc;
     char *body_final;
+    char *alias_backup = NULL;
     size_t body_len;
     const char *passport;
     const char *value;
@@ -1017,6 +1020,8 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
     passport = msg->remote_user;
 
+    buddy = purple_find_buddy(purple_connection_get_account(gc), passport);
+
     if (!strcmp(passport, "messenger@microsoft.com") &&
         strstr(body, "immediate security update"))
     {
@@ -1029,6 +1034,12 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
         pecan_debug ("user-agent=[%s]", value);
     }
 #endif
+
+    if ((value = msn_message_get_attr(msg, "P4-Context")) != NULL)
+    {
+        alias_backup = g_strdup(buddy->alias);
+        purple_buddy_set_displayname(gc, passport, value);
+    }
 
     if ((value = msn_message_get_attr(msg, "X-MMS-IM-Format")) != NULL)
     {
@@ -1076,6 +1087,12 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
                                                                   passport, purple_connection_get_account(gc));
             swboard->flag |= MSN_SB_FLAG_IM;
         }
+    }
+
+    if (alias_backup)
+    {
+        purple_buddy_set_displayname(gc, passport, alias_backup);
+        g_free(alias_backup);
     }
 
     g_free(body_final);
