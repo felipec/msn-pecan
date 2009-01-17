@@ -1188,7 +1188,7 @@ control_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 static void
 got_datacast_inform_user (MsnCmdProc *cmdproc,
                           const char *passport,
-                          char *str)
+                          const char *str)
 {
     PurpleAccount *account;
     MsnSwitchBoard *swboard;
@@ -1227,11 +1227,12 @@ static void
 got_voice_clip(MsnSlpCall *slpcall, const guchar *data, gsize size)
 {
     FILE *f;
-    char *file, *str;
+    char *file;
+    const char *str;
 
     if ((f = purple_mkstemp(&file, TRUE)))
     {
-        char *decoded_file = malloc(sizeof(file)+13);
+        char *decoded_file = calloc (sizeof (file) + 12 + 1, 1);
 
         fwrite(data, size, 1, f);
         fclose(f);
@@ -1241,14 +1242,12 @@ got_voice_clip(MsnSlpCall *slpcall, const guchar *data, gsize size)
 
         decode_wav_using_siren7 (file, decoded_file);
 
-        str = g_strdup_printf("sent you a voice clip. Click <a href='file://%s'>here</a> to play it.", decoded_file);
+        str = g_strdup_printf(_("sent you a voice clip. Click <a href='file://%s'>here</a> to play it."), decoded_file);
         got_datacast_inform_user(slpcall->slplink->swboard->cmdproc, slpcall->slplink->remote_user, str);
-
-        g_free(str);
     } else {
         pecan_error ("couldn't create temporany file to store the received voice clip!\n");
 
-        str = g_strdup_printf("sent you a voice clip, but it cannot be played due to an error happened while storing the file.");
+        str = g_strdup_printf(_("sent you a voice clip, but it cannot be played due to an error happened while storing the file."));
         got_datacast_inform_user(slpcall->slplink->swboard->cmdproc, slpcall->slplink->remote_user, str);
     }
 }
