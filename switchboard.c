@@ -28,8 +28,11 @@
 
 #if defined(PECAN_CVR)
 #include "cvr/slplink.h"
-#include "utils/siren7_decoder.h"
 #endif /* defined(PECAN_CVR) */
+
+#if defined(PECAN_LIBSIREN)
+#include "utils/siren7_decoder.h"
+#endif /* defined(PECAN_LIBSIREN) */
 
 #include "session_private.h"
 
@@ -1181,7 +1184,7 @@ control_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     }
 }
 
-#if defined(PECAN_CVR)
+#if defined(PECAN_LIBSIREN)
 static void
 got_datacast_inform_user (MsnCmdProc *cmdproc,
                           const char *passport,
@@ -1249,7 +1252,7 @@ got_voice_clip(MsnSlpCall *slpcall, const guchar *data, gsize size)
         got_datacast_inform_user(slpcall->slplink->swboard->cmdproc, slpcall->slplink->remote_user, str);
     }
 }
-#endif /* defined(PECAN_CVR) */
+#endif /* defined(PECAN_LIBSIREN) */
 
 static void
 datacast_msg (MsnCmdProc *cmdproc,
@@ -1275,7 +1278,7 @@ datacast_msg (MsnCmdProc *cmdproc,
     }
     else if (strcmp (id, "3") == 0)
     {
-#if defined(PECAN_CVR)
+#if defined(PECAN_LIBSIREN)
         const char *data;
         MsnSlpLink *slplink;
         MsnObject *obj;
@@ -1287,7 +1290,7 @@ datacast_msg (MsnCmdProc *cmdproc,
         msn_slplink_request_object(slplink, data, got_voice_clip, NULL, obj);
             
         msn_object_destroy(obj);
-#endif /* defined(PECAN_CVR) */
+#endif /* defined(PECAN_LIBSIREN) */
     }
     else
     {

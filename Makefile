@@ -37,6 +37,10 @@ ifdef CVR
   override CFLAGS += -DPECAN_CVR
 endif
 
+ifdef LIBSIREN
+  override CFLAGS += -DPECAN_LIBSIREN
+endif
+
 # extra debugging
 override CFLAGS += -DPECAN_DEBUG_SLP
 
@@ -89,12 +93,6 @@ ifdef CVR
 	     cvr/slpsession.o \
 	     cvr/pecan_slp_object.o
 
-  objects += utils/libsiren/common.o \
-	     utils/libsiren/dct4.o \
-	     utils/libsiren/decoder.o \
-	     utils/libsiren/huffman.o \
-	     utils/libsiren/rmlt.o \
-	     utils/siren7_decoder.o
 endif
 
 ifdef SOCKET
@@ -105,6 +103,15 @@ endif
 ifdef DIRECTCONN
   objects += directconn.o
   override CFLAGS += -DMSN_DIRECTCONN
+endif
+
+ifdef LIBSIREN
+  objects += utils/libsiren/common.o \
+	     utils/libsiren/dct4.o \
+	     utils/libsiren/decoder.o \
+	     utils/libsiren/huffman.o \
+	     utils/libsiren/rmlt.o \
+	     utils/siren7_decoder.o
 endif
 
 sources := $(objects:.o=.c)
