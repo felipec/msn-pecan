@@ -106,12 +106,12 @@ ifdef DIRECTCONN
 endif
 
 ifdef LIBSIREN
-  objects += utils/libsiren/common.o \
-	     utils/libsiren/dct4.o \
-	     utils/libsiren/decoder.o \
-	     utils/libsiren/huffman.o \
-	     utils/libsiren/rmlt.o \
-	     utils/siren7_decoder.o
+  objects += lib/libsiren/common.o \
+	     lib/libsiren/dct4.o \
+	     lib/libsiren/decoder.o \
+	     lib/libsiren/huffman.o \
+	     lib/libsiren/rmlt.o \
+	     pecan_siren7.o
 endif
 
 sources := $(objects:.o=.c)

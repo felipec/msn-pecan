@@ -31,7 +31,7 @@
 #endif /* defined(PECAN_CVR) */
 
 #if defined(PECAN_LIBSIREN)
-#include "utils/siren7_decoder.h"
+#include "pecan_siren7.h"
 #endif /* defined(PECAN_LIBSIREN) */
 
 #include "session_private.h"

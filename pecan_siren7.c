@@ -24,7 +24,7 @@
  */
 
 #include <stdio.h>
-#include "utils/libsiren/siren7.h"
+#include "lib/libsiren/siren7.h"
 
 #define RIFF_ID 0x46464952
 #define WAVE_ID 0x45564157
