@@ -39,6 +39,7 @@ endif
 
 ifdef LIBSIREN
   override CFLAGS += -DPECAN_LIBSIREN
+  LIBSIREN_LIBS := -lm
 endif
 
 # extra debugging
@@ -47,7 +48,7 @@ override CFLAGS += -DPECAN_DEBUG_SLP
 # For glib < 2.6 support (libpurple maniacs)
 FALLBACK_CFLAGS := -I./fix_purple
 
-LDFLAGS := -Wl,--no-undefined,-lm
+LDFLAGS := -Wl,--no-undefined
 
 prefix := $(DESTDIR)/$(PURPLE_PREFIX)
 plugin_dir := $(prefix)/lib/purple-2
@@ -154,9 +155,15 @@ else
   Q = @
 endif
 
+plugin_libs := $(PURPLE_LIBS) $(GOBJECT_LIBS)
+
+ifdef LIBSIREN
+  plugin_libs += $(LIBSIREN_LIBS)
+endif
+
 $(plugin): $(objects)
 $(plugin): CFLAGS := $(CFLAGS) $(PURPLE_CFLAGS) $(GOBJECT_CFLAGS) $(FALLBACK_CFLAGS) -D VERSION='"$(version)"'
-$(plugin): LIBS := $(PURPLE_LIBS) $(GOBJECT_LIBS)
+$(plugin): LIBS := $(plugin_libs)
 
 %.dylib::
 	$(P)DYLIB
