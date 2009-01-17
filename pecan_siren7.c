@@ -28,116 +28,130 @@
 
 #define RIFF_ID 0x46464952
 #define WAVE_ID 0x45564157
-#define FMT__ID 0x20746d66
+#define FMT_ID 0x20746d66
 #define DATA_ID 0x61746164
 #define FACT_ID 0x74636166
 
-typedef struct {
-	unsigned int ChunkId;
-	unsigned int ChunkSize;
-} WAVE_CHUNK;
+typedef struct
+{
+    unsigned int chunk_id;
+    unsigned int chunk_size;
+} wav_data;
 
-typedef struct {
-	unsigned int ChunkId;
-	unsigned int ChunkSize;
-	unsigned int TypeID;
-} RIFF;
+typedef struct
+{
+    unsigned int chunk_id;
+    unsigned int chunk_size;
+    unsigned int type_id;
+} riff_data;
 
-typedef struct {
-	unsigned short Format; 
-	unsigned short Channels;
-	unsigned int SampleRate; 
-	unsigned int ByteRate;
-	unsigned short BlockAlign;
-	unsigned short BitsPerSample;
-} fmtChunk;
+typedef struct
+{
+    unsigned short format;
+    unsigned short channels;
+    unsigned int sample_rate;
+    unsigned int byte_rate;
+    unsigned short block_align;
+    unsigned short bits_per_sample;
+} fmt_chunk;
 
-typedef struct {
-	fmtChunk fmt;
-	unsigned short ExtraSize;
-	unsigned char *ExtraContent;
-} fmtChunkEx;
-
+typedef struct
+{
+    fmt_chunk fmt;
+    unsigned short extra_size;
+    unsigned char *extra_content;
+} fmt_chunk_ex;
 
 #define IDX(val, i) ((unsigned int) ((unsigned char *) &val)[i])
 
-#define GUINT16_FROM_LE(val) ( (unsigned short) ( IDX(val, 0) + (unsigned short) IDX(val, 1) * 256 ))
-#define GUINT32_FROM_LE(val) ( (unsigned int) (IDX(val, 0) + IDX(val, 1) * 256 + \
-        IDX(val, 2) * 65536 + IDX(val, 3) * 16777216)) 
-
+#define GUINT16_FROM_LE(val) ((unsigned short) (IDX (val, 0) + (unsigned short) IDX (val, 1) * 256))
+#define GUINT32_FROM_LE(val) ((unsigned int) (IDX (val, 0) + IDX (val, 1) * 256 + \
+                                              IDX (val, 2) * 65536 + IDX (val, 3) * 16777216))
 
 void
-decode_wav_using_siren7 (char *input_file, char *output_file)
+decode_wav_using_siren7 (char *input_file,
+                         char *output_file)
 {
-	FILE * input;
-	FILE * output;
-	RIFF riff_header;
-	WAVE_CHUNK current_chunk;
-	fmtChunkEx fmt_info;
-	unsigned char *out_data = NULL;
-	unsigned char *out_ptr = NULL;
-	unsigned char InBuffer[40];
-	unsigned int fileOffset;
-	unsigned int chunkOffset;
+    FILE * input;
+    FILE * output;
+    riff_data riff_header;
+    wav_data current_chunk;
+    fmt_chunk_ex fmt_info;
+    unsigned char *out_data = NULL;
+    unsigned char *out_ptr = NULL;
+    unsigned char in_buffer[40];
+    unsigned int file_offset;
+    unsigned int chunk_offset;
 
-	SirenDecoder decoder = Siren7_NewDecoder(16000);
-	
-	input = fopen(input_file, "rb");
-	output = fopen(output_file, "wb");
+    SirenDecoder decoder = Siren7_NewDecoder (16000);
 
-	fileOffset = 0;
-	fread(&riff_header, sizeof(RIFF), 1, input);
-	fileOffset += sizeof(RIFF);
+    input = fopen (input_file, "rb");
+    output = fopen (output_file, "wb");
 
-	riff_header.ChunkId = GUINT32_FROM_LE(riff_header.ChunkId);
-	riff_header.ChunkSize = GUINT32_FROM_LE(riff_header.ChunkSize);
-	riff_header.TypeID = GUINT32_FROM_LE(riff_header.TypeID);
+    file_offset = 0;
+    fread (&riff_header, sizeof (riff_data), 1, input);
+    file_offset += sizeof (riff_data);
 
-	if (riff_header.ChunkId == RIFF_ID && riff_header.TypeID == WAVE_ID) {
-		while (fileOffset < riff_header.ChunkSize) {
-			fread(&current_chunk, sizeof(WAVE_CHUNK), 1, input);
-			fileOffset += sizeof(WAVE_CHUNK);
-			current_chunk.ChunkId = GUINT32_FROM_LE(current_chunk.ChunkId);
-			current_chunk.ChunkSize = GUINT32_FROM_LE(current_chunk.ChunkSize);
+    riff_header.chunk_id = GUINT32_FROM_LE (riff_header.chunk_id);
+    riff_header.chunk_size = GUINT32_FROM_LE (riff_header.chunk_size);
+    riff_header.type_id = GUINT32_FROM_LE (riff_header.type_id);
 
-			chunkOffset = 0;
-			if (current_chunk.ChunkId == FMT__ID) {
-				fread(&fmt_info, sizeof(fmtChunk), 1, input);
-				/* Should convert from LE the fmt_info structure, but it's not necessary... */
-				if (current_chunk.ChunkSize > sizeof(fmtChunk)) {
-					fread(&(fmt_info.ExtraSize), sizeof(short), 1, input);
-					fmt_info.ExtraSize= GUINT32_FROM_LE(fmt_info.ExtraSize);
-					fmt_info.ExtraContent = (unsigned char *) malloc (fmt_info.ExtraSize);
-					fread(fmt_info.ExtraContent, fmt_info.ExtraSize, 1, input);
-				} else {
-					fmt_info.ExtraSize = 0;
-					fmt_info.ExtraContent = NULL;
-				}
-			} else if (current_chunk.ChunkId  == DATA_ID) {
-				out_data = (unsigned char *) malloc(current_chunk.ChunkSize * 16);
-				out_ptr = out_data;
-				while (chunkOffset + 40 <= current_chunk.ChunkSize) {
-					fread(InBuffer, 1, 40, input);
-					Siren7_DecodeFrame(decoder, InBuffer, out_ptr);
-					out_ptr += 640;
-					chunkOffset += 40;
-				}
-				fread(InBuffer, 1, current_chunk.ChunkSize - chunkOffset, input);
-			} else {
-				fseek(input, current_chunk.ChunkSize, SEEK_CUR);
-			}
-			fileOffset += current_chunk.ChunkSize;
-		}
-	}
-	
-	/* The WAV heder should be converted TO LE, but should be done inside the library and it's not important for now ... */
-	fwrite(&(decoder->WavHeader), sizeof(decoder->WavHeader), 1, output);
-	fwrite(out_data, 1, GUINT32_FROM_LE(decoder->WavHeader.DataSize), output);
-	fclose(output);
+    if (riff_header.chunk_id == RIFF_ID && riff_header.type_id == WAVE_ID)
+    {
+        while (file_offset < riff_header.chunk_size)
+        {
+            fread (&current_chunk, sizeof (wav_data), 1, input);
+            file_offset += sizeof (wav_data);
+            current_chunk.chunk_id = GUINT32_FROM_LE (current_chunk.chunk_id);
+            current_chunk.chunk_size = GUINT32_FROM_LE (current_chunk.chunk_size);
 
-	Siren7_CloseDecoder(decoder);
+            chunk_offset = 0;
+            if (current_chunk.chunk_id == FMT_ID)
+            {
+                fread (&fmt_info, sizeof (fmt_chunk), 1, input);
+                /* Should convert from LE the fmt_info structure, but it's not necessary... */
+                if (current_chunk.chunk_size > sizeof (fmt_chunk))
+                {
+                    fread (&(fmt_info.extra_size), sizeof (short), 1, input);
+                    fmt_info.extra_size = GUINT32_FROM_LE (fmt_info.extra_size);
+                    fmt_info.extra_content = (unsigned char *) malloc (fmt_info.extra_size);
+                    fread (fmt_info.extra_content, fmt_info.extra_size, 1, input);
+                }
+                else
+                {
+                    fmt_info.extra_size = 0;
+                    fmt_info.extra_content = NULL;
+                }
+            }
+            else if (current_chunk.chunk_id  == DATA_ID)
+            {
+                out_data = (unsigned char *) malloc (current_chunk.chunk_size * 16);
+                out_ptr = out_data;
+                while (chunk_offset + 40 <= current_chunk.chunk_size)
+                {
+                    fread (in_buffer, 1, 40, input);
+                    Siren7_DecodeFrame (decoder, in_buffer, out_ptr);
+                    out_ptr += 640;
+                    chunk_offset += 40;
+                }
+                fread (in_buffer, 1, current_chunk.chunk_size - chunk_offset, input);
+            }
+            else
+            {
+                fseek (input, current_chunk.chunk_size, SEEK_CUR);
+            }
 
-	free(out_data);
-	if (fmt_info.ExtraContent != NULL)
-		free(fmt_info.ExtraContent);
+            file_offset += current_chunk.chunk_size;
+        }
+    }
+
+    /* The WAV heder should be converted TO LE, but should be done inside the library and it's not important for now ... */
+    fwrite (&(decoder->WavHeader), sizeof (decoder->WavHeader), 1, output);
+    fwrite (out_data, 1, GUINT32_FROM_LE (decoder->WavHeader.DataSize), output);
+    fclose (output);
+
+    Siren7_CloseDecoder (decoder);
+
+    free (out_data);
+    free (fmt_info.extra_content);
 }
