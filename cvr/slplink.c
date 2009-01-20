@@ -302,7 +302,7 @@ msg_ack(MsnMessage *msg, void *data)
 	else
 	{
 		/* The whole message has been sent */
-		if (slpmsg->flags == 0x20 || slpmsg->flags == 0x1000030)
+		if (slpmsg->flags == 0x20 || slpmsg->flags == 0x1000020 || slpmsg->flags == 0x1000030)
 		{
 			if (slpmsg->slpcall != NULL)
 			{
@@ -390,7 +390,7 @@ msn_slplink_send_msgpart(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
         msn_slplink_send_msg(slplink, msg);
 #endif /* MSN_DIRECTCONN */
 
-	if ((slpmsg->flags == 0x20 || slpmsg->flags == 0x1000030) &&
+	if ((slpmsg->flags == 0x20 || slpmsg->flags == 0x1000020 || slpmsg->flags == 0x1000030) &&
 		(slpmsg->slpcall != NULL))
 	{
 		slpmsg->slpcall->progress = TRUE;
@@ -424,7 +424,7 @@ msn_slplink_release_slpmsg(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
 		msg->msnslp_header.ack_size = slpmsg->ack_size;
 		msg->msnslp_header.ack_sub_id = slpmsg->ack_sub_id;
 	}
-	else if (slpmsg->flags == 0x20 || slpmsg->flags == 0x1000030)
+	else if (slpmsg->flags == 0x20 || slpmsg->flags == 0x1000020 || slpmsg->flags == 0x1000030)
 	{
 		MsnSlpSession *slpsession;
 		slpsession = slpmsg->slpsession;
@@ -580,7 +580,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 
 			if (slpmsg->slpcall != NULL)
 			{
-				if (slpmsg->flags == 0x20 || slpmsg->flags == 0x1000030)
+				if (slpmsg->flags == 0x20 || slpmsg->flags == 0x1000020 || slpmsg->flags == 0x1000030)
 				{
 					PurpleXfer *xfer;
 
@@ -634,7 +634,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 			memcpy(slpmsg->buffer + offset, data, len);
 	}
 
-	if ((slpmsg->flags == 0x20 || slpmsg->flags == 0x1000030) &&
+	if ((slpmsg->flags == 0x20 || slpmsg->flags == 0x1000020 || slpmsg->flags == 0x1000030) &&
 		(slpmsg->slpcall != NULL))
 	{
 		slpmsg->slpcall->progress = TRUE;
@@ -675,7 +675,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 			}
 		}
 		else if (slpmsg->flags == 0x0 || slpmsg->flags == 0x20 ||
-				 slpmsg->flags == 0x1000030)
+				 slpmsg->flags == 0x1000020 || slpmsg->flags == 0x1000030)
 		{
 			/* Release all the messages and send the ACK */
 
@@ -683,7 +683,8 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 			msn_slplink_unleash(slplink);
 		}
 #else
-                if (slpmsg->flags == 0x0 || slpmsg->flags == 0x20 ||
+                if (slpmsg->flags == 0x0 || slpmsg->flags == 0x1000000 ||
+                    slpmsg->flags == 0x20 || slpmsg->flags == 0x1000020 ||
                     slpmsg->flags == 0x1000030)
                 {
                     /* Release all the messages and send the ACK */
