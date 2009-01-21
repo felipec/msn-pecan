@@ -29,6 +29,7 @@
 #include "session.h"
 #include "pecan_util.h"
 #include "pecan_printf.h"
+#include "pecan_log.h"
 
 #include <string.h>
 
@@ -280,6 +281,8 @@ msn_slp_process_msg(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
 			msn_slp_call_session_init(slpcall);
 	}
 #endif /* MSN_DIRECTCONN */
+	else
+		pecan_warning ("slp_process_msg: unprocessed SLP message with flags 0x%08lx", slpmsg->flags);
 
 	return slpcall;
 }
