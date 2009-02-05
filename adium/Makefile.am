@@ -39,6 +39,7 @@ MSNSOURCES = msn.c \
 	     cvr/slpmsg.c \
 	     cvr/slpsession.c \
 	     cvr/pecan_slp_object.c \
+	     utils/msgpluslive.c \
 	     fix_purple.c
 
 AM_CFLAGS = $(st)

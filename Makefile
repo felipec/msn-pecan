@@ -88,6 +88,7 @@ objects := msn.o \
 	   io/pecan_cmd_server.o \
 	   io/pecan_http_server.o \
 	   io/pecan_ssl_conn.o \
+	   utils/msgpluslive.o \
 	   fix_purple.o
 
 ifdef CVR

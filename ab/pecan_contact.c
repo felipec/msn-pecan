@@ -34,6 +34,7 @@
 
 #ifdef HAVE_LIBPURPLE
 #include "fix_purple.h"
+#include "utils/msgpluslive.h"
 
 /* libpurple stuff. */
 #include "fix_purple_win32.h"
@@ -193,11 +194,29 @@ pecan_contact_set_friendly_name (PecanContact *contact,
         return;
     }
 
-    g_free (contact->friendly_name);
-    contact->friendly_name = g_strdup (name);
-
 #ifdef HAVE_LIBPURPLE
     g_return_if_fail (contact->contactlist);
+
+    if (purple_account_get_bool (contact->contactlist->session->account, "hide_msgplus_tags", TRUE))
+    {
+        char* parsed_name;
+
+        parsed_name = remove_plus_tags_from_str (name);
+
+        if (!parsed_name)
+            parsed_name = g_strdup (name);
+        if (contact->friendly_name && parsed_name &&
+            strcmp (contact->friendly_name, parsed_name) == 0)
+            return;
+
+        g_free (contact->friendly_name);
+        contact->friendly_name = parsed_name;
+    }
+    else
+    {
+        g_free (contact->friendly_name);
+        contact->friendly_name = g_strdup (name);
+    }
 
     {
         PurpleAccount *account;
@@ -222,6 +241,9 @@ pecan_contact_set_friendly_name (PecanContact *contact,
         pecan_contact_set_store_name (contact, name);
     }
 #endif
+#else
+    g_free (contact->friendly_name);
+    contact->friendly_name = g_strdup (name);
 #endif /* HAVE_LIBPURPLE */
 }
 
@@ -239,8 +261,33 @@ pecan_contact_set_personal_message (PecanContact *contact,
         return;
     }
 
+#ifdef HAVE_LIBPURPLE
+    g_return_if_fail (contact->contactlist);
+
+    if (value && purple_account_get_bool (contact->contactlist->session->account, "hide_msgplus_tags", TRUE))
+    {
+        char* parsed_value;
+
+        parsed_value = remove_plus_tags_from_str (value);
+
+        if (!parsed_value)
+            parsed_value = g_strdup (value);
+        if (contact->personal_message && parsed_value &&
+            strcmp (contact->personal_message, parsed_value) == 0)
+            return;
+
+        g_free (contact->personal_message);
+        contact->personal_message = parsed_value;
+    }
+    else
+    {
+        g_free (contact->personal_message);
+        contact->personal_message = g_strdup (value);
+    }
+#else
     g_free (contact->personal_message);
     contact->personal_message = g_strdup (value);
+#endif /* HAVE_LIBPURPLE */
 }
 
 void
