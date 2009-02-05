@@ -12,7 +12,9 @@ PURPLE_DATAIR := $(shell pkg-config --variable=datadir purple)
 GOBJECT_CFLAGS := $(shell pkg-config --cflags gobject-2.0)
 GOBJECT_LIBS := $(shell pkg-config --libs gobject-2.0)
 
+# default configuration options
 CVR := y
+LIBSIREN := y
 
 ifdef DEBUG
   CFLAGS += -ggdb
