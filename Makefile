@@ -138,6 +138,7 @@ else
 ifeq ($(PLATFORM),win32)
   SHLIBEXT := dll
   LDFLAGS := -Wl,--enable-auto-image-base -Wl,--exclude-libs=libintl.a
+  objects += win32/resource.res
 else
   SHLIBEXT := so
 endif
@@ -195,6 +196,9 @@ $(plugin): LIBS := $(plugin_libs)
 %.o:: %.c
 	$(P)CC
 	$(Q)$(CC) $(CFLAGS) -MMD -o $@ -c $<
+
+%.res:: %.rc
+	windres $< -O coff -o $@
 
 clean:
 	find -name '*.mo' -delete
