@@ -46,6 +46,10 @@ ifdef LIBSIREN
   LIBSIREN_LIBS := -lm
 endif
 
+ifdef PLUS_SOUNDS
+  override CFLAGS += -DRECEIVE_PLUS_SOUNDS
+endif
+
 # extra debugging
 override CFLAGS += -DPECAN_DEBUG_SLP
 

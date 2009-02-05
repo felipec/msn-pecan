@@ -998,6 +998,89 @@ usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 /**************************************************************************
  * Message Handlers
  **************************************************************************/
+
+static void
+got_datacast_inform_user (MsnCmdProc *cmdproc,
+                          const char *passport,
+                          const char *str)
+{
+    PurpleAccount *account;
+    MsnSwitchBoard *swboard;
+    PecanContact *contact;
+    const char *friendly_name;
+    gchar *new_str;
+
+    account = cmdproc->session->account;
+    swboard = cmdproc->data;
+    contact = pecan_contactlist_find_contact(cmdproc->session->contactlist, passport);
+    friendly_name = pecan_contact_get_friendly_name(contact);
+    if (!friendly_name)
+        friendly_name = passport;
+
+    new_str = g_strdup_printf("%s %s", friendly_name, str);
+
+    /* Grab the conv for this swboard. If there isn't one and it's an IM then create it,
+    otherwise the smileys won't work, this needs to be fixed. */
+    if (!swboard->conv)
+    {
+        if (swboard->current_users > 1)
+            swboard->conv = purple_find_chat(account->gc, swboard->chat_id);
+        else
+        {
+            swboard->conv = purple_find_conversation_with_account(PURPLE_CONV_TYPE_IM,
+                                                                  passport, account);
+            if (!swboard->conv)
+                swboard->conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, passport);
+        }
+    }
+    swboard->flag |= MSN_SB_FLAG_IM;
+
+    purple_conversation_write(swboard->conv, NULL, new_str, PURPLE_MESSAGE_SYSTEM, time(NULL));
+
+    g_free (new_str);
+}
+
+#if defined(RECEIVE_PLUS_SOUNDS)
+static void
+save_plus_sound_cb(PurpleUtilFetchUrlData *url_data, gpointer user_data,
+                   const gchar *sound, size_t len, const gchar *error_message)
+{
+    FILE *f;
+    gchar *path;
+    gchar *str;
+    MsnCmdProc *cmdproc = user_data;
+    const char *passport = cmdproc->extra_data;
+
+    if ((error_message != NULL) || (len == 0))
+        return;
+
+    if (purple_mkstemp(&path, TRUE))
+    {
+        gchar *path_mp3 = g_strconcat (path, ".mp3", NULL);
+
+        f = fopen (path_mp3, "wb");
+        fwrite(sound, len, 1, f);
+
+        str = g_strdup_printf (_("sent you a Messenger Plus! sound. Click <a href='file://%s'>here</a> to play it."), path_mp3);
+        got_datacast_inform_user (cmdproc, passport, str);
+
+        fclose(f);
+
+        g_free (path_mp3);
+    }
+    else
+    {
+        pecan_error ("couldn't create temporany file to store the received Plus! sound!\n");
+
+        str = g_strdup_printf (_("sent you a Messenger Plus! sound, but it cannot be played due to an error happened while storing the file."));
+        got_datacast_inform_user (cmdproc, passport, str);
+    }
+
+    g_free(str);
+    g_free(path);
+}
+#endif /* defined(RECEIVE_PLUS_SOUNDS) */
+
 static void
 plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 {
@@ -1010,7 +1093,7 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     char *body_final;
     char *alias_backup = NULL;
     size_t body_len;
-    const char *passport;
+    char *passport;
     const char *value;
 
     gc = cmdproc->session->account->gc;
@@ -1022,7 +1105,7 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     body_enc = g_markup_escape_text(body_str, -1);
     g_free(body_str);
 
-    passport = msg->remote_user;
+    passport = strdup (msg->remote_user);
 
     buddy = purple_find_buddy(purple_connection_get_account(gc), passport);
 
@@ -1065,6 +1148,26 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
     swboard->flag |= MSN_SB_FLAG_IM;
 
+#if defined(RECEIVE_PLUS_SOUNDS)
+    const char *body_plus_sound = strstr (body_final, "[Messenger Plus! Sound] - Data{");
+
+    if (body_plus_sound && strlen (body_plus_sound) > 43)
+    {
+        char *plus_sound_link = calloc (48 + 12 + 1, 1);
+
+        strcpy (plus_sound_link, "http://sounds.msgpluslive.net/esnd/snd/get?hash=");
+        strncat (plus_sound_link, body_plus_sound + 31, 12);
+
+        cmdproc->extra_data = passport;
+
+        purple_util_fetch_url (plus_sound_link, TRUE, NULL, FALSE, save_plus_sound_cb, cmdproc);
+
+        free (plus_sound_link);
+
+        return;
+    }
+#endif /* defined(RECEIVE_PLUS_SOUNDS) */
+
     if (swboard->current_users > 1 ||
         ((swboard->conv != NULL) &&
          purple_conversation_get_type(swboard->conv) == PURPLE_CONV_TYPE_CHAT))
@@ -1100,6 +1203,7 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     }
 
     g_free(body_final);
+    g_free(passport);
 }
 
 #if defined(PECAN_CVR)
@@ -1185,44 +1289,6 @@ control_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 }
 
 #if defined(PECAN_LIBSIREN)
-static void
-got_datacast_inform_user (MsnCmdProc *cmdproc,
-                          const char *passport,
-                          const char *str)
-{
-    PurpleAccount *account;
-    MsnSwitchBoard *swboard;
-    PecanContact *contact;
-    const char *friendly_name;
-
-    account = cmdproc->session->account;
-    swboard = cmdproc->data;
-    contact = pecan_contactlist_find_contact(cmdproc->session->contactlist, passport);
-    friendly_name = pecan_contact_get_friendly_name(contact);
-    if (!friendly_name)
-        friendly_name = passport;
-
-    str = g_strdup_printf("%s %s", friendly_name, str);
-
-    /* Grab the conv for this swboard. If there isn't one and it's an IM then create it,
-    otherwise the smileys won't work, this needs to be fixed. */
-    if (!swboard->conv)
-    {
-        if (swboard->current_users > 1)
-            swboard->conv = purple_find_chat(account->gc, swboard->chat_id);
-        else
-        {
-            swboard->conv = purple_find_conversation_with_account(PURPLE_CONV_TYPE_IM,
-                                                                  passport, account);
-            if (!swboard->conv)
-                swboard->conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, passport);
-        }
-    }
-    swboard->flag |= MSN_SB_FLAG_IM;
-
-    purple_conversation_write(swboard->conv, NULL, str, PURPLE_MESSAGE_SYSTEM, time(NULL));
-}
-
 static void
 got_voice_clip(MsnSlpCall *slpcall, const guchar *data, gsize size)
 {

@@ -1792,6 +1792,9 @@ init_plugin (PurplePlugin *plugin)
 
         option = purple_account_option_bool_new (_("Use user displays"), "use_userdisplay", TRUE);
         prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
+
+        option = purple_account_option_bool_new (_("Don't show Messenger Plus! tags"), "hide_msgplus_tags", TRUE);
+        prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
     }
 
     purple_cmd_register ("nudge", "", PURPLE_CMD_P_PRPL,

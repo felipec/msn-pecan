@@ -12,6 +12,7 @@ Compared to Pidgin's official MSN plug-in:
  * Server-side storage for display names (private alias)
  * Support for handwritten messages (read-only)
  * Support for voice clips (receive-only)
+ * Support for Plus! sounds (receive-only)
  * Option to hide Plus! tags
 
 Other features:

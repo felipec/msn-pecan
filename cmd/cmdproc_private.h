@@ -41,6 +41,7 @@ struct MsnCmdProc
     MsnErrorCb error_handler;
 
     gpointer data; /**< Extra data, like the switchboard. */
+    gpointer extra_data; /**< Extra data. */
     guint cmd_count;
 
     struct MsnHistory *history;
