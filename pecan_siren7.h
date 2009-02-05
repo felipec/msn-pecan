@@ -19,6 +19,6 @@
 #ifndef SIREN7_DECODER_H
 #define SIREN7_DECODER_H
 
-void decode_wav_using_siren7 (char *input_file, char *output_file);
+void decode_wav_using_siren7 (const char *input_file, const char *output_file);
 
 #endif /* SIREN7_DECODER_H */

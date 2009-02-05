@@ -1294,28 +1294,31 @@ got_voice_clip(MsnSlpCall *slpcall, const guchar *data, gsize size)
 {
     FILE *f;
     char *file;
-    const char *str;
+    gchar *str;
 
     if ((f = purple_mkstemp(&file, TRUE)))
     {
-        char *decoded_file = calloc (sizeof (file) + 12 + 1, 1);
+        gchar *decoded_file;
 
         fwrite(data, size, 1, f);
         fclose(f);
 
-        strcpy(decoded_file, file);
-        strcat(decoded_file, "_decoded.wav");
+        decoded_file = g_strconcat (file, "_decoded.wav", NULL);
 
         decode_wav_using_siren7 (file, decoded_file);
 
         str = g_strdup_printf(_("sent you a voice clip. Click <a href='file://%s'>here</a> to play it."), decoded_file);
         got_datacast_inform_user(slpcall->slplink->swboard->cmdproc, slpcall->slplink->remote_user, str);
+
+        g_free (decoded_file);
     } else {
         pecan_error ("couldn't create temporany file to store the received voice clip!\n");
 
         str = g_strdup_printf(_("sent you a voice clip, but it cannot be played due to an error happened while storing the file."));
         got_datacast_inform_user(slpcall->slplink->swboard->cmdproc, slpcall->slplink->remote_user, str);
     }
+
+    g_free (str);
 }
 #endif /* defined(PECAN_LIBSIREN) */
 
