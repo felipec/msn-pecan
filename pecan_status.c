@@ -163,37 +163,34 @@ pecan_update_personal_message (MsnSession *session)
     if (!session->logged_in)
         return;
 
-    if (!purple_account_get_bool (session->account, "use_psm", FALSE))
-    {
-        const gchar *msg;
+#ifndef PECAN_USE_PSM
+    const gchar *msg;
 
-        msg = purple_account_get_string (session->account, "personal_message", "");
-        pecan_set_personal_message (session, (gchar *) msg);
+    msg = purple_account_get_string (session->account, "personal_message", "");
+    pecan_set_personal_message (session, (gchar *) msg);
+#else
+    PurpleStatus *status;
+    const gchar *formatted_msg;
+
+    status = purple_account_get_active_status (session->account);
+    formatted_msg = purple_status_get_attr_string (status, "message");
+
+    if (formatted_msg)
+    {
+        gchar *msg;
+        gchar *tmp;
+
+        tmp = purple_markup_strip_html (formatted_msg);
+        msg = g_markup_escape_text (tmp, -1);
+        pecan_set_personal_message (session, msg);
+
+        g_free (tmp);
+        g_free (msg);
     }
     else
     {
-        PurpleStatus *status;
-        const gchar *formatted_msg;
-
-        status = purple_account_get_active_status (session->account);
-        formatted_msg = purple_status_get_attr_string (status, "message");
-
-        if (formatted_msg)
-        {
-            gchar *msg;
-            gchar *tmp;
-
-            tmp = purple_markup_strip_html (formatted_msg);
-            msg = g_markup_escape_text (tmp, -1);
-            pecan_set_personal_message (session, msg);
-
-            g_free (tmp);
-            g_free (msg);
-        }
-        else
-        {
-            pecan_set_personal_message (session, NULL);
-        }
+        pecan_set_personal_message (session, NULL);
     }
+#endif /* PECAN_USE_PSM */
 }
 #endif /* HAVE_LIBPURPLE */

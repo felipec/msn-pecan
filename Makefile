@@ -37,6 +37,10 @@ ifdef CVR
   override CFLAGS += -DPECAN_CVR
 endif
 
+ifndef DO_NOT_USE_PSM
+  override CFLAGS += -DPECAN_USE_PSM
+endif
+
 ifdef LIBSIREN
   override CFLAGS += -DPECAN_LIBSIREN
   LIBSIREN_LIBS := -lm

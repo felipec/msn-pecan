@@ -71,6 +71,7 @@ AM_CPPFLAGS = \
 	      -DHAVE_LIBPURPLE \
 	      -DPURPLE_DEBUG \
 	      -DPECAN_CVR \
+	      -DPECAN_USE_PSM \
 	      -DPECAN_DEBUG_SLP \
 	      -DPLUGIN_NAME='msn_pecan' \
 	      -DVERSION='"$(version)"'
