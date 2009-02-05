@@ -6,7 +6,8 @@ PLATFORM := $(shell uname -s)
 
 PURPLE_CFLAGS := $(shell pkg-config --cflags purple)
 PURPLE_LIBS := $(shell pkg-config --libs purple)
-PURPLE_PREFIX := $(shell pkg-config --variable=prefix purple)
+PURPLE_LIBDIR := $(shell pkg-config --variable=libdir purple)
+PURPLE_DATAIR := $(shell pkg-config --variable=datadir purple)
 
 GOBJECT_CFLAGS := $(shell pkg-config --cflags gobject-2.0)
 GOBJECT_LIBS := $(shell pkg-config --libs gobject-2.0)
@@ -58,9 +59,8 @@ FALLBACK_CFLAGS := -I./fix_purple
 
 LDFLAGS := -Wl,--no-undefined
 
-prefix := $(DESTDIR)/$(PURPLE_PREFIX)
-plugin_dir := $(prefix)/lib/purple-2
-data_dir := $(prefix)/share
+plugin_dir := $(DESTDIR)/$(PURPLE_LIBDIR)/purple-2
+data_dir := $(DESTDIR)/$(PURPLE_DATADIR)
 
 objects := msn.o \
 	   nexus.o \
@@ -219,7 +219,7 @@ dist:
 install: $(plugin)
 	mkdir -p $(plugin_dir)
 	install $(plugin) $(plugin_dir)
-	# chcon -t textrel_shlib_t $(plugin_dir)/$(plugin)
+	# chcon -t textrel_shlib_t $(plugin_dir)/$(plugin) # for selinux
 
 %.mo:: %.po
 	$(MSGFMT) -c -o $@ $<
