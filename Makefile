@@ -7,7 +7,7 @@ PLATFORM := $(shell uname -s)
 PURPLE_CFLAGS := $(shell pkg-config --cflags purple)
 PURPLE_LIBS := $(shell pkg-config --libs purple)
 PURPLE_LIBDIR := $(shell pkg-config --variable=libdir purple)
-PURPLE_DATAIR := $(shell pkg-config --variable=datadir purple)
+PURPLE_DATADIR := $(shell pkg-config --variable=datadir purple)
 
 GOBJECT_CFLAGS := $(shell pkg-config --cflags gobject-2.0)
 GOBJECT_LIBS := $(shell pkg-config --libs gobject-2.0)
