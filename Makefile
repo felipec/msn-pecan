@@ -131,7 +131,7 @@ sources := $(objects:.o=.c)
 deps := $(objects:.o=.d)
 
 PO_TEMPLATE := po/messages.pot
-CATALOGS := nl fi fr it sr es sv
+CATALOGS := ar da de es fi tr hu it nb nl pt_BR pt ru sr sv tr zh_CN zh_TW
 
 ifeq ($(PLATFORM),Darwin)
   SHLIBEXT := dylib
