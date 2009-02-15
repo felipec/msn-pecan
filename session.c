@@ -52,8 +52,10 @@ msn_session_new (const gchar *username,
 
     session = g_new0 (MsnSession, 1);
 
-    session->username = g_strdup (username);
+    session->username = pecan_normalize (username);
     session->password = g_strdup (password);
+
+    pecan_contact_set_passport (session->user, session->username);
 
 #if 0
     if (session->http_method)
