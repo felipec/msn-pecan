@@ -15,6 +15,7 @@ GOBJECT_LIBS := $(shell pkg-config --libs gobject-2.0)
 # default configuration options
 CVR := y
 LIBSIREN := y
+PLUS_SOUNDS := y
 
 ifdef DEBUG
   CFLAGS += -ggdb
