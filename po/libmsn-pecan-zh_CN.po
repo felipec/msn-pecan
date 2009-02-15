@@ -7,449 +7,267 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msn-pecan\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2008-06-27 15:13+0300\n"
-"PO-Revision-Date: 2008-07-18 07:37+0000\n"
-"Last-Translator: Tao Wei <Unknown>\n"
+"POT-Creation-Date: 2009-02-05 23:45+0200\n"
+"PO-Revision-Date: 2008-12-17 10:26+0000\n"
+"Last-Translator: Junnan Wu <Unknown>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2008-11-25 00:48+0000\n"
+"X-Launchpad-Export-Date: 2009-02-15 13:00+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: error.c:41
-msgid "Unable to parse message"
-msgstr "无法处理消息"
-
-#: error.c:45
-msgid "Syntax Error (probably a client bug)"
-msgstr "错误（可能为客户端问题）"
-
-#: error.c:49
-msgid "Invalid e-mail address"
-msgstr "无效的电子邮件地址"
-
-#: error.c:52
-msgid "User does not exist"
-msgstr "用户不存在"
-
-#: error.c:56
-msgid "Fully qualified domain name missing"
-msgstr "缺少全称域名"
-
-#: error.c:59
-msgid "Already logged in"
-msgstr "已登录"
-
-#: error.c:62
-msgid "Invalid screen name"
-msgstr "无效的昵称"
-
-#: error.c:65
-msgid "Invalid friendly name"
-msgstr "友好的名称无效"
-
-#: error.c:68
-msgid "List full"
-msgstr "列表已满"
-
-#: error.c:71
-msgid "Already there"
-msgstr "已列出"
-
-#: error.c:74
-msgid "Not on list"
-msgstr "未列出"
-
-#: error.c:77
-msgid "User is offline"
-msgstr "用户离线"
-
-#: error.c:80
-msgid "Already in the mode"
-msgstr "已在该模式中"
-
-#: error.c:83
-msgid "Already in opposite list"
-msgstr "已在相对列表"
-
-#: error.c:86
-msgid "Too many groups"
-msgstr "组太多"
-
-#: error.c:89
-msgid "Invalid group"
-msgstr "无效的组"
-
-#: error.c:92
-msgid "User not in group"
-msgstr "用户未在组中"
-
-#: error.c:95
-msgid "Group name too long"
-msgstr "组名太长"
-
-#: error.c:98
-msgid "Cannot remove group zero"
-msgstr "无法删除零组"
-
-#: error.c:102
-msgid "Tried to add a user to a group that doesn't exist"
-msgstr "试图向不存在的组中添加联系人"
-
-#: error.c:106
-msgid "Switchboard failed"
-msgstr "切换板失败"
-
-#: error.c:109
-msgid "Notify transfer failed"
-msgstr "通知传送失败"
-
-#: error.c:113
-msgid "Required fields missing"
-msgstr "缺少必需域"
-
-#: error.c:116
-msgid "Too many hits to a FND"
-msgstr "FND 的次数太多"
-
-#: error.c:119
-msgid "Not logged in"
-msgstr "未登入"
-
-#: error.c:123
-msgid "Service temporarily unavailable"
-msgstr "服务暂时不可用"
-
-#: error.c:126
-msgid "Database server error"
-msgstr "数据库服务器错误"
-
-#: error.c:129
-msgid "Command disabled"
-msgstr "命令被禁用"
-
-#: error.c:132
-msgid "File operation error"
-msgstr "文件操作错误"
-
-#: error.c:135
-msgid "Memory allocation error"
-msgstr "内存分配错误"
-
-#: error.c:138
-msgid "Wrong CHL value sent to server"
-msgstr "给服务器发送的 CHL 值错误"
-
-#: error.c:142
-msgid "Server busy"
-msgstr "服务器忙"
-
-#: error.c:145 error.c:158 error.c:213
-msgid "Server unavailable"
-msgstr "服务器不可用"
-
-#: error.c:148
-msgid "Peer notification server down"
-msgstr "通知服务器已关闭"
-
-#: error.c:151
-msgid "Database connect error"
-msgstr "数据库连接错误"
-
-#: error.c:155
-msgid "Server is going down (abandon ship)"
-msgstr "服务器即将下线"
-
-#: error.c:162
-msgid "Error creating connection"
-msgstr "创建连接出错"
-
-#: error.c:166
-msgid "CVR parameters are either unknown or not allowed"
-msgstr "CVR 参数未知或不允许"
-
-#: error.c:169
-msgid "Unable to write"
-msgstr "无法写入"
-
-#: error.c:172
-msgid "Session overload"
-msgstr "会话过载"
-
-#: error.c:175
-msgid "User is too active"
-msgstr "用户过于活跃"
-
-#: error.c:178
-msgid "Too many sessions"
-msgstr "会话过多"
-
-#: error.c:181
-msgid "Passport not verified"
-msgstr "Passport 未验证"
-
-#: error.c:184
-msgid "Bad friend file"
-msgstr "无效的好友文件"
-
-#: error.c:187
-msgid "Not expected"
-msgstr "未期待"
-
-#: error.c:192
-msgid "Friendly name changes too rapidly"
-msgstr "友好的名称更改太频繁"
-
-#: error.c:201
-msgid "Server too busy"
-msgstr "服务器忙"
-
-#: error.c:205
-msgid "Authentication failed"
-msgstr "认证失败"
-
-#: error.c:208
-msgid "Not allowed when hiding"
-msgstr "隐身时不允许"
-
-#: error.c:216
-msgid "Not accepting new users"
-msgstr "不接受新用户"
-
-#: error.c:220
-msgid "Kids Passport without parental consent"
-msgstr "没有父母在的儿童护照"
-
-#: error.c:224
-msgid "Passport account not yet verified"
-msgstr "Passport 账户尚未验证"
-
-#: error.c:227
-msgid "Bad ticket"
-msgstr "无效的票证"
-
-#: error.c:231
-#, c-format
-msgid "Unknown Error Code %d"
-msgstr "未知的错误代码 %d"
-
-#: error.c:243
-#, c-format
-msgid "MSN Error: %s\n"
-msgstr "MSN 错误: %s\n"
-
-#: msn.c:114
+#: msn.c:152
 msgid "Nudge"
 msgstr "闪屏震动"
 
-#: msn.c:115
+#: msn.c:153
 #, c-format
 msgid "%s has nudged you!"
 msgstr "%s 发来了闪屏震动！"
 
-#: msn.c:116
+#: msn.c:154
 #, c-format
 msgid "Nudging %s..."
 msgstr "正在闪屏震动 %s..."
 
-#: msn.c:251
+#: msn.c:304
 msgid "Set your friendly name."
 msgstr "设置您的友好名称。"
 
-#: msn.c:252
+#: msn.c:305
 msgid "This is the name that other MSN buddies will see you as."
 msgstr "这是其他 MSN 好友看到的名字。"
 
-#: msn.c:255 msn.c:272 msn.c:289 msn.c:306
+#: msn.c:308 msn.c:329 msn.c:347 msn.c:364 msn.c:381
 msgid "OK"
 msgstr "确定"
 
-#: msn.c:256 msn.c:273 msn.c:290 msn.c:307 msn.c:328
+#: msn.c:309 msn.c:330 msn.c:348 msn.c:365 msn.c:382 msn.c:403
 msgid "Cancel"
 msgstr "取消"
 
-#: msn.c:270
+#: msn.c:324
+msgid "Set your personal message."
+msgstr "输入你的个人信息。"
+
+#: msn.c:325
+msgid "This is the message that other MSN buddies will see under your name."
+msgstr "这是聊天信息，其他MSN好友将看到你的名字。"
+
+#: msn.c:345
 msgid "Set your home phone number."
 msgstr "设置您的家庭电话号码。"
 
-#: msn.c:287
+#: msn.c:362
 msgid "Set your work phone number."
 msgstr "设置您的工作电话号码。"
 
-#: msn.c:304
+#: msn.c:379
 msgid "Set your mobile phone number."
 msgstr "设置您的移动电话号码。"
 
-#: msn.c:319
+#: msn.c:394
 msgid "Allow MSN Mobile pages?"
 msgstr "允许 MSN 移动寻呼吗？"
 
-#: msn.c:320
+#: msn.c:395
 msgid ""
 "Do you want to allow or disallow people on your buddy list to send you MSN "
 "Mobile pages to your cell phone or other mobile device?"
 msgstr "在您的允许之下，您的好友可以给您的移动电话或其它移动设备发送 MSN 移动寻呼。您想要允许还是禁止这一功能？"
 
-#: msn.c:326
+#: msn.c:401
 msgid "Allow"
 msgstr "允许"
 
-#: msn.c:327
+#: msn.c:402
 msgid "Disallow"
 msgstr "禁止"
 
-#: msn.c:344
-msgid "This Hotmail account may not be active."
-msgstr "此 Hotmail 账户可能未激活。"
+#: msn.c:417
+msgid "This account's email is not enabled."
+msgstr "此账户未启用电子邮件。"
 
-#: msn.c:388
+#: msn.c:461
 msgid "Send a mobile message."
 msgstr "发送移动消息。"
 
-#: msn.c:390
+#: msn.c:463
 msgid "Page"
 msgstr "页面"
 
-#: msn.c:391
+#: msn.c:464
 msgid "Close"
 msgstr "关闭"
 
-#: msn.c:545
+#: msn.c:625
 msgid "Status"
 msgstr "状态"
 
-#: msn.c:546
+#: msn.c:626
 msgid "Idle"
 msgstr "发呆"
 
-#: msn.c:555
+#: msn.c:635
 msgid "Personal Message"
 msgstr "私人信息"
 
-#: msn.c:559
+#: msn.c:639
 msgid "Has you"
 msgstr "有你"
 
-#: msn.c:560 msn.c:569
+#: msn.c:640 msn.c:649
 msgid "Yes"
 msgstr "是"
 
-#: msn.c:560 msn.c:569
+#: msn.c:640 msn.c:649
 msgid "No"
 msgstr "否"
 
-#: msn.c:568
+#: msn.c:648
 msgid "Blocked"
 msgstr "被屏蔽"
 
-#: msn.c:580
+#: msn.c:661
 msgid "Message"
 msgstr "消息"
 
-#: msn.c:592
+#: msn.c:676
 msgid "Be Right Back"
 msgstr "马上回来"
 
-#: msn.c:593
+#: msn.c:677
 msgid "Busy"
 msgstr "忙"
 
-#: msn.c:594
+#: msn.c:678
 msgid "On the Phone"
 msgstr "电话中"
 
-#: msn.c:595
+#: msn.c:679
 msgid "Out to Lunch"
 msgstr "外出就餐"
 
-#: msn.c:626
+#: msn.c:712
 msgid "Set Friendly Name..."
 msgstr "设置友好的名称..."
 
-#: msn.c:631
+#: msn.c:717
+msgid "Set Personal Message..."
+msgstr "设置个人信息："
+
+#: msn.c:724
 msgid "Set Home Phone Number..."
 msgstr "设置家庭电话号码..."
 
-#: msn.c:635
+#: msn.c:728
 msgid "Set Work Phone Number..."
 msgstr "设置工作电话号码..."
 
-#: msn.c:639
+#: msn.c:732
 msgid "Set Mobile Phone Number..."
 msgstr "设置移动电话号码..."
 
-#: msn.c:645
+#: msn.c:738
 msgid "Enable/Disable Mobile Devices..."
 msgstr "启用/禁用移动设备..."
 
-#: msn.c:650
+#: msn.c:743
 msgid "Allow/Disallow Mobile Pages..."
 msgstr "允许/禁止移动寻呼..."
 
-#: msn.c:661
+#: msn.c:753
 msgid "Open Hotmail Inbox"
 msgstr "打开 Hotmail 收件箱"
 
-#: msn.c:689
+#: msn.c:783
 msgid "Send to Mobile"
 msgstr "发送到移动设备"
 
-#: msn.c:698
+#: msn.c:791
 msgid "Initiate _Chat"
 msgstr "发起聊天(_C)"
 
-#: msn.c:722
+#: msn.c:817
 msgid ""
 "SSL support is needed for MSN. Please install a supported SSL library."
 msgstr "MSN 需要 SSL 支持。请安装被支持的 SSL 库。"
 
-#: msn.c:745
+#: msn.c:846
 msgid "Failed to connect to server."
 msgstr "连接服务器失败。"
 
-#: msn.c:1344
+#: msn.c:1586
 msgid "Username"
 msgstr "用户名"
 
-#: msn.c:1349
+#: msn.c:1596
+msgid "Friendly Name"
+msgstr "昵称"
+
+#: msn.c:1612
+msgid "Home Phone"
+msgstr "家庭电话"
+
+#: msn.c:1615
+msgid "Mobile Phone"
+msgstr "移动电话"
+
+#: msn.c:1618
+msgid "Work Phone"
+msgstr "办公电话"
+
+#: msn.c:1625
 msgid "Profile URL"
 msgstr "配置文件 URL"
 
-#: msn.c:1469 msn.c:1470
+#: msn.c:1751 msn.c:1752
 msgid "WLM Protocol Plugin"
 msgstr "WLM 协议插件"
 
-#: msn.c:1496
+#: msn.c:1778
 msgid "Server"
 msgstr "服务器"
 
-#: msn.c:1499
+#: msn.c:1781
 msgid "Port"
 msgstr "端口"
 
-#: msn.c:1502
+#: msn.c:1784
 msgid "Use HTTP Method"
 msgstr "使用 HTTP 方式"
 
-#: msn.c:1505
+#: msn.c:1787
 msgid "Show custom smileys"
 msgstr "显示自定义表情"
 
-#: msn.c:1508
+#: msn.c:1790
 msgid "Use server-side alias"
 msgstr "使用服务器端别名"
 
-#: msn.c:1515
+#: msn.c:1793
+msgid "Use direct connections"
+msgstr "直接使用链接"
+
+#: msn.c:1796
+msgid "Use user displays"
+msgstr "远程协助"
+
+#: msn.c:1799
+msgid "Don't show Messenger Plus! tags"
+msgstr ""
+
+#: msn.c:1806
 msgid "nudge: nudge a user to get their attention"
 msgstr "nudge：发送闪屏震动引起注意"
 
-#: nexus.c:154
+#: nexus.c:158
 msgid "Unable to connect"
 msgstr "无法连接"
 
-#: notification.c:106 notification.c:143
+#: notification.c:103 notification.c:148
 #, c-format
 msgid ""
 "Error on notification server:\n"
@@ -458,7 +276,7 @@ msgstr ""
 "通知服务器出错：\n"
 "%s"
 
-#: notification.c:113
+#: notification.c:110
 msgid ""
 "Error on notification server:\n"
 "Unknown"
@@ -466,44 +284,44 @@ msgstr ""
 "通知服务器出错：\n"
 "未知"
 
-#: notification.c:264
+#: notification.c:262
 #, c-format
 msgid "%s is not a valid group."
 msgstr "%s 不是有效的组名。"
 
-#: notification.c:269 session.c:357
+#: notification.c:267 session.c:370
 msgid "Unknown error."
 msgstr "未知错误。"
 
-#: notification.c:272
+#: notification.c:270
 #, c-format
 msgid "%s on %s (%s)"
 msgstr "%s 在 %s (%s)"
 
-#: notification.c:615
+#: notification.c:613
 #, c-format
 msgid "Unable to add user on %s (%s)"
 msgstr "无法在 %s(%s) 上添加用户"
 
-#: notification.c:619
+#: notification.c:617
 #, c-format
 msgid "Unable to block user on %s (%s)"
 msgstr "无法屏蔽 %s (%s) 上的用户"
 
-#: notification.c:623
+#: notification.c:621
 #, c-format
 msgid "Unable to permit user on %s (%s)"
 msgstr "无法允许 %s (%s) 上的用户"
 
-#: notification.c:967
+#: notification.c:1014
 msgid "Unable to rename group"
 msgstr "无法重命名组"
 
-#: notification.c:1026
+#: notification.c:1073
 msgid "Unable to delete group"
 msgstr "无法删除组"
 
-#: notification.c:1508
+#: notification.c:1574
 #, c-format
 msgid ""
 "The MSN server will shut down for maintenance in %d minute. You will "
@@ -524,119 +342,328 @@ msgstr[0] ""
 "\n"
 "维护完成后您才能继续登入。"
 
-#: session.c:326
+#: session.c:340
 msgid "Our protocol is not supported by the server."
 msgstr "服务器不支持此协议。"
 
-#: session.c:330
+#: session.c:344
 msgid "Error parsing HTTP."
 msgstr "解析 HTTP 出错。"
 
-#: session.c:334
+#: session.c:348
 msgid "You have signed on from another location."
 msgstr "您在其它位置用此用户名登入了。"
 
-#: session.c:337
+#: session.c:351
 msgid ""
 "The MSN servers are temporarily unavailable. Please wait and try again."
 msgstr "MSN 服务器临时不可用。请稍候再试一次。"
 
-#: session.c:342
+#: session.c:356
 msgid "The MSN servers are going down temporarily."
 msgstr "MSN 服务器目前维护中。"
 
-#: session.c:347
+#: session.c:361
 #, c-format
 msgid "Unable to authenticate: %s"
 msgstr "无法通过身份验证: %s"
 
-#: session.c:349
+#: session.c:362
 msgid "Unknown error"
 msgstr "未知错误"
 
-#: session.c:352
+#: session.c:365
 msgid ""
 "Your MSN buddy list is temporarily unavailable. Please wait and try again."
 msgstr "您的 MSN 好友列表暂时不可用。请稍候再试一次。"
 
-#: session.c:372
-msgid "Connecting"
-msgstr "连接中"
-
-#: session.c:373 session.c:375
-msgid "Handshaking"
-msgstr "握手"
-
-#: session.c:374
-msgid "Transferring"
-msgstr "文件传送中"
-
-#: session.c:376
-msgid "Starting authentication"
-msgstr "开始身份验证"
-
-#: session.c:377
-msgid "Getting cookie"
-msgstr "获得 cookie"
-
-#: session.c:378
-msgid "Authenticating"
-msgstr "正在认证"
-
-#: session.c:379
-msgid "Sending cookie"
-msgstr "发送 cookie"
-
-#: session.c:380
-msgid "Retrieving buddy list"
-msgstr "获取好友列表"
-
-#: switchboard.c:539
+#: switchboard.c:553
 msgid "Message may have not been sent because a timeout occurred:"
 msgstr "发生超时，消息可能未发出："
 
-#: switchboard.c:547
+#: switchboard.c:561
 msgid "Message could not be sent, not allowed while invisible:"
 msgstr "消息未发出，隐身时不允许："
 
-#: switchboard.c:551
+#: switchboard.c:565
 msgid "Message could not be sent because the user is offline:"
 msgstr "消息未发出，因为用户离线："
 
-#: switchboard.c:555
+#: switchboard.c:569
 msgid "Message could not be sent because a connection error occurred:"
 msgstr "消息未发出，因为发生了连接错误："
 
-#: switchboard.c:559
+#: switchboard.c:573
 msgid "Message could not be sent because we are sending too quickly:"
 msgstr "消息未发出，因为发送的频率太高："
 
-#: switchboard.c:563
+#: switchboard.c:577
 msgid ""
 "Message could not be sent because we were unable to establish a session with "
 "the server. This is likely a server problem, try again in a few minutes:"
 msgstr "无法与服务器建立连接，消息无法发送。这可能是服务器的问题，请稍候重试。"
 
-#: switchboard.c:570
+#: switchboard.c:584
 msgid ""
 "Message could not be sent because an error with the switchboard occurred:"
 msgstr "消息未发出，因为切换板发生了错误："
 
-#: switchboard.c:578
+#: switchboard.c:592
 msgid "Message may have not been sent because an unknown error occurred:"
 msgstr "消息可能未发出，因为发生了未知错误："
 
-#: ab/pecan_contactlist.c:280
+#: switchboard.c:1058
+#, c-format
+msgid ""
+"sent you a Messenger Plus! sound. Click <a href='file://%s'>here</a> to play "
+"it."
+msgstr ""
+
+#: switchboard.c:1069
+msgid ""
+"sent you a Messenger Plus! sound, but it cannot be played due to an error "
+"happened while storing the file."
+msgstr ""
+
+#: switchboard.c:1316
+#, c-format
+msgid "sent you a voice clip. Click <a href='file://%s'>here</a> to play it."
+msgstr ""
+
+#: switchboard.c:1323
+msgid ""
+"sent you a voice clip, but it cannot be played due to an error happened "
+"while storing the file."
+msgstr ""
+
+#: pecan_error.c:37
+msgid "Unable to parse message"
+msgstr "无法处理消息"
+
+#: pecan_error.c:40
+msgid "Syntax Error (probably a client bug)"
+msgstr "错误（可能为客户端问题）"
+
+#: pecan_error.c:43
+msgid "Invalid e-mail address"
+msgstr "无效的电子邮件地址"
+
+#: pecan_error.c:46
+msgid "User does not exist"
+msgstr "用户不存在"
+
+#: pecan_error.c:49
+msgid "Fully qualified domain name missing"
+msgstr "缺少全称域名"
+
+#: pecan_error.c:52
+msgid "Already logged in"
+msgstr "已登录"
+
+#: pecan_error.c:55
+msgid "Invalid screen name"
+msgstr "无效的昵称"
+
+#: pecan_error.c:58
+msgid "Invalid friendly name"
+msgstr "友好的名称无效"
+
+#: pecan_error.c:61
+msgid "List full"
+msgstr "列表已满"
+
+#: pecan_error.c:64
+msgid "Already there"
+msgstr "已列出"
+
+#: pecan_error.c:67
+msgid "Not on list"
+msgstr "未列出"
+
+#: pecan_error.c:70
+msgid "User is offline"
+msgstr "用户离线"
+
+#: pecan_error.c:73
+msgid "Already in the mode"
+msgstr "已在该模式中"
+
+#: pecan_error.c:76
+msgid "Already in opposite list"
+msgstr "已在相对列表"
+
+#: pecan_error.c:79
+msgid "Too many groups"
+msgstr "组太多"
+
+#: pecan_error.c:82
+msgid "Invalid group"
+msgstr "无效的组"
+
+#: pecan_error.c:85
+msgid "User not in group"
+msgstr "用户未在组中"
+
+#: pecan_error.c:88
+msgid "Group name too long"
+msgstr "组名太长"
+
+#: pecan_error.c:91
+msgid "Cannot remove group zero"
+msgstr "无法删除零组"
+
+#: pecan_error.c:94
+msgid "Tried to add a user to a group that doesn't exist"
+msgstr "试图向不存在的组中添加联系人"
+
+#: pecan_error.c:97
+msgid "Switchboard failed"
+msgstr "切换板失败"
+
+#: pecan_error.c:100
+msgid "Notify transfer failed"
+msgstr "通知传送失败"
+
+#: pecan_error.c:103
+msgid "Required fields missing"
+msgstr "缺少必需域"
+
+#: pecan_error.c:106
+msgid "Too many hits to a FND"
+msgstr "FND 的次数太多"
+
+#: pecan_error.c:109
+msgid "Not logged in"
+msgstr "未登入"
+
+#: pecan_error.c:112
+msgid "Service temporarily unavailable"
+msgstr "服务暂时不可用"
+
+#: pecan_error.c:115
+msgid "Database server error"
+msgstr "数据库服务器错误"
+
+#: pecan_error.c:118
+msgid "Command disabled"
+msgstr "命令被禁用"
+
+#: pecan_error.c:121
+msgid "File operation error"
+msgstr "文件操作错误"
+
+#: pecan_error.c:124
+msgid "Memory allocation error"
+msgstr "内存分配错误"
+
+#: pecan_error.c:127
+msgid "Wrong CHL value sent to server"
+msgstr "给服务器发送的 CHL 值错误"
+
+#: pecan_error.c:130
+msgid "Server busy"
+msgstr "服务器忙"
+
+#: pecan_error.c:133 pecan_error.c:145 pecan_error.c:195
+msgid "Server unavailable"
+msgstr "服务器不可用"
+
+#: pecan_error.c:136
+msgid "Peer notification server down"
+msgstr "通知服务器已关闭"
+
+#: pecan_error.c:139
+msgid "Database connect error"
+msgstr "数据库连接错误"
+
+#: pecan_error.c:142
+msgid "Server is going down (abandon ship)"
+msgstr "服务器即将下线"
+
+#: pecan_error.c:148
+msgid "Error creating connection"
+msgstr "创建连接出错"
+
+#: pecan_error.c:151
+msgid "CVR parameters are either unknown or not allowed"
+msgstr "CVR 参数未知或不允许"
+
+#: pecan_error.c:154
+msgid "Unable to write"
+msgstr "无法写入"
+
+#: pecan_error.c:157
+msgid "Session overload"
+msgstr "会话过载"
+
+#: pecan_error.c:160
+msgid "User is too active"
+msgstr "用户过于活跃"
+
+#: pecan_error.c:163
+msgid "Too many sessions"
+msgstr "会话过多"
+
+#: pecan_error.c:166
+msgid "Passport not verified"
+msgstr "Passport 未验证"
+
+#: pecan_error.c:169
+msgid "Bad friend file"
+msgstr "无效的好友文件"
+
+#: pecan_error.c:172
+msgid "Not expected"
+msgstr "未期待"
+
+#: pecan_error.c:175
+msgid "Friendly name changes too rapidly"
+msgstr "友好的名称更改太频繁"
+
+#: pecan_error.c:183
+msgid "Server too busy"
+msgstr "服务器忙"
+
+#: pecan_error.c:187
+msgid "Authentication failed"
+msgstr "认证失败"
+
+#: pecan_error.c:190
+msgid "Not allowed when hiding"
+msgstr "隐身时不允许"
+
+#: pecan_error.c:198
+msgid "Not accepting new users"
+msgstr "不接受新用户"
+
+#: pecan_error.c:201
+msgid "Kids Passport without parental consent"
+msgstr "没有父母在的儿童护照"
+
+#: pecan_error.c:204
+msgid "Passport account not yet verified"
+msgstr "Passport 账户尚未验证"
+
+#: pecan_error.c:207
+msgid "Bad ticket"
+msgstr "无效的票证"
+
+#: pecan_error.c:210
+#, c-format
+msgid "Unknown Error Code %u"
+msgstr "未知的错误代码 %u"
+
+#: ab/pecan_contactlist.c:278
 #, c-format
 msgid "%s has added you to his or her buddy list."
 msgstr "%s 已将您添加为好友。"
 
-#: ab/pecan_contactlist.c:348
+#: ab/pecan_contactlist.c:345
 #, c-format
 msgid "%s has removed you from his or her buddy list."
 msgstr "%s 已经将您从好友名单中删除。"
 
-#: ab/pecan_contactlist.c:839
+#: ab/pecan_contactlist.c:822
 #, c-format
 msgid "Can't add to \"%s\"; it's a virtual group"
 msgstr "无法将“%s”添加为好友，它是个虚拟组"

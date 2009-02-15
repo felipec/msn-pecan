@@ -1,91 +1,87 @@
-# Portuguese (brazil) translation for msn-pecan
-# This file is distributed under the same license as the msn-pecan package.
-# FIRST AUTHOR <deadcow@archlinux.com.br>, 2009.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: msn-pecan\n"
-"Report-Msgid-Bugs-To: Thiago Silva <deadcow@archlinux.com.br>\n"
+"Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-02-05 23:45+0200\n"
-"PO-Revision-Date: 2009-02-12 19:53+0000\n"
-"Last-Translator: Arthur Cruz <Unknown>\n"
-"Language-Team: Portuguese - pt_BR\n"
+"PO-Revision-Date: 2009-02-11 12:07+0000\n"
+"Last-Translator: صقر بن عبدالله <Unknown>\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n % 100 >= "
+"3 && n % 100 <= 10 ? 3 : n % 100 >= 11 && n % 100 <= 99 ? 4 : 5;\n"
 "X-Launchpad-Export-Date: 2009-02-15 13:00+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
+"X-Poedit-Language: Arabic\n"
 
 #: msn.c:152
 msgid "Nudge"
-msgstr "Chamar a atenção"
+msgstr ""
 
 #: msn.c:153
 #, c-format
 msgid "%s has nudged you!"
-msgstr "%s está lhe chamando a atenção!"
+msgstr "%s وكزك!"
 
 #: msn.c:154
 #, c-format
 msgid "Nudging %s..."
-msgstr "Chamando a atenção de %s..."
+msgstr "جارٍ وكز %s..."
 
 #: msn.c:304
 msgid "Set your friendly name."
-msgstr "Insira seu apelido."
+msgstr "تعيين اسمك."
 
 #: msn.c:305
 msgid "This is the name that other MSN buddies will see you as."
-msgstr "Este é seu nome visto por seus amigos."
+msgstr "هذا هو الاسم الذي سيراه أصدقائك على MSN."
 
 #: msn.c:308 msn.c:329 msn.c:347 msn.c:364 msn.c:381
 msgid "OK"
-msgstr "Aceitar"
+msgstr "موافق"
 
 #: msn.c:309 msn.c:330 msn.c:348 msn.c:365 msn.c:382 msn.c:403
 msgid "Cancel"
-msgstr "Cancelar"
+msgstr ""
 
 #: msn.c:324
 msgid "Set your personal message."
-msgstr "Defina sua mensagem pessoal."
+msgstr ""
 
 #: msn.c:325
 msgid "This is the message that other MSN buddies will see under your name."
-msgstr "Esta é a mensagem que seus colegas verão abaixo de seu nome."
+msgstr ""
 
 #: msn.c:345
 msgid "Set your home phone number."
-msgstr "Insira seu numero de telefone de casa"
+msgstr "تعيين رقم هاتف المنزل."
 
 #: msn.c:362
 msgid "Set your work phone number."
-msgstr "Insira seu numero de telefone de trabalho"
+msgstr "تعيين رقم هاتف العمل."
 
 #: msn.c:379
 msgid "Set your mobile phone number."
-msgstr "Insira seu numero de celular"
+msgstr "تعيين رقم الهاتف النقّال."
 
 #: msn.c:394
 msgid "Allow MSN Mobile pages?"
-msgstr "Permitir paginas do MSN Mobile?"
+msgstr "سماح بصفحات MSN على الهاتف النقّال؟"
 
 #: msn.c:395
 msgid ""
 "Do you want to allow or disallow people on your buddy list to send you MSN "
 "Mobile pages to your cell phone or other mobile device?"
 msgstr ""
-"Quer permitir ou bloquear pessoas de sua lista de amigos de enviar mensagens "
-"através do MSN Mobile para seu celular?"
 
 #: msn.c:401
 msgid "Allow"
-msgstr "Permitir"
+msgstr "مسموح"
 
 #: msn.c:402
 msgid "Disallow"
-msgstr "Bloquear"
+msgstr "غير مسموح"
 
 #: msn.c:417
 msgid "This account's email is not enabled."
@@ -93,67 +89,67 @@ msgstr ""
 
 #: msn.c:461
 msgid "Send a mobile message."
-msgstr "Enviar uma mensagem de celular"
+msgstr "إرسال رسالة للهاتف."
 
 #: msn.c:463
 msgid "Page"
-msgstr "Página"
+msgstr "راسل"
 
 #: msn.c:464
 msgid "Close"
-msgstr "Fechar"
+msgstr "إغلاق"
 
 #: msn.c:625
 msgid "Status"
-msgstr "Estado"
+msgstr ""
 
 #: msn.c:626
 msgid "Idle"
-msgstr "Inativo"
+msgstr ""
 
 #: msn.c:635
 msgid "Personal Message"
-msgstr "Mensagem pessoal"
+msgstr ""
 
 #: msn.c:639
 msgid "Has you"
-msgstr "Tem você"
+msgstr "أنت موجود في قائمته"
 
 #: msn.c:640 msn.c:649
 msgid "Yes"
-msgstr "Sim"
+msgstr ""
 
 #: msn.c:640 msn.c:649
 msgid "No"
-msgstr "Não"
+msgstr ""
 
 #: msn.c:648
 msgid "Blocked"
-msgstr "Bloqueado"
+msgstr "محظور"
 
 #: msn.c:661
 msgid "Message"
-msgstr "Mensagem"
+msgstr "رسالة"
 
 #: msn.c:676
 msgid "Be Right Back"
-msgstr "Volto já"
+msgstr ""
 
 #: msn.c:677
 msgid "Busy"
-msgstr "Ocupado"
+msgstr ""
 
 #: msn.c:678
 msgid "On the Phone"
-msgstr "No telefone"
+msgstr ""
 
 #: msn.c:679
 msgid "Out to Lunch"
-msgstr "Saiu para comer"
+msgstr ""
 
 #: msn.c:712
 msgid "Set Friendly Name..."
-msgstr "Insira seu apelido..."
+msgstr "تعيين اسم..."
 
 #: msn.c:717
 msgid "Set Personal Message..."
@@ -161,50 +157,48 @@ msgstr ""
 
 #: msn.c:724
 msgid "Set Home Phone Number..."
-msgstr "Insira seu numero de telefone de casa..."
+msgstr "تعيين رقم هاتف المنزل..."
 
 #: msn.c:728
 msgid "Set Work Phone Number..."
-msgstr "Insira seu numero de telefone de trabalho..."
+msgstr "تعيين رقم هاتف العمل..."
 
 #: msn.c:732
 msgid "Set Mobile Phone Number..."
-msgstr "Insira seu numero de telefone celular..."
+msgstr "تعيين رقم الهاتف النقّال..."
 
 #: msn.c:738
 msgid "Enable/Disable Mobile Devices..."
-msgstr "Permitir/Bloquear dispositivos móveis..."
+msgstr "تفعيل/تعطيل أجهزة متنقّلة..."
 
 #: msn.c:743
 msgid "Allow/Disallow Mobile Pages..."
-msgstr "Permitir/Bloquear páginas Mobile"
+msgstr "السماح أو لا بالصفحات على الهاتف النقّال"
 
 #: msn.c:753
 msgid "Open Hotmail Inbox"
-msgstr "Abrir caixa de entrada do Hotmail"
+msgstr "Hotmail فتح صندوق الوارد في"
 
 #: msn.c:783
 msgid "Send to Mobile"
-msgstr "Enviar a um Mobile"
+msgstr "إرسال إلى هاتف نقّال"
 
 #: msn.c:791
 msgid "Initiate _Chat"
-msgstr "Iniciar _Chat"
+msgstr "بدء ال_دردشة"
 
 #: msn.c:817
 msgid ""
 "SSL support is needed for MSN. Please install a supported SSL library."
-msgstr ""
-"É necessário o suporte a SSL para o MSN. Por favor instale a biblioteca "
-"necessária SSL."
+msgstr "دعم SSL مطلوب لدى MSN. رجاء تثبيت مكتبة SSL المدعومة."
 
 #: msn.c:846
 msgid "Failed to connect to server."
-msgstr "Impossivel conectar-se ao servidor."
+msgstr "فشل في الاتصال بالخادوم."
 
 #: msn.c:1586
 msgid "Username"
-msgstr "Nome de usuário"
+msgstr "اسم المستخدم"
 
 #: msn.c:1596
 msgid "Friendly Name"
@@ -212,47 +206,47 @@ msgstr ""
 
 #: msn.c:1612
 msgid "Home Phone"
-msgstr "Telefone Residencial"
+msgstr ""
 
 #: msn.c:1615
 msgid "Mobile Phone"
-msgstr "Telefone Celular"
+msgstr ""
 
 #: msn.c:1618
 msgid "Work Phone"
-msgstr "Telefone Comercial"
+msgstr ""
 
 #: msn.c:1625
 msgid "Profile URL"
-msgstr "URL do Perfil"
+msgstr "عنوان السيرة"
 
 #: msn.c:1751 msn.c:1752
 msgid "WLM Protocol Plugin"
-msgstr "Plugin de Protocolo WLM"
+msgstr "ملحق بروتوكول WLM"
 
 #: msn.c:1778
 msgid "Server"
-msgstr "Servidor"
+msgstr "خادوم"
 
 #: msn.c:1781
 msgid "Port"
-msgstr "Porta"
+msgstr "منفذ"
 
 #: msn.c:1784
 msgid "Use HTTP Method"
-msgstr "Usar método HTTP"
+msgstr "استخدم طريقة HTTP"
 
 #: msn.c:1787
 msgid "Show custom smileys"
-msgstr "Exibir Smileys customizados"
+msgstr "إظهار الإبتسامات المخصّصة"
 
 #: msn.c:1790
 msgid "Use server-side alias"
-msgstr "Usar apelidos do servidor"
+msgstr "استخدم كنية من ناحية الخادوم"
 
 #: msn.c:1793
 msgid "Use direct connections"
-msgstr "Usar Conexões Diretas"
+msgstr ""
 
 #: msn.c:1796
 msgid "Use user displays"
@@ -260,15 +254,15 @@ msgstr ""
 
 #: msn.c:1799
 msgid "Don't show Messenger Plus! tags"
-msgstr "Não mostrar as tags do Messenger Plus!"
+msgstr ""
 
 #: msn.c:1806
 msgid "nudge: nudge a user to get their attention"
-msgstr "Atenção: Envia um sinal de atenção ao seu amigo."
+msgstr "وكزة: وكز مستخدم لإثارة انتباههم"
 
 #: nexus.c:158
 msgid "Unable to connect"
-msgstr "Não é possivel se conectar"
+msgstr "لم يمكن الاتصال"
 
 #: notification.c:103 notification.c:148
 #, c-format
@@ -276,7 +270,7 @@ msgid ""
 "Error on notification server:\n"
 "%s"
 msgstr ""
-"Erro no servidor de notificacão:\n"
+"خطأ على خادوم الإشعار:\n"
 "%s"
 
 #: notification.c:110
@@ -284,45 +278,45 @@ msgid ""
 "Error on notification server:\n"
 "Unknown"
 msgstr ""
-"Erro no servidor de notificacão:\n"
-"Desconhecido"
+"خطأ على خادوم الإشعار:\n"
+"مجهول"
 
 #: notification.c:262
 #, c-format
 msgid "%s is not a valid group."
-msgstr "%s não é um nome de grupo válido"
+msgstr "%s ليست مجموعة صالحة."
 
 #: notification.c:267 session.c:370
 msgid "Unknown error."
-msgstr "Erro desconhecido."
+msgstr "خطأ مجهول."
 
 #: notification.c:270
 #, c-format
 msgid "%s on %s (%s)"
-msgstr "%s em %s (%s)"
+msgstr "%s على %s (%s)"
 
 #: notification.c:613
 #, c-format
 msgid "Unable to add user on %s (%s)"
-msgstr "Impossivel adiconar usuário em %s (%s)"
+msgstr "لم يمكن إضافة المستخدم على %s (%s)"
 
 #: notification.c:617
 #, c-format
 msgid "Unable to block user on %s (%s)"
-msgstr "Impossivel bloquear usuário em %s (%s)"
+msgstr "لم يمكن حظور المستخدم على %s (%s)"
 
 #: notification.c:621
 #, c-format
 msgid "Unable to permit user on %s (%s)"
-msgstr "Impossivel desbloquear usuário em %s (%s)."
+msgstr "لم يمكن السماح بالمستخدم على %s (%s)"
 
 #: notification.c:1014
 msgid "Unable to rename group"
-msgstr "Impossivel de renomear grupo"
+msgstr "لم يمكن من إعادة تسمية المجموعة"
 
 #: notification.c:1073
 msgid "Unable to delete group"
-msgstr "Impossivel deletar grupo"
+msgstr "لم يتمكّن من حذف المجموعة"
 
 #: notification.c:1574
 #, c-format
@@ -341,96 +335,80 @@ msgid_plural ""
 "After the maintenance has been completed, you will be able to successfully "
 "sign in."
 msgstr[0] ""
-"O servidor de MSN irá se desconectar para manutenção em %d minutos.Você será "
-"desconectado automaticamente. Por favor, termine qualquer conversação "
-"ativa.\n"
-"\n"
-"Após a manutenção estiver completada, você poderá se conectar novamente."
 msgstr[1] ""
-"O servidor de MSN irá se desconectar para manutenção em %d minutos.Você será "
-"desconectado automaticamente. Por favor, termine qualquer conversação "
-"ativa.\n"
-"\n"
-"Após a manutenção estiver completada, você poderá se conectar novamente."
 
 #: session.c:340
 msgid "Our protocol is not supported by the server."
-msgstr "Nosso protocolo não é suportado pelo servidor."
+msgstr "بروتوكولنا ليس مدعوم من قبل الخادوم."
 
 #: session.c:344
 msgid "Error parsing HTTP."
-msgstr "Erro interpretando HTTP."
+msgstr "خطأ في تحليل HTTP."
 
 #: session.c:348
 msgid "You have signed on from another location."
-msgstr "Você se conectou através de outra localidade."
+msgstr "لقد ولجت من مكان آخر."
 
 #: session.c:351
 msgid ""
 "The MSN servers are temporarily unavailable. Please wait and try again."
-msgstr ""
-"Os servidores MSN estão temporariamente indisponiveis, por favor aguarde e "
-"tente mais tarde."
+msgstr "خوادم MSN غير متوفرة مؤقّتاً. رجاء المحاولة مرّة أخرى بعد قليل."
 
 #: session.c:356
 msgid "The MSN servers are going down temporarily."
-msgstr "Os servidores MSN estão sendo desligados temporariamente."
+msgstr "خوادم MSN سوف توقّف مؤقّتاً."
 
 #: session.c:361
 #, c-format
 msgid "Unable to authenticate: %s"
-msgstr "Impossivel de autenticar: %s"
+msgstr "لم يتمكن الاستيثاق: %s"
 
 #: session.c:362
 msgid "Unknown error"
-msgstr "Erro desconhecido"
+msgstr "خطأ مجهول"
 
 #: session.c:365
 msgid ""
 "Your MSN buddy list is temporarily unavailable. Please wait and try again."
 msgstr ""
-"Sua lista de amigos está temporariamente indisponivel, por favor aguarde e "
-"tente mais tarde."
+"قائمة أصدقائك لدى MSN غير متوفر حاليّاً. رجاء المحاولة مرّة أخرى بعد قليل."
 
 #: switchboard.c:553
 msgid "Message may have not been sent because a timeout occurred:"
-msgstr "A mensagem pode nao ter sido enviada porque o tempo expirou:"
+msgstr "قد تكون الرسالة غير مرسلة بسبب حدوث انتهاء المهلة"
 
 #: switchboard.c:561
 msgid "Message could not be sent, not allowed while invisible:"
-msgstr "A mensagem não pode ser enviada, não permitido no modo invisivel:"
+msgstr "لم يمكن إرسال الرسالة، غير مسموح به حين تكون خفيّ:"
 
 #: switchboard.c:565
 msgid "Message could not be sent because the user is offline:"
-msgstr "A mensagem não pode ser enviada porque o usuário esta desconectado:"
+msgstr "لم يمكن إرسال الرسالة لأن المستخدم غير متصل:"
 
 #: switchboard.c:569
 msgid "Message could not be sent because a connection error occurred:"
-msgstr "A mensagem não pode ser enviada porque ocorreu um erro de conexão:"
+msgstr "لم يمكن إرسال الرسالة بسبب حدوث خطأ اتصال:"
 
 #: switchboard.c:573
 msgid "Message could not be sent because we are sending too quickly:"
-msgstr ""
-"A mensagem não pode ser enviada porque estamos enviando muito rapido:"
+msgstr "لم يمكن إرسال الرسالة لأنّنا نرسل بشكل سريع:"
 
 #: switchboard.c:577
 msgid ""
 "Message could not be sent because we were unable to establish a session with "
 "the server. This is likely a server problem, try again in a few minutes:"
 msgstr ""
-"A mensagem não pode ser enviada porque não foi possivel estabelecer uma "
-"sessão com o servidor. É possivel que seja um erro no servidor, Por favor "
-"tente novamente em alguns minutos."
+"لم يمكن إرسال الرسالة بسبب عدم قدرتنا لإنشاء جلسة مع الخادوم. من الأغلب أن "
+"يكون هذا بسبب مشكلة لدى الخادوم، حاول مرّة أخرى بعد بضعة دقائق:"
 
 #: switchboard.c:584
 msgid ""
 "Message could not be sent because an error with the switchboard occurred:"
-msgstr ""
-"A mensagem não pode ser enviada porque ocorreu um erro no Switchboard:"
+msgstr "لم يمكن إرسال الرسالة بسبب حدوث خطأ في لوحة التبديل:"
 
 #: switchboard.c:592
 msgid "Message may have not been sent because an unknown error occurred:"
-msgstr "A mensagem não pode ser enviada porque ocorreu um erro desconhecido:"
+msgstr "قد تكون الرسالة غير مرسلة بسبب حدث خطأ مجهول:"
 
 #: switchboard.c:1058
 #, c-format
@@ -438,242 +416,235 @@ msgid ""
 "sent you a Messenger Plus! sound. Click <a href='file://%s'>here</a> to play "
 "it."
 msgstr ""
-"te enviou um som do Messenger Plus!. Clique <a href='file://%s'>aqui</a> "
-"para tocá-lo."
 
 #: switchboard.c:1069
 msgid ""
 "sent you a Messenger Plus! sound, but it cannot be played due to an error "
 "happened while storing the file."
 msgstr ""
-"te enviou um som do Messenger Plus!, mas não pode ser tocado graças a um "
-"erro que aconteceu ao armazenar o arquivo."
 
 #: switchboard.c:1316
 #, c-format
 msgid "sent you a voice clip. Click <a href='file://%s'>here</a> to play it."
 msgstr ""
-"te enviou um clip de voz. Clique <a href='file://%s'>aqui</a> para tocá-lo."
 
 #: switchboard.c:1323
 msgid ""
 "sent you a voice clip, but it cannot be played due to an error happened "
 "while storing the file."
 msgstr ""
-"te enviou um clip de voz, mas não pode ser tocado graças a um erro que "
-"aconteceu ao armazenar o arquivo."
 
 #: pecan_error.c:37
 msgid "Unable to parse message"
-msgstr "Impossivel interpretar a mensagem"
+msgstr "لم يمكن تحليل الرسالة"
 
 #: pecan_error.c:40
 msgid "Syntax Error (probably a client bug)"
-msgstr "Erro de sintaxe (provavelmente um erro de cliente)"
+msgstr "خطأ صياغة (غالباً علّة العميل)"
 
 #: pecan_error.c:43
 msgid "Invalid e-mail address"
-msgstr "Endereço de e-mail inválido"
+msgstr "بريد إلكتروني غير صالح"
 
 #: pecan_error.c:46
 msgid "User does not exist"
-msgstr "O usuário não existe"
+msgstr "المستخدم ليس موجود"
 
 #: pecan_error.c:49
 msgid "Fully qualified domain name missing"
-msgstr "Falta um endereço de dominio completo"
+msgstr ""
 
 #: pecan_error.c:52
 msgid "Already logged in"
-msgstr "Já está conectado"
+msgstr "المستخدم مولوج حاليّاً"
 
 #: pecan_error.c:55
 msgid "Invalid screen name"
-msgstr "Nome de usuário invalido"
+msgstr "اسم المستخدم غير صالح"
 
 #: pecan_error.c:58
 msgid "Invalid friendly name"
-msgstr "Apelido inválido"
+msgstr "اسم غير صالح"
 
 #: pecan_error.c:61
 msgid "List full"
-msgstr "Lista cheia"
+msgstr "القائمة مملوءة"
 
 #: pecan_error.c:64
 msgid "Already there"
-msgstr "Já está ali"
+msgstr "المستخدم موجود هناك حاليّاً"
 
 #: pecan_error.c:67
 msgid "Not on list"
-msgstr "Não está na lista"
+msgstr "ليس في القائمة"
 
 #: pecan_error.c:70
 msgid "User is offline"
-msgstr "O usuário está desconectado"
+msgstr ""
 
 #: pecan_error.c:73
 msgid "Already in the mode"
-msgstr "Já está neste modo"
+msgstr "حاليّاً في الوضع"
 
 #: pecan_error.c:76
 msgid "Already in opposite list"
-msgstr "Já se encontra na lista contrária"
+msgstr "موجود حاليّاً في القائمة المضادّة"
 
 #: pecan_error.c:79
 msgid "Too many groups"
-msgstr "Muitos grupos"
+msgstr "مجموعات كثيرة جدّاً"
 
 #: pecan_error.c:82
 msgid "Invalid group"
-msgstr "Grupo inválido"
+msgstr "مجموعة غير صالحة"
 
 #: pecan_error.c:85
 msgid "User not in group"
-msgstr "O usuário não está no grupo"
+msgstr "المستخدم ليس في المجموعة"
 
 #: pecan_error.c:88
 msgid "Group name too long"
-msgstr "Nome de grupo muito grande"
+msgstr "اسم المجموعة طويل جدّاً"
 
 #: pecan_error.c:91
 msgid "Cannot remove group zero"
-msgstr "Impossivel remover o grupo zero"
+msgstr "لا يمكن حذف المجموعة الأساسي"
 
 #: pecan_error.c:94
 msgid "Tried to add a user to a group that doesn't exist"
-msgstr "Tentou adicionar um usuário a um grupo não existente"
+msgstr "تم المحاولة لإضافة مستخدم لمجموعة لا وجود لها"
 
 #: pecan_error.c:97
 msgid "Switchboard failed"
-msgstr "Falha no Switchboard"
+msgstr "فشلت لوحة التبديل"
 
 #: pecan_error.c:100
 msgid "Notify transfer failed"
-msgstr "Falha na notificação de transferencia"
+msgstr "فشل نقل الإشعار"
 
 #: pecan_error.c:103
 msgid "Required fields missing"
-msgstr "Faltam campos obrigatórios"
+msgstr "الحقول المطلوبة غير موجودة"
 
 #: pecan_error.c:106
 msgid "Too many hits to a FND"
-msgstr "Muitos resultados de um FND"
+msgstr "نقرات كثيرة جدّاً لـFND"
 
 #: pecan_error.c:109
 msgid "Not logged in"
-msgstr "Desconectado"
+msgstr "ليس مولوج"
 
 #: pecan_error.c:112
 msgid "Service temporarily unavailable"
-msgstr "Serviço temporariamente indisponivel"
+msgstr "خدمة غير متوفرة مؤقّتاً"
 
 #: pecan_error.c:115
 msgid "Database server error"
-msgstr "Erro na base de dados"
+msgstr "خطأ خادوم قاعدة البيانات"
 
 #: pecan_error.c:118
 msgid "Command disabled"
-msgstr "Comando desabilitado"
+msgstr "الأمر معطّل"
 
 #: pecan_error.c:121
 msgid "File operation error"
-msgstr "Erro na operação de arquivos"
+msgstr "خطأ في عمليّة الملفّ"
 
 #: pecan_error.c:124
 msgid "Memory allocation error"
-msgstr "Erro na alocação de memória"
+msgstr "خطأ في تخصيص الذاكرة"
 
 #: pecan_error.c:127
 msgid "Wrong CHL value sent to server"
-msgstr "Valor CHL erroneamente enviado ao servidor"
+msgstr ""
 
 #: pecan_error.c:130
 msgid "Server busy"
-msgstr "Servidor ocupado"
+msgstr "الخادوم مشغول"
 
 #: pecan_error.c:133 pecan_error.c:145 pecan_error.c:195
 msgid "Server unavailable"
-msgstr "Servidor não disponivel"
+msgstr "الخادوم غير متوفر"
 
 #: pecan_error.c:136
 msgid "Peer notification server down"
-msgstr "Servidor de notificação fora do ar"
+msgstr "خادوم إشعار النظير موقّف"
 
 #: pecan_error.c:139
 msgid "Database connect error"
-msgstr "Erro de conexão a base de dados"
+msgstr "خطأ في اتصال قاعدة البيانات"
 
 #: pecan_error.c:142
 msgid "Server is going down (abandon ship)"
-msgstr "O servidor está sendo desativado (Salve-se quem puder)"
+msgstr "جارٍ توقيف الخادوم (جارٍ الخروج)"
 
 #: pecan_error.c:148
 msgid "Error creating connection"
-msgstr "Erro criando a conexão"
+msgstr "خطأ في إنشاء الاتصال"
 
 #: pecan_error.c:151
 msgid "CVR parameters are either unknown or not allowed"
-msgstr "Parametros CVR desconhecidos ou não permitidos"
+msgstr "معامل CVR غير مسموح بهم أو غير معروفة"
 
 #: pecan_error.c:154
 msgid "Unable to write"
-msgstr "Impossivel escrever"
+msgstr "لم يمكن الكتابة"
 
 #: pecan_error.c:157
 msgid "Session overload"
-msgstr "Sessão sobrecarregada"
+msgstr "تحميل الجلسة أكثر مما يستحمل"
 
 #: pecan_error.c:160
 msgid "User is too active"
-msgstr "Usuario muito ativo"
+msgstr "المستخدم نشيط جدّاً"
 
 #: pecan_error.c:163
 msgid "Too many sessions"
-msgstr "Muitas sessões"
+msgstr "جلسات كثيرة"
 
 #: pecan_error.c:166
 msgid "Passport not verified"
-msgstr "Passport não verificado"
+msgstr "جواز سفر غير محقّق"
 
 #: pecan_error.c:169
 msgid "Bad friend file"
-msgstr "Arquivo de amigo inválido"
+msgstr "ملفّ صديق غير جيد"
 
 #: pecan_error.c:172
 msgid "Not expected"
-msgstr "Não esperado"
+msgstr "غير متوقع"
 
 #: pecan_error.c:175
 msgid "Friendly name changes too rapidly"
-msgstr "Mudança de nomes de amigos muito rapida"
+msgstr "الاسم يتغيير بسرعة"
 
 #: pecan_error.c:183
 msgid "Server too busy"
-msgstr "Servidor ocupado"
+msgstr "الخادوم مشغول"
 
 #: pecan_error.c:187
 msgid "Authentication failed"
-msgstr "Falha na autenticação"
+msgstr "فشل الاستيثاق"
 
 #: pecan_error.c:190
 msgid "Not allowed when hiding"
-msgstr "Não permitido no estado invisivel"
+msgstr "لا يسمح حين مخفيّ"
 
 #: pecan_error.c:198
 msgid "Not accepting new users"
-msgstr "Não aceitando novos usuários"
+msgstr "لا يقبل مستخدمين جدد"
 
 #: pecan_error.c:201
 msgid "Kids Passport without parental consent"
-msgstr "Passport de menores sem o consentimento dos pais"
+msgstr "Kids Passport بدون قبول من لدى الوالدين"
 
 #: pecan_error.c:204
 msgid "Passport account not yet verified"
-msgstr "Conta Passport ainda não verificada"
+msgstr "لم يتم التحقيق على حساب Passport بعد"
 
 #: pecan_error.c:207
 msgid "Bad ticket"
-msgstr "Ticket inválido"
+msgstr "تذكرة سيئة"
 
 #: pecan_error.c:210
 #, c-format
@@ -683,49 +654,49 @@ msgstr ""
 #: ab/pecan_contactlist.c:278
 #, c-format
 msgid "%s has added you to his or her buddy list."
-msgstr "O usuário %s adicionou você a sua lista de amigos."
+msgstr "لقد أضافك %s في قائمة أصدقائه."
 
 #: ab/pecan_contactlist.c:345
 #, c-format
 msgid "%s has removed you from his or her buddy list."
-msgstr "O usuário %s removeu você de sua lista de amigos."
+msgstr "لقد حذفك %s من قائمة أصدقائه."
 
 #: ab/pecan_contactlist.c:822
 #, c-format
 msgid "Can't add to \"%s\"; it's a virtual group"
-msgstr "Impossivel adicionar ao \"%s\"; é um grupo virtual"
+msgstr "لا يمكن الإضافة لمجموعة \"%s\"; إنّها مجموعة إفتراضيّة"
 
 #, c-format
 #~ msgid "Unknown Error Code %d"
-#~ msgstr "Código de erro desconhecido %d"
+#~ msgstr "رمز الخطأ غير معروف %d"
 
 #, c-format
 #~ msgid "MSN Error: %s\n"
-#~ msgstr "Erro de MSN: %s\n"
+#~ msgstr "خطأ MSN: %s\n"
 
 #~ msgid "This Hotmail account may not be active."
-#~ msgstr "Esta conta Hotmail pode não estar ativa."
+#~ msgstr "قد يكون حساب Hotmail هذا غير نشط."
 
 #~ msgid "Connecting"
-#~ msgstr "Conectando"
+#~ msgstr "جارِ الاتصال"
 
 #~ msgid "Handshaking"
-#~ msgstr "Sincronizando"
+#~ msgstr "جارٍ إقامة الاتصال"
 
 #~ msgid "Transferring"
-#~ msgstr "Transferindo"
+#~ msgstr "حارٍ النقل"
 
 #~ msgid "Starting authentication"
-#~ msgstr "Iniciando autenticação"
+#~ msgstr "جارِ بدأ الاستيثاق"
 
 #~ msgid "Getting cookie"
-#~ msgstr "Obtendo cookie"
+#~ msgstr "جارٍ الحصول على الكعكة"
 
 #~ msgid "Authenticating"
-#~ msgstr "Autenticando"
+#~ msgstr "جارٍ الاستيثاق"
 
 #~ msgid "Sending cookie"
-#~ msgstr "Enviando cookie"
+#~ msgstr "جارٍ إرسال الكعكة"
 
 #~ msgid "Retrieving buddy list"
-#~ msgstr "Obtendo lista de amigos"
+#~ msgstr "استرجاع قائمة الأصدقاء"
