@@ -150,7 +150,9 @@ ifdef STATIC
   override CFLAGS += -DPURPLE_STATIC_PRPL
 else
   plugin := libmsn-pecan.$(SHLIBEXT)
+ifneq ($(PLATFORM),win32)
   override CFLAGS += -fPIC
+endif
 endif
 
 .PHONY: clean
@@ -199,7 +201,7 @@ $(plugin): LIBS := $(plugin_libs)
 	$(Q)$(CC) $(CFLAGS) -MMD -o $@ -c $<
 
 %.res:: %.rc
-	windres $< -O coff -o $@
+	$(WINDRES) $< -O coff -o $@
 
 clean:
 	find -name '*.mo' -delete
