@@ -68,7 +68,8 @@ typedef enum
 
 MsnSession *
 msn_session_new (const gchar *username,
-                 const gchar *password);
+                 const gchar *password,
+                 gboolean http_method);
 
 /**
  * Destroys an MSN session.

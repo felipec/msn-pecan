@@ -823,7 +823,8 @@ login (PurpleAccount *account)
     port = purple_account_get_int (account, "port", MSN_PORT);
 
     session = msn_session_new (purple_account_get_username (account),
-                               purple_account_get_password (account));
+                               purple_account_get_password (account),
+                               purple_account_get_bool (account, "http_method", FALSE));
 
     gc->proto_data = session;
     gc->flags |= PURPLE_CONNECTION_HTML | \
@@ -837,7 +838,6 @@ login (PurpleAccount *account)
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
 
     session->user_data = account;
-    session->http_method = purple_account_get_bool (account, "http_method", FALSE);
     session->server_alias = purple_account_get_bool (account, "server_alias", FALSE);
     session->use_directconn = purple_account_get_bool (account, "use_directconn", FALSE);
     session->use_userdisplay = purple_account_get_bool (account, "use_userdisplay", FALSE);

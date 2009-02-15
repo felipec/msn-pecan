@@ -46,7 +46,8 @@
 
 MsnSession *
 msn_session_new (const gchar *username,
-                 const gchar *password)
+                 const gchar *password,
+                 gboolean http_method)
 {
     MsnSession *session;
 
@@ -54,6 +55,9 @@ msn_session_new (const gchar *username,
 
     session->username = pecan_normalize (username);
     session->password = g_strdup (password);
+    session->http_method = http_method; /** @todo switchboard and notification
+                                          need this here but should be updated
+                                          on-the-fly. */
 
     pecan_contact_set_passport (session->user, session->username);
 
