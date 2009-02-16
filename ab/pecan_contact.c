@@ -27,7 +27,7 @@
 #include "pecan_util.h"
 
 #include "cvr/slp.h"
-#include "session_private.h"
+#include "pecan_ud.h" /* for pecan_ud_manager_contact_set_object */
 
 #include <string.h>
 #include <stdbool.h>

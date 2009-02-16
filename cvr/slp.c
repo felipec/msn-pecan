@@ -28,8 +28,6 @@
 #include "pecan_log.h"
 #include "io/pecan_buffer.h"
 
-#include "session_private.h"
-
 #include "cmd/cmdproc_private.h"
 #include "cmd/msg_private.h"
 
