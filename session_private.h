@@ -20,8 +20,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#ifndef MSN_SESSION_PRIVATE_H
-#define MSN_SESSION_PRIVATE_H
+#ifndef SESSION_PRIVATE_H
+#define SESSION_PRIVATE_H
 
 #include "session.h"
 #include "io/pecan_node.h"
@@ -38,8 +38,6 @@ struct MsnNotification;
 struct MsnNexus;
 struct MsnSync;
 
-struct _PurpleConversation;
-
 struct MsnSession
 {
     gchar *username;
@@ -48,23 +46,24 @@ struct MsnSession
     void *user_data;
     PecanContact *user; /**< Store contact information. */
 
+    GHashTable *config; /**< Configuration options. */
+
+    PecanContactList *contactlist;
+    PecanOimSession *oim_session;
+    PecanUdManager *udm;
+
     gboolean connected;
-    gboolean logged_in; /**< A temporal flag to ignore local buddy list adds. */
-    gboolean destroying; /**< A flag that states if the session is being destroyed. */
+    gboolean logged_in; /** @todo move to libpurple user_data and cancel
+                          operations that require us to be logged in. */
     PecanNode *http_conn;
 
     struct MsnNotification *notification;
     struct MsnNexus *nexus;
     struct MsnSync *sync;
 
-    PecanContactList *contactlist;
-
-    int servconns_count; /**< The count of server connections. */
     GList *switches; /**< The list of all the switchboards. */
     GList *directconns; /**< The list of all the directconnections. */
     GList *slplinks; /**< The list of all the slplinks. */
-
-    int conv_seq; /**< The current conversation sequence number. */
 
     struct
     {
@@ -84,11 +83,9 @@ struct MsnSession
         gchar *p;
     } passport_cookie;
 
+    /* libpurple stuff (should move to user_data) */
     guint inbox_unread_count; /* The number of unread e-mails on the inbox. */
-    PecanOimSession *oim_session;
-    PecanUdManager *udm;
-
-    GHashTable *config; /**< Configuration options. */
+    int conv_seq; /**< The current conversation sequence number. */
 };
 
-#endif /* MSN_SESSION_PRIVATE_H */
+#endif /* SESSION_PRIVATE_H */

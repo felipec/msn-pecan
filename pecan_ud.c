@@ -132,10 +132,6 @@ userdisplay_fail (MsnSlpCall *slpcall,
 
     udm = session->udm;
 
-    /* If the session is being destroyed we better stop doing anything. */
-    if (session->destroying)
-        return;
-
 #ifdef PECAN_UDM_TIMED
     /* Delay before freeing a buddy icon window slot and requesting the next icon, if appropriate.
      * If we don't delay, we'll rapidly hit the MSN equivalent of AIM's rate limiting; the server will

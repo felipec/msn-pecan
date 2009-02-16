@@ -90,8 +90,6 @@ msn_session_destroy (MsnSession *session)
     if (!session)
         return;
 
-    session->destroying = TRUE;
-
     pecan_ud_manager_free (session->udm);
     pecan_oim_session_free (session->oim_session);
 
