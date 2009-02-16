@@ -55,9 +55,11 @@ msn_session_new (const gchar *username,
 
     session->username = pecan_normalize (username);
     session->password = g_strdup (password);
-    session->http_method = http_method; /** @todo switchboard and notification
-                                          need this here but should be updated
-                                          on-the-fly. */
+
+    session->config = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+
+    /** @todo sb and ns need this here but should be updated on-the-fly. */
+    msn_session_set_bool (session, "use_http_method", http_method);
 
 #if 0
     if (session->http_method)
@@ -126,6 +128,8 @@ msn_session_destroy (MsnSession *session)
         msn_nexus_destroy (session->nexus);
 
     pecan_contact_free (session->user);
+
+    g_hash_table_destroy (session->config);
 
     g_free (session->username);
     g_free (session->password);
@@ -416,4 +420,19 @@ msn_session_finish_login (MsnSession *session)
     }
 
     pecan_contactlist_check_pending (session->contactlist);
+}
+
+void
+msn_session_set_bool (MsnSession *session,
+                      const gchar *fieldname,
+                      gboolean value)
+{
+    g_hash_table_insert (session->config, g_strdup (fieldname), GINT_TO_POINTER (value));
+}
+
+gboolean
+msn_session_get_bool (const MsnSession *session,
+                      const gchar *fieldname)
+{
+    return GPOINTER_TO_INT (g_hash_table_lookup (session->config, fieldname));
 }

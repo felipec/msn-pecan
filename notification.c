@@ -184,7 +184,7 @@ msn_notification_new(MsnSession *session)
 
         conn->session = session;
 
-        if (session->http_method)
+        if (msn_session_get_bool (session, "use_http_method"))
         {
             if (session->http_conn)
             {
@@ -740,7 +740,7 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     }
 
 #if defined(PECAN_CVR)
-    if (session->use_userdisplay)
+    if (msn_session_get_bool (session, "use_userdisplay"))
     {
         if (cmd->param_count == 6)
         {
@@ -804,7 +804,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     pecan_contact_set_friendly_name(user, friendly);
 
 #if defined(PECAN_CVR)
-    if (session->use_userdisplay)
+    if (msn_session_get_bool (session, "use_userdisplay"))
     {
         if (cmd->param_count == 5)
         {
@@ -828,7 +828,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     pecan_contact_update(user);
 
     /* store the friendly name on the server. */
-    if (!session->server_alias)
+    if (!msn_session_get_bool (session, "use_server_alias"))
         msn_cmdproc_send (cmdproc, "SBP", "%s %s %s", pecan_contact_get_guid (user), "MFN", cmd->params[2]);
 
     g_free (friendly);
@@ -935,7 +935,7 @@ sbp_cmd (MsnCmdProc *cmdproc,
         {
             gchar *tmp;
             tmp = pecan_url_decode (value);
-            if (session->server_alias)
+            if (msn_session_get_bool (session, "use_server_alias"))
                 pecan_contact_set_store_name (contact, tmp);
             g_free (tmp);
         }

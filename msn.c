@@ -838,9 +838,12 @@ login (PurpleAccount *account)
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
 
     session->user_data = account;
-    session->server_alias = purple_account_get_bool (account, "server_alias", FALSE);
-    session->use_directconn = purple_account_get_bool (account, "use_directconn", FALSE);
-    session->use_userdisplay = purple_account_get_bool (account, "use_userdisplay", FALSE);
+    msn_session_set_bool (session, "use_server_alias",
+                          purple_account_get_bool (account, "use_server_alias", FALSE));
+    msn_session_set_bool (session, "use_directconn",
+                          purple_account_get_bool (account, "use_directconn", FALSE));
+    msn_session_set_bool (session, "use_userdisplay",
+                          purple_account_get_bool (account, "use_userdisplay", FALSE));
 
     purple_connection_update_progress (gc, _("Connecting"), 1, 2);
 
@@ -1203,7 +1206,7 @@ alias_buddy (PurpleConnection *gc,
     cmdproc = session->notification->cmdproc;
     contact = pecan_contactlist_find_contact (session->contactlist, name);
 
-    if (!session->server_alias)
+    if (!msn_session_get_bool (session, "use_server_alias"))
         return;
 
     if (alias && strlen (alias))
@@ -1512,7 +1515,7 @@ msn_keepalive(PurpleConnection *gc)
 
 	session = gc->proto_data;
 
-	if (!session->http_method)
+	if (!msn_session_get_bool (session, "use_http_method"))
 	{
 		MsnCmdProc *cmdproc;
 		cmdproc = session->notification->cmdproc;

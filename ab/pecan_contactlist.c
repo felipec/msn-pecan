@@ -163,7 +163,7 @@ get_store_name (PecanContact *contact)
 
     g_return_val_if_fail (contact, NULL);
 
-    if (contact->contactlist->session->server_alias)
+    if (msn_session_get_bool (contact->contactlist->session, "use_server_alias"))
     {
         store_name = pecan_contact_get_store_name (contact);
     }
@@ -395,7 +395,7 @@ msn_got_lst_contact (MsnSession *session,
             pecan_contact_add_group_id (contact, NULL);
         }
 
-        if (session->server_alias)
+        if (msn_session_get_bool (session, "use_server_alias"))
         {
             pecan_contact_set_store_name (contact, extra);
         }

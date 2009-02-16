@@ -167,7 +167,7 @@ msn_switchboard_new(MsnSession *session)
 
         conn->session = session;
 
-        if (session->http_method)
+        if (msn_session_get_bool (session, "use_http_method"))
         {
             if (session->http_conn)
             {
@@ -865,7 +865,7 @@ joi_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     process_queue(swboard);
 
-    if (!session->http_method)
+    if (!msn_session_get_bool (session, "use_http_method"))
         send_clientcaps(swboard);
 
     if (swboard->closed)

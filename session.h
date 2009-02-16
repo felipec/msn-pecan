@@ -192,4 +192,13 @@ msn_session_set_error (MsnSession *session,
 void
 msn_session_finish_login (MsnSession *session);
 
+void
+msn_session_set_bool (MsnSession *session,
+                      const gchar *fieldname,
+                      gboolean value);
+
+gboolean
+msn_session_get_bool (const MsnSession *session,
+                      const gchar *fieldname);
+
 #endif /* MSN_SESSION_H */
