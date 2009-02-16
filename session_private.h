@@ -48,8 +48,6 @@ struct MsnSession
     void *user_data;
     PecanContact *user;
 
-    MsnLoginStep login_step; /**< The current step in the login process. */
-
     gboolean connected;
     gboolean logged_in; /**< A temporal flag to ignore local buddy list adds. */
     gboolean destroying; /**< A flag that states if the session is being destroyed. */
