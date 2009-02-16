@@ -46,7 +46,7 @@ struct MsnSession
     gchar *password;
 
     void *user_data;
-    PecanContact *user;
+    PecanContact *user; /**< Store contact information. */
 
     gboolean connected;
     gboolean logged_in; /**< A temporal flag to ignore local buddy list adds. */

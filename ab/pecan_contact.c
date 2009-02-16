@@ -58,8 +58,6 @@ pecan_contact_new (PecanContactList *contactlist)
 void
 pecan_contact_free (PecanContact *contact)
 {
-    g_return_if_fail (contact);
-
     if (contact->clientcaps)
         g_hash_table_destroy (contact->clientcaps);
 

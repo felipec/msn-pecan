@@ -59,8 +59,6 @@ msn_session_new (const gchar *username,
                                           need this here but should be updated
                                           on-the-fly. */
 
-    pecan_contact_set_passport (session->user, session->username);
-
 #if 0
     if (session->http_method)
     {
@@ -127,8 +125,7 @@ msn_session_destroy (MsnSession *session)
     if (session->nexus)
         msn_nexus_destroy (session->nexus);
 
-    if (session->user)
-        pecan_contact_free (session->user);
+    pecan_contact_free (session->user);
 
     g_free (session->username);
     g_free (session->password);
