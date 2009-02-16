@@ -842,6 +842,8 @@ login (PurpleAccount *account)
     session->use_directconn = purple_account_get_bool (account, "use_directconn", FALSE);
     session->use_userdisplay = purple_account_get_bool (account, "use_userdisplay", FALSE);
 
+    purple_connection_update_progress (gc, _("Connecting"), 1, 2);
+
     if (!msn_session_connect (session, host, port))
         purple_connection_error (gc, _("Failed to connect to server."));
 }
