@@ -1570,7 +1570,7 @@ system_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
         {
             case 1:
                 minutes = atoi(g_hash_table_lookup(table, "Arg1"));
-                g_snprintf(buf, sizeof(buf), dngettext(PACKAGE, 
+                g_snprintf(buf, sizeof(buf), dngettext(GETTEXT_PACKAGE,
                                                        "The MSN server will shut down for maintenance "
                                                        "in %d minute. You will automatically be "
                                                        "signed out at that time.  Please finish any "
