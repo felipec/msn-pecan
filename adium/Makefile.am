@@ -74,5 +74,7 @@ AM_CPPFLAGS = \
 	      -DPECAN_CVR \
 	      -DPECAN_USE_PSM \
 	      -DPECAN_DEBUG_SLP \
+	      -DGETTEXT_PACKAGE='"pidgin"' \
+	      -DENABLE_NLS \
 	      -DPLUGIN_NAME='msn_pecan' \
 	      -DVERSION='"$(version)"'
