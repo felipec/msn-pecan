@@ -843,7 +843,7 @@ login (PurpleAccount *account)
     msn_session_set_bool (session, "use_directconn",
                           purple_account_get_bool (account, "use_directconn", FALSE));
     msn_session_set_bool (session, "use_userdisplay",
-                          purple_account_get_bool (account, "use_userdisplay", FALSE));
+                          purple_account_get_bool (account, "use_userdisplay", TRUE));
 
     purple_connection_update_progress (gc, _("Connecting"), 1, 2);
 
