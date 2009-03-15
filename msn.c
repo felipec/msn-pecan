@@ -577,6 +577,19 @@ list_icon (PurpleAccount *a,
     return "msn";
 }
 
+static const char *
+list_emblems (PurpleBuddy *b)
+{
+    PecanContact *contact;
+
+    contact = b->proto_data;
+
+    if (contact && contact->mobile)
+        return "mobile";
+
+    return NULL;
+}
+
 static gchar *
 status_text (PurpleBuddy *buddy)
 {
@@ -1666,7 +1679,7 @@ static PurplePluginProtocolInfo prpl_info =
     NULL, /* protocol_options */
     {"png", 0, 0, 96, 96, 0, PURPLE_ICON_SCALE_SEND}, /* icon_spec */
     list_icon, /* list_icon */
-    NULL, /* list_emblems */
+    list_emblems, /* list_emblems */
     status_text, /* status_text */
     tooltip_text, /* tooltip_text */
     status_types, /* away_states */

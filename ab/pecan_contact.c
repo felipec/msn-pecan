@@ -118,7 +118,7 @@ pecan_contact_update (PecanContact *contact)
 
     purple_prpl_got_user_status (account, contact->passport, pidgin_status, NULL);
 
-    if (contact->mobile)
+    if (contact->mobile && contact->status == PECAN_STATUS_OFFLINE)
         purple_prpl_got_user_status (account, contact->passport, "mobile", NULL);
     else
         purple_prpl_got_user_status_deactive (account, contact->passport, "mobile");
