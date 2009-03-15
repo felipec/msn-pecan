@@ -862,6 +862,7 @@ chg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 static void
 not_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload, size_t len)
 {
+    pecan_info ("incoming notification: [%s]", payload);
 }
 
 static void
