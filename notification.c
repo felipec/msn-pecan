@@ -713,9 +713,6 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     PurpleAccount *account;
     PurpleConnection *gc;
     PecanContact *user;
-#if defined(PECAN_CVR)
-    MsnObject *msnobj;
-#endif /* defined(PECAN_CVR) */
     const char *state, *passport;
     gchar *friendly;
 
@@ -744,6 +741,7 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     {
         if (cmd->param_count == 6)
         {
+            MsnObject *msnobj;
             gchar *tmp;
             tmp = pecan_url_decode (cmd->params[5]);
             msnobj = msn_object_new_from_string (tmp);
@@ -778,9 +776,6 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     PurpleAccount *account;
     PurpleConnection *gc;
     PecanContact *user;
-#if defined(PECAN_CVR)
-    MsnObject *msnobj;
-#endif /* defined(PECAN_CVR) */
     unsigned long clientid;
     const char *state, *passport;
     gchar *friendly;
@@ -808,6 +803,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     {
         if (cmd->param_count == 5)
         {
+            MsnObject *msnobj;
             gchar *tmp;
             tmp = pecan_url_decode(cmd->params[4]);
             msnobj = msn_object_new_from_string(tmp);

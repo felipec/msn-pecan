@@ -203,7 +203,7 @@ request (PecanContact *user)
 
         my_obj = pecan_contact_get_object (msn_session_get_contact (session));
 
-        if (my_obj != NULL)
+        if (my_obj)
         {
             PecanBuffer *image;
             image = msn_object_get_image (my_obj);
