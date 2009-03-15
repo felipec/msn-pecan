@@ -50,46 +50,6 @@ util_type_to_str (PecanStatus status)
 }
 
 static inline void
-set_status (MsnSession *session,
-            PecanStatus status)
-{
-    MsnCmdProc *cmdproc;
-    PecanContact *user;
-    const gchar *state_text;
-#if defined(PECAN_CVR)
-    MsnObject *msnobj;
-#endif /* defined(PECAN_CVR) */
-
-    user = msn_session_get_contact (session);
-    cmdproc = session->notification->cmdproc;
-    state_text = util_type_to_str (status);
-
-#if defined(PECAN_CVR)
-    msnobj = pecan_contact_get_object (user);
-
-    if (msnobj)
-    {
-        gchar *msnobj_str;
-
-        msnobj_str = msn_object_to_string (msnobj);
-
-        msn_cmdproc_send (cmdproc, "CHG", "%s %d %s", state_text,
-                          MSN_CLIENT_ID, purple_url_encode (msnobj_str));
-
-        g_free (msnobj_str);
-    }
-    else
-    {
-        msn_cmdproc_send (cmdproc, "CHG", "%s %d", state_text,
-                          MSN_CLIENT_ID);
-    }
-#else
-    msn_cmdproc_send (cmdproc, "CHG", "%s %d", state_text,
-                      MSN_CLIENT_ID);
-#endif /* defined(PECAN_CVR) */
-}
-
-static inline void
 pecan_set_personal_message (MsnSession *session,
                             gchar *value)
 {
@@ -155,12 +115,46 @@ util_status_from_session (MsnSession *session)
 void
 pecan_update_status (MsnSession *session)
 {
+    MsnCmdProc *cmdproc;
+    PecanContact *user;
+    const gchar *state_text;
+
     g_return_if_fail (session);
 
     if (!session->logged_in)
         return;
 
-    set_status (session, util_status_from_session (session));
+    user = msn_session_get_contact (session);
+    cmdproc = session->notification->cmdproc;
+    state_text = util_type_to_str (util_status_from_session (session));
+
+#if defined(PECAN_CVR)
+    {
+        MsnObject *msnobj;
+
+        msnobj = pecan_contact_get_object (user);
+
+        if (msnobj)
+        {
+            gchar *msnobj_str;
+
+            msnobj_str = msn_object_to_string (msnobj);
+
+            msn_cmdproc_send (cmdproc, "CHG", "%s %d %s", state_text,
+                              MSN_CLIENT_ID, purple_url_encode (msnobj_str));
+
+            g_free (msnobj_str);
+        }
+        else
+        {
+            msn_cmdproc_send (cmdproc, "CHG", "%s %d", state_text,
+                              MSN_CLIENT_ID);
+        }
+    }
+#else
+    msn_cmdproc_send (cmdproc, "CHG", "%s %d", state_text,
+                      MSN_CLIENT_ID);
+#endif /* defined(PECAN_CVR) */
 }
 
 void
