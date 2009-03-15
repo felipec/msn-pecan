@@ -21,6 +21,7 @@
  */
 
 #include "pecan_status.h"
+#include "pecan_log.h"
 
 #include "session.h"
 #include "notification.h"
@@ -43,7 +44,7 @@ static inline const gchar *
 util_type_to_str (PecanStatus status)
 {
     static const gchar *status_text[] =
-    { "NLN", "NLN", "BSY", "IDL", "BRB", "AWY", "PHN", "LUN", "HDN", "HDN" };
+    { NULL, "NLN", "BSY", "IDL", "BRB", "AWY", "PHN", "LUN", "HDN", NULL };
 
     return status_text[status];
 }
@@ -143,7 +144,10 @@ util_status_from_session (MsnSession *session)
             msnstatus = PECAN_STATUS_ONLINE;
     }
     else
-        msnstatus = PECAN_STATUS_NONE;
+    {
+        pecan_error ("wrong: status_id=[%s]", status_id);
+        msnstatus = PECAN_STATUS_WRONG;
+    }
 
     return msnstatus;
 }

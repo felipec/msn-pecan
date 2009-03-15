@@ -160,7 +160,7 @@ pecan_contact_set_state (PecanContact *contact,
     else if (strcmp (state, "HDN") == 0)
         status = PECAN_STATUS_HIDDEN;
     else
-        status = PECAN_STATUS_NONE;
+        status = PECAN_STATUS_WRONG;
 
     contact->status = status;
 }
