@@ -71,6 +71,8 @@ msn_session_new (const gchar *username,
     }
 #endif
 
+    session->udm = pecan_ud_manager_new (session);
+
     session->notification = msn_notification_new (session);
     session->contactlist = pecan_contactlist_new (session);
 
@@ -79,7 +81,6 @@ msn_session_new (const gchar *username,
     session->conv_seq = 1;
 
     session->oim_session = pecan_oim_session_new (session);
-    session->udm = pecan_ud_manager_new (session);
 
     return session;
 }
@@ -90,7 +91,6 @@ msn_session_destroy (MsnSession *session)
     if (!session)
         return;
 
-    pecan_ud_manager_free (session->udm);
     pecan_oim_session_free (session->oim_session);
 
     if (session->connected)
@@ -107,6 +107,7 @@ msn_session_destroy (MsnSession *session)
         msn_slplink_destroy (session->slplinks->data);
 #endif /* defined(PECAN_CVR) */
 
+    pecan_ud_manager_free (session->udm);
     pecan_contactlist_destroy (session->contactlist);
 
     g_free (session->passport_info.kv);
