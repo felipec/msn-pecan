@@ -106,9 +106,10 @@ pecan_contact_update (PecanContact *contact)
             pidgin_status = "phone"; break;
         case PECAN_STATUS_LUNCH:
             pidgin_status = "lunch"; break;
+        case PECAN_STATUS_HIDDEN:
+            pidgin_status = "invisible"; break;
         case PECAN_STATUS_IDLE:
             idle = TRUE;
-        case PECAN_STATUS_HIDDEN:
         case PECAN_STATUS_ONLINE:
             pidgin_status = "available"; break;
         default:
