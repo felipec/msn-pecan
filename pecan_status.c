@@ -121,7 +121,9 @@ util_status_from_session (MsnSession *session)
     status = purple_presence_get_active_status (presence);
     status_id = purple_status_get_id (status);
 
-    if (strcmp (status_id, "away") == 0)
+    if (strcmp (status_id, "available") == 0)
+        msnstatus = PECAN_STATUS_ONLINE;
+    else if (strcmp (status_id, "away") == 0)
         msnstatus = PECAN_STATUS_AWAY;
     else if (strcmp (status_id, "brb") == 0)
         msnstatus = PECAN_STATUS_BRB;
