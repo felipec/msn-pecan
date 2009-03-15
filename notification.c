@@ -830,34 +830,13 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     g_free (friendly);
 }
 
-#if 0
 static void
 chg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
-    char *state = cmd->params[1];
-    int state_id = 0;
-
-    if (!strcmp(state, "NLN"))
-        state_id = MSN_ONLINE;
-    else if (!strcmp(state, "BSY"))
-        state_id = MSN_BUSY;
-    else if (!strcmp(state, "IDL"))
-        state_id = MSN_IDLE;
-    else if (!strcmp(state, "BRB"))
-        state_id = MSN_BRB;
-    else if (!strcmp(state, "AWY"))
-        state_id = MSN_AWAY;
-    else if (!strcmp(state, "PHN"))
-        state_id = MSN_PHONE;
-    else if (!strcmp(state, "LUN"))
-        state_id = MSN_LUNCH;
-    else if (!strcmp(state, "HDN"))
-        state_id = MSN_HIDDEN;
-
-    cmdproc->session->state = state_id;
+    PecanContact *user;
+    user = msn_session_get_contact (cmdproc->session);
+    pecan_contact_set_state (user, cmd->params[1]);
 }
-#endif
-
 
 static void
 not_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload, size_t len)
@@ -1676,7 +1655,7 @@ msn_notification_init(void)
     cbs_table = msn_table_new();
 
     /* Synchronous */
-    msn_table_add_cmd(cbs_table, "CHG", "CHG", NULL);
+    msn_table_add_cmd(cbs_table, "CHG", "CHG", chg_cmd);
     msn_table_add_cmd(cbs_table, "CHG", "ILN", iln_cmd);
     msn_table_add_cmd(cbs_table, "ADC", "ADC", adc_cmd);
     msn_table_add_cmd(cbs_table, "ADC", "ILN", iln_cmd);
