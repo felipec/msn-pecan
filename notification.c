@@ -831,11 +831,38 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 }
 
 static void
+contact_update (PecanContact *contact,
+                gpointer user_data)
+{
+    if (contact->status == PECAN_STATUS_OFFLINE)
+        return;
+
+#if defined(PECAN_CVR)
+    {
+        MsnObject *msnobj;
+        msnobj = pecan_contact_get_object (contact);
+        if (msnobj)
+            pecan_contact_set_object (contact, msnobj);
+    }
+#endif /* defined(PECAN_CVR) */
+}
+
+static void
 chg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     PecanContact *user;
+    PecanStatus old_status;
+
     user = msn_session_get_contact (cmdproc->session);
+    old_status = user->status;
     pecan_contact_set_state (user, cmd->params[1]);
+
+    if (old_status == PECAN_STATUS_HIDDEN)
+    {
+        /* now we are able to send messages and do p2p */
+
+        pecan_contactlist_foreach_contact (cmdproc->session->contactlist, contact_update, NULL);
+    }
 }
 
 static void

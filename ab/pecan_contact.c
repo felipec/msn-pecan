@@ -593,6 +593,13 @@ pecan_contact_set_object (PecanContact *contact,
 {
     g_return_if_fail (contact);
 
+    /** @todo sometimes we need to force an update, in those cases the old and
+     * new object will be the same, we must not free the object, so in order to
+     * do that properly we need to implement msnobj ref/unref. */
+    /* For now just assume there was no obj set. */
+    if (contact->msnobj == obj)
+        contact->msnobj = NULL;
+
     if (contact->msnobj)
         msn_object_destroy (contact->msnobj);
 
