@@ -128,7 +128,7 @@ userdisplay_fail (MsnSlpCall *slpcall,
 
     g_return_if_fail (session);
 
-    pecan_debug ("foo");
+    pecan_error ("unknown error");
 
     udm = session->udm;
 
