@@ -39,7 +39,7 @@ typedef enum
     PECAN_STATUS_OFFLINE,
     PECAN_STATUS_HIDDEN
 
-} PecanStatusType;
+} PecanStatus;
 
 struct MsnSession;
 

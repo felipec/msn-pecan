@@ -40,7 +40,7 @@
 #endif /* HAVE_LIBPURPLE */
 
 static inline const gchar *
-util_type_to_str (PecanStatusType status)
+util_type_to_str (PecanStatus status)
 {
     static const gchar *status_text[] =
     { "NLN", "NLN", "BSY", "IDL", "BRB", "AWY", "PHN", "LUN", "HDN", "HDN" };
@@ -49,8 +49,8 @@ util_type_to_str (PecanStatusType status)
 }
 
 static inline void
-pecan_set_status (MsnSession *session,
-                  PecanStatusType status)
+set_status (MsnSession *session,
+            PecanStatus status)
 {
     MsnCmdProc *cmdproc;
     PecanContact *user;
@@ -107,11 +107,11 @@ pecan_set_personal_message (MsnSession *session,
 }
 
 #ifdef HAVE_LIBPURPLE
-static inline PecanStatusType
+static inline PecanStatus
 util_status_from_session (MsnSession *session)
 {
     PurpleAccount *account;
-    PecanStatusType msnstatus;
+    PecanStatus msnstatus;
     PurplePresence *presence;
     PurpleStatus *status;
     const gchar *status_id;
@@ -154,7 +154,7 @@ pecan_update_status (MsnSession *session)
     if (!session->logged_in)
         return;
 
-    pecan_set_status (session, util_status_from_session (session));
+    set_status (session, util_status_from_session (session));
 }
 
 void
