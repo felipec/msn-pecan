@@ -267,6 +267,10 @@ msn_slp_process_msg(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
 			if (slpcall->timer)
 				purple_timeout_remove(slpcall->timer);
 
+			/* clear the error cb, otherwise it will be called when
+			 * the slpcall is destroyed. */
+			slpcall->end_cb = NULL;
+
 			slpcall->cb(slpcall, body, body_len);
 
 			slpcall->wasted = TRUE;
