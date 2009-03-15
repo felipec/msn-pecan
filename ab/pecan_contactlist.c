@@ -765,6 +765,34 @@ pecan_contactlist_check_pending (PecanContactList *contactlist)
     g_hash_table_foreach (contactlist->contact_names, contact_check_pending, contactlist);
 }
 
+typedef struct
+{
+    PecanContactListFunc func;
+    gpointer user_data;
+} EachContactData;
+
+static void
+contact_each (gpointer key,
+              gpointer value,
+              gpointer user_data)
+{
+    EachContactData *tmp;
+    tmp = user_data;
+    tmp->func (value, tmp->user_data);
+}
+
+void
+pecan_contactlist_foreach_contact (PecanContactList *contactlist,
+                                   PecanContactListFunc func,
+                                   gpointer user_data)
+{
+    EachContactData *tmp = g_new0 (EachContactData, 1);
+    tmp->func = func;
+    tmp->user_data = user_data;
+    g_hash_table_foreach (contactlist->contact_names, contact_each, tmp);
+    g_free (tmp);
+}
+
 #ifdef HAVE_LIBPURPLE
 /**************************************************************************
  * Purple functions

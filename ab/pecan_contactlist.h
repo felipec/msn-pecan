@@ -48,6 +48,8 @@ typedef enum
     MSN_LIST_PL_OP = 0x10
 } MsnListOp;
 
+typedef void (*PecanContactListFunc) (PecanContact *contact, gpointer user_data);
+
 struct _PurpleBuddy;
 struct _PurpleGroup;
 
@@ -77,5 +79,7 @@ void pecan_contactlist_move_buddy (PecanContactList *contactlist, const gchar *w
 void pecan_contactlist_check_pending (PecanContactList *contactlist);
 
 void pecan_contactlist_add_buddy_helper (PecanContactList *contactlist, struct _PurpleBuddy *buddy, struct _PurpleGroup *group);
+
+void pecan_contactlist_foreach_contact (PecanContactList *contactlist, PecanContactListFunc func, gpointer user_data);
 
 #endif /* PECAN_CONTACTLIST_H */
