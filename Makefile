@@ -16,11 +16,12 @@ GOBJECT_LIBS := $(shell pkg-config --libs gobject-2.0)
 CVR := y
 LIBSIREN := y
 PLUS_SOUNDS := y
+DEBUG := y
+
+CFLAGS := -O2
 
 ifdef DEBUG
   CFLAGS += -ggdb
-else
-  CFLAGS += -O2
 endif
 
 EXTRA_WARNINGS := -Wall -Wextra -Wformat-nonliteral -Wcast-align -Wpointer-arith \
