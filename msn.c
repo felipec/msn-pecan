@@ -983,7 +983,7 @@ send_im (PurpleConnection *gc,
     {
         PecanContact *contact;
         contact = pecan_contactlist_find_contact (session->contactlist, who);
-        if (contact && !contact->status && contact->mobile)
+        if (contact && contact->status == PECAN_STATUS_OFFLINE && contact->mobile)
         {
             gchar *text;
             text = purple_markup_strip_html (message);

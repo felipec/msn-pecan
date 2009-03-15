@@ -85,25 +85,44 @@ pecan_contact_update (PecanContact *contact)
 {
 #ifdef HAVE_LIBPURPLE
     PurpleAccount *account;
+    const char *pidgin_status;
+    gboolean idle = FALSE;
 
     g_return_if_fail (contact->contactlist);
 
     account = msn_session_get_user_data (contact->contactlist->session);
 
-    if (contact->status)
-        purple_prpl_got_user_status (account, contact->passport, contact->status, NULL);
-    else
-        purple_prpl_got_user_status (account, contact->passport, "offline", NULL);
+    switch (contact->status)
+    {
+        case PECAN_STATUS_OFFLINE:
+            pidgin_status = "offline"; break;
+        case PECAN_STATUS_BUSY:
+            pidgin_status = "busy"; break;
+        case PECAN_STATUS_BRB:
+            pidgin_status = "brb"; break;
+        case PECAN_STATUS_AWAY:
+            pidgin_status = "away"; break;
+        case PECAN_STATUS_PHONE:
+            pidgin_status = "phone"; break;
+        case PECAN_STATUS_LUNCH:
+            pidgin_status = "lunch"; break;
+        case PECAN_STATUS_IDLE:
+            idle = TRUE;
+        case PECAN_STATUS_HIDDEN:
+        case PECAN_STATUS_ONLINE:
+            pidgin_status = "available"; break;
+        default:
+            pidgin_status = NULL; break;
+    }
+
+    purple_prpl_got_user_status (account, contact->passport, pidgin_status, NULL);
 
     if (contact->mobile)
         purple_prpl_got_user_status (account, contact->passport, "mobile", NULL);
     else
         purple_prpl_got_user_status_deactive (account, contact->passport, "mobile");
 
-    if (contact->idle)
-        purple_prpl_got_user_idle (account, contact->passport, TRUE, -1);
-    else
-        purple_prpl_got_user_idle (account, contact->passport, FALSE, 0);
+    purple_prpl_got_user_idle (account, contact->passport, idle, idle ? -1 : 0);
 #endif /* HAVE_LIBPURPLE */
 }
 
@@ -120,31 +139,28 @@ void
 pecan_contact_set_state (PecanContact *contact,
                          const gchar *state)
 {
-    const gchar *status;
+    PecanStatus status;
 
     if (!state)
-    {
-        contact->status = NULL;
-        return;
-    }
-
-    if (!g_ascii_strcasecmp (state, "BSY"))
-        status = "busy";
-    else if (!g_ascii_strcasecmp (state, "BRB"))
-        status = "brb";
-    else if (!g_ascii_strcasecmp (state, "AWY"))
-        status = "away";
-    else if (!g_ascii_strcasecmp (state, "PHN"))
-        status = "phone";
-    else if (!g_ascii_strcasecmp (state, "LUN"))
-        status = "lunch";
+        status = PECAN_STATUS_OFFLINE;
+    else if (strcmp (state, "NLN") == 0)
+        status = PECAN_STATUS_ONLINE;
+    else if (strcmp (state, "BSY") == 0)
+        status = PECAN_STATUS_BUSY;
+    else if (strcmp (state, "IDL") == 0)
+        status = PECAN_STATUS_IDLE;
+    else if (strcmp (state, "BRB") == 0)
+        status = PECAN_STATUS_BRB;
+    else if (strcmp (state, "AWY") == 0)
+        status = PECAN_STATUS_AWAY;
+    else if (strcmp (state, "PHN") == 0)
+        status = PECAN_STATUS_PHONE;
+    else if (strcmp (state, "LUN") == 0)
+        status = PECAN_STATUS_LUNCH;
+    else if (strcmp (state, "HDN") == 0)
+        status = PECAN_STATUS_HIDDEN;
     else
-        status = "available";
-
-    if (!g_ascii_strcasecmp (state, "IDL"))
-        contact->idle = TRUE;
-    else
-        contact->idle = FALSE;
+        status = PECAN_STATUS_NONE;
 
     contact->status = status;
 }
@@ -691,7 +707,7 @@ is_blocked (PecanContact *contact)
 static inline gboolean
 is_offline (PecanContact *contact)
 {
-    return (contact->status == NULL ? true : false);
+    return (contact->status == PECAN_STATUS_OFFLINE ? true : false);
 }
 
 gboolean

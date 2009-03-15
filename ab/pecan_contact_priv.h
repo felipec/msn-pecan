@@ -26,6 +26,7 @@
 #include <glib.h>
 
 #include "pecan_contactlist.h"
+#include "pecan_status.h"
 #if defined(PECAN_CVR)
 #include "cvr/pecan_slp_object.h"
 #endif /* defined(PECAN_CVR) */
@@ -43,8 +44,7 @@ struct PecanContact
     gchar *personal_message; /**< The personal message. */
     gchar *guid; /**< The GUID. Only present for contacts in our FL. */
 
-    const gchar *status; /**< The state of the contact. */
-    gboolean idle; /**< The idle state of the contact. */
+    PecanStatus status;
 
     struct
     {
