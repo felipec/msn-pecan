@@ -28,18 +28,14 @@
 #include "command.h"
 #include "transaction.h"
 
-/**
- * A command.
- */
 struct MsnCommand
 {
-    guint trId;
+    MsnTransaction *trans;
+    guint tr_id;
 
-    gchar *command;
+    gchar *base;
     gchar **params;
     guint param_count;
-
-    MsnTransaction *trans;
 
     gchar *payload;
     gsize payload_len;

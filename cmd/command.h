@@ -28,6 +28,6 @@
 typedef struct MsnCommand MsnCommand;
 
 MsnCommand *msn_command_from_string (const gchar *string);
-void msn_command_destroy (MsnCommand *cmd);
+void msn_command_free (MsnCommand *cmd);
 
 #endif /* MSN_COMMAND_H */

@@ -51,7 +51,7 @@ msn_command_from_string (const char *string)
     param_start = strchr (tmp, ' ');
 
     cmd = g_new0 (MsnCommand, 1);
-    cmd->command = tmp;
+    cmd->base = tmp;
 
     /** @todo check string "preferredEmail: " */
 
@@ -71,23 +71,22 @@ msn_command_from_string (const char *string)
 
         param = cmd->params[0];
 
-        cmd->trId = is_num (param) ? atoi (param) : 0;
+        cmd->tr_id = is_num (param) ? atoi (param) : 0;
     }
     else
-        cmd->trId = 0;
+        cmd->tr_id = 0;
 
     return cmd;
 }
 
 void
-msn_command_destroy (MsnCommand *cmd)
+msn_command_free (MsnCommand *cmd)
 {
-    g_return_if_fail (cmd);
+    if (!cmd)
+        return;
 
-    if (cmd->payload)
-        g_free (cmd->payload);
-
-    g_free (cmd->command);
+    g_free (cmd->payload);
+    g_free (cmd->base);
     g_strfreev (cmd->params);
     g_free (cmd);
 }

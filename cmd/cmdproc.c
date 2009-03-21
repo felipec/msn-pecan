@@ -57,9 +57,7 @@ msn_cmdproc_destroy (MsnCmdProc *cmdproc)
     pecan_debug ("cmdproc=%p", cmdproc);
 
     msn_history_destroy (cmdproc->history);
-
-    if (cmdproc->last_cmd)
-        msn_command_destroy (cmdproc->last_cmd);
+    msn_command_free (cmdproc->last_cmd);
 
     g_free (cmdproc);
 
@@ -277,21 +275,21 @@ msn_cmdproc_process_cmd (MsnCmdProc *cmdproc,
 
     pecan_log ("begin");
 
-    if (cmd->trId)
-        cmd->trans = trans = msn_history_find (cmdproc->history, cmd->trId);
+    if (cmd->tr_id)
+        cmd->trans = trans = msn_history_find (cmdproc->history, cmd->tr_id);
 
     /* transaction finished. clear timeouts. */
     if (trans)
         msn_transaction_flush (trans);
 
-    if (g_ascii_isdigit (cmd->command[0]))
+    if (g_ascii_isdigit (cmd->base[0]))
     {
         if (trans)
         {
             MsnErrorCb error_cb = NULL;
             int error;
 
-            error = atoi (cmd->command);
+            error = atoi (cmd->base);
 
             if (trans->error_cb)
                 error_cb = trans->error_cb;
@@ -305,26 +303,26 @@ msn_cmdproc_process_cmd (MsnCmdProc *cmdproc,
             if (error_cb)
                 error_cb (cmdproc, trans, error);
             else
-                pecan_error ("unhandled error: [%s]", cmd->command);
+                pecan_error ("unhandled error: [%s]", cmd->base);
 
             return;
         }
     }
 
     if (cmdproc->cbs_table->async)
-        cb = g_hash_table_lookup (cmdproc->cbs_table->async, cmd->command);
+        cb = g_hash_table_lookup (cmdproc->cbs_table->async, cmd->base);
 
     if (!cb)
         if (trans && trans->callbacks)
-            cb = g_hash_table_lookup (trans->callbacks, cmd->command);
+            cb = g_hash_table_lookup (trans->callbacks, cmd->base);
 
     if (!cb && cmdproc->cbs_table->fallback)
-        cb = g_hash_table_lookup (cmdproc->cbs_table->fallback, cmd->command);
+        cb = g_hash_table_lookup (cmdproc->cbs_table->fallback, cmd->base);
 
     if (cb)
         cb (cmdproc, cmd);
     else
-        pecan_warning ("unhandled command: [%s]", cmd->command);
+        pecan_warning ("unhandled command: [%s]", cmd->base);
 
     pecan_log ("end");
 }
@@ -335,8 +333,7 @@ msn_cmdproc_process_cmd_text (MsnCmdProc *cmdproc,
 {
     show_debug_cmd (cmdproc, TRUE, command);
 
-    if (cmdproc->last_cmd)
-        msn_command_destroy (cmdproc->last_cmd);
+    msn_command_free (cmdproc->last_cmd);
 
     cmdproc->last_cmd = msn_command_from_string (command);
 
