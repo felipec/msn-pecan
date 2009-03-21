@@ -169,9 +169,9 @@ g_fopen (const gchar *filename,
 #endif /* !GLIB_CHECK_VERSION(2,6,0) */
 
 void
-purple_buddy_set_displayname (PurpleConnection *gc,
-                              const gchar *who,
-                              const gchar *value)
+purple_buddy_set_private_alias (PurpleConnection *gc,
+                                const gchar *who,
+                                const gchar *value)
 {
     PurpleAccount *account;
     GSList *buddies;
@@ -193,9 +193,9 @@ purple_buddy_set_displayname (PurpleConnection *gc,
 }
 
 void
-purple_buddy_set_nickname (PurpleConnection *gc,
-                           const gchar *who,
-                           const gchar *value)
+purple_buddy_set_public_alias (PurpleConnection *gc,
+                               const gchar *who,
+                               const gchar *value)
 {
     PurpleAccount *account;
     GSList *buddies;

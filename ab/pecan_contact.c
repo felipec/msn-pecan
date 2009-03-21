@@ -236,8 +236,8 @@ pecan_contact_set_friendly_name (PecanContact *contact,
         contact->friendly_name = g_strdup (name);
     }
 
-    purple_buddy_set_nickname (purple_account_get_connection (account),
-                               contact->passport, contact->friendly_name);
+    purple_buddy_set_public_alias (purple_account_get_connection (account),
+                                   contact->passport, contact->friendly_name);
 
     /** @todo temporarily disable this until we have proper server-side aliases
      * support. */
@@ -344,7 +344,7 @@ pecan_contact_set_store_name (PecanContact *contact,
         account = msn_session_get_user_data (session);
         connection = purple_account_get_connection (account);
 
-        purple_buddy_set_displayname (connection, contact->passport, contact->store_name);
+        purple_buddy_set_private_alias (connection, contact->passport, contact->store_name);
     }
 
     /** @todo temporarily disable this until we have proper server-side aliases
