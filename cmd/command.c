@@ -76,8 +76,6 @@ msn_command_from_string (const char *string)
     else
         cmd->trId = 0;
 
-    msn_command_ref (cmd);
-
     return cmd;
 }
 
@@ -86,42 +84,10 @@ msn_command_destroy (MsnCommand *cmd)
 {
     g_return_if_fail (cmd);
 
-    if (cmd->ref_count > 0)
-    {
-        msn_command_unref (cmd);
-        return;
-    }
-
     if (cmd->payload)
         g_free (cmd->payload);
 
     g_free (cmd->command);
     g_strfreev (cmd->params);
     g_free (cmd);
-}
-
-MsnCommand *
-msn_command_ref (MsnCommand *cmd)
-{
-    g_return_val_if_fail (cmd, NULL);
-
-    cmd->ref_count++;
-    return cmd;
-}
-
-MsnCommand *
-msn_command_unref (MsnCommand *cmd)
-{
-    g_return_val_if_fail (cmd, NULL);
-    g_return_val_if_fail (cmd->ref_count > 0, NULL);
-
-    cmd->ref_count--;
-
-    if (cmd->ref_count == 0)
-    {
-        msn_command_destroy (cmd);
-        return NULL;
-    }
-
-    return cmd;
 }

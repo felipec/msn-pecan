@@ -39,8 +39,6 @@ struct MsnCommand
     gchar **params;
     guint param_count;
 
-    gint ref_count;
-
     MsnTransaction *trans;
 
     gchar *payload;
