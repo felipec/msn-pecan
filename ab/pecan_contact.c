@@ -310,15 +310,9 @@ pecan_contact_set_store_name (PecanContact *contact,
 
     pecan_debug ("passport=[%s],name=[%s]", contact->passport, name);
 
-    /** @todo temporarily disable this until a proper way is implemented. */
-#if 0
     if (contact->contactlist)
     {
-        MsnSession *session;
-
-        session = contact->contactlist->session;
-
-        if (session->server_alias)
+        if (msn_session_get_bool (contact->contactlist->session, "use_server_alias"))
         {
             /** @todo this is a hack to disable display names. */
             if (name &&
@@ -328,7 +322,6 @@ pecan_contact_set_store_name (PecanContact *contact,
             }
         }
     }
-#endif
 
     if (contact->store_name && name &&
         strcmp (contact->store_name, name) == 0)
