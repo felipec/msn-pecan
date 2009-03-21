@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2008 Felipe Contreras
+ * Copyright (C) 2007-2009 Felipe Contreras
  * Copyright (C) 2005 Sanoi <sanoix@gmail.com>
  *
  * Purple is the legal property of its developers, whose names are too numerous
