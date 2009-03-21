@@ -173,20 +173,20 @@ purple_buddy_set_displayname (PurpleConnection *gc,
                               const gchar *who,
                               const gchar *value)
 {
-    PurpleAccount *account = purple_connection_get_account (gc);
-    GSList *buddies = purple_find_buddies (account, who);
+    PurpleAccount *account;
+    GSList *buddies;
     PurpleBuddy *b;
 
-    while (buddies != NULL)
+    account = purple_connection_get_account (gc);
+    buddies = purple_find_buddies (account, who);
+
+    while (buddies)
     {
         b = buddies->data;
         buddies = g_slist_delete_link (buddies, buddies);
 
-        if ((b->alias == NULL && value == NULL) ||
-            (b->alias && value && !strcmp (b->alias, value)))
-        {
+        if (g_strcmp0 (b->alias, value) == 0)
             continue;
-        }
 
         purple_blist_alias_buddy (b, value);
     }
@@ -197,20 +197,20 @@ purple_buddy_set_nickname (PurpleConnection *gc,
                            const gchar *who,
                            const gchar *value)
 {
-    PurpleAccount *account = purple_connection_get_account (gc);
-    GSList *buddies = purple_find_buddies (account, who);
+    PurpleAccount *account;
+    GSList *buddies;
     PurpleBuddy *b;
 
-    while (buddies != NULL)
+    account = purple_connection_get_account (gc);
+    buddies = purple_find_buddies (account, who);
+
+    while (buddies)
     {
         b = buddies->data;
         buddies = g_slist_delete_link (buddies, buddies);
 
-        if ((b->server_alias == NULL && value == NULL) ||
-            (b->server_alias && value && !strcmp (b->server_alias, value)))
-        {
+        if (g_strcmp0 (b->server_alias, value) == 0)
             continue;
-        }
 
         purple_blist_server_alias_buddy (b, value);
     }
