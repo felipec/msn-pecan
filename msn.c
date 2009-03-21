@@ -1805,7 +1805,7 @@ init_plugin (PurplePlugin *plugin)
         option = purple_account_option_bool_new (_("Show custom smileys"), "custom_smileys", TRUE);
         prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
 
-        option = purple_account_option_bool_new (_("Use server-side alias"), "server_alias", FALSE);
+        option = purple_account_option_bool_new (_("Use server-side alias"), "use_server_alias", FALSE);
         prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
 
         option = purple_account_option_bool_new (_("Use direct connections"), "use_directconn", FALSE);
