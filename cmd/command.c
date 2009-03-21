@@ -26,101 +26,102 @@
 #include <stdlib.h>
 
 static gboolean
-is_num(char *str)
+is_num (char *str)
 {
-	char *c;
-	for (c = str; *c; c++) {
-		if (!(g_ascii_isdigit(*c)))
-			return FALSE;
-	}
+    char *c;
+    for (c = str; *c; c++)
+    {
+        if (!(g_ascii_isdigit(*c)))
+            return FALSE;
+    }
 
-	return TRUE;
+    return TRUE;
 }
 
 MsnCommand *
-msn_command_from_string(const char *string)
+msn_command_from_string (const char *string)
 {
-	MsnCommand *cmd;
-	char *tmp;
-	char *param_start;
+    MsnCommand *cmd;
+    char *tmp;
+    char *param_start;
 
-	g_return_val_if_fail(string != NULL, NULL);
+    g_return_val_if_fail (string, NULL);
 
-	tmp = g_strdup(string);
-	param_start = strchr(tmp, ' ');
+    tmp = g_strdup (string);
+    param_start = strchr (tmp, ' ');
 
-	cmd = g_new0(MsnCommand, 1);
-	cmd->command = tmp;
+    cmd = g_new0 (MsnCommand, 1);
+    cmd->command = tmp;
 
-        /** @todo check string "preferredEmail: " */
+    /** @todo check string "preferredEmail: " */
 
-        if (param_start)
-	{
-		*param_start++ = '\0';
-		cmd->params = g_strsplit(param_start, " ", 0);
-	}
+    if (param_start)
+    {
+        *param_start++ = '\0';
+        cmd->params = g_strsplit (param_start, " ", 0);
+    }
 
-	if (cmd->params != NULL && cmd->params[0] != NULL)
-	{
-		char *param;
-		int c;
+    if (cmd->params && cmd->params[0])
+    {
+        char *param;
+        int c;
 
-		for (c = 0; cmd->params[c]; c++);
-		cmd->param_count = c;
+        for (c = 0; cmd->params[c]; c++);
+        cmd->param_count = c;
 
-		param = cmd->params[0];
+        param = cmd->params[0];
 
-		cmd->trId = is_num(param) ? atoi(param) : 0;
-	}
-	else
-		cmd->trId = 0;
+        cmd->trId = is_num (param) ? atoi (param) : 0;
+    }
+    else
+        cmd->trId = 0;
 
-	msn_command_ref(cmd);
+    msn_command_ref (cmd);
 
-	return cmd;
+    return cmd;
 }
 
 void
-msn_command_destroy(MsnCommand *cmd)
+msn_command_destroy (MsnCommand *cmd)
 {
-	g_return_if_fail(cmd != NULL);
+    g_return_if_fail (cmd);
 
-	if (cmd->ref_count > 0)
-	{
-		msn_command_unref(cmd);
-		return;
-	}
+    if (cmd->ref_count > 0)
+    {
+        msn_command_unref (cmd);
+        return;
+    }
 
-	if (cmd->payload != NULL)
-		g_free(cmd->payload);
+    if (cmd->payload)
+        g_free (cmd->payload);
 
-	g_free(cmd->command);
-	g_strfreev(cmd->params);
-	g_free(cmd);
+    g_free (cmd->command);
+    g_strfreev (cmd->params);
+    g_free (cmd);
 }
 
 MsnCommand *
-msn_command_ref(MsnCommand *cmd)
+msn_command_ref (MsnCommand *cmd)
 {
-	g_return_val_if_fail(cmd != NULL, NULL);
+    g_return_val_if_fail (cmd, NULL);
 
-	cmd->ref_count++;
-	return cmd;
+    cmd->ref_count++;
+    return cmd;
 }
 
 MsnCommand *
-msn_command_unref(MsnCommand *cmd)
+msn_command_unref (MsnCommand *cmd)
 {
-	g_return_val_if_fail(cmd != NULL, NULL);
-	g_return_val_if_fail(cmd->ref_count > 0, NULL);
+    g_return_val_if_fail (cmd, NULL);
+    g_return_val_if_fail (cmd->ref_count > 0, NULL);
 
-	cmd->ref_count--;
+    cmd->ref_count--;
 
-	if (cmd->ref_count == 0)
-	{
-		msn_command_destroy(cmd);
-		return NULL;
-	}
+    if (cmd->ref_count == 0)
+    {
+        msn_command_destroy (cmd);
+        return NULL;
+    }
 
-	return cmd;
+    return cmd;
 }
