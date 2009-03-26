@@ -34,7 +34,6 @@
 
 #ifdef HAVE_LIBPURPLE
 #include "fix_purple.h"
-#include "utils/msgpluslive.h"
 
 /* libpurple stuff. */
 #include "fix_purple_win32.h"

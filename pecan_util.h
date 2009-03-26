@@ -25,6 +25,8 @@
 
 #include <glib.h>
 
+gchar* remove_plus_tags_from_str (const gchar *str);
+
 gchar *pecan_url_decode (const gchar *url);
 
 /**
