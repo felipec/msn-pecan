@@ -1690,6 +1690,9 @@ get_info (PurpleConnection *gc,
 
         if (work_phone)
             purple_notify_user_info_add_pair (user_info, _("Work Phone"), work_phone);
+
+        purple_notify_user_info_add_pair (user_info, _("Has Space"),
+                                          ((user->client_id & MSN_CLIENT_CAP_SPACE) ? _("Yes") : _("No")));
     }
 
     {
