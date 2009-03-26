@@ -23,6 +23,8 @@
 #ifndef PECAN_STATUS_H
 #define PECAN_STATUS_H
 
+#include <glib.h>
+
 /**
  * Status types.
  */
@@ -55,5 +57,7 @@ void pecan_update_status (struct MsnSession *session);
  * @param session The MSN session.
  */
 void pecan_update_personal_message (struct MsnSession *session);
+
+gboolean pecan_timeout_tune_status (gpointer data);
 
 #endif /* PECAN_STATUS_H */

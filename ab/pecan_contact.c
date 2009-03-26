@@ -302,6 +302,93 @@ pecan_contact_set_personal_message (PecanContact *contact,
 }
 
 void
+pecan_contact_set_current_media (PecanContact *contact,
+                                 const gchar *current_media)
+{
+    gchar **current_media_array;
+    int strings = 0;
+
+    g_return_if_fail (contact);
+    g_return_if_fail (current_media);
+
+    /*
+    * 0: Application
+    * 1: 'Music'/'Games'/'Office'
+    * 2: Enabled
+    * 3: Format
+    * 4: Title
+    * If 'Music':
+    *  5: Artist
+    *  6: Album
+    *  7: ?
+    */
+
+    current_media_array = g_strsplit (current_media, "\\0", 0);
+
+#if GLIB_CHECK_VERSION(2,6,0)
+    strings  = g_strv_length (current_media_array);
+#else
+    while (current_media_array[++strings] != NULL);
+#endif
+
+    if (strings < 4)
+    {
+        current_media_array = g_strsplit (current_media, "&#x5C;0", 0);
+
+#if GLIB_CHECK_VERSION(2,6,0)
+        strings  = g_strv_length (current_media_array);
+#else
+        while (current_media_array[++strings] != NULL);
+#endif
+    }
+
+    if (strings >= 4 && strcmp (current_media_array[2], "1") == 0)
+    {
+        if (strcmp (current_media_array[1], "Music") == 0)
+            contact->media.type = CURRENT_MEDIA_MUSIC;
+        else if (strcmp (current_media_array[1], "Games") == 0)
+            contact->media.type = CURRENT_MEDIA_GAMES;
+        else if (strcmp (current_media_array[1], "Office") == 0)
+            contact->media.type = CURRENT_MEDIA_OFFICE;
+        else
+            contact->media.type = CURRENT_MEDIA_UNKNOWN;
+
+        g_free (contact->media.title);
+        if (strings == 4)
+            contact->media.title = purple_unescape_html (current_media_array[3]);
+        else
+            contact->media.title = purple_unescape_html (current_media_array[4]);
+
+        g_free (contact->media.artist);
+        if (strings > 5)
+            contact->media.artist = purple_unescape_html (current_media_array[5]);
+        else
+            contact->media.artist = NULL;
+
+        g_free (contact->media.album);
+        if (strings > 6)
+            contact->media.album = purple_unescape_html (current_media_array[6]);
+        else
+            contact->media.album = NULL;
+    }
+    else
+    {
+        contact->media.type = CURRENT_MEDIA_UNKNOWN;
+
+        g_free (contact->media.title);
+        contact->media.title = NULL;
+
+        g_free (contact->media.artist);
+        contact->media.artist = NULL;
+
+        g_free (contact->media.album);
+        contact->media.album = NULL;
+    }
+
+    g_strfreev (current_media_array);
+}
+
+void
 pecan_contact_set_store_name (PecanContact *contact,
                               const gchar *name)
 {

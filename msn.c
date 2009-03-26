@@ -601,6 +601,29 @@ status_text (PurpleBuddy *buddy)
     status = purple_presence_get_active_status (presence);
     contact = buddy->proto_data;
 
+    if (contact && contact->media.title)
+    {
+
+        if (contact->media.type == CURRENT_MEDIA_MUSIC) 
+        {
+            const gchar *title, *artist, *album;
+
+            title = contact->media.title;
+            artist = contact->media.artist;
+            album = contact->media.album;
+
+            return g_strdup_printf ("♫ %s", purple_util_format_song_info (title, artist, album, NULL));
+        }
+        else if (contact->media.type == CURRENT_MEDIA_GAMES)
+        {
+            return g_strdup_printf (_("Playing %s"), contact->media.title);
+        }
+        else if (contact->media.type == CURRENT_MEDIA_OFFICE) 
+        {
+            return g_strdup_printf (_("Editing %s"), contact->media.title);
+        }
+    }
+
     {
         const gchar *personal_message;
         personal_message = pecan_contact_get_personal_message (contact);
@@ -647,6 +670,30 @@ tooltip_text (PurpleBuddy *buddy,
             {
                 purple_notify_user_info_add_pair (user_info, _("Personal Message"),
                                                   pecan_contact_get_personal_message (user));
+            }
+
+            if (user->media.title)
+            {
+
+                if (user->media.type == CURRENT_MEDIA_MUSIC) 
+                {
+                    const gchar *title, *artist, *album;
+
+                    title = user->media.title;
+                    artist = user->media.artist;
+                    album = user->media.album;
+
+                    purple_notify_user_info_add_pair (user_info, _("Now Listening"),
+                                                      purple_util_format_song_info (title, artist, album, NULL));
+                }
+                else if (user->media.type == CURRENT_MEDIA_GAMES)
+                {
+                    purple_notify_user_info_add_pair (user_info, _("Playing a game"), g_strdup (user->media.title));
+                }
+                else if (user->media.type == CURRENT_MEDIA_OFFICE) 
+                {
+                    purple_notify_user_info_add_pair (user_info, _("Working"), g_strdup (user->media.title));
+                }
             }
 
             purple_notify_user_info_add_pair (user_info, _("Has you"),
@@ -705,6 +752,15 @@ status_types (PurpleAccount *account)
         /** @todo when do we use this? */
         status = purple_status_type_new_full (PURPLE_STATUS_MOBILE, "mobile", NULL, FALSE, FALSE, TRUE);
         types = g_list_append (types, status);
+
+        status = purple_status_type_new_with_attrs(PURPLE_STATUS_TUNE, "tune", NULL, FALSE, TRUE, TRUE,
+                                                   PURPLE_TUNE_TITLE, _("Song Title"), purple_value_new (PURPLE_TYPE_STRING),
+                                                   PURPLE_TUNE_ARTIST, _("Song Artist"), purple_value_new (PURPLE_TYPE_STRING),
+                                                   PURPLE_TUNE_ALBUM, _("Song Album"), purple_value_new (PURPLE_TYPE_STRING),
+                                                   "game", _("Game Name"), purple_value_new (PURPLE_TYPE_STRING),
+                                                   "office", _("Office App Name"), purple_value_new (PURPLE_TYPE_STRING),
+                                                   NULL);
+        types = g_list_append(types, status);
     }
 
     return types;

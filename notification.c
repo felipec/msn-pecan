@@ -1133,7 +1133,7 @@ ubx_cmd_post (MsnCmdProc *cmdproc,
 
     if (contact)
     {
-        gchar *psm = NULL;
+        gchar *psm = NULL, *current_media = NULL;
         const gchar *start;
         const gchar *end;
 
@@ -1150,6 +1150,20 @@ ubx_cmd_post (MsnCmdProc *cmdproc,
 
         pecan_contact_set_personal_message (contact, psm);
         g_free (psm);
+
+        start = g_strstr_len (payload, len, "<CurrentMedia>");
+        if (start)
+        {
+            start += 14;
+            end = g_strstr_len (start, len - (start - payload), "</CurrentMedia>");
+
+	    if (end > start)
+                current_media = g_strndup (start, end - start);
+        }
+
+        if (current_media)
+            pecan_contact_set_current_media (contact, current_media);
+        g_free (current_media);
 
         pecan_contact_update (contact);
     }

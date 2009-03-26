@@ -120,6 +120,9 @@ msn_session_destroy (MsnSession *session)
     g_free (session->passport_cookie.t);
     g_free (session->passport_cookie.p);
 
+    if (session->autoupdate_tune.timer)
+        g_source_remove (session->autoupdate_tune.timer);
+
     if (session->sync)
         msn_sync_destroy (session->sync);
 
@@ -411,6 +414,7 @@ msn_session_finish_login (MsnSession *session)
     /** @todo move this to msn.c */
     pecan_update_status (session);
     pecan_update_personal_message (session);
+    pecan_timeout_tune_status (session);
 
     {
         PurpleConnection *connection;

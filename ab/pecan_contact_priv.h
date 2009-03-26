@@ -32,6 +32,25 @@
 #endif /* defined(PECAN_CVR) */
 
 /**
+ * Current media.
+ */
+typedef enum
+{
+	CURRENT_MEDIA_UNKNOWN,
+	CURRENT_MEDIA_MUSIC,
+	CURRENT_MEDIA_GAMES,
+	CURRENT_MEDIA_OFFICE
+} CurrentMediaType;
+
+typedef struct _CurrentMedia
+{
+	CurrentMediaType type;     /**< Type.   */
+	gchar *title;    /**< Title.  */
+	gchar *artist;   /**< Artist. */
+	gchar *album;    /**< Album.  */
+} CurrentMedia;
+
+/**
  * A contact.
  */
 struct PecanContact
@@ -42,6 +61,7 @@ struct PecanContact
     gchar *store_name; /**< The name stored in the server. */
     gchar *friendly_name; /**< The friendly name. */
     gchar *personal_message; /**< The personal message. */
+    CurrentMedia media; /**< The current media. */
     gchar *guid; /**< The GUID. Only present for contacts in our FL. */
 
     PecanStatus status;

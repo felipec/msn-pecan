@@ -86,6 +86,12 @@ struct MsnSession
     /* libpurple stuff (should move to user_data) */
     guint inbox_unread_count; /* The number of unread e-mails on the inbox. */
     int conv_seq; /**< The current conversation sequence number. */
+
+    struct
+    {
+        gboolean enabled;
+        guint timer;
+    } autoupdate_tune;
 };
 
 #endif /* SESSION_PRIVATE_H */

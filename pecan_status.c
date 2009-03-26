@@ -51,13 +51,14 @@ util_type_to_str (PecanStatus status)
 
 static inline void
 pecan_set_personal_message (MsnSession *session,
-                            gchar *value)
+                            gchar *value,
+                            gchar *current_media)
 {
     MsnCmdProc *cmdproc;
     gchar *payload;
 
     cmdproc = session->notification->cmdproc;
-    payload = pecan_strdup_printf ("<Data><PSM>%s</PSM><CurrentMedia></CurrentMedia></Data>", value ? value : "");
+    payload = pecan_strdup_printf ("<Data><PSM>%s</PSM><CurrentMedia>%s</CurrentMedia></Data>", value ? value : "", current_media ? current_media : "");
 
     {
         MsnTransaction *trans;
@@ -112,6 +113,40 @@ util_status_from_session (MsnSession *session)
     return msnstatus;
 }
 
+static gchar *
+create_current_media_string (PurplePresence *presence)
+{
+    const gchar *title, *game, *office;
+
+    PurpleStatus *status = purple_presence_get_status (presence, "tune");
+
+    if (!status || !purple_status_is_active (status))
+        return NULL;
+
+    title = purple_status_get_attr_string (status, PURPLE_TUNE_TITLE);
+    game = purple_status_get_attr_string (status, "game");
+    office = purple_status_get_attr_string (status, "office");
+
+    if (title) 
+    {
+        const gchar *artist = purple_status_get_attr_string (status, PURPLE_TUNE_ARTIST);
+        const gchar *album = purple_status_get_attr_string (status, PURPLE_TUNE_ALBUM);
+
+        return g_strdup_printf("WMP\\0Music\\01\\0{0}%s%s\\0%s\\0%s\\0%s\\0",
+                               artist ? " - {1}" : "",
+                               album ? " ({2})" : "",
+                               title,
+                               artist ? artist : "",
+                               album ? album : "");
+    }
+    else if (game)
+        return g_strdup_printf ("\\0Games\\01\\0Playing {0}\\0%s\\0", game);
+    else if (office)
+        return g_strdup_printf ("\\0Office\\01\\0Editing {0}\\0%s\\0", office);
+    else
+        return NULL;
+}
+
 void
 pecan_update_status (MsnSession *session)
 {
@@ -161,18 +196,24 @@ void
 pecan_update_personal_message (MsnSession *session)
 {
     PurpleAccount *account;
+    PurplePresence *presence;
+    gchar *current_media;
+
     g_return_if_fail (session);
 
     if (!session->logged_in)
         return;
 
     account = msn_session_get_user_data (session);
+    presence = purple_account_get_presence (account);
+
+    current_media = create_current_media_string (presence);
 
 #ifndef PECAN_USE_PSM
     const gchar *msg;
 
     msg = purple_account_get_string (account, "personal_message", "");
-    pecan_set_personal_message (session, (gchar *) msg);
+    pecan_set_personal_message (session, (gchar *) msg, current_media);
 #else
     PurpleStatus *status;
     const gchar *formatted_msg;
@@ -187,15 +228,59 @@ pecan_update_personal_message (MsnSession *session)
 
         tmp = purple_markup_strip_html (formatted_msg);
         msg = g_markup_escape_text (tmp, -1);
-        pecan_set_personal_message (session, msg);
+        pecan_set_personal_message (session, msg, current_media);
 
         g_free (tmp);
         g_free (msg);
     }
     else
     {
-        pecan_set_personal_message (session, NULL);
+        pecan_set_personal_message (session, NULL, current_media);
     }
 #endif /* PECAN_USE_PSM */
+
+    if (current_media)
+        g_free (current_media);
 }
 #endif /* HAVE_LIBPURPLE */
+
+gboolean
+pecan_timeout_tune_status (gpointer data)
+{
+    MsnSession *session;
+    PurpleAccount *account;
+    PurplePresence *presence;
+    PurpleStatus *status;
+
+    session = data;
+
+    if (!session)
+        return FALSE;
+
+    account = msn_session_get_user_data (session);
+    presence = purple_account_get_presence (account);
+    status = purple_presence_get_status (presence, "tune");
+
+    if (status)
+    {
+        if (session->autoupdate_tune.enabled)
+        {
+            pecan_update_personal_message (session);
+
+            if (!status || !purple_status_is_active (status))
+                session->autoupdate_tune.enabled = FALSE;
+        }
+        else
+        {
+            if (status && purple_status_is_active (status))
+            {
+                session->autoupdate_tune.enabled = TRUE;
+                pecan_update_personal_message (session);
+            }
+        }
+    }
+
+    session->autoupdate_tune.timer = g_timeout_add_seconds (10, pecan_timeout_tune_status, session);
+
+    return FALSE;
+}

@@ -98,6 +98,14 @@ void pecan_contact_set_friendly_name (PecanContact *contact, const gchar *name);
 void pecan_contact_set_personal_message (PecanContact *contact, const gchar *value);
 
 /**
+ * Sets the current media for a contact.
+ *
+ * @param contact The contact.
+ * @param current_media The current media.
+ */
+void pecan_contact_set_current_media (PecanContact *contact, const gchar *current_media);
+
+/**
  * Sets the store name for a contact.
  *
  * @param contact The contact.
