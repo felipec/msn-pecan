@@ -27,6 +27,7 @@
 #include "pecan_status.h"
 #include "pecan_util.h"
 #include "pecan_ud.h"
+#include "ab/pecan_contact_priv.h"
 
 #if defined(PECAN_CVR)
 #include "cvr/slplink.h"
@@ -43,6 +44,33 @@
 /* libpurple stuff. */
 #include "fix_purple_win32.h"
 #include <account.h>
+
+static void
+conversation_created_cb (PurpleConversation *conv, gpointer data)
+{
+    gchar *str;
+    const gchar *tmp_user, *friendly_name;
+    MsnSession *session = data;
+    PecanContact *contact;
+
+    tmp_user = purple_conversation_get_name (conv);
+    contact = pecan_contactlist_find_contact (session->contactlist, tmp_user);
+    if (contact)
+        friendly_name = pecan_contact_get_friendly_name (contact);
+    else
+        friendly_name = tmp_user;
+    if (!friendly_name)
+        friendly_name = tmp_user;
+
+    if (contact && !(contact->list_op & (1 << MSN_LIST_RL)))
+    {
+        str = g_strdup_printf (_("You are not in %s's contact list."), friendly_name);
+
+        purple_conversation_write (conv, NULL, str, PURPLE_MESSAGE_SYSTEM, time (NULL));
+
+        g_free (str);
+    }
+}
 
 MsnSession *
 msn_session_new (const gchar *username,
@@ -85,6 +113,9 @@ msn_session_new (const gchar *username,
     session->conversations = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) msn_switchboard_unref);
     session->chats = g_hash_table_new_full (g_int_hash, g_int_equal, NULL, (GDestroyNotify) msn_switchboard_unref);
 
+    purple_signal_connect (purple_conversations_get_handle(), "conversation-created",
+                           session, PURPLE_CALLBACK (conversation_created_cb), session);
+
     return session;
 }
 
@@ -95,6 +126,9 @@ msn_session_destroy (MsnSession *session)
         return;
 
     pecan_oim_session_free (session->oim_session);
+
+    purple_signal_disconnect (purple_conversations_get_handle(), "conversation-created",
+                              session, PURPLE_CALLBACK (conversation_created_cb));
 
     if (session->connected)
         msn_session_disconnect (session);
