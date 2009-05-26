@@ -111,7 +111,7 @@ msn_slpmsg_destroy(MsnSlpMessage *slpmsg)
 void
 msn_slpmsg_set_body(MsnSlpMessage *slpmsg,
 					gconstpointer *body,
-					long long size)
+					guint64 size)
 {
 	/* We can only have one data source at a time. */
 	g_return_if_fail(slpmsg->buffer == NULL);

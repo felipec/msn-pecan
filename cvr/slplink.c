@@ -287,7 +287,7 @@ static void
 msg_ack(MsnMessage *msg, void *data)
 {
 	MsnSlpMessage *slpmsg;
-	long long real_size;
+	guint64 real_size;
 
 	slpmsg = data;
 
@@ -333,7 +333,7 @@ void
 msn_slplink_send_msgpart(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
 {
 	MsnMessage *msg;
-	long long real_size;
+	guint64 real_size;
 	size_t len = 0;
 
 	/* Maybe we will want to create a new msg for this slpmsg instead of
@@ -538,7 +538,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 {
 	MsnSlpMessage *slpmsg;
 	const char *data;
-	gsize offset;
+	guint64 offset;
 	gsize len;
 
 #ifdef PECAN_DEBUG_SLP
@@ -625,7 +625,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink, MsnMessage *msg)
 	}
 	else if (slpmsg->size)
 	{
-		if (offset > (slpmsg->size - len))
+		if (len > slpmsg->size || offset > (slpmsg->size - len))
 		{
 			pecan_error ("oversized slpmsg");
 			g_return_if_reached();

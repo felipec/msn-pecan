@@ -51,7 +51,7 @@ struct MsnSlpMessage
 	long id;
 	long ack_id;
 	long ack_sub_id;
-	long long ack_size;
+	guint64 ack_size;
 	long app_id;
 
 	gboolean sip; /**< A flag that states if this is a SIP slp message. */
@@ -60,8 +60,8 @@ struct MsnSlpMessage
 
 	FILE *fp;
 	gchar *buffer;
-	long long offset;
-	long long size;
+	guint64 offset;
+	guint64 size;
 
 	GList *msgs; /**< The real messages. */
 
@@ -92,7 +92,7 @@ void msn_slpmsg_destroy(MsnSlpMessage *slpmsg);
 
 void msn_slpmsg_set_body(MsnSlpMessage *slpmsg,
 						 gconstpointer *body,
-						 long long size);
+						 guint64 size);
 void msn_slpmsg_set_image (MsnSlpMessage *slpmsg, PecanBuffer *image);
 void msn_slpmsg_open_file(MsnSlpMessage *slpmsg,
 						  const char *file_name);
