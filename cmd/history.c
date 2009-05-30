@@ -42,7 +42,7 @@ msn_history_destroy (MsnHistory *history)
     MsnTransaction *trans;
 
     while ((trans = g_queue_pop_head (history->queue)))
-        msn_transaction_destroy (trans);
+        msn_transaction_unref (trans);
 
     g_queue_free (history->queue);
     g_free (history);
@@ -54,7 +54,7 @@ msn_history_flush (MsnHistory *history)
     MsnTransaction *trans;
 
     while ((trans = g_queue_pop_head (history->queue)))
-        msn_transaction_destroy (trans);
+        msn_transaction_unref (trans);
 }
 
 static gint
@@ -106,6 +106,6 @@ msn_history_add (MsnHistory *history,
     {
         pecan_warning ("dropping transaction");
         trans = g_queue_pop_head (queue);
-        msn_transaction_destroy (trans);
+        msn_transaction_unref (trans);
     }
 }

@@ -88,6 +88,7 @@ msn_message_destroy(MsnMessage *msg)
                 trans->callbacks = NULL;
 
                 msn_transaction_flush (trans);
+                msn_transaction_unref (trans);
 
                 msg->trans = NULL;
             }
