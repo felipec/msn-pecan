@@ -105,6 +105,7 @@ msn_session_new (const gchar *username,
     session->contactlist = pecan_contactlist_new (session);
 
     session->user = pecan_contact_new (NULL);
+    pecan_contact_set_passport (session->user, session->username);
 
     session->conv_seq = 1;
 
