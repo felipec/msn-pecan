@@ -52,6 +52,8 @@ msn_transaction_new (MsnCmdProc *cmdproc,
         va_end (arg);
     }
 
+    trans->ref_count = 1;
+
     return trans;
 }
 
