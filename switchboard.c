@@ -127,6 +127,7 @@ close_cb (PecanNode *conn,
         pecan_error ("connection error: (SB)");
     }
 
+    swboard->error = MSN_SB_ERROR_CONNECTION;
     msn_switchboard_close (swboard);
 }
 
