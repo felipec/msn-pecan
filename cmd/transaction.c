@@ -73,6 +73,28 @@ msn_transaction_destroy (MsnTransaction *trans)
     g_free (trans);
 }
 
+MsnTransaction *
+msn_transaction_ref (MsnTransaction *trans)
+{
+    trans->ref_count++;
+
+    return trans;
+}
+
+MsnTransaction *
+msn_transaction_unref (MsnTransaction *trans)
+{
+    trans->ref_count--;
+
+    if (trans->ref_count == 0)
+    {
+        msn_transaction_destroy (trans);
+        return NULL;
+    }
+
+    return trans;
+}
+
 void
 msn_transaction_flush (MsnTransaction *trans)
 {

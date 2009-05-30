@@ -49,6 +49,8 @@ struct MsnTransaction
 
     gchar *payload;
     gsize payload_len;
+
+    guint ref_count;
 };
 
 #endif /* MSN_TRANSACTION_PRIVATE_H */
