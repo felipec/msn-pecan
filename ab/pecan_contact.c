@@ -466,76 +466,14 @@ pecan_contact_set_buddy_icon (PecanContact *contact,
                               PecanBuffer *image)
 {
 #if defined(PECAN_CVR)
+#ifdef HAVE_LIBPURPLE
     MsnObject *msnobj;
 
     g_return_if_fail (contact);
 
-    msnobj = pecan_contact_get_object (contact);
-
-    if (!image)
-    {
-        pecan_contact_set_object (contact, NULL);
-        return;
-    }
-
-#ifdef HAVE_LIBPURPLE
-    {
-        PurpleCipherContext *ctx;
-        char *base64;
-        unsigned char digest[20];
-
-        if (!msnobj)
-        {
-            msnobj = msn_object_new ();
-            msn_object_set_local (msnobj);
-            msn_object_set_type (msnobj, MSN_OBJECT_USERTILE);
-            msn_object_set_location (msnobj, "TFR2C2.tmp");
-            msn_object_set_creator (msnobj, pecan_contact_get_passport (contact));
-
-            pecan_contact_set_object (contact, msnobj);
-        }
-
-        msn_object_set_image (msnobj, image);
-
-        /* Compute the SHA1D field. */
-        memset (digest, 0, sizeof (digest));
-
-        ctx = purple_cipher_context_new_by_name ("sha1", NULL);
-        purple_cipher_context_append (ctx, (const guchar *) image->data, image->size);
-        purple_cipher_context_digest (ctx, sizeof (digest), digest, NULL);
-
-        base64 = purple_base64_encode (digest, sizeof (digest));
-        msn_object_set_sha1d (msnobj, base64);
-        g_free (base64);
-
-        msn_object_set_size (msnobj, image->size);
-
-        {
-            gchar *buf;
-
-            /* Compute the SHA1C field. */
-            buf = pecan_strdup_printf ("Creator%sSize%dType%dLocation%sFriendly%sSHA1D%s",
-                                       msn_object_get_creator (msnobj),
-                                       msn_object_get_size (msnobj),
-                                       msn_object_get_type (msnobj),
-                                       msn_object_get_location (msnobj),
-                                       msn_object_get_friendly (msnobj),
-                                       msn_object_get_sha1d (msnobj));
-
-            memset (digest, 0, sizeof (digest));
-
-            purple_cipher_context_reset (ctx, NULL);
-            purple_cipher_context_append (ctx, (const guchar *) buf, strlen (buf));
-            purple_cipher_context_digest (ctx, sizeof (digest), digest, NULL);
-            purple_cipher_context_destroy (ctx);
-
-            g_free (buf);
-        }
-
-        base64 = purple_base64_encode (digest, sizeof (digest));
-        msn_object_set_sha1c (msnobj, base64);
-        g_free (base64);
-    }
+    msnobj = msn_object_new_from_image (image, "TFR2C2.tmp", pecan_contact_get_passport (contact),
+                                        MSN_OBJECT_USERTILE);
+    pecan_contact_set_object (contact, msnobj);
 #endif /* HAVE_LIBPURPLE */
 #endif /* defined(PECAN_CVR) */
 }
