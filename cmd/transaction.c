@@ -120,7 +120,7 @@ msn_transaction_set_data (MsnTransaction *trans,
 }
 
 void
-msn_transaction_add_cb( MsnTransaction *trans,
+msn_transaction_add_cb (MsnTransaction *trans,
                         const gchar *answer,
                         MsnTransCb cb)
 {
