@@ -66,6 +66,7 @@ pecan_strdup_vprintf (const gchar *format,
                 case 'd':
                 case 'i':
                 case 'u':
+                case 'x':
                 case 'X':
                     {
                         gchar *tmp;
