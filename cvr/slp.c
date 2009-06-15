@@ -331,14 +331,14 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
                     g_return_if_reached ();
 		}
 
-		msn_object_destroy(obj);
-
 		{
 			gchar *tmp;
 			tmp = msn_object_to_string (obj);
 			pecan_info ("object requested: %s", tmp);
 			g_free (tmp);
 		}
+
+		msn_object_destroy(obj);
 
 		slpsession = msn_slplink_find_slp_session(slplink,
 												  slpcall->session_id);
