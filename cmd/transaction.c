@@ -130,7 +130,7 @@ msn_transaction_set_payload (MsnTransaction *trans,
     g_return_if_fail (trans);
     g_return_if_fail (payload);
 
-    trans->payload = g_strdup (payload);
+    trans->payload = g_strndup (payload, payload_len);
     trans->payload_len = payload_len ? payload_len : strlen (trans->payload);
 }
 
