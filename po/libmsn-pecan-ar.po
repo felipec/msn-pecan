@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msn-pecan\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-05 23:45+0200\n"
+"POT-Creation-Date: 2009-06-06 13:22+0300\n"
 "PO-Revision-Date: 2009-02-11 12:07+0000\n"
 "Last-Translator: صقر بن عبدالله <Unknown>\n"
 "Language-Team: \n"
@@ -11,13 +11,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n % 100 >= "
 "3 && n % 100 <= 10 ? 3 : n % 100 >= 11 && n % 100 <= 99 ? 4 : 5;\n"
-"X-Launchpad-Export-Date: 2009-02-15 13:00+0000\n"
+"X-Launchpad-Export-Date: 2009-06-15 22:44+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Language: Arabic\n"
-
-#: msn.c:152
-msgid "Nudge"
-msgstr ""
 
 #: msn.c:153
 #, c-format
@@ -41,18 +37,6 @@ msgstr "هذا هو الاسم الذي سيراه أصدقائك على MSN."
 msgid "OK"
 msgstr "موافق"
 
-#: msn.c:309 msn.c:330 msn.c:348 msn.c:365 msn.c:382 msn.c:403
-msgid "Cancel"
-msgstr ""
-
-#: msn.c:324
-msgid "Set your personal message."
-msgstr ""
-
-#: msn.c:325
-msgid "This is the message that other MSN buddies will see under your name."
-msgstr ""
-
 #: msn.c:345
 msgid "Set your home phone number."
 msgstr "تعيين رقم هاتف المنزل."
@@ -69,12 +53,6 @@ msgstr "تعيين رقم الهاتف النقّال."
 msgid "Allow MSN Mobile pages?"
 msgstr "سماح بصفحات MSN على الهاتف النقّال؟"
 
-#: msn.c:395
-msgid ""
-"Do you want to allow or disallow people on your buddy list to send you MSN "
-"Mobile pages to your cell phone or other mobile device?"
-msgstr ""
-
 #: msn.c:401
 msgid "Allow"
 msgstr "مسموح"
@@ -82,10 +60,6 @@ msgstr "مسموح"
 #: msn.c:402
 msgid "Disallow"
 msgstr "غير مسموح"
-
-#: msn.c:417
-msgid "This account's email is not enabled."
-msgstr ""
 
 #: msn.c:461
 msgid "Send a mobile message."
@@ -99,164 +73,96 @@ msgstr "راسل"
 msgid "Close"
 msgstr "إغلاق"
 
-#: msn.c:625
-msgid "Status"
-msgstr ""
-
-#: msn.c:626
-msgid "Idle"
-msgstr ""
-
-#: msn.c:635
-msgid "Personal Message"
-msgstr ""
-
-#: msn.c:639
+#: msn.c:700
 msgid "Has you"
 msgstr "أنت موجود في قائمته"
 
-#: msn.c:640 msn.c:649
-msgid "Yes"
-msgstr ""
-
-#: msn.c:640 msn.c:649
-msgid "No"
-msgstr ""
-
-#: msn.c:648
+#: msn.c:709
 msgid "Blocked"
 msgstr "محظور"
 
-#: msn.c:661
+#: msn.c:722
 msgid "Message"
 msgstr "رسالة"
 
-#: msn.c:676
-msgid "Be Right Back"
-msgstr ""
-
-#: msn.c:677
-msgid "Busy"
-msgstr ""
-
-#: msn.c:678
-msgid "On the Phone"
-msgstr ""
-
-#: msn.c:679
-msgid "Out to Lunch"
-msgstr ""
-
-#: msn.c:712
+#: msn.c:782
 msgid "Set Friendly Name..."
 msgstr "تعيين اسم..."
 
-#: msn.c:717
-msgid "Set Personal Message..."
-msgstr ""
-
-#: msn.c:724
+#: msn.c:794
 msgid "Set Home Phone Number..."
 msgstr "تعيين رقم هاتف المنزل..."
 
-#: msn.c:728
+#: msn.c:798
 msgid "Set Work Phone Number..."
 msgstr "تعيين رقم هاتف العمل..."
 
-#: msn.c:732
+#: msn.c:802
 msgid "Set Mobile Phone Number..."
 msgstr "تعيين رقم الهاتف النقّال..."
 
-#: msn.c:738
+#: msn.c:808
 msgid "Enable/Disable Mobile Devices..."
 msgstr "تفعيل/تعطيل أجهزة متنقّلة..."
 
-#: msn.c:743
+#: msn.c:813
 msgid "Allow/Disallow Mobile Pages..."
 msgstr "السماح أو لا بالصفحات على الهاتف النقّال"
 
-#: msn.c:753
+#: msn.c:823
 msgid "Open Hotmail Inbox"
 msgstr "Hotmail فتح صندوق الوارد في"
 
-#: msn.c:783
+#: msn.c:853
 msgid "Send to Mobile"
 msgstr "إرسال إلى هاتف نقّال"
 
-#: msn.c:791
+#: msn.c:861
 msgid "Initiate _Chat"
 msgstr "بدء ال_دردشة"
 
-#: msn.c:817
+#: msn.c:887
 msgid ""
 "SSL support is needed for MSN. Please install a supported SSL library."
 msgstr "دعم SSL مطلوب لدى MSN. رجاء تثبيت مكتبة SSL المدعومة."
 
-#: msn.c:846
+#: msn.c:921
 msgid "Failed to connect to server."
 msgstr "فشل في الاتصال بالخادوم."
 
-#: msn.c:1586
+#: msn.c:1647
 msgid "Username"
 msgstr "اسم المستخدم"
 
-#: msn.c:1596
-msgid "Friendly Name"
-msgstr ""
-
-#: msn.c:1612
-msgid "Home Phone"
-msgstr ""
-
-#: msn.c:1615
-msgid "Mobile Phone"
-msgstr ""
-
-#: msn.c:1618
-msgid "Work Phone"
-msgstr ""
-
-#: msn.c:1625
+#: msn.c:1689
 msgid "Profile URL"
 msgstr "عنوان السيرة"
 
-#: msn.c:1751 msn.c:1752
+#: msn.c:1815 msn.c:1816
 msgid "WLM Protocol Plugin"
 msgstr "ملحق بروتوكول WLM"
 
-#: msn.c:1778
+#: msn.c:1842
 msgid "Server"
 msgstr "خادوم"
 
-#: msn.c:1781
+#: msn.c:1845
 msgid "Port"
 msgstr "منفذ"
 
-#: msn.c:1784
+#: msn.c:1848
 msgid "Use HTTP Method"
 msgstr "استخدم طريقة HTTP"
 
-#: msn.c:1787
+#: msn.c:1851
 msgid "Show custom smileys"
 msgstr "إظهار الإبتسامات المخصّصة"
 
-#: msn.c:1790
+#: msn.c:1854
 msgid "Use server-side alias"
 msgstr "استخدم كنية من ناحية الخادوم"
 
-#: msn.c:1793
-msgid "Use direct connections"
-msgstr ""
-
-#: msn.c:1796
-msgid "Use user displays"
-msgstr ""
-
-#: msn.c:1799
-msgid "Don't show Messenger Plus! tags"
-msgstr ""
-
-#: msn.c:1806
+#: msn.c:1870
 msgid "nudge: nudge a user to get their attention"
 msgstr "وكزة: وكز مستخدم لإثارة انتباههم"
 
@@ -286,7 +192,7 @@ msgstr ""
 msgid "%s is not a valid group."
 msgstr "%s ليست مجموعة صالحة."
 
-#: notification.c:267 session.c:370
+#: notification.c:267 session.c:399
 msgid "Unknown error."
 msgstr "خطأ مجهول."
 
@@ -310,90 +216,71 @@ msgstr "لم يمكن حظور المستخدم على %s (%s)"
 msgid "Unable to permit user on %s (%s)"
 msgstr "لم يمكن السماح بالمستخدم على %s (%s)"
 
-#: notification.c:1014
+#: notification.c:1017
 msgid "Unable to rename group"
 msgstr "لم يمكن من إعادة تسمية المجموعة"
 
-#: notification.c:1073
+#: notification.c:1076
 msgid "Unable to delete group"
 msgstr "لم يتمكّن من حذف المجموعة"
 
-#: notification.c:1574
-#, c-format
-msgid ""
-"The MSN server will shut down for maintenance in %d minute. You will "
-"automatically be signed out at that time.  Please finish any conversations "
-"in progress.\n"
-"\n"
-"After the maintenance has been completed, you will be able to successfully "
-"sign in."
-msgid_plural ""
-"The MSN server will shut down for maintenance in %d minutes. You will "
-"automatically be signed out at that time.  Please finish any conversations "
-"in progress.\n"
-"\n"
-"After the maintenance has been completed, you will be able to successfully "
-"sign in."
-msgstr[0] ""
-msgstr[1] ""
-
-#: session.c:340
+#: session.c:369
 msgid "Our protocol is not supported by the server."
 msgstr "بروتوكولنا ليس مدعوم من قبل الخادوم."
 
-#: session.c:344
+#: session.c:373
 msgid "Error parsing HTTP."
 msgstr "خطأ في تحليل HTTP."
 
-#: session.c:348
+#: session.c:377
 msgid "You have signed on from another location."
 msgstr "لقد ولجت من مكان آخر."
 
-#: session.c:351
+#: session.c:380
 msgid ""
 "The MSN servers are temporarily unavailable. Please wait and try again."
 msgstr "خوادم MSN غير متوفرة مؤقّتاً. رجاء المحاولة مرّة أخرى بعد قليل."
 
-#: session.c:356
+#: session.c:385
 msgid "The MSN servers are going down temporarily."
 msgstr "خوادم MSN سوف توقّف مؤقّتاً."
 
-#: session.c:361
+#: session.c:390
 #, c-format
 msgid "Unable to authenticate: %s"
 msgstr "لم يتمكن الاستيثاق: %s"
 
-#: session.c:362
+#: session.c:391
 msgid "Unknown error"
 msgstr "خطأ مجهول"
 
-#: session.c:365
+#: session.c:394
 msgid ""
 "Your MSN buddy list is temporarily unavailable. Please wait and try again."
 msgstr ""
 "قائمة أصدقائك لدى MSN غير متوفر حاليّاً. رجاء المحاولة مرّة أخرى بعد قليل."
 
-#: switchboard.c:553
+#: switchboard.c:567
 msgid "Message may have not been sent because a timeout occurred:"
 msgstr "قد تكون الرسالة غير مرسلة بسبب حدوث انتهاء المهلة"
 
-#: switchboard.c:561
+#: switchboard.c:575
 msgid "Message could not be sent, not allowed while invisible:"
 msgstr "لم يمكن إرسال الرسالة، غير مسموح به حين تكون خفيّ:"
 
-#: switchboard.c:565
+#: switchboard.c:579
 msgid "Message could not be sent because the user is offline:"
 msgstr "لم يمكن إرسال الرسالة لأن المستخدم غير متصل:"
 
-#: switchboard.c:569
+#: switchboard.c:583
 msgid "Message could not be sent because a connection error occurred:"
 msgstr "لم يمكن إرسال الرسالة بسبب حدوث خطأ اتصال:"
 
-#: switchboard.c:573
+#: switchboard.c:587
 msgid "Message could not be sent because we are sending too quickly:"
 msgstr "لم يمكن إرسال الرسالة لأنّنا نرسل بشكل سريع:"
 
-#: switchboard.c:577
+#: switchboard.c:591
 msgid ""
 "Message could not be sent because we were unable to establish a session with "
 "the server. This is likely a server problem, try again in a few minutes:"
@@ -401,38 +288,14 @@ msgstr ""
 "لم يمكن إرسال الرسالة بسبب عدم قدرتنا لإنشاء جلسة مع الخادوم. من الأغلب أن "
 "يكون هذا بسبب مشكلة لدى الخادوم، حاول مرّة أخرى بعد بضعة دقائق:"
 
-#: switchboard.c:584
+#: switchboard.c:598
 msgid ""
 "Message could not be sent because an error with the switchboard occurred:"
 msgstr "لم يمكن إرسال الرسالة بسبب حدوث خطأ في لوحة التبديل:"
 
-#: switchboard.c:592
+#: switchboard.c:606
 msgid "Message may have not been sent because an unknown error occurred:"
 msgstr "قد تكون الرسالة غير مرسلة بسبب حدث خطأ مجهول:"
-
-#: switchboard.c:1058
-#, c-format
-msgid ""
-"sent you a Messenger Plus! sound. Click <a href='file://%s'>here</a> to play "
-"it."
-msgstr ""
-
-#: switchboard.c:1069
-msgid ""
-"sent you a Messenger Plus! sound, but it cannot be played due to an error "
-"happened while storing the file."
-msgstr ""
-
-#: switchboard.c:1316
-#, c-format
-msgid "sent you a voice clip. Click <a href='file://%s'>here</a> to play it."
-msgstr ""
-
-#: switchboard.c:1323
-msgid ""
-"sent you a voice clip, but it cannot be played due to an error happened "
-"while storing the file."
-msgstr ""
 
 #: pecan_error.c:37
 msgid "Unable to parse message"
@@ -449,10 +312,6 @@ msgstr "بريد إلكتروني غير صالح"
 #: pecan_error.c:46
 msgid "User does not exist"
 msgstr "المستخدم ليس موجود"
-
-#: pecan_error.c:49
-msgid "Fully qualified domain name missing"
-msgstr ""
 
 #: pecan_error.c:52
 msgid "Already logged in"
@@ -477,10 +336,6 @@ msgstr "المستخدم موجود هناك حاليّاً"
 #: pecan_error.c:67
 msgid "Not on list"
 msgstr "ليس في القائمة"
-
-#: pecan_error.c:70
-msgid "User is offline"
-msgstr ""
 
 #: pecan_error.c:73
 msgid "Already in the mode"
@@ -553,10 +408,6 @@ msgstr "خطأ في عمليّة الملفّ"
 #: pecan_error.c:124
 msgid "Memory allocation error"
 msgstr "خطأ في تخصيص الذاكرة"
-
-#: pecan_error.c:127
-msgid "Wrong CHL value sent to server"
-msgstr ""
 
 #: pecan_error.c:130
 msgid "Server busy"
@@ -646,11 +497,6 @@ msgstr "لم يتم التحقيق على حساب Passport بعد"
 msgid "Bad ticket"
 msgstr "تذكرة سيئة"
 
-#: pecan_error.c:210
-#, c-format
-msgid "Unknown Error Code %u"
-msgstr ""
-
 #: ab/pecan_contactlist.c:278
 #, c-format
 msgid "%s has added you to his or her buddy list."
@@ -661,42 +507,216 @@ msgstr "لقد أضافك %s في قائمة أصدقائه."
 msgid "%s has removed you from his or her buddy list."
 msgstr "لقد حذفك %s من قائمة أصدقائه."
 
-#: ab/pecan_contactlist.c:822
+#: ab/pecan_contactlist.c:850
 #, c-format
 msgid "Can't add to \"%s\"; it's a virtual group"
 msgstr "لا يمكن الإضافة لمجموعة \"%s\"; إنّها مجموعة إفتراضيّة"
 
+#: msn.c:152
+msgid "Nudge"
+msgstr ""
+
+#: msn.c:309 msn.c:330 msn.c:348 msn.c:365 msn.c:382 msn.c:403
+msgid "Cancel"
+msgstr ""
+
+#: msn.c:324
+msgid "Set your personal message."
+msgstr ""
+
+#: msn.c:325
+msgid "This is the message that other MSN buddies will see under your name."
+msgstr ""
+
+#: msn.c:395
+msgid ""
+"Do you want to allow or disallow people on your buddy list to send you MSN "
+"Mobile pages to your cell phone or other mobile device?"
+msgstr ""
+
+#: msn.c:417
+msgid "This account's email is not enabled."
+msgstr ""
+
+#: msn.c:620
 #, c-format
-#~ msgid "Unknown Error Code %d"
-#~ msgstr "رمز الخطأ غير معروف %d"
+msgid "Playing %s"
+msgstr ""
 
+#: msn.c:624
 #, c-format
-#~ msgid "MSN Error: %s\n"
-#~ msgstr "خطأ MSN: %s\n"
+msgid "Editing %s"
+msgstr ""
 
-#~ msgid "This Hotmail account may not be active."
-#~ msgstr "قد يكون حساب Hotmail هذا غير نشط."
+#: msn.c:662
+msgid "Status"
+msgstr ""
 
-#~ msgid "Connecting"
-#~ msgstr "جارِ الاتصال"
+#: msn.c:663
+msgid "Idle"
+msgstr ""
 
-#~ msgid "Handshaking"
-#~ msgstr "جارٍ إقامة الاتصال"
+#: msn.c:672
+msgid "Personal Message"
+msgstr ""
 
-#~ msgid "Transferring"
-#~ msgstr "حارٍ النقل"
+#: msn.c:687
+msgid "Now Listening"
+msgstr ""
 
-#~ msgid "Starting authentication"
-#~ msgstr "جارِ بدأ الاستيثاق"
+#: msn.c:692
+msgid "Playing a game"
+msgstr ""
 
-#~ msgid "Getting cookie"
-#~ msgstr "جارٍ الحصول على الكعكة"
+#: msn.c:696
+msgid "Working"
+msgstr ""
 
-#~ msgid "Authenticating"
-#~ msgstr "جارٍ الاستيثاق"
+#: msn.c:701 msn.c:710 msn.c:1682
+msgid "Yes"
+msgstr ""
 
-#~ msgid "Sending cookie"
-#~ msgstr "جارٍ إرسال الكعكة"
+#: msn.c:701 msn.c:710 msn.c:1682
+msgid "No"
+msgstr ""
 
-#~ msgid "Retrieving buddy list"
-#~ msgstr "استرجاع قائمة الأصدقاء"
+#: msn.c:737
+msgid "Be Right Back"
+msgstr ""
+
+#: msn.c:738
+msgid "Busy"
+msgstr ""
+
+#: msn.c:739
+msgid "On the Phone"
+msgstr ""
+
+#: msn.c:740
+msgid "Out to Lunch"
+msgstr ""
+
+#: msn.c:758
+msgid "Song Title"
+msgstr ""
+
+#: msn.c:759
+msgid "Song Artist"
+msgstr ""
+
+#: msn.c:760
+msgid "Song Album"
+msgstr ""
+
+#: msn.c:761
+msgid "Game Name"
+msgstr ""
+
+#: msn.c:762
+msgid "Office App Name"
+msgstr ""
+
+#: msn.c:787
+msgid "Set Personal Message..."
+msgstr ""
+
+#: msn.c:918
+msgid "Connecting"
+msgstr ""
+
+#: msn.c:1657
+msgid "Friendly Name"
+msgstr ""
+
+#: msn.c:1673
+msgid "Home Phone"
+msgstr ""
+
+#: msn.c:1676
+msgid "Mobile Phone"
+msgstr ""
+
+#: msn.c:1679
+msgid "Work Phone"
+msgstr ""
+
+#: msn.c:1681
+msgid "Has Space"
+msgstr ""
+
+#: msn.c:1857
+msgid "Use direct connections"
+msgstr ""
+
+#: msn.c:1860
+msgid "Use user displays"
+msgstr ""
+
+#: msn.c:1863
+msgid "Don't show Messenger Plus! tags"
+msgstr ""
+
+#: notification.c:1592
+#, c-format
+msgid ""
+"The MSN server will shut down for maintenance in %d minute. You will "
+"automatically be signed out at that time.  Please finish any conversations "
+"in progress.\n"
+"\n"
+"After the maintenance has been completed, you will be able to successfully "
+"sign in."
+msgid_plural ""
+"The MSN server will shut down for maintenance in %d minutes. You will "
+"automatically be signed out at that time.  Please finish any conversations "
+"in progress.\n"
+"\n"
+"After the maintenance has been completed, you will be able to successfully "
+"sign in."
+msgstr[0] ""
+msgstr[1] ""
+
+#: session.c:67
+#, c-format
+msgid "You are not in %s's contact list."
+msgstr ""
+
+#: switchboard.c:1076
+#, c-format
+msgid ""
+"sent you a Messenger Plus! sound. Click <a href='file://%s'>here</a> to play "
+"it."
+msgstr ""
+
+#: switchboard.c:1087
+msgid ""
+"sent you a Messenger Plus! sound, but it cannot be played due to an error "
+"happened while storing the file."
+msgstr ""
+
+#: switchboard.c:1334
+#, c-format
+msgid "sent you a voice clip. Click <a href='file://%s'>here</a> to play it."
+msgstr ""
+
+#: switchboard.c:1341
+msgid ""
+"sent you a voice clip, but it cannot be played due to an error happened "
+"while storing the file."
+msgstr ""
+
+#: pecan_error.c:49
+msgid "Fully qualified domain name missing"
+msgstr ""
+
+#: pecan_error.c:70
+msgid "User is offline"
+msgstr ""
+
+#: pecan_error.c:127
+msgid "Wrong CHL value sent to server"
+msgstr ""
+
+#: pecan_error.c:210
+#, c-format
+msgid "Unknown Error Code %u"
+msgstr ""

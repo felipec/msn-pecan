@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msn-pecan\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2009-02-05 23:45+0200\n"
+"POT-Creation-Date: 2009-06-06 13:22+0300\n"
 "PO-Revision-Date: 2008-12-17 10:26+0000\n"
 "Last-Translator: Junnan Wu <Unknown>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2009-02-15 13:00+0000\n"
+"X-Launchpad-Export-Date: 2009-06-15 22:44+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: msn.c:152
@@ -102,164 +102,160 @@ msgstr "页面"
 msgid "Close"
 msgstr "关闭"
 
-#: msn.c:625
+#: msn.c:662
 msgid "Status"
 msgstr "状态"
 
-#: msn.c:626
+#: msn.c:663
 msgid "Idle"
 msgstr "发呆"
 
-#: msn.c:635
+#: msn.c:672
 msgid "Personal Message"
 msgstr "私人信息"
 
-#: msn.c:639
+#: msn.c:700
 msgid "Has you"
 msgstr "有你"
 
-#: msn.c:640 msn.c:649
+#: msn.c:701 msn.c:710 msn.c:1682
 msgid "Yes"
 msgstr "是"
 
-#: msn.c:640 msn.c:649
+#: msn.c:701 msn.c:710 msn.c:1682
 msgid "No"
 msgstr "否"
 
-#: msn.c:648
+#: msn.c:709
 msgid "Blocked"
 msgstr "被屏蔽"
 
-#: msn.c:661
+#: msn.c:722
 msgid "Message"
 msgstr "消息"
 
-#: msn.c:676
+#: msn.c:737
 msgid "Be Right Back"
 msgstr "马上回来"
 
-#: msn.c:677
+#: msn.c:738
 msgid "Busy"
 msgstr "忙"
 
-#: msn.c:678
+#: msn.c:739
 msgid "On the Phone"
 msgstr "电话中"
 
-#: msn.c:679
+#: msn.c:740
 msgid "Out to Lunch"
 msgstr "外出就餐"
 
-#: msn.c:712
+#: msn.c:782
 msgid "Set Friendly Name..."
 msgstr "设置友好的名称..."
 
-#: msn.c:717
+#: msn.c:787
 msgid "Set Personal Message..."
 msgstr "设置个人信息："
 
-#: msn.c:724
+#: msn.c:794
 msgid "Set Home Phone Number..."
 msgstr "设置家庭电话号码..."
 
-#: msn.c:728
+#: msn.c:798
 msgid "Set Work Phone Number..."
 msgstr "设置工作电话号码..."
 
-#: msn.c:732
+#: msn.c:802
 msgid "Set Mobile Phone Number..."
 msgstr "设置移动电话号码..."
 
-#: msn.c:738
+#: msn.c:808
 msgid "Enable/Disable Mobile Devices..."
 msgstr "启用/禁用移动设备..."
 
-#: msn.c:743
+#: msn.c:813
 msgid "Allow/Disallow Mobile Pages..."
 msgstr "允许/禁止移动寻呼..."
 
-#: msn.c:753
+#: msn.c:823
 msgid "Open Hotmail Inbox"
 msgstr "打开 Hotmail 收件箱"
 
-#: msn.c:783
+#: msn.c:853
 msgid "Send to Mobile"
 msgstr "发送到移动设备"
 
-#: msn.c:791
+#: msn.c:861
 msgid "Initiate _Chat"
 msgstr "发起聊天(_C)"
 
-#: msn.c:817
+#: msn.c:887
 msgid ""
 "SSL support is needed for MSN. Please install a supported SSL library."
 msgstr "MSN 需要 SSL 支持。请安装被支持的 SSL 库。"
 
-#: msn.c:846
+#: msn.c:921
 msgid "Failed to connect to server."
 msgstr "连接服务器失败。"
 
-#: msn.c:1586
+#: msn.c:1647
 msgid "Username"
 msgstr "用户名"
 
-#: msn.c:1596
+#: msn.c:1657
 msgid "Friendly Name"
 msgstr "昵称"
 
-#: msn.c:1612
+#: msn.c:1673
 msgid "Home Phone"
 msgstr "家庭电话"
 
-#: msn.c:1615
+#: msn.c:1676
 msgid "Mobile Phone"
 msgstr "移动电话"
 
-#: msn.c:1618
+#: msn.c:1679
 msgid "Work Phone"
 msgstr "办公电话"
 
-#: msn.c:1625
+#: msn.c:1689
 msgid "Profile URL"
 msgstr "配置文件 URL"
 
-#: msn.c:1751 msn.c:1752
+#: msn.c:1815 msn.c:1816
 msgid "WLM Protocol Plugin"
 msgstr "WLM 协议插件"
 
-#: msn.c:1778
+#: msn.c:1842
 msgid "Server"
 msgstr "服务器"
 
-#: msn.c:1781
+#: msn.c:1845
 msgid "Port"
 msgstr "端口"
 
-#: msn.c:1784
+#: msn.c:1848
 msgid "Use HTTP Method"
 msgstr "使用 HTTP 方式"
 
-#: msn.c:1787
+#: msn.c:1851
 msgid "Show custom smileys"
 msgstr "显示自定义表情"
 
-#: msn.c:1790
+#: msn.c:1854
 msgid "Use server-side alias"
 msgstr "使用服务器端别名"
 
-#: msn.c:1793
+#: msn.c:1857
 msgid "Use direct connections"
 msgstr "直接使用链接"
 
-#: msn.c:1796
+#: msn.c:1860
 msgid "Use user displays"
 msgstr "远程协助"
 
-#: msn.c:1799
-msgid "Don't show Messenger Plus! tags"
-msgstr ""
-
-#: msn.c:1806
+#: msn.c:1870
 msgid "nudge: nudge a user to get their attention"
 msgstr "nudge：发送闪屏震动引起注意"
 
@@ -289,7 +285,7 @@ msgstr ""
 msgid "%s is not a valid group."
 msgstr "%s 不是有效的组名。"
 
-#: notification.c:267 session.c:370
+#: notification.c:267 session.c:399
 msgid "Unknown error."
 msgstr "未知错误。"
 
@@ -313,15 +309,15 @@ msgstr "无法屏蔽 %s (%s) 上的用户"
 msgid "Unable to permit user on %s (%s)"
 msgstr "无法允许 %s (%s) 上的用户"
 
-#: notification.c:1014
+#: notification.c:1017
 msgid "Unable to rename group"
 msgstr "无法重命名组"
 
-#: notification.c:1073
+#: notification.c:1076
 msgid "Unable to delete group"
 msgstr "无法删除组"
 
-#: notification.c:1574
+#: notification.c:1592
 #, c-format
 msgid ""
 "The MSN server will shut down for maintenance in %d minute. You will "
@@ -342,99 +338,75 @@ msgstr[0] ""
 "\n"
 "维护完成后您才能继续登入。"
 
-#: session.c:340
+#: session.c:369
 msgid "Our protocol is not supported by the server."
 msgstr "服务器不支持此协议。"
 
-#: session.c:344
+#: session.c:373
 msgid "Error parsing HTTP."
 msgstr "解析 HTTP 出错。"
 
-#: session.c:348
+#: session.c:377
 msgid "You have signed on from another location."
 msgstr "您在其它位置用此用户名登入了。"
 
-#: session.c:351
+#: session.c:380
 msgid ""
 "The MSN servers are temporarily unavailable. Please wait and try again."
 msgstr "MSN 服务器临时不可用。请稍候再试一次。"
 
-#: session.c:356
+#: session.c:385
 msgid "The MSN servers are going down temporarily."
 msgstr "MSN 服务器目前维护中。"
 
-#: session.c:361
+#: session.c:390
 #, c-format
 msgid "Unable to authenticate: %s"
 msgstr "无法通过身份验证: %s"
 
-#: session.c:362
+#: session.c:391
 msgid "Unknown error"
 msgstr "未知错误"
 
-#: session.c:365
+#: session.c:394
 msgid ""
 "Your MSN buddy list is temporarily unavailable. Please wait and try again."
 msgstr "您的 MSN 好友列表暂时不可用。请稍候再试一次。"
 
-#: switchboard.c:553
+#: switchboard.c:567
 msgid "Message may have not been sent because a timeout occurred:"
 msgstr "发生超时，消息可能未发出："
 
-#: switchboard.c:561
+#: switchboard.c:575
 msgid "Message could not be sent, not allowed while invisible:"
 msgstr "消息未发出，隐身时不允许："
 
-#: switchboard.c:565
+#: switchboard.c:579
 msgid "Message could not be sent because the user is offline:"
 msgstr "消息未发出，因为用户离线："
 
-#: switchboard.c:569
+#: switchboard.c:583
 msgid "Message could not be sent because a connection error occurred:"
 msgstr "消息未发出，因为发生了连接错误："
 
-#: switchboard.c:573
+#: switchboard.c:587
 msgid "Message could not be sent because we are sending too quickly:"
 msgstr "消息未发出，因为发送的频率太高："
 
-#: switchboard.c:577
+#: switchboard.c:591
 msgid ""
 "Message could not be sent because we were unable to establish a session with "
 "the server. This is likely a server problem, try again in a few minutes:"
 msgstr "无法与服务器建立连接，消息无法发送。这可能是服务器的问题，请稍候重试。"
 
-#: switchboard.c:584
+#: switchboard.c:598
 msgid ""
 "Message could not be sent because an error with the switchboard occurred:"
 msgstr "消息未发出，因为切换板发生了错误："
 
-#: switchboard.c:592
+#: switchboard.c:606
 msgid "Message may have not been sent because an unknown error occurred:"
 msgstr "消息可能未发出，因为发生了未知错误："
-
-#: switchboard.c:1058
-#, c-format
-msgid ""
-"sent you a Messenger Plus! sound. Click <a href='file://%s'>here</a> to play "
-"it."
-msgstr ""
-
-#: switchboard.c:1069
-msgid ""
-"sent you a Messenger Plus! sound, but it cannot be played due to an error "
-"happened while storing the file."
-msgstr ""
-
-#: switchboard.c:1316
-#, c-format
-msgid "sent you a voice clip. Click <a href='file://%s'>here</a> to play it."
-msgstr ""
-
-#: switchboard.c:1323
-msgid ""
-"sent you a voice clip, but it cannot be played due to an error happened "
-"while storing the file."
-msgstr ""
 
 #: pecan_error.c:37
 msgid "Unable to parse message"
@@ -663,7 +635,90 @@ msgstr "%s 已将您添加为好友。"
 msgid "%s has removed you from his or her buddy list."
 msgstr "%s 已经将您从好友名单中删除。"
 
-#: ab/pecan_contactlist.c:822
+#: ab/pecan_contactlist.c:850
 #, c-format
 msgid "Can't add to \"%s\"; it's a virtual group"
 msgstr "无法将“%s”添加为好友，它是个虚拟组"
+
+#: msn.c:620
+#, c-format
+msgid "Playing %s"
+msgstr ""
+
+#: msn.c:624
+#, c-format
+msgid "Editing %s"
+msgstr ""
+
+#: msn.c:687
+msgid "Now Listening"
+msgstr ""
+
+#: msn.c:692
+msgid "Playing a game"
+msgstr ""
+
+#: msn.c:696
+msgid "Working"
+msgstr ""
+
+#: msn.c:758
+msgid "Song Title"
+msgstr ""
+
+#: msn.c:759
+msgid "Song Artist"
+msgstr ""
+
+#: msn.c:760
+msgid "Song Album"
+msgstr ""
+
+#: msn.c:761
+msgid "Game Name"
+msgstr ""
+
+#: msn.c:762
+msgid "Office App Name"
+msgstr ""
+
+#: msn.c:918
+msgid "Connecting"
+msgstr ""
+
+#: msn.c:1681
+msgid "Has Space"
+msgstr ""
+
+#: msn.c:1863
+msgid "Don't show Messenger Plus! tags"
+msgstr ""
+
+#: session.c:67
+#, c-format
+msgid "You are not in %s's contact list."
+msgstr ""
+
+#: switchboard.c:1076
+#, c-format
+msgid ""
+"sent you a Messenger Plus! sound. Click <a href='file://%s'>here</a> to play "
+"it."
+msgstr ""
+
+#: switchboard.c:1087
+msgid ""
+"sent you a Messenger Plus! sound, but it cannot be played due to an error "
+"happened while storing the file."
+msgstr ""
+
+#: switchboard.c:1334
+#, c-format
+msgid "sent you a voice clip. Click <a href='file://%s'>here</a> to play it."
+msgstr ""
+
+#: switchboard.c:1341
+msgid ""
+"sent you a voice clip, but it cannot be played due to an error happened "
+"while storing the file."
+msgstr ""

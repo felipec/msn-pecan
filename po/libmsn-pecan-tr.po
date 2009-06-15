@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msn-pecan\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2009-02-05 23:45+0200\n"
-"PO-Revision-Date: 2009-02-08 15:42+0000\n"
+"POT-Creation-Date: 2009-06-06 13:22+0300\n"
+"PO-Revision-Date: 2009-02-21 14:02+0000\n"
 "Last-Translator: Serkan Kaba <Unknown>\n"
 "Language-Team: Turkish <tr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2009-02-15 13:00+0000\n"
+"X-Launchpad-Export-Date: 2009-06-15 22:44+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: msn.c:152
@@ -52,10 +52,6 @@ msgstr "İptal"
 msgid "Set your personal message."
 msgstr "Kişisel iletinizi ayarlayın."
 
-#: msn.c:325
-msgid "This is the message that other MSN buddies will see under your name."
-msgstr ""
-
 #: msn.c:345
 msgid "Set your home phone number."
 msgstr "Ev telefon numaranızı ayarlayın."
@@ -91,7 +87,7 @@ msgstr "İzin verme"
 
 #: msn.c:417
 msgid "This account's email is not enabled."
-msgstr ""
+msgstr "Bu hesabın e-posta adresi etkin değil."
 
 #: msn.c:461
 msgid "Send a mobile message."
@@ -105,166 +101,146 @@ msgstr "Sayfa"
 msgid "Close"
 msgstr "Kapat"
 
-#: msn.c:625
+#: msn.c:662
 msgid "Status"
 msgstr "Durum"
 
-#: msn.c:626
+#: msn.c:663
 msgid "Idle"
 msgstr "Boşta"
 
-#: msn.c:635
+#: msn.c:672
 msgid "Personal Message"
 msgstr "Kişisel İleti"
 
-#: msn.c:639
+#: msn.c:700
 msgid "Has you"
 msgstr "Sizi eklemiş"
 
-#: msn.c:640 msn.c:649
+#: msn.c:701 msn.c:710 msn.c:1682
 msgid "Yes"
 msgstr "Evet"
 
-#: msn.c:640 msn.c:649
+#: msn.c:701 msn.c:710 msn.c:1682
 msgid "No"
 msgstr "Hayır"
 
-#: msn.c:648
+#: msn.c:709
 msgid "Blocked"
 msgstr "Engellenmiş"
 
-#: msn.c:661
+#: msn.c:722
 msgid "Message"
 msgstr "İleti"
 
-#: msn.c:676
+#: msn.c:737
 msgid "Be Right Back"
 msgstr "Hemen Dönecek"
 
-#: msn.c:677
+#: msn.c:738
 msgid "Busy"
 msgstr "Meşgul"
 
-#: msn.c:678
+#: msn.c:739
 msgid "On the Phone"
 msgstr "Telefonda"
 
-#: msn.c:679
+#: msn.c:740
 msgid "Out to Lunch"
 msgstr "Yemekte"
 
-#: msn.c:712
+#: msn.c:782
 msgid "Set Friendly Name..."
 msgstr "Arkadaşlık İsmi Ayarla..."
 
-#: msn.c:717
+#: msn.c:787
 msgid "Set Personal Message..."
 msgstr "Kişisel İletiyi Ayarla..."
 
-#: msn.c:724
+#: msn.c:794
 msgid "Set Home Phone Number..."
 msgstr "Ev Telefonu Numarası Ayarla..."
 
-#: msn.c:728
+#: msn.c:798
 msgid "Set Work Phone Number..."
 msgstr "İş Telefonu Numarası Ayarla..."
 
-#: msn.c:732
+#: msn.c:802
 msgid "Set Mobile Phone Number..."
 msgstr "Cep Telefonu Numarası Ayarla..."
 
-#: msn.c:738
+#: msn.c:808
 msgid "Enable/Disable Mobile Devices..."
 msgstr "Mobil Aygıtları Etkinleştir/Devredışı Bırak..."
 
-#: msn.c:743
+#: msn.c:813
 msgid "Allow/Disallow Mobile Pages..."
 msgstr "Mobil Sayfalara İzin Ver/Verme"
 
-#: msn.c:753
+#: msn.c:823
 msgid "Open Hotmail Inbox"
 msgstr "Hotmail Gelen Kutusunu Aç"
 
-#: msn.c:783
+#: msn.c:853
 msgid "Send to Mobile"
 msgstr "Cebine Gönder"
 
-#: msn.c:791
+#: msn.c:861
 msgid "Initiate _Chat"
 msgstr "Sohbete Başla"
 
-#: msn.c:817
+#: msn.c:887
 msgid ""
 "SSL support is needed for MSN. Please install a supported SSL library."
 msgstr ""
 "MSN için SSL desteği gereklidir. Lütfen desteklenen bir SSL kütüphanesi "
 "yükleyin."
 
-#: msn.c:846
+#: msn.c:921
 msgid "Failed to connect to server."
 msgstr "Sunucuya bağlanılamadı."
 
-#: msn.c:1586
+#: msn.c:1647
 msgid "Username"
 msgstr "Kullanıcı Adı"
 
-#: msn.c:1596
-msgid "Friendly Name"
-msgstr ""
-
-#: msn.c:1612
+#: msn.c:1673
 msgid "Home Phone"
 msgstr "Ev Telefonu"
 
-#: msn.c:1615
+#: msn.c:1676
 msgid "Mobile Phone"
 msgstr "Cep Telefonu"
 
-#: msn.c:1618
+#: msn.c:1679
 msgid "Work Phone"
 msgstr "İş Telefonu"
 
-#: msn.c:1625
-msgid "Profile URL"
-msgstr ""
-
-#: msn.c:1751 msn.c:1752
+#: msn.c:1815 msn.c:1816
 msgid "WLM Protocol Plugin"
 msgstr "WLM Protokol Eklentisi"
 
-#: msn.c:1778
+#: msn.c:1842
 msgid "Server"
 msgstr "Sunucu"
 
-#: msn.c:1781
+#: msn.c:1845
 msgid "Port"
 msgstr "Port"
 
-#: msn.c:1784
+#: msn.c:1848
 msgid "Use HTTP Method"
 msgstr "HTTP Metodunu Kullan"
 
-#: msn.c:1787
+#: msn.c:1851
 msgid "Show custom smileys"
 msgstr "Özel gülenyüzleri göster"
 
-#: msn.c:1790
-msgid "Use server-side alias"
-msgstr ""
-
-#: msn.c:1793
-msgid "Use direct connections"
-msgstr ""
-
-#: msn.c:1796
-msgid "Use user displays"
-msgstr ""
-
-#: msn.c:1799
+#: msn.c:1863
 msgid "Don't show Messenger Plus! tags"
 msgstr "Messenger Plus! etiketlerini gösterme"
 
-#: msn.c:1806
+#: msn.c:1870
 msgid "nudge: nudge a user to get their attention"
 msgstr "titreşim: dikkatini çekmek için bir kullanıcıya titreşim gönder"
 
@@ -294,7 +270,7 @@ msgstr ""
 msgid "%s is not a valid group."
 msgstr "%s geçerli bir grup değil."
 
-#: notification.c:267 session.c:370
+#: notification.c:267 session.c:399
 msgid "Unknown error."
 msgstr "Bilinmeyen hata."
 
@@ -318,15 +294,15 @@ msgstr "%s içindeki kullanıcı engellenemiyor (%s)"
 msgid "Unable to permit user on %s (%s)"
 msgstr "%s içindeki kullanıcıya izin verilemiyor (%s)"
 
-#: notification.c:1014
+#: notification.c:1017
 msgid "Unable to rename group"
 msgstr "Grup adı değiştirilemiyor"
 
-#: notification.c:1073
+#: notification.c:1076
 msgid "Unable to delete group"
 msgstr "Grup silinemiyor"
 
-#: notification.c:1574
+#: notification.c:1592
 #, c-format
 msgid ""
 "The MSN server will shut down for maintenance in %d minute. You will "
@@ -348,66 +324,66 @@ msgstr[0] ""
 "\n"
 "Bakım tamamlandığında tekrar başarıyla oturum açabileceksiniz."
 
-#: session.c:340
+#: session.c:369
 msgid "Our protocol is not supported by the server."
 msgstr "Bu protokol sunucu tarafından desteklenmiyor."
 
-#: session.c:344
+#: session.c:373
 msgid "Error parsing HTTP."
 msgstr "HTTP ayrıştırma hatası"
 
-#: session.c:348
+#: session.c:377
 msgid "You have signed on from another location."
 msgstr "Başka bir yerden oturum açtınız."
 
-#: session.c:351
+#: session.c:380
 msgid ""
 "The MSN servers are temporarily unavailable. Please wait and try again."
 msgstr ""
 "MSN sunucuları geçici olarak servis dışıdır. Lütfen bekleyin ve tekrar "
 "deneyin."
 
-#: session.c:356
+#: session.c:385
 msgid "The MSN servers are going down temporarily."
 msgstr "MSN sunucusu geçici olarak kapatılıyor"
 
-#: session.c:361
+#: session.c:390
 #, c-format
 msgid "Unable to authenticate: %s"
 msgstr "Doğruluk kanıtlanamıyor: %s"
 
-#: session.c:362
+#: session.c:391
 msgid "Unknown error"
 msgstr "Bilinmeyen hata."
 
-#: session.c:365
+#: session.c:394
 msgid ""
 "Your MSN buddy list is temporarily unavailable. Please wait and try again."
 msgstr ""
 "MSN listenize geçici olarak erişilemiyor. Lütfen daha sonra tekrar deneyin."
 
-#: switchboard.c:553
+#: switchboard.c:567
 msgid "Message may have not been sent because a timeout occurred:"
 msgstr "İleti gönderilmemiş olabilir çünkü bir zaman aşımı meydana geldi:"
 
-#: switchboard.c:561
+#: switchboard.c:575
 msgid "Message could not be sent, not allowed while invisible:"
 msgstr ""
 "İleti gönderilmemiş olabilir çünkü görünmez iken yollamaya izin verilmiyor:"
 
-#: switchboard.c:565
+#: switchboard.c:579
 msgid "Message could not be sent because the user is offline:"
 msgstr "İleti gönderilmemiş olabilir çünkü kullanıcı çevrimdışı:"
 
-#: switchboard.c:569
+#: switchboard.c:583
 msgid "Message could not be sent because a connection error occurred:"
 msgstr "İleti gönderilmemiş olabilir çünkü bir bağlantı hatası oluştu:"
 
-#: switchboard.c:573
+#: switchboard.c:587
 msgid "Message could not be sent because we are sending too quickly:"
 msgstr "İleti gönderilmemiş olabilir çünkü çok çabuk gönderdik:"
 
-#: switchboard.c:577
+#: switchboard.c:591
 msgid ""
 "Message could not be sent because we were unable to establish a session with "
 "the server. This is likely a server problem, try again in a few minutes:"
@@ -415,39 +391,38 @@ msgstr ""
 "İleti gönderilemedi çünkü sunucu ile bir oturum kurulamadı. Muhtemelen bir "
 "sunucu sorunu var, birkaç dakika içinde yeniden deneyin:"
 
-#: switchboard.c:584
+#: switchboard.c:598
 msgid ""
 "Message could not be sent because an error with the switchboard occurred:"
 msgstr "İleti gönderilmemiş olabilir çünkü santralle bir problem oluştu:"
 
-#: switchboard.c:592
+#: switchboard.c:606
 msgid "Message may have not been sent because an unknown error occurred:"
 msgstr ""
 "İleti gönderilmemiş olabilir çünkü bilinmeyen bir hata meydana geldi:"
 
-#: switchboard.c:1058
+#: switchboard.c:1076
 #, c-format
 msgid ""
 "sent you a Messenger Plus! sound. Click <a href='file://%s'>here</a> to play "
 "it."
 msgstr ""
+"size bir Messenger Plus! sesi gönderdi. Dinlemek için <a "
+"href='file://%s'>buraya</a> tıklayın."
 
-#: switchboard.c:1069
+#: switchboard.c:1087
 msgid ""
 "sent you a Messenger Plus! sound, but it cannot be played due to an error "
 "happened while storing the file."
 msgstr ""
+"size bir Messenger Plus! sesi gönderdi, ancak dosya kaydedilemediğinden "
+"oynatılamıyor."
 
-#: switchboard.c:1316
+#: switchboard.c:1334
 #, c-format
 msgid "sent you a voice clip. Click <a href='file://%s'>here</a> to play it."
 msgstr ""
-
-#: switchboard.c:1323
-msgid ""
-"sent you a voice clip, but it cannot be played due to an error happened "
-"while storing the file."
-msgstr ""
+"size bir ses gönderdi. Dinlemek için <a href='file://%s'>buraya</a> tıklayın."
 
 #: pecan_error.c:37
 msgid "Unable to parse message"
@@ -464,10 +439,6 @@ msgstr "Geçersiz e-posta adresi"
 #: pecan_error.c:46
 msgid "User does not exist"
 msgstr "Kullanıcı mevcut değil"
-
-#: pecan_error.c:49
-msgid "Fully qualified domain name missing"
-msgstr ""
 
 #: pecan_error.c:52
 msgid "Already logged in"
@@ -497,10 +468,6 @@ msgstr "Listede değil"
 msgid "User is offline"
 msgstr "Kullanıcı çevrimdışı"
 
-#: pecan_error.c:73
-msgid "Already in the mode"
-msgstr ""
-
 #: pecan_error.c:76
 msgid "Already in opposite list"
 msgstr "Zaten karşı listede"
@@ -529,21 +496,9 @@ msgstr "Sıfırıncı grup silinemez"
 msgid "Tried to add a user to a group that doesn't exist"
 msgstr "Bir kişi, henüz bulunmayan bir gruba eklenilmeye çalışıldı"
 
-#: pecan_error.c:97
-msgid "Switchboard failed"
-msgstr ""
-
-#: pecan_error.c:100
-msgid "Notify transfer failed"
-msgstr ""
-
 #: pecan_error.c:103
 msgid "Required fields missing"
 msgstr "Gerekli alanlar eksik"
-
-#: pecan_error.c:106
-msgid "Too many hits to a FND"
-msgstr ""
 
 #: pecan_error.c:109
 msgid "Not logged in"
@@ -569,21 +524,9 @@ msgstr "Dosya işlemi hatası"
 msgid "Memory allocation error"
 msgstr "Bellek ayırma hatası"
 
-#: pecan_error.c:127
-msgid "Wrong CHL value sent to server"
-msgstr ""
-
 #: pecan_error.c:130
 msgid "Server busy"
 msgstr "Sunucu meşgul"
-
-#: pecan_error.c:133 pecan_error.c:145 pecan_error.c:195
-msgid "Server unavailable"
-msgstr ""
-
-#: pecan_error.c:136
-msgid "Peer notification server down"
-msgstr ""
 
 #: pecan_error.c:139
 msgid "Database connect error"
@@ -597,14 +540,6 @@ msgstr "Sunucu kapanıyor (gemiyi terkedin)"
 msgid "Error creating connection"
 msgstr "Bağlantı oluşturma hatası"
 
-#: pecan_error.c:151
-msgid "CVR parameters are either unknown or not allowed"
-msgstr ""
-
-#: pecan_error.c:154
-msgid "Unable to write"
-msgstr ""
-
 #: pecan_error.c:157
 msgid "Session overload"
 msgstr "Oturum aşırı yüklendi"
@@ -616,14 +551,6 @@ msgstr "Kullanıcı çok aktif"
 #: pecan_error.c:163
 msgid "Too many sessions"
 msgstr "Çok fazla oturum"
-
-#: pecan_error.c:166
-msgid "Passport not verified"
-msgstr ""
-
-#: pecan_error.c:169
-msgid "Bad friend file"
-msgstr ""
 
 #: pecan_error.c:172
 msgid "Not expected"
@@ -641,25 +568,9 @@ msgstr "Sunucu çok yoğun"
 msgid "Authentication failed"
 msgstr "Kimlik doğrulanamadı"
 
-#: pecan_error.c:190
-msgid "Not allowed when hiding"
-msgstr ""
-
 #: pecan_error.c:198
 msgid "Not accepting new users"
 msgstr "Yeni kullanıcı kabul edilmiyor"
-
-#: pecan_error.c:201
-msgid "Kids Passport without parental consent"
-msgstr ""
-
-#: pecan_error.c:204
-msgid "Passport account not yet verified"
-msgstr ""
-
-#: pecan_error.c:207
-msgid "Bad ticket"
-msgstr ""
 
 #: pecan_error.c:210
 #, c-format
@@ -676,7 +587,156 @@ msgstr "%s sizi arkadaş listesine ekledi."
 msgid "%s has removed you from his or her buddy list."
 msgstr "%s sizi arkadaş listesinden sildi."
 
-#: ab/pecan_contactlist.c:822
+#: ab/pecan_contactlist.c:850
 #, c-format
 msgid "Can't add to \"%s\"; it's a virtual group"
 msgstr "\"%s\" grubu sanal olduğundan bu gruba eklenemedi"
+
+#: msn.c:325
+msgid "This is the message that other MSN buddies will see under your name."
+msgstr ""
+
+#: msn.c:620
+#, c-format
+msgid "Playing %s"
+msgstr ""
+
+#: msn.c:624
+#, c-format
+msgid "Editing %s"
+msgstr ""
+
+#: msn.c:687
+msgid "Now Listening"
+msgstr ""
+
+#: msn.c:692
+msgid "Playing a game"
+msgstr ""
+
+#: msn.c:696
+msgid "Working"
+msgstr ""
+
+#: msn.c:758
+msgid "Song Title"
+msgstr ""
+
+#: msn.c:759
+msgid "Song Artist"
+msgstr ""
+
+#: msn.c:760
+msgid "Song Album"
+msgstr ""
+
+#: msn.c:761
+msgid "Game Name"
+msgstr ""
+
+#: msn.c:762
+msgid "Office App Name"
+msgstr ""
+
+#: msn.c:918
+msgid "Connecting"
+msgstr ""
+
+#: msn.c:1657
+msgid "Friendly Name"
+msgstr ""
+
+#: msn.c:1681
+msgid "Has Space"
+msgstr ""
+
+#: msn.c:1689
+msgid "Profile URL"
+msgstr ""
+
+#: msn.c:1854
+msgid "Use server-side alias"
+msgstr ""
+
+#: msn.c:1857
+msgid "Use direct connections"
+msgstr ""
+
+#: msn.c:1860
+msgid "Use user displays"
+msgstr ""
+
+#: session.c:67
+#, c-format
+msgid "You are not in %s's contact list."
+msgstr ""
+
+#: switchboard.c:1341
+msgid ""
+"sent you a voice clip, but it cannot be played due to an error happened "
+"while storing the file."
+msgstr ""
+
+#: pecan_error.c:49
+msgid "Fully qualified domain name missing"
+msgstr ""
+
+#: pecan_error.c:73
+msgid "Already in the mode"
+msgstr ""
+
+#: pecan_error.c:97
+msgid "Switchboard failed"
+msgstr ""
+
+#: pecan_error.c:100
+msgid "Notify transfer failed"
+msgstr ""
+
+#: pecan_error.c:106
+msgid "Too many hits to a FND"
+msgstr ""
+
+#: pecan_error.c:127
+msgid "Wrong CHL value sent to server"
+msgstr ""
+
+#: pecan_error.c:133 pecan_error.c:145 pecan_error.c:195
+msgid "Server unavailable"
+msgstr ""
+
+#: pecan_error.c:136
+msgid "Peer notification server down"
+msgstr ""
+
+#: pecan_error.c:151
+msgid "CVR parameters are either unknown or not allowed"
+msgstr ""
+
+#: pecan_error.c:154
+msgid "Unable to write"
+msgstr ""
+
+#: pecan_error.c:166
+msgid "Passport not verified"
+msgstr ""
+
+#: pecan_error.c:169
+msgid "Bad friend file"
+msgstr ""
+
+#: pecan_error.c:190
+msgid "Not allowed when hiding"
+msgstr ""
+
+#: pecan_error.c:201
+msgid "Kids Passport without parental consent"
+msgstr ""
+
+#: pecan_error.c:204
+msgid "Passport account not yet verified"
+msgstr ""
+
+#: pecan_error.c:207
+msgid "Bad ticket"
+msgstr ""
