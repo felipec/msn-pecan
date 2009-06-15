@@ -120,7 +120,7 @@ msn_slpmsg_set_body(MsnSlpMessage *slpmsg,
 	if (body != NULL)
 		slpmsg->buffer = g_memdup(body, size);
 	else
-		slpmsg->buffer = g_malloc(size);
+		slpmsg->buffer = g_malloc0(size);
 
 	slpmsg->size = size;
 }
