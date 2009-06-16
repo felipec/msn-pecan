@@ -38,7 +38,11 @@
 #ifdef HAVE_LIBPURPLE
 /* libpurple stuff. */
 #include "fix_purple_win32.h"
+#ifdef ADIUM
+#include <account.h>
+#else
 #include <privacy.h>
+#endif /* ADIUM */
 #endif /* HAVE_LIBPURPLE */
 
 const char *lists[] = { "FL", "AL", "BL", "RL", "PL" };

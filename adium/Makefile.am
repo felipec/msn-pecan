@@ -69,6 +69,7 @@ AM_CPPFLAGS = \
 	      $(GLIB_CFLAGS) \
 	      $(DEBUG_CFLAGS) \
 	      -DHAVE_LIBPURPLE \
+	      -DADIUM \
 	      -DPURPLE_DEBUG \
 	      -DPECAN_CVR \
 	      -DPECAN_USE_PSM \

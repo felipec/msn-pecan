@@ -47,7 +47,9 @@
 /* libpurple stuff. */
 #include "fix_purple_win32.h"
 #include <debug.h>
+#ifndef ADIUM
 #include <privacy.h>
+#endif /* ADIUM */
 #include <request.h>
 #include <accountopt.h>
 #include <pluginpref.h>
