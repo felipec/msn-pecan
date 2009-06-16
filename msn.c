@@ -619,11 +619,13 @@ status_text (PurpleBuddy *buddy)
             return g_strdup (personal_message);
     }
 
+#ifndef ADIUM
     if (!purple_presence_is_available (presence) &&
         !purple_presence_is_idle (presence))
     {
         return g_strdup (purple_status_get_name (status));
     }
+#endif /* ADIUM */
 
     return NULL;
 }
