@@ -1069,7 +1069,11 @@ save_plus_sound_cb(PurpleUtilFetchUrlData *url_data, gpointer user_data,
         f = fopen (path_mp3, "wb");
         fwrite(sound, len, 1, f);
 
+#ifndef ADIUM
         str = g_strdup_printf (_("sent you a Messenger Plus! sound. Click <a href='file://%s'>here</a> to play it."), path_mp3);
+#else
+        str = g_strdup_printf (_("sent you a Messenger Plus! sound. Copy the following link in Safari to play it: %s"), path_mp3);
+#endif /* ADIUM */
         got_datacast_inform_user (cmdproc, passport, str);
 
         fclose(f);
@@ -1327,7 +1331,11 @@ got_voice_clip(MsnSlpCall *slpcall, const guchar *data, gsize size)
 
         decode_wav_using_siren7 (file, decoded_file);
 
+#ifndef ADIUM
         str = g_strdup_printf(_("sent you a voice clip. Click <a href='file://%s'>here</a> to play it."), decoded_file);
+#else
+        str = g_strdup_printf(_("sent you a voice clip. Copy the following link in Safari to play it: %s"), decoded_file);
+#endif /* ADIUM */
         got_datacast_inform_user(slpcall->slplink->swboard->cmdproc, slpcall->slplink->remote_user, str);
 
         g_free (decoded_file);

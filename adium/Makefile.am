@@ -17,6 +17,7 @@ MSNSOURCES = msn.c \
 	     pecan_status.c \
 	     pecan_oim.c \
 	     pecan_dp_manager.c \
+	     pecan_siren7.c \
 	     cmd/cmdproc.c \
 	     cmd/command.c \
 	     cmd/history.c \
@@ -39,13 +40,18 @@ MSNSOURCES = msn.c \
 	     cvr/slpmsg.c \
 	     cvr/pecan_slp_object.c \
 	     cvr/xfer.c \
+	     lib/libsiren/common.c \
+	     lib/libsiren/dct4.c \
+	     lib/libsiren/decoder.c \
+	     lib/libsiren/huffman.c \
+	     lib/libsiren/rmlt.c \
 	     fix_purple.c
 
 AM_CFLAGS = $(st)
 
 version := $(shell $(srcdir)/get-version.sh)
 
-libmsn_pecan_la_LDFLAGS = -module -avoid-version
+libmsn_pecan_la_LDFLAGS = -module -avoid-version -lm
 
 if STATIC_MSN
 
@@ -71,9 +77,11 @@ AM_CPPFLAGS = \
 	      -DHAVE_LIBPURPLE \
 	      -DADIUM \
 	      -DPURPLE_DEBUG \
+	      -DPECAN_DEBUG_SLP \
 	      -DPECAN_CVR \
 	      -DPECAN_USE_PSM \
-	      -DPECAN_DEBUG_SLP \
+	      -DPECAN_LIBSIREN \
+	      -DRECEIVE_PLUS_SOUNDS \
 	      -DGETTEXT_PACKAGE='"pidgin"' \
 	      -DENABLE_NLS \
 	      -DVERSION='"$(version)"'
