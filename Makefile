@@ -36,6 +36,7 @@ OTHER_WARNINGS := -D_FORTIFY_SOURCE=2 -fstack-protector -g3 -Wdisabled-optimizat
 
 CFLAGS += -Wall # $(EXTRA_WARNINGS)
 
+override CFLAGS += -D_XOPEN_SOURCE
 override CFLAGS += -I. -D GETTEXT_PACKAGE='"libmsn-pecan"' -DENABLE_NLS -DHAVE_LIBPURPLE -DPURPLE_DEBUG -D PLUGIN_NAME='msn-pecan'
 
 ifdef CVR

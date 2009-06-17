@@ -1,4 +1,3 @@
-#define _XOPEN_SOURCE
 #include <time.h> /* for strptime */
 
 #include "pecan_oim_private.h"
