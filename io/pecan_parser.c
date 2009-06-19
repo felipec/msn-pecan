@@ -60,10 +60,10 @@ pecan_parser_read_line (PecanParser *parser,
 
     if (parser->need_more)
     {
-        gchar buf[MSN_BUF_LEN + 1];
+        gchar buf[0x2000 + 1];
         gsize bytes_read;
 
-        status = pecan_node_read (parser->node, buf, MSN_BUF_LEN, &bytes_read, NULL);
+        status = pecan_node_read (parser->node, buf, 0x2000, &bytes_read, NULL);
 
         if (status != G_IO_STATUS_NORMAL)
             goto leave;
