@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2006-2009 Felipe Contreras.
+/**
+ * Copyright (C) 2008-2009 Felipe Contreras
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@
 
 #include <time.h> /* for strptime */
 
-#include "pecan_oim.h"
+#include "pn_oim.h"
 #include "io/pecan_ssl_conn.h"
 #include "io/pecan_parser.h"
 
@@ -87,7 +87,7 @@ oim_request_free (OimRequest *oim_request)
 }
 
 PecanOimSession *
-pecan_oim_session_new (MsnSession *session)
+pn_oim_session_new (MsnSession *session)
 {
     PecanOimSession *oim_session;
 
@@ -99,7 +99,7 @@ pecan_oim_session_new (MsnSession *session)
 }
 
 void
-pecan_oim_session_free (PecanOimSession *oim_session)
+pn_oim_session_free (PecanOimSession *oim_session)
 {
     if (!oim_session)
         return;
@@ -325,9 +325,9 @@ oim_process_requests (PecanOimSession *oim_session)
 }
 
 void
-pecan_oim_session_request (PecanOimSession *oim_session,
-                           const gchar *passport,
-                           const gchar *message_id)
+pn_oim_session_request (PecanOimSession *oim_session,
+                        const gchar *passport,
+                        const gchar *message_id)
 {
     gboolean initial;
 

@@ -1451,9 +1451,9 @@ initial_mdata_msg (MsnCmdProc *cmdproc,
 
                             message_id = pn_get_xml_field ("I", start, end);
 
-                            pecan_oim_session_request (session->oim_session,
-                                                       passport,
-                                                       message_id);
+                            pn_oim_session_request (session->oim_session,
+                                                    passport,
+                                                    message_id);
 
                             g_free (passport);
                             g_free (message_id);

@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef PECAN_OIM_H
-#define PECAN_OIM_H
+#ifndef PN_OIM_H
+#define PN_OIM_H
 
 typedef struct PecanOimSession PecanOimSession;
 
@@ -25,10 +25,10 @@ typedef struct PecanOimSession PecanOimSession;
 
 struct MsnSession;
 
-PecanOimSession *pecan_oim_session_new (MsnSession *session);
-void pecan_oim_session_free (PecanOimSession *oim_session);
-void pecan_oim_session_request (PecanOimSession *oim_session,
-                                const gchar *passport,
-                                const gchar *message_id);
+PecanOimSession *pn_oim_session_new (MsnSession *session);
+void pn_oim_session_free (PecanOimSession *oim_session);
+void pn_oim_session_request (PecanOimSession *oim_session,
+                             const gchar *passport,
+                             const gchar *message_id);
 
-#endif /* PECAN_OIM_H */
+#endif /* PN_OIM_H */

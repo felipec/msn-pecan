@@ -28,7 +28,7 @@
 
 #include "io/pecan_node.h"
 
-#include "pecan_oim.h"
+#include "pn_oim.h"
 #include "pecan_dp_manager.h"
 
 struct MsnNotification;

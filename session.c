@@ -104,7 +104,7 @@ msn_session_new (const gchar *username,
 
     session->conv_seq = 1;
 
-    session->oim_session = pecan_oim_session_new (session);
+    session->oim_session = pn_oim_session_new (session);
 
     session->conversations = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) msn_switchboard_unref);
     session->chats = g_hash_table_new_full (g_int_hash, g_int_equal, NULL, (GDestroyNotify) msn_switchboard_unref);
@@ -121,7 +121,7 @@ msn_session_destroy (MsnSession *session)
     if (!session)
         return;
 
-    pecan_oim_session_free (session->oim_session);
+    pn_oim_session_free (session->oim_session);
 
     purple_signal_disconnect (purple_conversations_get_handle(), "conversation-created",
                               session, PURPLE_CALLBACK (conversation_created_cb));
