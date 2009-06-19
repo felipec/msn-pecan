@@ -1557,38 +1557,32 @@ system_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     if ((type_s = g_hash_table_lookup(table, "Type")) != NULL)
     {
         int type = atoi(type_s);
-        char buf[MSN_BUF_LEN];
+        gchar *msg;
         int minutes;
 
         switch (type)
         {
             case 1:
                 minutes = atoi(g_hash_table_lookup(table, "Arg1"));
-                g_snprintf(buf, sizeof(buf), dngettext(GETTEXT_PACKAGE,
-                                                       "The MSN server will shut down for maintenance "
-                                                       "in %d minute. You will automatically be "
-                                                       "signed out at that time.  Please finish any "
-                                                       "conversations in progress.\n\nAfter the "
-                                                       "maintenance has been completed, you will be "
-                                                       "able to successfully sign in.",
-                                                       "The MSN server will shut down for maintenance "
-                                                       "in %d minutes. You will automatically be "
-                                                       "signed out at that time.  Please finish any "
-                                                       "conversations in progress.\n\nAfter the "
-                                                       "maintenance has been completed, you will be "
-                                                       "able to successfully sign in.", minutes),
-                           minutes);
+                msg = g_strdup_printf(_("The MSN server will shut down for maintenance "
+                                        "in %d minutes. You will automatically be "
+                                        "signed out at that time.  Please finish any "
+                                        "conversations in progress.\n\nAfter the "
+                                        "maintenance has been completed, you will be "
+                                        "able to successfully sign in."), minutes);
             default:
+                msg = NULL;
                 break;
         }
 
-        if (*buf != '\0')
+        if (msg)
         {
             PurpleAccount *account;
             PurpleConnection *connection;
             account = msn_session_get_user_data (cmdproc->session);
             connection = purple_account_get_connection (account);
-            purple_notify_info (connection, NULL, buf, NULL);
+            purple_notify_info (connection, NULL, msg, NULL);
+            g_free (msg);
         }
     }
 
