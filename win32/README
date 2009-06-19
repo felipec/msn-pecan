@@ -17,5 +17,4 @@ make CC=i386-mingw32-gcc PLATFORM=win32
 
 == to-do ==
 
- * Remove PLATFORM variable (use gcc -dumpmachine)
  * Create builds to ease the process (glib and libpurple)

@@ -2,7 +2,7 @@ CC := gcc
 XGETTEXT := xgettext
 MSGFMT := msgfmt
 
-PLATFORM := $(shell uname -s)
+PLATFORM := $(shell $(CC) -dumpmachine | cut -f 3 -d -)
 
 PURPLE_CFLAGS := $(shell pkg-config --cflags purple)
 PURPLE_LIBS := $(shell pkg-config --libs purple)
@@ -134,10 +134,10 @@ deps := $(objects:.o=.d)
 PO_TEMPLATE := po/messages.pot
 CATALOGS := ar da de es fi tr hu it nb nl pt_BR pt sr sv tr zh_CN zh_TW
 
-ifeq ($(PLATFORM),Darwin)
+ifeq ($(PLATFORM),darwin)
   SHLIBEXT := dylib
 else
-ifeq ($(PLATFORM),win32)
+ifeq ($(PLATFORM),mingw32)
   SHLIBEXT := dll
   LDFLAGS := -Wl,--enable-auto-image-base -Wl,--exclude-libs=libintl.a
   objects += win32/resource.res
@@ -151,7 +151,7 @@ ifdef STATIC
   override CFLAGS += -DPURPLE_STATIC_PRPL
 else
   plugin := libmsn-pecan.$(SHLIBEXT)
-ifneq ($(PLATFORM),win32)
+ifneq ($(PLATFORM),mingw32)
   override CFLAGS += -fPIC
 endif
 endif
