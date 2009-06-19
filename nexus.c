@@ -44,35 +44,35 @@
 MsnNexus *
 msn_nexus_new(MsnSession *session)
 {
-	MsnNexus *nexus;
+    MsnNexus *nexus;
 
-	nexus = g_new0(MsnNexus, 1);
-	nexus->session = session;
-	nexus->challenge_data = g_hash_table_new_full(g_str_hash,
-		g_str_equal, g_free, g_free);
+    nexus = g_new0(MsnNexus, 1);
+    nexus->session = session;
+    nexus->challenge_data = g_hash_table_new_full(g_str_hash,
+                                                  g_str_equal, g_free, g_free);
 
-	return nexus;
+    return nexus;
 }
 
 void
 msn_nexus_destroy(MsnNexus *nexus)
 {
-	if (nexus->gsc)
-		purple_ssl_close(nexus->gsc);
+    if (nexus->gsc)
+        purple_ssl_close(nexus->gsc);
 
-	g_free(nexus->login_host);
+    g_free(nexus->login_host);
 
-	g_free(nexus->login_path);
+    g_free(nexus->login_path);
 
-	if (nexus->challenge_data != NULL)
-		g_hash_table_destroy(nexus->challenge_data);
+    if (nexus->challenge_data != NULL)
+        g_hash_table_destroy(nexus->challenge_data);
 
-	if (nexus->input_handler > 0)
-		purple_input_remove(nexus->input_handler);
-	g_free(nexus->write_buf);
-	g_free(nexus->read_buf);
+    if (nexus->input_handler > 0)
+        purple_input_remove(nexus->input_handler);
+    g_free(nexus->write_buf);
+    g_free(nexus->read_buf);
 
-	g_free(nexus);
+    g_free(nexus);
 }
 
 /**************************************************************************
@@ -82,55 +82,55 @@ msn_nexus_destroy(MsnNexus *nexus)
 static gssize
 msn_ssl_read(MsnNexus *nexus)
 {
-	gssize len;
-	char temp_buf[4096];
+    gssize len;
+    char temp_buf[4096];
 
-	if ((len = purple_ssl_read(nexus->gsc, temp_buf,
-			sizeof(temp_buf))) > 0)
-	{
-		nexus->read_buf = g_realloc(nexus->read_buf,
-			nexus->read_len + len + 1);
-		strncpy(nexus->read_buf + nexus->read_len, temp_buf, len);
-		nexus->read_len += len;
-		nexus->read_buf[nexus->read_len] = '\0';
-	}
+    if ((len = purple_ssl_read(nexus->gsc, temp_buf,
+                               sizeof(temp_buf))) > 0)
+    {
+        nexus->read_buf = g_realloc(nexus->read_buf,
+                                    nexus->read_len + len + 1);
+        strncpy(nexus->read_buf + nexus->read_len, temp_buf, len);
+        nexus->read_len += len;
+        nexus->read_buf[nexus->read_len] = '\0';
+    }
 
-	return len;
+    return len;
 }
 
 static void
 nexus_write_cb(gpointer data, gint source, PurpleInputCondition cond)
 {
-	MsnNexus *nexus = data;
-	gssize len, total_len;
+    MsnNexus *nexus = data;
+    gssize len, total_len;
 
-	total_len = strlen(nexus->write_buf);
+    total_len = strlen(nexus->write_buf);
 
-	len = purple_ssl_write(nexus->gsc,
-		nexus->write_buf + nexus->written_len,
-		total_len - nexus->written_len);
+    len = purple_ssl_write(nexus->gsc,
+                           nexus->write_buf + nexus->written_len,
+                           total_len - nexus->written_len);
 
-	if (len < 0 && errno == EAGAIN)
-		return;
-	else if (len <= 0) {
-		purple_input_remove(nexus->input_handler);
-		nexus->input_handler = 0;
-		/* TODO: notify of the error */
-		return;
-	}
-	nexus->written_len += len;
+    if (len < 0 && errno == EAGAIN)
+        return;
+    else if (len <= 0) {
+        purple_input_remove(nexus->input_handler);
+        nexus->input_handler = 0;
+        /* TODO: notify of the error */
+        return;
+    }
+    nexus->written_len += len;
 
-	if (nexus->written_len < total_len)
-		return;
+    if (nexus->written_len < total_len)
+        return;
 
-	purple_input_remove(nexus->input_handler);
-	nexus->input_handler = 0;
+    purple_input_remove(nexus->input_handler);
+    nexus->input_handler = 0;
 
-	g_free(nexus->write_buf);
-	nexus->write_buf = NULL;
-	nexus->written_len = 0;
+    g_free(nexus->write_buf);
+    nexus->write_buf = NULL;
+    nexus->written_len = 0;
 
-	nexus->written_cb(nexus, source, 0);
+    nexus->written_cb(nexus, source, 0);
 }
 
 /**************************************************************************
@@ -139,183 +139,183 @@ nexus_write_cb(gpointer data, gint source, PurpleInputCondition cond)
 
 static void
 login_connect_cb(gpointer data, PurpleSslConnection *gsc,
-				 PurpleInputCondition cond);
+                 PurpleInputCondition cond);
 
 static void
 login_error_cb(PurpleSslConnection *gsc, PurpleSslErrorType error, void *data)
 {
-	MsnNexus *nexus;
-	MsnSession *session;
+    MsnNexus *nexus;
+    MsnSession *session;
 
-	nexus = data;
-	g_return_if_fail(nexus != NULL);
+    nexus = data;
+    g_return_if_fail(nexus != NULL);
 
-	nexus->gsc = NULL;
+    nexus->gsc = NULL;
 
-	session = nexus->session;
-	g_return_if_fail(session != NULL);
+    session = nexus->session;
+    g_return_if_fail(session != NULL);
 
-	msn_session_set_error(session, MSN_ERROR_AUTH, _("Unable to connect"));
-	/* the above line will result in nexus being destroyed, so we don't want
-	 * to destroy it here, or we'd crash */
+    msn_session_set_error(session, MSN_ERROR_AUTH, _("Unable to connect"));
+    /* the above line will result in nexus being destroyed, so we don't want
+     * to destroy it here, or we'd crash */
 }
 
 static void
 nexus_login_written_cb(gpointer data, gint source, PurpleInputCondition cond)
 {
-	MsnNexus *nexus = data;
-	MsnSession *session;
-	int len;
+    MsnNexus *nexus = data;
+    MsnSession *session;
+    int len;
 
-	session = nexus->session;
-	g_return_if_fail(session != NULL);
+    session = nexus->session;
+    g_return_if_fail(session != NULL);
 
-	if (nexus->input_handler == 0)
-		/* TODO: Use purple_ssl_input_add()? */
-		nexus->input_handler = purple_input_add(nexus->gsc->fd,
-			PURPLE_INPUT_READ, nexus_login_written_cb, nexus);
+    if (nexus->input_handler == 0)
+        /* TODO: Use purple_ssl_input_add()? */
+        nexus->input_handler = purple_input_add(nexus->gsc->fd,
+                                                PURPLE_INPUT_READ, nexus_login_written_cb, nexus);
 
 
-	len = msn_ssl_read(nexus);
+    len = msn_ssl_read(nexus);
 
-	if (len < 0 && errno == EAGAIN)
-		return;
-	else if (len < 0) {
-		purple_input_remove(nexus->input_handler);
-		nexus->input_handler = 0;
-		g_free(nexus->read_buf);
-		nexus->read_buf = NULL;
-		nexus->read_len = 0;
-		/* TODO: error handling */
-		return;
-	}
+    if (len < 0 && errno == EAGAIN)
+        return;
+    else if (len < 0) {
+        purple_input_remove(nexus->input_handler);
+        nexus->input_handler = 0;
+        g_free(nexus->read_buf);
+        nexus->read_buf = NULL;
+        nexus->read_len = 0;
+        /* TODO: error handling */
+        return;
+    }
 
-	if (g_strstr_len(nexus->read_buf, nexus->read_len,
-			"\r\n\r\n") == NULL)
-		return;
+    if (g_strstr_len(nexus->read_buf, nexus->read_len,
+                     "\r\n\r\n") == NULL)
+        return;
 
-	purple_input_remove(nexus->input_handler);
-	nexus->input_handler = 0;
+    purple_input_remove(nexus->input_handler);
+    nexus->input_handler = 0;
 
-	purple_ssl_close(nexus->gsc);
-	nexus->gsc = NULL;
+    purple_ssl_close(nexus->gsc);
+    nexus->gsc = NULL;
 
-	pecan_log ("ssl buffer: [%s]", nexus->read_buf);
+    pecan_log ("ssl buffer: [%s]", nexus->read_buf);
 
-	if (strstr(nexus->read_buf, "HTTP/1.1 302") != NULL)
-	{
-		/* Redirect. */
-		char *location, *c;
+    if (strstr(nexus->read_buf, "HTTP/1.1 302") != NULL)
+    {
+        /* Redirect. */
+        char *location, *c;
 
-		location = strstr(nexus->read_buf, "Location: ");
-		if (location == NULL)
-		{
-			g_free(nexus->read_buf);
-			nexus->read_buf = NULL;
-			nexus->read_len = 0;
+        location = strstr(nexus->read_buf, "Location: ");
+        if (location == NULL)
+        {
+            g_free(nexus->read_buf);
+            nexus->read_buf = NULL;
+            nexus->read_len = 0;
 
-			return;
-		}
-		location = strchr(location, ' ') + 1;
+            return;
+        }
+        location = strchr(location, ' ') + 1;
 
-		if ((c = strchr(location, '\r')) != NULL)
-			*c = '\0';
+        if ((c = strchr(location, '\r')) != NULL)
+            *c = '\0';
 
-		/* Skip the http:// */
-		if ((c = strchr(location, '/')) != NULL)
-			location = c + 2;
+        /* Skip the http:// */
+        if ((c = strchr(location, '/')) != NULL)
+            location = c + 2;
 
-		if ((c = strchr(location, '/')) != NULL)
-		{
-			g_free(nexus->login_path);
-			nexus->login_path = g_strdup(c);
+        if ((c = strchr(location, '/')) != NULL)
+        {
+            g_free(nexus->login_path);
+            nexus->login_path = g_strdup(c);
 
-			*c = '\0';
-		}
+            *c = '\0';
+        }
 
-		g_free(nexus->login_host);
-		nexus->login_host = g_strdup(location);
+        g_free(nexus->login_host);
+        nexus->login_host = g_strdup(location);
 
-		nexus->gsc = purple_ssl_connect(msn_session_get_user_data (session),
-				nexus->login_host, PURPLE_SSL_DEFAULT_PORT,
-				login_connect_cb, login_error_cb, nexus);
-	}
-	else if (strstr(nexus->read_buf, "HTTP/1.1 401 Unauthorized") != NULL)
-	{
-		const char *tmp;
-		gchar *error = NULL;
+        nexus->gsc = purple_ssl_connect(msn_session_get_user_data (session),
+                                        nexus->login_host, PURPLE_SSL_DEFAULT_PORT,
+                                        login_connect_cb, login_error_cb, nexus);
+    }
+    else if (strstr(nexus->read_buf, "HTTP/1.1 401 Unauthorized") != NULL)
+    {
+        const char *tmp;
+        gchar *error = NULL;
 
-		if ((tmp = strstr(nexus->read_buf, "WWW-Authenticate")) != NULL)
-		{
-			if ((tmp = strstr(tmp, "cbtxt=")) != NULL)
-			{
-				const char *c;
-				char *tmp2;
+        if ((tmp = strstr(nexus->read_buf, "WWW-Authenticate")) != NULL)
+        {
+            if ((tmp = strstr(tmp, "cbtxt=")) != NULL)
+            {
+                const char *c;
+                char *tmp2;
 
-				tmp += strlen("cbtxt=");
+                tmp += strlen("cbtxt=");
 
-				if ((c = strchr(tmp, '\n')) == NULL)
-					c = tmp + strlen(tmp);
+                if ((c = strchr(tmp, '\n')) == NULL)
+                    c = tmp + strlen(tmp);
 
-				tmp2 = g_strndup(tmp, c - tmp);
-				error = pecan_url_decode(tmp2);
-				g_free(tmp2);
-				if ((tmp2 = strstr(error, " Do one of the following or try again:")) != NULL)
-					*tmp2 = '\0';
-			}
-		}
+                tmp2 = g_strndup(tmp, c - tmp);
+                error = pecan_url_decode(tmp2);
+                g_free(tmp2);
+                if ((tmp2 = strstr(error, " Do one of the following or try again:")) != NULL)
+                    *tmp2 = '\0';
+            }
+        }
 
-		msn_session_set_error(session, MSN_ERROR_AUTH, error);
-		g_free(error);
-	}
-	else if (strstr(nexus->read_buf, "HTTP/1.1 503 Service Unavailable"))
-	{
-		msn_session_set_error(session, MSN_ERROR_SERV_UNAVAILABLE, NULL);
-	}
-	else if (strstr(nexus->read_buf, "HTTP/1.1 200 OK"))
-	{
-		char *base, *c;
-		char *login_params;
+        msn_session_set_error(session, MSN_ERROR_AUTH, error);
+        g_free(error);
+    }
+    else if (strstr(nexus->read_buf, "HTTP/1.1 503 Service Unavailable"))
+    {
+        msn_session_set_error(session, MSN_ERROR_SERV_UNAVAILABLE, NULL);
+    }
+    else if (strstr(nexus->read_buf, "HTTP/1.1 200 OK"))
+    {
+        char *base, *c;
+        char *login_params;
 
 #if 0
-		/* All your base are belong to us. */
-		base = buffer;
+        /* All your base are belong to us. */
+        base = buffer;
 
-		/* For great cookie! */
-		while ((base = strstr(base, "Set-Cookie: ")) != NULL)
-		{
-			base += strlen("Set-Cookie: ");
+        /* For great cookie! */
+        while ((base = strstr(base, "Set-Cookie: ")) != NULL)
+        {
+            base += strlen("Set-Cookie: ");
 
-			c = strchr(base, ';');
+            c = strchr(base, ';');
 
-			session->login_cookies =
-				g_list_append(session->login_cookies,
-							  g_strndup(base, c - base));
-		}
+            session->login_cookies =
+                g_list_append(session->login_cookies,
+                              g_strndup(base, c - base));
+        }
 #endif
 
-		base  = strstr(nexus->read_buf, "Authentication-Info: ");
+        base  = strstr(nexus->read_buf, "Authentication-Info: ");
 
-		g_return_if_fail(base != NULL);
+        g_return_if_fail(base != NULL);
 
-		base  = strstr(base, "from-PP='");
-		base += strlen("from-PP='");
-		c     = strchr(base, '\'');
+        base = strstr(base, "from-PP='");
+        base += strlen("from-PP='");
+        c = strchr(base, '\'');
 
-		login_params = g_strndup(base, c - base);
+        login_params = g_strndup(base, c - base);
 
-		msn_got_login_params(session, login_params);
+        msn_got_login_params(session, login_params);
 
-		g_free(login_params);
+        g_free(login_params);
 
-		msn_nexus_destroy(nexus);
-		session->nexus = NULL;
-		return;
-	}
+        msn_nexus_destroy(nexus);
+        session->nexus = NULL;
+        return;
+    }
 
-	g_free(nexus->read_buf);
-	nexus->read_buf = NULL;
-	nexus->read_len = 0;
+    g_free(nexus->read_buf);
+    nexus->read_buf = NULL;
+    nexus->read_len = 0;
 
 }
 
@@ -323,161 +323,158 @@ nexus_login_written_cb(gpointer data, gint source, PurpleInputCondition cond)
 static const gchar *
 nexus_challenge_data_lookup(GHashTable *challenge_data, const char *key)
 {
-	const gchar *entry;
+    const gchar *entry;
 
-	return (entry = g_hash_table_lookup(challenge_data, key)) ?	entry : "(null)";
+    return (entry = g_hash_table_lookup(challenge_data, key)) ? entry : "(null)";
 }
 
 void
 login_connect_cb(gpointer data, PurpleSslConnection *gsc,
-				 PurpleInputCondition cond)
+                 PurpleInputCondition cond)
 {
-	MsnNexus *nexus;
-	MsnSession *session;
-	char *username, *password;
-	char *request_str, *head, *tail;
-	char *buffer = NULL;
-	guint32 ctint;
+    MsnNexus *nexus;
+    MsnSession *session;
+    char *username, *password;
+    char *request_str, *head, *tail;
+    char *buffer = NULL;
+    guint32 ctint;
 
-	nexus = data;
-	g_return_if_fail(nexus != NULL);
+    nexus = data;
+    g_return_if_fail(nexus != NULL);
 
-	session = nexus->session;
-	g_return_if_fail(session != NULL);
+    session = nexus->session;
+    g_return_if_fail(session != NULL);
 
-	username =
-		g_strdup(purple_url_encode(msn_session_get_username(session)));
+    username =
+        g_strdup(purple_url_encode(msn_session_get_username(session)));
 
-	password =
-		g_strdup(purple_url_encode(msn_session_get_password(session)));
+    password =
+        g_strdup(purple_url_encode(msn_session_get_password(session)));
 
-	ctint = strtoul((char *)g_hash_table_lookup(nexus->challenge_data, "ct"), NULL, 10) + 200;
+    ctint = strtoul((char *)g_hash_table_lookup(nexus->challenge_data, "ct"), NULL, 10) + 200;
 
-        head = g_strdup_printf("GET %s HTTP/1.1\r\n"
-                               "Authorization: Passport1.4 OrgVerb=GET,OrgURL=%s,sign-in=%s",
-                               nexus->login_path,
-                               (char *)g_hash_table_lookup(nexus->challenge_data, "ru"),
-                               username);
+    head = g_strdup_printf("GET %s HTTP/1.1\r\n"
+                           "Authorization: Passport1.4 OrgVerb=GET,OrgURL=%s,sign-in=%s",
+                           nexus->login_path,
+                           (char *)g_hash_table_lookup(nexus->challenge_data, "ru"),
+                           username);
 
-        tail = g_strdup_printf("lc=%s,id=%s,tw=%s,fs=%s,ru=%s,ct=%" G_GUINT32_FORMAT ",kpp=%s,kv=%s,ver=%s,tpf=%s\r\n"
-                               "User-Agent: MSMSGS\r\n"
-                               "Host: %s\r\n"
-                               "Connection: Keep-Alive\r\n"
-                               "Cache-Control: no-cache\r\n",
-                               nexus_challenge_data_lookup(nexus->challenge_data, "lc"),
-                               nexus_challenge_data_lookup(nexus->challenge_data, "id"),
-                               nexus_challenge_data_lookup(nexus->challenge_data, "tw"),
-                               nexus_challenge_data_lookup(nexus->challenge_data, "fs"),
-                               nexus_challenge_data_lookup(nexus->challenge_data, "ru"),
-                               ctint,
-                               nexus_challenge_data_lookup(nexus->challenge_data, "kpp"),
-                               nexus_challenge_data_lookup(nexus->challenge_data, "kv"),
-                               nexus_challenge_data_lookup(nexus->challenge_data, "ver"),
-                               nexus_challenge_data_lookup(nexus->challenge_data, "tpf"),
-                               nexus->login_host);
+    tail = g_strdup_printf("lc=%s,id=%s,tw=%s,fs=%s,ru=%s,ct=%" G_GUINT32_FORMAT ",kpp=%s,kv=%s,ver=%s,tpf=%s\r\n"
+                           "User-Agent: MSMSGS\r\n"
+                           "Host: %s\r\n"
+                           "Connection: Keep-Alive\r\n"
+                           "Cache-Control: no-cache\r\n",
+                           nexus_challenge_data_lookup(nexus->challenge_data, "lc"),
+                           nexus_challenge_data_lookup(nexus->challenge_data, "id"),
+                           nexus_challenge_data_lookup(nexus->challenge_data, "tw"),
+                           nexus_challenge_data_lookup(nexus->challenge_data, "fs"),
+                           nexus_challenge_data_lookup(nexus->challenge_data, "ru"),
+                           ctint,
+                           nexus_challenge_data_lookup(nexus->challenge_data, "kpp"),
+                           nexus_challenge_data_lookup(nexus->challenge_data, "kv"),
+                           nexus_challenge_data_lookup(nexus->challenge_data, "ver"),
+                           nexus_challenge_data_lookup(nexus->challenge_data, "tpf"),
+                           nexus->login_host);
 
-	buffer = g_strdup_printf("%s,pwd=XXXXXXXX,%s\r\n", head, tail);
-	request_str = g_strdup_printf("%s,pwd=%s,%s\r\n", head, password, tail);
+    buffer = g_strdup_printf("%s,pwd=XXXXXXXX,%s\r\n", head, tail);
+    request_str = g_strdup_printf("%s,pwd=%s,%s\r\n", head, password, tail);
 
-	pecan_log ("sending: [%s]", buffer);
+    pecan_log ("sending: [%s]", buffer);
 
-	g_free(buffer);
-	g_free(head);
-	g_free(tail);
-	g_free(username);
-	g_free(password);
+    g_free(buffer);
+    g_free(head);
+    g_free(tail);
+    g_free(username);
+    g_free(password);
 
-	nexus->write_buf = request_str;
-	nexus->written_len = 0;
+    nexus->write_buf = request_str;
+    nexus->written_len = 0;
 
-	nexus->read_len = 0;
+    nexus->read_len = 0;
 
-	nexus->written_cb = nexus_login_written_cb;
+    nexus->written_cb = nexus_login_written_cb;
 
-	nexus->input_handler = purple_input_add(gsc->fd, PURPLE_INPUT_WRITE,
-		nexus_write_cb, nexus);
+    nexus->input_handler = purple_input_add(gsc->fd, PURPLE_INPUT_WRITE,
+                                            nexus_write_cb, nexus);
 
-	nexus_write_cb(nexus, gsc->fd, PURPLE_INPUT_WRITE);
+    nexus_write_cb(nexus, gsc->fd, PURPLE_INPUT_WRITE);
 
-	return;
-
-
+    return;
 }
 
 static void
 nexus_connect_written_cb(gpointer data, gint source, PurpleInputCondition cond)
 {
-	MsnNexus *nexus = data;
-	int len;
-	char *da_login;
-	char *base, *c;
+    MsnNexus *nexus = data;
+    int len;
+    char *da_login;
+    char *base, *c;
 
-	if (nexus->input_handler == 0)
-		/* TODO: Use purple_ssl_input_add()? */
-		nexus->input_handler = purple_input_add(nexus->gsc->fd,
-			PURPLE_INPUT_READ, nexus_connect_written_cb, nexus);
+    if (nexus->input_handler == 0)
+        /* TODO: Use purple_ssl_input_add()? */
+        nexus->input_handler = purple_input_add(nexus->gsc->fd,
+                                                PURPLE_INPUT_READ, nexus_connect_written_cb, nexus);
 
-	/* Get the PassportURLs line. */
-	len = msn_ssl_read(nexus);
+    /* Get the PassportURLs line. */
+    len = msn_ssl_read(nexus);
 
-	if (len < 0 && errno == EAGAIN)
-		return;
-	else if (len < 0) {
-		purple_input_remove(nexus->input_handler);
-		nexus->input_handler = 0;
-		g_free(nexus->read_buf);
-		nexus->read_buf = NULL;
-		nexus->read_len = 0;
-		/* TODO: error handling */
-		return;
-	}
+    if (len < 0 && errno == EAGAIN)
+        return;
+    else if (len < 0) {
+        purple_input_remove(nexus->input_handler);
+        nexus->input_handler = 0;
+        g_free(nexus->read_buf);
+        nexus->read_buf = NULL;
+        nexus->read_len = 0;
+        /* TODO: error handling */
+        return;
+    }
 
-	if (g_strstr_len(nexus->read_buf, nexus->read_len,
-			"\r\n\r\n") == NULL)
-		return;
+    if (g_strstr_len(nexus->read_buf, nexus->read_len,
+                     "\r\n\r\n") == NULL)
+        return;
 
-	purple_input_remove(nexus->input_handler);
-	nexus->input_handler = 0;
+    purple_input_remove(nexus->input_handler);
+    nexus->input_handler = 0;
 
-	base = strstr(nexus->read_buf, "PassportURLs");
+    base = strstr(nexus->read_buf, "PassportURLs");
 
-	if (base == NULL)
-	{
-		g_free(nexus->read_buf);
-		nexus->read_buf = NULL;
-		nexus->read_len = 0;
-		return;
-	}
+    if (base == NULL)
+    {
+        g_free(nexus->read_buf);
+        nexus->read_buf = NULL;
+        nexus->read_len = 0;
+        return;
+    }
 
-	if ((da_login = strstr(base, "DALogin=")) != NULL)
-	{
-		/* skip over "DALogin=" */
-		da_login += 8;
+    if ((da_login = strstr(base, "DALogin=")) != NULL)
+    {
+        /* skip over "DALogin=" */
+        da_login += 8;
 
-		if ((c = strchr(da_login, ',')) != NULL)
-			*c = '\0';
+        if ((c = strchr(da_login, ',')) != NULL)
+            *c = '\0';
 
-		if ((c = strchr(da_login, '/')) != NULL)
-		{
-			nexus->login_path = g_strdup(c);
-			*c = '\0';
-		}
+        if ((c = strchr(da_login, '/')) != NULL)
+        {
+            nexus->login_path = g_strdup(c);
+            *c = '\0';
+        }
 
-		nexus->login_host = g_strdup(da_login);
-	}
+        nexus->login_host = g_strdup(da_login);
+    }
 
-	g_free(nexus->read_buf);
-	nexus->read_buf = NULL;
-	nexus->read_len = 0;
+    g_free(nexus->read_buf);
+    nexus->read_buf = NULL;
+    nexus->read_len = 0;
 
-	purple_ssl_close(nexus->gsc);
+    purple_ssl_close(nexus->gsc);
 
-	/* Now begin the connection to the login server. */
-	nexus->gsc = purple_ssl_connect(msn_session_get_user_data (nexus->session),
-			nexus->login_host, PURPLE_SSL_DEFAULT_PORT,
-			login_connect_cb, login_error_cb, nexus);
+    /* Now begin the connection to the login server. */
+    nexus->gsc = purple_ssl_connect(msn_session_get_user_data (nexus->session),
+                                    nexus->login_host, PURPLE_SSL_DEFAULT_PORT,
+                                    login_connect_cb, login_error_cb, nexus);
 }
-
 
 /**************************************************************************
  * Connect
@@ -485,34 +482,34 @@ nexus_connect_written_cb(gpointer data, gint source, PurpleInputCondition cond)
 
 static void
 nexus_connect_cb(gpointer data, PurpleSslConnection *gsc,
-				 PurpleInputCondition cond)
+                 PurpleInputCondition cond)
 {
-	MsnNexus *nexus;
-	MsnSession *session;
+    MsnNexus *nexus;
+    MsnSession *session;
 
-	nexus = data;
-	g_return_if_fail(nexus != NULL);
+    nexus = data;
+    g_return_if_fail(nexus != NULL);
 
-	session = nexus->session;
-	g_return_if_fail(session != NULL);
+    session = nexus->session;
+    g_return_if_fail(session != NULL);
 
-	nexus->write_buf = g_strdup("GET /rdr/pprdr.asp\r\n\r\n");
-	nexus->written_len = 0;
+    nexus->write_buf = g_strdup("GET /rdr/pprdr.asp\r\n\r\n");
+    nexus->written_len = 0;
 
-	nexus->read_len = 0;
+    nexus->read_len = 0;
 
-	nexus->written_cb = nexus_connect_written_cb;
+    nexus->written_cb = nexus_connect_written_cb;
 
-	nexus->input_handler = purple_input_add(gsc->fd, PURPLE_INPUT_WRITE,
-		nexus_write_cb, nexus);
+    nexus->input_handler = purple_input_add(gsc->fd, PURPLE_INPUT_WRITE,
+                                            nexus_write_cb, nexus);
 
-	nexus_write_cb(nexus, gsc->fd, PURPLE_INPUT_WRITE);
+    nexus_write_cb(nexus, gsc->fd, PURPLE_INPUT_WRITE);
 }
 
 void
 msn_nexus_connect(MsnNexus *nexus)
 {
-	nexus->gsc = purple_ssl_connect(msn_session_get_user_data (nexus->session),
-			"nexus.passport.com", PURPLE_SSL_DEFAULT_PORT,
-			nexus_connect_cb, login_error_cb, nexus);
+    nexus->gsc = purple_ssl_connect(msn_session_get_user_data (nexus->session),
+                                    "nexus.passport.com", PURPLE_SSL_DEFAULT_PORT,
+                                    nexus_connect_cb, login_error_cb, nexus);
 }

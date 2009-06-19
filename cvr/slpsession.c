@@ -31,48 +31,48 @@
 MsnSlpSession *
 msn_slp_session_new(MsnSlpCall *slpcall)
 {
-	MsnSlpSession *slpsession;
+    MsnSlpSession *slpsession;
 
-	g_return_val_if_fail(slpcall != NULL, NULL);
+    g_return_val_if_fail(slpcall != NULL, NULL);
 
-	slpsession = g_new0(MsnSlpSession, 1);
+    slpsession = g_new0(MsnSlpSession, 1);
 
-	slpsession->slpcall = slpcall;
-	slpsession->id = slpcall->session_id;
-	slpsession->call_id = slpcall->id;
-	slpsession->app_id = slpcall->app_id;
+    slpsession->slpcall = slpcall;
+    slpsession->id = slpcall->session_id;
+    slpsession->call_id = slpcall->id;
+    slpsession->app_id = slpcall->app_id;
 
-	slpcall->slplink->slp_sessions =
-		g_list_append(slpcall->slplink->slp_sessions, slpsession);
+    slpcall->slplink->slp_sessions =
+        g_list_append(slpcall->slplink->slp_sessions, slpsession);
 
-	return slpsession;
+    return slpsession;
 }
 
 void
 msn_slp_session_destroy(MsnSlpSession *slpsession)
 {
-	g_return_if_fail(slpsession != NULL);
+    g_return_if_fail(slpsession != NULL);
 
-	if (slpsession->call_id != NULL)
-		g_free(slpsession->call_id);
+    if (slpsession->call_id != NULL)
+        g_free(slpsession->call_id);
 
-	slpsession->slpcall->slplink->slp_sessions =
-		g_list_remove(slpsession->slpcall->slplink->slp_sessions, slpsession);
+    slpsession->slpcall->slplink->slp_sessions =
+        g_list_remove(slpsession->slpcall->slplink->slp_sessions, slpsession);
 
-	g_free(slpsession);
+    g_free(slpsession);
 }
 
 #if 0
 static void
 msn_slp_session_send_slpmsg(MsnSlpSession *slpsession, MsnSlpMessage *slpmsg)
 {
-	slpmsg->slpsession = slpsession;
+    slpmsg->slpsession = slpsession;
 
 #if 0
-	slpmsg->session_id = slpsession->id;
-	slpmsg->app_id = slpsession->app_id;
+    slpmsg->session_id = slpsession->id;
+    slpmsg->app_id = slpsession->app_id;
 #endif
 
-	msn_slplink_send_slpmsg(slpsession->slpcall->slplink, slpmsg);
+    msn_slplink_send_slpmsg(slpsession->slpcall->slplink, slpmsg);
 }
 #endif

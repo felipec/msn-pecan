@@ -608,7 +608,7 @@ read_impl (PecanNode *conn,
                 gchar *t;
 
                 t = strchr (http_conn->last_session_id, '.');
-		session_id = g_strndup (http_conn->last_session_id, t - http_conn->last_session_id);
+                session_id = g_strndup (http_conn->last_session_id, t - http_conn->last_session_id);
 
                 child = g_hash_table_lookup (http_conn->childs, session_id);
                 pecan_log ("child=%p", child);

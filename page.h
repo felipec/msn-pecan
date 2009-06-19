@@ -33,10 +33,10 @@ typedef struct _MsnPage MsnPage;
  */
 struct _MsnPage
 {
-	char *from_location;
-	char *from_phone;
+    char *from_location;
+    char *from_phone;
 
-	char *body;
+    char *body;
 };
 
 /**

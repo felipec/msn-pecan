@@ -29,22 +29,22 @@ typedef struct MsnMessage MsnMessage;
 
 typedef enum
 {
-	MSN_MSG_UNKNOWN,
-	MSN_MSG_TEXT,
-	MSN_MSG_TYPING,
-	MSN_MSG_CAPS,
-	MSN_MSG_SLP,
-	MSN_MSG_NUDGE
+    MSN_MSG_UNKNOWN,
+    MSN_MSG_TEXT,
+    MSN_MSG_TYPING,
+    MSN_MSG_CAPS,
+    MSN_MSG_SLP,
+    MSN_MSG_NUDGE
 
 } MsnMsgType;
 
 typedef enum
 {
-	MSN_MSG_ERROR_NONE, /**< No error. */
-	MSN_MSG_ERROR_TIMEOUT, /**< The message timedout. */
-	MSN_MSG_ERROR_NAK, /**< The message could not be sent. */
-	MSN_MSG_ERROR_SB, /**< The error comes from the switchboard. */
-	MSN_MSG_ERROR_UNKNOWN /**< An unknown error occurred. */
+    MSN_MSG_ERROR_NONE, /**< No error. */
+    MSN_MSG_ERROR_TIMEOUT, /**< The message timedout. */
+    MSN_MSG_ERROR_NAK, /**< The message could not be sent. */
+    MSN_MSG_ERROR_SB, /**< The error comes from the switchboard. */
+    MSN_MSG_ERROR_UNKNOWN /**< An unknown error occurred. */
 
 } MsnMsgErrorType;
 
@@ -107,7 +107,7 @@ MsnMessage *msn_message_new_from_cmd(MsnCommand *cmd);
  * @param payload_len The length of the payload.
  */
 void msn_message_parse_payload(MsnMessage *msg, const char *payload,
-							   size_t payload_len);
+                               size_t payload_len);
 
 /**
  * Destroys a message.
@@ -242,7 +242,7 @@ const char *msn_message_get_charset(const MsnMessage *msg);
  * @param value The attribute value.
  */
 void msn_message_set_attr(MsnMessage *msg, const char *attr,
-						  const char *value);
+                          const char *value);
 
 /**
  * Returns an attribute from a message.
@@ -264,10 +264,10 @@ const char *msn_message_get_attr(const MsnMessage *msg, const char *attr);
 GHashTable *msn_message_get_hashtable_from_body(const MsnMessage *msg);
 
 void msn_message_show_readable(MsnMessage *msg, const char *info,
-							   gboolean text_body);
+                               gboolean text_body);
 
 void msn_message_parse_slp_body(MsnMessage *msg, const char *body,
-								size_t len);
+                                size_t len);
 
 char *msn_message_gen_slp_body(MsnMessage *msg, size_t *ret_size);
 

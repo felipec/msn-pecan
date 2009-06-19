@@ -35,21 +35,21 @@ typedef void (*_PurpleInputFunction) (gpointer, gint, guint);
 
 struct MsnNexus
 {
-	MsnSession *session;
+    MsnSession *session;
 
-	char *login_host;
-	char *login_path;
-	GHashTable *challenge_data;
-	struct _PurpleSslConnection *gsc;
+    char *login_host;
+    char *login_path;
+    GHashTable *challenge_data;
+    struct _PurpleSslConnection *gsc;
 
-	guint input_handler;
+    guint input_handler;
 
-	char *write_buf;
-	gssize written_len;
-	_PurpleInputFunction written_cb;
+    char *write_buf;
+    gssize written_len;
+    _PurpleInputFunction written_cb;
 
-	char *read_buf;
-	gsize read_len;
+    char *read_buf;
+    gsize read_len;
 };
 
 void msn_nexus_connect(MsnNexus *nexus);

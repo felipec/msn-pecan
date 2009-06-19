@@ -1,5 +1,5 @@
 /*
- * Copyright © 2006 Felipe Contreras.
+ * Copyright (C) 2006-2009 Felipe Contreras.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __MSN_CMD_H_
-#define __MSN_CMD_H_
+#ifndef PECAN_CMD_H
+#define PECAN_CMD_H
 
 #include <glib.h>
 
@@ -27,13 +27,13 @@ typedef struct MsnCmd MsnCmd;
 
 struct MsnCmd
 {
-	gchar *id;
-	gint trid;
-	gchar *args;
-	gchar *argv[100];
+    gchar *id;
+    gint trid;
+    gchar *args;
+    gchar *argv[100];
 
-	gchar *str;
-	gchar *buffer_cur;
+    gchar *str;
+    gchar *buffer_cur;
 };
 
 MsnCmd *msn_cmd_new ();
@@ -43,4 +43,4 @@ MsnCmd *msn_cmd_from_string (gchar *string);
 void msn_cmd_free (MsnCmd *cmd);
 gchar *msn_cmd_get_param (MsnCmd *cmd, gint num);
 
-#endif /* __MSN_CMD_H_ */
+#endif /* PECAN_CMD_H */

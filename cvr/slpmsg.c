@@ -43,85 +43,85 @@
 MsnSlpMessage *
 msn_slpmsg_new(MsnSlpLink *slplink)
 {
-	MsnSlpMessage *slpmsg;
+    MsnSlpMessage *slpmsg;
 
-	slpmsg = g_new0(MsnSlpMessage, 1);
+    slpmsg = g_new0(MsnSlpMessage, 1);
 
 #ifdef PECAN_DEBUG_SLPMSG
-	pecan_info ("slpmsg new (%p)\n", slpmsg);
+    pecan_info ("slpmsg new (%p)\n", slpmsg);
 #endif
 
-	slpmsg->slplink = slplink;
+    slpmsg->slplink = slplink;
 
-	slplink->slp_msgs =
-		g_list_append(slplink->slp_msgs, slpmsg);
+    slplink->slp_msgs =
+        g_list_append(slplink->slp_msgs, slpmsg);
 
-	return slpmsg;
+    return slpmsg;
 }
 
 void
 msn_slpmsg_destroy(MsnSlpMessage *slpmsg)
 {
-	MsnSlpLink *slplink;
-	GList *cur;
+    MsnSlpLink *slplink;
+    GList *cur;
 
-	g_return_if_fail(slpmsg != NULL);
+    g_return_if_fail(slpmsg != NULL);
 
 #ifdef PECAN_DEBUG_SLPMSG
-	pecan_info ("slpmsg destroy (%p)\n", slpmsg);
+    pecan_info ("slpmsg destroy (%p)\n", slpmsg);
 #endif
 
-	slplink = slpmsg->slplink;
+    slplink = slpmsg->slplink;
 
-	if (slpmsg->fp != NULL)
-		fclose(slpmsg->fp);
+    if (slpmsg->fp != NULL)
+        fclose(slpmsg->fp);
 
-	g_free(slpmsg->buffer);
+    g_free(slpmsg->buffer);
 
 #ifdef PECAN_DEBUG_SLP
-	/*
-	if (slpmsg->info != NULL)
-		g_free(slpmsg->info);
-	*/
+    /*
+       if (slpmsg->info != NULL)
+       g_free(slpmsg->info);
+       */
 #endif
 
-	for (cur = slpmsg->msgs; cur != NULL; cur = cur->next)
-	{
-		/* Something is pointing to this slpmsg, so we should remove that
-		 * pointer to prevent a crash. */
-		/* Ex: a user goes offline and after that we receive an ACK */
+    for (cur = slpmsg->msgs; cur != NULL; cur = cur->next)
+    {
+        /* Something is pointing to this slpmsg, so we should remove that
+         * pointer to prevent a crash. */
+        /* Ex: a user goes offline and after that we receive an ACK */
 
-		MsnMessage *msg = cur->data;
+        MsnMessage *msg = cur->data;
 
 #ifdef PECAN_DEBUG_SLPMSG
-		pecan_info ("Unlink slpmsg callbacks.\n");
+        pecan_info ("Unlink slpmsg callbacks.\n");
 #endif
 
-		msg->ack_cb = NULL;
-		msg->nak_cb = NULL;
-		msg->ack_data = NULL;
-	}
+        msg->ack_cb = NULL;
+        msg->nak_cb = NULL;
+        msg->ack_data = NULL;
+    }
 
-	slplink->slp_msgs = g_list_remove(slplink->slp_msgs, slpmsg);
+    slplink->slp_msgs = g_list_remove(slplink->slp_msgs, slpmsg);
 
-	g_free(slpmsg);
+    g_free(slpmsg);
 }
 
 void
 msn_slpmsg_set_body(MsnSlpMessage *slpmsg,
-					gconstpointer *body,
-					guint64 size)
+                    gconstpointer *body,
+                    guint64 size)
 {
-	/* We can only have one data source at a time. */
-	g_return_if_fail(slpmsg->buffer == NULL);
-	g_return_if_fail(slpmsg->fp == NULL);
+    /* We can only have one data source at a time. */
+    g_return_if_fail(slpmsg->buffer == NULL);
+    g_return_if_fail(slpmsg->fp == NULL);
 
-	if (body != NULL)
-		slpmsg->buffer = g_memdup(body, size);
-	else
-		slpmsg->buffer = g_malloc0(size);
+    if (body != NULL)
+        slpmsg->buffer = g_memdup(body, size);
+    else
+        slpmsg->buffer = g_malloc0(size);
 
-	slpmsg->size = size;
+    slpmsg->size = size;
 }
 
 void
@@ -138,102 +138,102 @@ msn_slpmsg_set_image (MsnSlpMessage *slpmsg,
 void
 msn_slpmsg_open_file(MsnSlpMessage *slpmsg, const char *file_name)
 {
-	struct stat st;
+    struct stat st;
 
-	g_return_if_fail(slpmsg->buffer == NULL);
-	g_return_if_fail(slpmsg->fp == NULL);
+    g_return_if_fail(slpmsg->buffer == NULL);
+    g_return_if_fail(slpmsg->fp == NULL);
 
-	slpmsg->fp = g_fopen(file_name, "rb");
+    slpmsg->fp = g_fopen(file_name, "rb");
 
-	if (g_stat(file_name, &st) == 0)
-		slpmsg->size = st.st_size;
+    if (g_stat(file_name, &st) == 0)
+        slpmsg->size = st.st_size;
 }
 
 #ifdef PECAN_DEBUG_SLP
 void
 msn_slpmsg_show(MsnMessage *msg)
 {
-	const char *info;
-	gboolean text;
+    const char *info;
+    gboolean text;
 
-	text = FALSE;
+    text = FALSE;
 
-	switch (msg->msnslp_header.flags)
-	{
-		case 0x0:
-			info = "SLP CONTROL";
-			text = TRUE;
-			break;
-		case 0x2:
-			info = "SLP ACK"; break;
-		case 0x20:
-		case 0x1000030:
-			info = "SLP DATA"; break;
-		case 0x100:
-			info = "SLP DC"; break;
-		default:
-			info = "SLP UNKNOWN"; break;
-	}
+    switch (msg->msnslp_header.flags)
+    {
+        case 0x0:
+            info = "SLP CONTROL";
+            text = TRUE;
+            break;
+        case 0x2:
+            info = "SLP ACK"; break;
+        case 0x20:
+        case 0x1000030:
+            info = "SLP DATA"; break;
+        case 0x100:
+            info = "SLP DC"; break;
+        default:
+            info = "SLP UNKNOWN"; break;
+    }
 
-	msn_message_show_readable(msg, info, text);
+    msn_message_show_readable(msg, info, text);
 }
 #endif
 
 MsnSlpMessage *
 msn_slpmsg_sip_new(MsnSlpCall *slpcall, int cseq,
-				   const char *header, const char *branch,
-				   const char *content_type, const char *content)
+                   const char *header, const char *branch,
+                   const char *content_type, const char *content)
 {
-	MsnSlpLink *slplink;
-	MsnSlpMessage *slpmsg;
-	gchar *body;
-	gsize body_len;
-	gsize content_len;
+    MsnSlpLink *slplink;
+    MsnSlpMessage *slpmsg;
+    gchar *body;
+    gsize body_len;
+    gsize content_len;
 
-	g_return_val_if_fail(slpcall != NULL, NULL);
-	g_return_val_if_fail(header  != NULL, NULL);
+    g_return_val_if_fail(slpcall != NULL, NULL);
+    g_return_val_if_fail(header  != NULL, NULL);
 
-	slplink = slpcall->slplink;
+    slplink = slpcall->slplink;
 
-	/* Let's remember that "content" should end with a 0x00 */
+    /* Let's remember that "content" should end with a 0x00 */
 
-	content_len = (content != NULL) ? strlen(content) + 1 : 0;
+    content_len = (content != NULL) ? strlen(content) + 1 : 0;
 
-	body = g_strdup_printf("%s\r\n"
-			       "To: <msnmsgr:%s>\r\n"
-			       "From: <msnmsgr:%s>\r\n"
-			       "Via: MSNSLP/1.0/TLP ;branch={%s}\r\n"
-			       "CSeq: %d\r\n"
-			       "Call-ID: {%s}\r\n"
-			       "Max-Forwards: 0\r\n"
-			       "Content-Type: %s\r\n"
-			       "Content-Length: %" G_GSIZE_FORMAT "\r\n"
-			       "\r\n",
-			       header,
-			       slplink->remote_user,
-			       slplink->local_user,
-			       branch,
-			       cseq,
-			       slpcall->id,
-			       content_type,
-			       content_len);
+    body = g_strdup_printf("%s\r\n"
+                           "To: <msnmsgr:%s>\r\n"
+                           "From: <msnmsgr:%s>\r\n"
+                           "Via: MSNSLP/1.0/TLP ;branch={%s}\r\n"
+                           "CSeq: %d\r\n"
+                           "Call-ID: {%s}\r\n"
+                           "Max-Forwards: 0\r\n"
+                           "Content-Type: %s\r\n"
+                           "Content-Length: %" G_GSIZE_FORMAT "\r\n"
+                           "\r\n",
+                           header,
+                           slplink->remote_user,
+                           slplink->local_user,
+                           branch,
+                           cseq,
+                           slpcall->id,
+                           content_type,
+                           content_len);
 
-	body_len = strlen(body);
+    body_len = strlen(body);
 
-	if (content_len > 0)
-	{
-		body_len += content_len;
-		body = g_realloc(body, body_len);
-		g_strlcat(body, content, body_len);
-	}
+    if (content_len > 0)
+    {
+        body_len += content_len;
+        body = g_realloc(body, body_len);
+        g_strlcat(body, content, body_len);
+    }
 
-	slpmsg = msn_slpmsg_new(slplink);
-	msn_slpmsg_set_body(slpmsg, (gpointer) body, body_len);
+    slpmsg = msn_slpmsg_new(slplink);
+    msn_slpmsg_set_body(slpmsg, (gpointer) body, body_len);
 
-	slpmsg->sip = TRUE;
-	slpmsg->slpcall = slpcall;
+    slpmsg->sip = TRUE;
+    slpmsg->slpcall = slpcall;
 
-	g_free(body);
+    g_free(body);
 
-	return slpmsg;
+    return slpmsg;
 }

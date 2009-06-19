@@ -31,21 +31,21 @@
 
 typedef struct
 {
-	guint32 session_id;
-	guint32 id;
-	guint64 offset;
-	guint64 total_size;
-	guint32 length;
-	guint32 flags;
-	guint32 ack_id;
-	guint32 ack_sub_id;
-	guint64 ack_size;
+    guint32 session_id;
+    guint32 id;
+    guint64 offset;
+    guint64 total_size;
+    guint32 length;
+    guint32 flags;
+    guint32 ack_id;
+    guint32 ack_sub_id;
+    guint64 ack_size;
 
 } MsnSlpHeader;
 
 typedef struct
 {
-	guint32 value;
+    guint32 value;
 
 } MsnSlpFooter;
 

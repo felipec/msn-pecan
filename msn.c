@@ -72,16 +72,16 @@
 
 typedef struct
 {
-	PurpleConnection *gc;
-	const char *passport;
+    PurpleConnection *gc;
+    const char *passport;
 
 } MsnMobileData;
 
 #if PURPLE_VERSION_CHECK(2,5,0)
 typedef struct
 {
-	char *smile;
-	MsnObject *obj;
+    char *smile;
+    MsnObject *obj;
 } MsnEmoticon;
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
 
@@ -124,61 +124,61 @@ normalize (const PurpleAccount *account,
 static gboolean
 msn_send_attention(PurpleConnection *gc, const char *username, guint type)
 {
-	MsnMessage *msg;
-	MsnSession *session;
-	MsnSwitchBoard *swboard;
+    MsnMessage *msg;
+    MsnSession *session;
+    MsnSwitchBoard *swboard;
 
-	msg = msn_message_new_nudge();
-	session = gc->proto_data;
-	swboard = msn_session_get_swboard(session, username, MSN_SB_FLAG_IM);
+    msg = msn_message_new_nudge();
+    session = gc->proto_data;
+    swboard = msn_session_get_swboard(session, username, MSN_SB_FLAG_IM);
 
-	if (swboard == NULL)
-		return FALSE;
+    if (swboard == NULL)
+        return FALSE;
 
-	msn_switchboard_send_msg(swboard, msg, TRUE);
-	msn_message_destroy(msg);
+    msn_switchboard_send_msg(swboard, msg, TRUE);
+    msn_message_destroy(msg);
 
-	return TRUE;
+    return TRUE;
 }
 
 static GList *
 msn_attention_types(PurpleAccount *account)
 {
-	PurpleAttentionType *attn;
-	static GList *list = NULL;
+    PurpleAttentionType *attn;
+    static GList *list = NULL;
 
-	if (!list) {
-		attn = g_new0(PurpleAttentionType, 1);
-		attn->name = _("Nudge");
-		attn->incoming_description = _("%s has nudged you!");
-		attn->outgoing_description = _("Nudging %s...");
-		list = g_list_append(list, attn);
-	}
+    if (!list) {
+        attn = g_new0(PurpleAttentionType, 1);
+        attn->name = _("Nudge");
+        attn->incoming_description = _("%s has nudged you!");
+        attn->outgoing_description = _("Nudging %s...");
+        list = g_list_append(list, attn);
+    }
 
-	return list;
+    return list;
 }
 
 
 static PurpleCmdRet
 msn_cmd_nudge(PurpleConversation *conv, const gchar *cmd, gchar **args, gchar **error, void *data)
 {
-	PurpleAccount *account = purple_conversation_get_account(conv);
-	PurpleConnection *gc = purple_account_get_connection(account);
-	const gchar *username;
+    PurpleAccount *account = purple_conversation_get_account(conv);
+    PurpleConnection *gc = purple_account_get_connection(account);
+    const gchar *username;
 
-	username = purple_conversation_get_name(conv);
+    username = purple_conversation_get_name(conv);
 
-	serv_send_attention(gc, username, MSN_NUDGE);
+    serv_send_attention(gc, username, MSN_NUDGE);
 
-	return PURPLE_CMD_RET_OK;
+    return PURPLE_CMD_RET_OK;
 }
 
 static void
 msn_act_id(PurpleConnection *gc, const char *entry)
 {
-	MsnSession *session;
-	session = gc->proto_data;
-        msn_set_prp(gc, "MFN", entry ? entry : msn_session_get_username (session));
+    MsnSession *session;
+    session = gc->proto_data;
+    msn_set_prp(gc, "MFN", entry ? entry : msn_session_get_username (session));
 }
 
 /** Adium needs this. */
@@ -192,104 +192,104 @@ msn_set_friendly_name (PurpleConnection *gc,
 static void
 msn_set_prp(PurpleConnection *gc, const char *type, const char *entry)
 {
-	MsnCmdProc *cmdproc;
-	MsnSession *session;
+    MsnCmdProc *cmdproc;
+    MsnSession *session;
 
-	session = gc->proto_data;
-	cmdproc = session->notification->cmdproc;
+    session = gc->proto_data;
+    cmdproc = session->notification->cmdproc;
 
-	if (entry == NULL || *entry == '\0')
-	{
-		msn_cmdproc_send(cmdproc, "PRP", "%s", type);
-	}
-	else
-	{
-		msn_cmdproc_send(cmdproc, "PRP", "%s %s", type,
-						 purple_url_encode(entry));
-	}
+    if (entry == NULL || *entry == '\0')
+    {
+        msn_cmdproc_send(cmdproc, "PRP", "%s", type);
+    }
+    else
+    {
+        msn_cmdproc_send(cmdproc, "PRP", "%s %s", type,
+                         purple_url_encode(entry));
+    }
 }
 
 #ifndef PECAN_USE_PSM
 static void
 msn_set_personal_message_cb (PurpleConnection *gc, const gchar *entry)
 {
-	MsnSession *session;
+    MsnSession *session;
 
-	session = gc->proto_data;
-	purple_account_set_string(session->user_data, "personal_message", entry);
+    session = gc->proto_data;
+    purple_account_set_string(session->user_data, "personal_message", entry);
 
-	pecan_update_personal_message (session);
+    pecan_update_personal_message (session);
 }
 #endif /* PECAN_USE_PSM */
 
 static void
 msn_set_home_phone_cb(PurpleConnection *gc, const char *entry)
 {
-	msn_set_prp(gc, "PHH", entry);
+    msn_set_prp(gc, "PHH", entry);
 }
 
 static void
 msn_set_work_phone_cb(PurpleConnection *gc, const char *entry)
 {
-	msn_set_prp(gc, "PHW", entry);
+    msn_set_prp(gc, "PHW", entry);
 }
 
 static void
 msn_set_mobile_phone_cb(PurpleConnection *gc, const char *entry)
 {
-	msn_set_prp(gc, "PHM", entry);
+    msn_set_prp(gc, "PHM", entry);
 }
 
 static void
 enable_msn_pages_cb(PurpleConnection *gc)
 {
-	msn_set_prp(gc, "MOB", "Y");
+    msn_set_prp(gc, "MOB", "Y");
 }
 
 static void
 disable_msn_pages_cb(PurpleConnection *gc)
 {
-	msn_set_prp(gc, "MOB", "N");
+    msn_set_prp(gc, "MOB", "N");
 }
 
 static void
 send_to_mobile(PurpleConnection *gc, const char *who, const char *entry)
 {
-	MsnTransaction *trans;
-	MsnSession *session;
-	MsnCmdProc *cmdproc;
-	MsnPage *page;
-	char *payload;
-	size_t payload_len;
+    MsnTransaction *trans;
+    MsnSession *session;
+    MsnCmdProc *cmdproc;
+    MsnPage *page;
+    char *payload;
+    size_t payload_len;
 
-	session = gc->proto_data;
-	cmdproc = session->notification->cmdproc;
+    session = gc->proto_data;
+    cmdproc = session->notification->cmdproc;
 
-	page = msn_page_new();
-	msn_page_set_body(page, entry);
+    page = msn_page_new();
+    msn_page_set_body(page, entry);
 
-	payload = msn_page_gen_payload(page, &payload_len);
+    payload = msn_page_gen_payload(page, &payload_len);
 
-	trans = msn_transaction_new(cmdproc, "PGD", "%s 1 %d", who, payload_len);
+    trans = msn_transaction_new(cmdproc, "PGD", "%s 1 %d", who, payload_len);
 
-	msn_transaction_set_payload(trans, payload, payload_len);
+    msn_transaction_set_payload(trans, payload, payload_len);
 
-	msn_page_destroy(page);
+    msn_page_destroy(page);
 
-	msn_cmdproc_send_trans(cmdproc, trans);
+    msn_cmdproc_send_trans(cmdproc, trans);
 }
 
 static void
 send_to_mobile_cb(MsnMobileData *data, const char *entry)
 {
-	send_to_mobile(data->gc, data->passport, entry);
-	g_free(data);
+    send_to_mobile(data->gc, data->passport, entry);
+    g_free(data);
 }
 
 static void
 close_mobile_page_cb(MsnMobileData *data, const char *entry)
 {
-	g_free(data);
+    g_free(data);
 }
 
 /* -- */
@@ -297,110 +297,110 @@ close_mobile_page_cb(MsnMobileData *data, const char *entry)
 static void
 msn_show_set_friendly_name(PurplePluginAction *action)
 {
-	PurpleConnection *gc;
+    PurpleConnection *gc;
 
-	gc = (PurpleConnection *) action->context;
+    gc = (PurpleConnection *) action->context;
 
-	purple_request_input(gc, NULL, _("Set your friendly name."),
-					   _("This is the name that other MSN buddies will "
-						 "see you as."),
-					   purple_connection_get_display_name(gc), FALSE, FALSE, NULL,
-					   _("OK"), G_CALLBACK(msn_act_id),
-					   _("Cancel"), NULL,
-					   purple_connection_get_account(gc), NULL, NULL,
-					   gc);
+    purple_request_input(gc, NULL, _("Set your friendly name."),
+                         _("This is the name that other MSN buddies will "
+                           "see you as."),
+                         purple_connection_get_display_name(gc), FALSE, FALSE, NULL,
+                         _("OK"), G_CALLBACK(msn_act_id),
+                         _("Cancel"), NULL,
+                         purple_connection_get_account(gc), NULL, NULL,
+                         gc);
 }
 
 #ifndef PECAN_USE_PSM
 static void
 msn_show_set_personal_message (PurplePluginAction *action)
 {
-	PurpleConnection *gc;
-	MsnSession *session;
+    PurpleConnection *gc;
+    MsnSession *session;
 
-	gc = (PurpleConnection *) action->context;
-	session = gc->proto_data;
+    gc = (PurpleConnection *) action->context;
+    session = gc->proto_data;
 
-	purple_request_input(gc, NULL, _("Set your personal message."),
-					   _("This is the message that other MSN buddies will "
-						 "see under your name."),
-					   purple_account_get_string (session->user_data, "personal_message", ""),
-					   FALSE, FALSE, NULL,
-					   _("OK"), G_CALLBACK(msn_set_personal_message_cb),
-					   _("Cancel"), NULL,
-					   purple_connection_get_account(gc), NULL, NULL,
-					   gc);
+    purple_request_input(gc, NULL, _("Set your personal message."),
+                         _("This is the message that other MSN buddies will "
+                           "see under your name."),
+                         purple_account_get_string (session->user_data, "personal_message", ""),
+                         FALSE, FALSE, NULL,
+                         _("OK"), G_CALLBACK(msn_set_personal_message_cb),
+                         _("Cancel"), NULL,
+                         purple_connection_get_account(gc), NULL, NULL,
+                         gc);
 }
 #endif /* PECAN_USE_PSM */
 
 static void
 msn_show_set_home_phone(PurplePluginAction *action)
 {
-	PurpleConnection *gc;
-	MsnSession *session;
+    PurpleConnection *gc;
+    MsnSession *session;
 
-	gc = (PurpleConnection *) action->context;
-	session = gc->proto_data;
+    gc = (PurpleConnection *) action->context;
+    session = gc->proto_data;
 
-	purple_request_input(gc, NULL, _("Set your home phone number."), NULL,
-					   pecan_contact_get_home_phone(msn_session_get_contact (session)), FALSE, FALSE, NULL,
-					   _("OK"), G_CALLBACK(msn_set_home_phone_cb),
-					   _("Cancel"), NULL,
-					   purple_connection_get_account(gc), NULL, NULL,
-					   gc);
+    purple_request_input(gc, NULL, _("Set your home phone number."), NULL,
+                         pecan_contact_get_home_phone(msn_session_get_contact (session)), FALSE, FALSE, NULL,
+                         _("OK"), G_CALLBACK(msn_set_home_phone_cb),
+                         _("Cancel"), NULL,
+                         purple_connection_get_account(gc), NULL, NULL,
+                         gc);
 }
 
 static void
 msn_show_set_work_phone(PurplePluginAction *action)
 {
-	PurpleConnection *gc;
-	MsnSession *session;
+    PurpleConnection *gc;
+    MsnSession *session;
 
-	gc = (PurpleConnection *) action->context;
-	session = gc->proto_data;
+    gc = (PurpleConnection *) action->context;
+    session = gc->proto_data;
 
-	purple_request_input(gc, NULL, _("Set your work phone number."), NULL,
-					   pecan_contact_get_work_phone(msn_session_get_contact (session)), FALSE, FALSE, NULL,
-					   _("OK"), G_CALLBACK(msn_set_work_phone_cb),
-					   _("Cancel"), NULL,
-					   purple_connection_get_account(gc), NULL, NULL,
-					   gc);
+    purple_request_input(gc, NULL, _("Set your work phone number."), NULL,
+                         pecan_contact_get_work_phone(msn_session_get_contact (session)), FALSE, FALSE, NULL,
+                         _("OK"), G_CALLBACK(msn_set_work_phone_cb),
+                         _("Cancel"), NULL,
+                         purple_connection_get_account(gc), NULL, NULL,
+                         gc);
 }
 
 static void
 msn_show_set_mobile_phone(PurplePluginAction *action)
 {
-	PurpleConnection *gc;
-	MsnSession *session;
+    PurpleConnection *gc;
+    MsnSession *session;
 
-	gc = (PurpleConnection *) action->context;
-	session = gc->proto_data;
+    gc = (PurpleConnection *) action->context;
+    session = gc->proto_data;
 
-	purple_request_input(gc, NULL, _("Set your mobile phone number."), NULL,
-					   pecan_contact_get_mobile_phone(msn_session_get_contact (session)), FALSE, FALSE, NULL,
-					   _("OK"), G_CALLBACK(msn_set_mobile_phone_cb),
-					   _("Cancel"), NULL,
-					   purple_connection_get_account(gc), NULL, NULL,
-					   gc);
+    purple_request_input(gc, NULL, _("Set your mobile phone number."), NULL,
+                         pecan_contact_get_mobile_phone(msn_session_get_contact (session)), FALSE, FALSE, NULL,
+                         _("OK"), G_CALLBACK(msn_set_mobile_phone_cb),
+                         _("Cancel"), NULL,
+                         purple_connection_get_account(gc), NULL, NULL,
+                         gc);
 }
 
 static void
 msn_show_set_mobile_pages(PurplePluginAction *action)
 {
-	PurpleConnection *gc;
+    PurpleConnection *gc;
 
-	gc = (PurpleConnection *) action->context;
+    gc = (PurpleConnection *) action->context;
 
-	purple_request_action(gc, NULL, _("Allow MSN Mobile pages?"),
-						_("Do you want to allow or disallow people on "
-						  "your buddy list to send you MSN Mobile pages "
-						  "to your cell phone or other mobile device?"),
-						-1,
-						purple_connection_get_account(gc), NULL, NULL,
-						gc, 3,
-						_("Allow"), G_CALLBACK(enable_msn_pages_cb),
-						_("Disallow"), G_CALLBACK(disable_msn_pages_cb),
-						_("Cancel"), NULL);
+    purple_request_action(gc, NULL, _("Allow MSN Mobile pages?"),
+                          _("Do you want to allow or disallow people on "
+                            "your buddy list to send you MSN Mobile pages "
+                            "to your cell phone or other mobile device?"),
+                          -1,
+                          purple_connection_get_account(gc), NULL, NULL,
+                          gc, 3,
+                          _("Allow"), G_CALLBACK(enable_msn_pages_cb),
+                          _("Disallow"), G_CALLBACK(disable_msn_pages_cb),
+                          _("Cancel"), NULL);
 }
 
 static void
@@ -442,128 +442,128 @@ show_hotmail_inbox (PurplePluginAction *action)
 static void
 show_send_to_mobile_cb(PurpleBlistNode *node, gpointer ignored)
 {
-	PurpleBuddy *buddy;
-	PurpleConnection *gc;
-	MsnSession *session;
-	MsnMobileData *data;
+    PurpleBuddy *buddy;
+    PurpleConnection *gc;
+    MsnSession *session;
+    MsnMobileData *data;
 
-	g_return_if_fail(PURPLE_BLIST_NODE_IS_BUDDY(node));
+    g_return_if_fail(PURPLE_BLIST_NODE_IS_BUDDY(node));
 
-	buddy = (PurpleBuddy *) node;
-	gc = purple_account_get_connection(buddy->account);
+    buddy = (PurpleBuddy *) node;
+    gc = purple_account_get_connection(buddy->account);
 
-	session = gc->proto_data;
+    session = gc->proto_data;
 
-	data = g_new0(MsnMobileData, 1);
-	data->gc = gc;
-	data->passport = buddy->name;
+    data = g_new0(MsnMobileData, 1);
+    data->gc = gc;
+    data->passport = buddy->name;
 
-	purple_request_input(gc, NULL, _("Send a mobile message."), NULL,
-					   NULL, TRUE, FALSE, NULL,
-					   _("Page"), G_CALLBACK(send_to_mobile_cb),
-					   _("Close"), G_CALLBACK(close_mobile_page_cb),
-					   purple_connection_get_account(gc), purple_buddy_get_name(buddy), NULL,
-					   data);
+    purple_request_input(gc, NULL, _("Send a mobile message."), NULL,
+                         NULL, TRUE, FALSE, NULL,
+                         _("Page"), G_CALLBACK(send_to_mobile_cb),
+                         _("Close"), G_CALLBACK(close_mobile_page_cb),
+                         purple_connection_get_account(gc), purple_buddy_get_name(buddy), NULL,
+                         data);
 }
 
 static gboolean
 msn_offline_message(const PurpleBuddy *buddy) {
-	PecanContact *user;
-	if (buddy == NULL)
-		return FALSE;
-	user = buddy->proto_data;
-	return user && user->mobile;
+    PecanContact *user;
+    if (buddy == NULL)
+        return FALSE;
+    user = buddy->proto_data;
+    return user && user->mobile;
 }
 
 static void
 initiate_chat_cb(PurpleBlistNode *node, gpointer data)
 {
-	PurpleBuddy *buddy;
-	PurpleConnection *gc;
+    PurpleBuddy *buddy;
+    PurpleConnection *gc;
 
-	MsnSession *session;
-	MsnSwitchBoard *swboard;
+    MsnSession *session;
+    MsnSwitchBoard *swboard;
 
-	g_return_if_fail(PURPLE_BLIST_NODE_IS_BUDDY(node));
+    g_return_if_fail(PURPLE_BLIST_NODE_IS_BUDDY(node));
 
-	buddy = (PurpleBuddy *) node;
-	gc = purple_account_get_connection(buddy->account);
+    buddy = (PurpleBuddy *) node;
+    gc = purple_account_get_connection(buddy->account);
 
-	session = gc->proto_data;
+    session = gc->proto_data;
 
-	swboard = msn_switchboard_new(session);
-        g_hash_table_insert (session->conversations, g_strdup (buddy->name), swboard);
-	msn_switchboard_request(swboard);
-	msn_switchboard_request_add_user(swboard, buddy->name);
+    swboard = msn_switchboard_new(session);
+    g_hash_table_insert (session->conversations, g_strdup (buddy->name), swboard);
+    msn_switchboard_request(swboard);
+    msn_switchboard_request_add_user(swboard, buddy->name);
 
-	/* TODO: This might move somewhere else, after USR might be */
-	swboard->chat_id = session->conv_seq++;
-	swboard->conv = serv_got_joined_chat(gc, swboard->chat_id, "MSN Chat");
-	swboard->flag = MSN_SB_FLAG_IM;
+    /* TODO: This might move somewhere else, after USR might be */
+    swboard->chat_id = session->conv_seq++;
+    swboard->conv = serv_got_joined_chat(gc, swboard->chat_id, "MSN Chat");
+    swboard->flag = MSN_SB_FLAG_IM;
 
-	purple_conv_chat_add_user(PURPLE_CONV_CHAT(swboard->conv),
-							msn_session_get_username(session), NULL, PURPLE_CBFLAGS_NONE, TRUE);
+    purple_conv_chat_add_user(PURPLE_CONV_CHAT(swboard->conv),
+                              msn_session_get_username(session), NULL, PURPLE_CBFLAGS_NONE, TRUE);
 }
 
 #if defined(PECAN_CVR)
 static void
 t_msn_xfer_init(PurpleXfer *xfer)
 {
-	MsnSlpLink *slplink = xfer->data;
-	msn_slplink_request_ft(slplink, xfer);
+    MsnSlpLink *slplink = xfer->data;
+    msn_slplink_request_ft(slplink, xfer);
 }
 
 static PurpleXfer*
 msn_new_xfer(PurpleConnection *gc, const char *who)
 {
-	MsnSession *session;
-	MsnSlpLink *slplink;
-	PurpleXfer *xfer;
+    MsnSession *session;
+    MsnSlpLink *slplink;
+    PurpleXfer *xfer;
 
-	session = gc->proto_data;
+    session = gc->proto_data;
 
-	xfer = purple_xfer_new(gc->account, PURPLE_XFER_SEND, who);
-	if (xfer)
-	{
-		slplink = msn_session_get_slplink(session, who);
+    xfer = purple_xfer_new(gc->account, PURPLE_XFER_SEND, who);
+    if (xfer)
+    {
+        slplink = msn_session_get_slplink(session, who);
 
-		xfer->data = slplink;
+        xfer->data = slplink;
 
-		purple_xfer_set_init_fnc(xfer, t_msn_xfer_init);
-	}
+        purple_xfer_set_init_fnc(xfer, t_msn_xfer_init);
+    }
 
-	return xfer;
+    return xfer;
 }
 
 static void
 msn_send_file(PurpleConnection *gc, const char *who, const char *file)
 {
-	PurpleXfer *xfer = msn_new_xfer(gc, who);
+    PurpleXfer *xfer = msn_new_xfer(gc, who);
 
-	if (file)
-		purple_xfer_request_accepted(xfer, file);
-	else
-		purple_xfer_request(xfer);
+    if (file)
+        purple_xfer_request_accepted(xfer, file);
+    else
+        purple_xfer_request(xfer);
 }
 
 static gboolean
 msn_can_receive_file(PurpleConnection *gc, const char *who)
 {
-        MsnSession *session;
-	gchar *normal_who;
-	gboolean ret;
+    MsnSession *session;
+    gchar *normal_who;
+    gboolean ret;
 
-        session = gc->proto_data;
+    session = gc->proto_data;
 
-	g_return_val_if_fail (session, FALSE);
+    g_return_val_if_fail (session, FALSE);
 
-	normal_who = pecan_normalize (who);
+    normal_who = pecan_normalize (who);
 
-	ret = strcmp(normal_who, msn_session_get_username (session));
+    ret = strcmp(normal_who, msn_session_get_username (session));
 
-	g_free (normal_who);
+    g_free (normal_who);
 
-	return ret;
+    return ret;
 }
 #endif /* defined(PECAN_CVR) */
 
@@ -770,61 +770,61 @@ status_types (PurpleAccount *account)
 static GList *
 msn_actions(PurplePlugin *plugin, gpointer context)
 {
-	PurpleConnection *gc = (PurpleConnection *)context;
-	MsnSession *session;
-	const char *user;
+    PurpleConnection *gc = (PurpleConnection *)context;
+    MsnSession *session;
+    const char *user;
 
-	GList *m = NULL;
-	PurplePluginAction *act;
+    GList *m = NULL;
+    PurplePluginAction *act;
 
-        session = gc->proto_data;
+    session = gc->proto_data;
 
-	act = purple_plugin_action_new(_("Set Friendly Name..."),
-								 msn_show_set_friendly_name);
-	m = g_list_append(m, act);
+    act = purple_plugin_action_new(_("Set Friendly Name..."),
+                                   msn_show_set_friendly_name);
+    m = g_list_append(m, act);
 
 #ifndef PECAN_USE_PSM
-	act = purple_plugin_action_new(_("Set Personal Message..."),
-					msn_show_set_personal_message);
-	m = g_list_append(m, act);
+    act = purple_plugin_action_new(_("Set Personal Message..."),
+                                   msn_show_set_personal_message);
+    m = g_list_append(m, act);
 #endif /* PECAN_USE_PSM */
 
-        m = g_list_append(m, NULL);
+    m = g_list_append(m, NULL);
 
-	act = purple_plugin_action_new(_("Set Home Phone Number..."),
-								 msn_show_set_home_phone);
-	m = g_list_append(m, act);
+    act = purple_plugin_action_new(_("Set Home Phone Number..."),
+                                   msn_show_set_home_phone);
+    m = g_list_append(m, act);
 
-	act = purple_plugin_action_new(_("Set Work Phone Number..."),
-			msn_show_set_work_phone);
-	m = g_list_append(m, act);
+    act = purple_plugin_action_new(_("Set Work Phone Number..."),
+                                   msn_show_set_work_phone);
+    m = g_list_append(m, act);
 
-	act = purple_plugin_action_new(_("Set Mobile Phone Number..."),
-			msn_show_set_mobile_phone);
-	m = g_list_append(m, act);
-	m = g_list_append(m, NULL);
+    act = purple_plugin_action_new(_("Set Mobile Phone Number..."),
+                                   msn_show_set_mobile_phone);
+    m = g_list_append(m, act);
+    m = g_list_append(m, NULL);
 
 #if 0
-	act = purple_plugin_action_new(_("Enable/Disable Mobile Devices..."),
-			msn_show_set_mobile_support);
-	m = g_list_append(m, act);
+    act = purple_plugin_action_new(_("Enable/Disable Mobile Devices..."),
+                                   msn_show_set_mobile_support);
+    m = g_list_append(m, act);
 #endif
 
-	act = purple_plugin_action_new(_("Allow/Disallow Mobile Pages..."),
-			msn_show_set_mobile_pages);
-	m = g_list_append(m, act);
+    act = purple_plugin_action_new(_("Allow/Disallow Mobile Pages..."),
+                                   msn_show_set_mobile_pages);
+    m = g_list_append(m, act);
 
-	user = msn_session_get_username(session);
+    user = msn_session_get_username(session);
 
-	if ((strstr(user, "@hotmail.") != NULL) ||
-		(strstr(user, "@msn.com") != NULL))
-	{
-		m = g_list_append(m, NULL);
-		act = purple_plugin_action_new (_("Open Hotmail Inbox"), show_hotmail_inbox);
-		m = g_list_append(m, act);
-	}
+    if ((strstr(user, "@hotmail.") != NULL) ||
+        (strstr(user, "@msn.com") != NULL))
+    {
+        m = g_list_append(m, NULL);
+        act = purple_plugin_action_new (_("Open Hotmail Inbox"), show_hotmail_inbox);
+        m = g_list_append(m, act);
+    }
 
-	return m;
+    return m;
 }
 
 static GList *
@@ -940,99 +940,99 @@ logout (PurpleConnection *gc)
 static GString*
 msn_msg_emoticon_add(GString *current, MsnEmoticon *emoticon)
 {
-	MsnObject *obj;
-	char *strobj;
+    MsnObject *obj;
+    char *strobj;
 
-	if (emoticon == NULL)
-            return current;
+    if (emoticon == NULL)
+        return current;
 
-	obj = emoticon->obj;
+    obj = emoticon->obj;
 
-	if (!obj)
-            return current;
+    if (!obj)
+        return current;
 
-	strobj = msn_object_to_string(obj);
+    strobj = msn_object_to_string(obj);
 
-	if (current)
-	{
-		g_string_append_printf(current, "\t%s\t%s", emoticon->smile, strobj);
-	}
-	else
-	{
-		current = g_string_new("");
-		g_string_printf(current,"%s\t%s", emoticon->smile, strobj);
-	}
+    if (current)
+    {
+        g_string_append_printf(current, "\t%s\t%s", emoticon->smile, strobj);
+    }
+    else
+    {
+        current = g_string_new("");
+        g_string_printf(current,"%s\t%s", emoticon->smile, strobj);
+    }
 
-	g_free(strobj);
+    g_free(strobj);
 
-	return current;
+    return current;
 }
 
 static void
 msn_send_emoticons(MsnSwitchBoard *swboard, GString *body)
 {
-	MsnMessage *msg;
+    MsnMessage *msg;
 
-	g_return_if_fail(body != NULL);
+    g_return_if_fail(body != NULL);
 
-	msg = msn_message_new(MSN_MSG_SLP);
-	msn_message_set_content_type(msg, "text/x-mms-emoticon");
-	msn_message_set_flag(msg, 'N');
-	msn_message_set_bin_data(msg, body->str, body->len);
+    msg = msn_message_new(MSN_MSG_SLP);
+    msn_message_set_content_type(msg, "text/x-mms-emoticon");
+    msn_message_set_flag(msg, 'N');
+    msn_message_set_bin_data(msg, body->str, body->len);
 
-	msn_switchboard_send_msg(swboard, msg, TRUE);
-	msn_message_destroy(msg);
+    msn_switchboard_send_msg(swboard, msg, TRUE);
+    msn_message_destroy(msg);
 }
 
 static void
 msn_emoticon_destroy(MsnEmoticon *emoticon)
 {
-	if (emoticon->obj)
-            msn_object_destroy(emoticon->obj);
-	g_free(emoticon->smile);
-	g_free(emoticon);
+    if (emoticon->obj)
+        msn_object_destroy(emoticon->obj);
+    g_free(emoticon->smile);
+    g_free(emoticon);
 }
 
 static GSList *
 msn_msg_grab_emoticons(const char *msg, const char *username)
 {
-	GSList *list;
-	GList *smileys;
-	PurpleSmiley *smiley;
-	PurpleStoredImage *image;
-	char *ptr;
-	MsnEmoticon *emoticon;
-	int length;
+    GSList *list;
+    GList *smileys;
+    PurpleSmiley *smiley;
+    PurpleStoredImage *image;
+    char *ptr;
+    MsnEmoticon *emoticon;
+    int length;
 
-	list = NULL;
-	smileys = purple_smileys_get_all();
-	length = strlen(msg);
+    list = NULL;
+    smileys = purple_smileys_get_all();
+    length = strlen(msg);
 
-	for (; smileys; smileys = g_list_delete_link(smileys, smileys))
-	{
-            PecanBuffer *buffer;
-            smiley = smileys->data;
+    for (; smileys; smileys = g_list_delete_link(smileys, smileys))
+    {
+        PecanBuffer *buffer;
+        smiley = smileys->data;
 
-            ptr = g_strstr_len(msg, length, purple_smiley_get_shortcut(smiley));
+        ptr = g_strstr_len(msg, length, purple_smiley_get_shortcut(smiley));
 
-            if (!ptr)
-                continue;
+        if (!ptr)
+            continue;
 
-            image = purple_smiley_get_stored_image(smiley);
-            buffer = pecan_buffer_new_memdup ((const gpointer) purple_imgstore_get_data (image),
-                                              purple_imgstore_get_size (image));
+        image = purple_smiley_get_stored_image(smiley);
+        buffer = pecan_buffer_new_memdup ((const gpointer) purple_imgstore_get_data (image),
+                                          purple_imgstore_get_size (image));
 
-            emoticon = g_new0(MsnEmoticon, 1);
-            emoticon->smile = g_strdup(purple_smiley_get_shortcut(smiley));
-            emoticon->obj = msn_object_new_from_image(buffer,
-                                                      purple_imgstore_get_filename(image),
-                                                      username, MSN_OBJECT_EMOTICON);
+        emoticon = g_new0(MsnEmoticon, 1);
+        emoticon->smile = g_strdup(purple_smiley_get_shortcut(smiley));
+        emoticon->obj = msn_object_new_from_image(buffer,
+                                                  purple_imgstore_get_filename(image),
+                                                  username, MSN_OBJECT_EMOTICON);
 
-            purple_imgstore_unref(image);
-            list = g_slist_prepend(list, emoticon);
-	}
+        purple_imgstore_unref(image);
+        list = g_slist_prepend(list, emoticon);
+    }
 
-	return list;
+    return list;
 }
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
 #endif /* defined(PECAN_CVR) */
@@ -1582,16 +1582,16 @@ chat_send (PurpleConnection *gc,
 static void
 msn_keepalive(PurpleConnection *gc)
 {
-	MsnSession *session;
+    MsnSession *session;
 
-	session = gc->proto_data;
+    session = gc->proto_data;
 
-	if (!msn_session_get_bool (session, "use_http_method"))
-	{
-		MsnCmdProc *cmdproc;
-		cmdproc = session->notification->cmdproc;
-		msn_cmdproc_send_quick(cmdproc, "PNG", NULL, NULL);
-	}
+    if (!msn_session_get_bool (session, "use_http_method"))
+    {
+        MsnCmdProc *cmdproc;
+        cmdproc = session->notification->cmdproc;
+        msn_cmdproc_send_quick(cmdproc, "PNG", NULL, NULL);
+    }
 }
 
 static void

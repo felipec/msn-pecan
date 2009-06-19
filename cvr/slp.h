@@ -32,16 +32,16 @@ struct PecanContact;
 
 struct _PurpleXfer;
 
-void msn_xfer_progress_cb(struct MsnSlpCall *slpcall, gsize total_length, gsize
-						  len, gsize offset);
+void msn_xfer_progress_cb(struct MsnSlpCall *slpcall, gsize total_length,
+                          gsize len, gsize offset);
 
-struct MsnSlpCall * msn_slp_sip_recv(struct MsnSlpLink *slplink,
-							  const char *body);
+struct MsnSlpCall *msn_slp_sip_recv(struct MsnSlpLink *slplink,
+                                    const char *body);
 
 void send_bye(struct MsnSlpCall *slpcall, const char *type);
 
 void msn_xfer_completed_cb(struct MsnSlpCall *slpcall,
-						   const guchar *body, gsize size);
+                           const guchar *body, gsize size);
 
 void msn_xfer_cancel(struct _PurpleXfer *xfer);
 void msn_xfer_end_cb(struct MsnSlpCall *slpcall, struct MsnSession *session);

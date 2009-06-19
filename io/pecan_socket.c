@@ -29,9 +29,9 @@
 
 void
 pecan_socket_connect (const gchar *hostname,
-		      guint port,
-		      PecanSocketCb connect_cb,
-		      gpointer user_data)
+                      guint port,
+                      PecanSocketCb connect_cb,
+                      gpointer user_data)
 {
     int fd;
     struct hostent* host;
@@ -75,10 +75,10 @@ pecan_socket_connect (const gchar *hostname,
 
 leave:
     {
-	PecanSocket *sock;
-	sock = g_new0 (PecanSocket, 1);
-	sock->fd = fd;
-	connect_cb (sock, success, user_data);
-	g_free (sock);
+        PecanSocket *sock;
+        sock = g_new0 (PecanSocket, 1);
+        sock->fd = fd;
+        connect_cb (sock, success, user_data);
+        g_free (sock);
     }
 }

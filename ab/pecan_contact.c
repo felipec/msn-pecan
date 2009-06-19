@@ -739,10 +739,10 @@ gboolean
 pecan_contact_can_receive (PecanContact *contact)
 {
     if (is_blocked (contact))
-	return false;
+        return false;
 
     if (is_offline (contact))
-	return false;
+        return false;
 
     return true;
 }

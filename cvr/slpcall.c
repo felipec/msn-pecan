@@ -50,241 +50,241 @@
 MsnSlpCall *
 msn_slp_call_new(MsnSlpLink *slplink)
 {
-	MsnSlpCall *slpcall;
+    MsnSlpCall *slpcall;
 
-	g_return_val_if_fail(slplink != NULL, NULL);
+    g_return_val_if_fail(slplink != NULL, NULL);
 
-	slpcall = g_new0(MsnSlpCall, 1);
+    slpcall = g_new0(MsnSlpCall, 1);
 
 #ifdef PECAN_DEBUG_SLPCALL
-	pecan_info ("slpcall_new: slpcall(%p)\n", slpcall);
+    pecan_info ("slpcall_new: slpcall(%p)\n", slpcall);
 #endif
 
-	slpcall->slplink = slplink;
+    slpcall->slplink = slplink;
 
-	msn_slplink_add_slpcall(slplink, slpcall);
+    msn_slplink_add_slpcall(slplink, slpcall);
 
-	slpcall->timer = purple_timeout_add(MSN_SLPCALL_TIMEOUT, msn_slp_call_timeout, slpcall);
-	slpcall->session_id = slplink->slp_session_id++;
+    slpcall->timer = purple_timeout_add(MSN_SLPCALL_TIMEOUT, msn_slp_call_timeout, slpcall);
+    slpcall->session_id = slplink->slp_session_id++;
 
-	return slpcall;
+    return slpcall;
 }
 
 void
 msn_slp_call_destroy(MsnSlpCall *slpcall)
 {
-	GList *e;
-	MsnSession *session;
+    GList *e;
+    MsnSession *session;
 
 #ifdef PECAN_DEBUG_SLPCALL
-	pecan_info ("slpcall_destroy: slpcall(%p)\n", slpcall);
+    pecan_info ("slpcall_destroy: slpcall(%p)\n", slpcall);
 #endif
 
-	g_return_if_fail(slpcall != NULL);
+    g_return_if_fail(slpcall != NULL);
 
-	if (slpcall->timer)
-		purple_timeout_remove(slpcall->timer);
+    if (slpcall->timer)
+        purple_timeout_remove(slpcall->timer);
 
-	if (slpcall->id != NULL)
-		g_free(slpcall->id);
+    if (slpcall->id != NULL)
+        g_free(slpcall->id);
 
-	if (slpcall->branch != NULL)
-		g_free(slpcall->branch);
+    if (slpcall->branch != NULL)
+        g_free(slpcall->branch);
 
-	if (slpcall->data_info != NULL)
-		g_free(slpcall->data_info);
+    if (slpcall->data_info != NULL)
+        g_free(slpcall->data_info);
 
-	for (e = slpcall->slplink->slp_msgs; e != NULL; )
-	{
-		MsnSlpMessage *slpmsg = e->data;
-		e = e->next;
+    for (e = slpcall->slplink->slp_msgs; e != NULL; )
+    {
+        MsnSlpMessage *slpmsg = e->data;
+        e = e->next;
 
 #ifdef PECAN_DEBUG_SLPCALL_VERBOSE
-		pecan_info ("slpcall_destroy: trying slpmsg(%p)\n",
-						slpmsg);
+        pecan_info ("slpcall_destroy: trying slpmsg(%p)\n",
+                    slpmsg);
 #endif
 
-		if (slpmsg->slpcall == slpcall)
-		{
-			msn_slpmsg_destroy(slpmsg);
-		}
-	}
+        if (slpmsg->slpcall == slpcall)
+        {
+            msn_slpmsg_destroy(slpmsg);
+        }
+    }
 
-	session = slpcall->slplink->session;
+    session = slpcall->slplink->session;
 
-	msn_slplink_remove_slpcall(slpcall->slplink, slpcall);
+    msn_slplink_remove_slpcall(slpcall->slplink, slpcall);
 
-	if (slpcall->end_cb != NULL)
-		slpcall->end_cb(slpcall, session);
+    if (slpcall->end_cb != NULL)
+        slpcall->end_cb(slpcall, session);
 
-	if (slpcall->xfer != NULL)
-		purple_xfer_unref(slpcall->xfer);
+    if (slpcall->xfer != NULL)
+        purple_xfer_unref(slpcall->xfer);
 
-	g_free(slpcall);
+    g_free(slpcall);
 }
 
 void
 msn_slp_call_init(MsnSlpCall *slpcall, MsnSlpCallType type)
 {
-	slpcall->id = msn_rand_guid();
-	slpcall->type = type;
+    slpcall->id = msn_rand_guid();
+    slpcall->type = type;
 }
 
 void
 msn_slp_call_session_init(MsnSlpCall *slpcall)
 {
-	MsnSlpSession *slpsession;
+    MsnSlpSession *slpsession;
 
-	slpsession = msn_slp_session_new(slpcall);
+    slpsession = msn_slp_session_new(slpcall);
 
-	if (slpcall->session_init_cb)
-		slpcall->session_init_cb(slpsession);
+    if (slpcall->session_init_cb)
+        slpcall->session_init_cb(slpsession);
 
-	slpcall->started = TRUE;
+    slpcall->started = TRUE;
 }
 
 void
 msn_slp_call_invite(MsnSlpCall *slpcall, const char *euf_guid,
-					int app_id, const char *context)
+                    int app_id, const char *context)
 {
-	MsnSlpLink *slplink;
-	MsnSlpMessage *slpmsg;
-	char *header;
-	char *content;
+    MsnSlpLink *slplink;
+    MsnSlpMessage *slpmsg;
+    char *header;
+    char *content;
 
-	g_return_if_fail(slpcall != NULL);
-	g_return_if_fail(context != NULL);
+    g_return_if_fail(slpcall != NULL);
+    g_return_if_fail(context != NULL);
 
-	slplink = slpcall->slplink;
+    slplink = slpcall->slplink;
 
-	slpcall->branch = msn_rand_guid();
+    slpcall->branch = msn_rand_guid();
 
-        content = g_strdup_printf("EUF-GUID: {%s}\r\n"
-                                  "SessionID: %lu\r\n"
-                                  "AppID: %d\r\n"
-                                  "Context: %s\r\n\r\n",
-                                  euf_guid,
-                                  slpcall->session_id,
-                                  app_id,
-                                  context);
+    content = g_strdup_printf("EUF-GUID: {%s}\r\n"
+                              "SessionID: %lu\r\n"
+                              "AppID: %d\r\n"
+                              "Context: %s\r\n\r\n",
+                              euf_guid,
+                              slpcall->session_id,
+                              app_id,
+                              context);
 
-        header = g_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
-                                 slplink->remote_user);
+    header = g_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
+                             slplink->remote_user);
 
-	slpmsg = msn_slpmsg_sip_new(slpcall, 0, header, slpcall->branch,
-								"application/x-msnmsgr-sessionreqbody", content);
+    slpmsg = msn_slpmsg_sip_new(slpcall, 0, header, slpcall->branch,
+                                "application/x-msnmsgr-sessionreqbody", content);
 
 #ifdef PECAN_DEBUG_SLP
-	slpmsg->info = "SLP INVITE";
-	slpmsg->text_body = TRUE;
+    slpmsg->info = "SLP INVITE";
+    slpmsg->text_body = TRUE;
 #endif
 
-	msn_slplink_send_slpmsg(slplink, slpmsg);
+    msn_slplink_send_slpmsg(slplink, slpmsg);
 
-	g_free(header);
-	g_free(content);
+    g_free(header);
+    g_free(content);
 }
 
 void
 msn_slp_call_close(MsnSlpCall *slpcall)
 {
-	g_return_if_fail(slpcall != NULL);
-	g_return_if_fail(slpcall->slplink != NULL);
+    g_return_if_fail(slpcall != NULL);
+    g_return_if_fail(slpcall->slplink != NULL);
 
-	send_bye(slpcall, "application/x-msnmsgr-sessionclosebody");
-	msn_slplink_unleash(slpcall->slplink);
-	msn_slp_call_destroy(slpcall);
+    send_bye(slpcall, "application/x-msnmsgr-sessionclosebody");
+    msn_slplink_unleash(slpcall->slplink);
+    msn_slp_call_destroy(slpcall);
 }
 
 gboolean
 msn_slp_call_timeout(gpointer data)
 {
-	MsnSlpCall *slpcall;
+    MsnSlpCall *slpcall;
 
-	slpcall = data;
+    slpcall = data;
 
 #ifdef PECAN_DEBUG_SLPCALL
-	pecan_info ("slpcall_timeout: slpcall(%p)\n", slpcall);
+    pecan_info ("slpcall_timeout: slpcall(%p)\n", slpcall);
 #endif
 
-	if (!slpcall->pending && !slpcall->progress)
-	{
-		msn_slp_call_destroy(slpcall);
-		return FALSE;
-	}
+    if (!slpcall->pending && !slpcall->progress)
+    {
+        msn_slp_call_destroy(slpcall);
+        return FALSE;
+    }
 
-	slpcall->progress = FALSE;
+    slpcall->progress = FALSE;
 
-	return TRUE;
+    return TRUE;
 }
 
 MsnSlpCall *
 msn_slp_process_msg(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
 {
-	MsnSlpCall *slpcall;
-	gpointer body;
-	gsize body_len;
+    MsnSlpCall *slpcall;
+    gpointer body;
+    gsize body_len;
 
-	slpcall = NULL;
-	body = slpmsg->buffer;
-	body_len = slpmsg->size;
+    slpcall = NULL;
+    body = slpmsg->buffer;
+    body_len = slpmsg->size;
 
-	if (slpmsg->flags == 0x0 || slpmsg->flags == 0x1000000)
-	{
-		char *body_str;
+    if (slpmsg->flags == 0x0 || slpmsg->flags == 0x1000000)
+    {
+        char *body_str;
 
-		/* Handwritten messages are just dumped down the line with no MSNObject */
-		if (slpmsg->session_id==64)
-		{
-			const char *start;
-			char *msgid;
-			int charsize;
-			/* Just to be evil they put a 0 in the string just before the data you want,
-			and then convert to utf-16 */
-			body_str = g_utf16_to_utf8((gunichar2*)body, body_len/2, NULL, NULL, NULL);
-			start = (char*)body+(strlen(body_str)+1)*2;
-			charsize = (body_len/2)-(strlen(body_str)+1);
-			g_free(body_str);
-			body_str = g_utf16_to_utf8((gunichar2*)start, charsize, NULL, NULL, NULL);
-			msgid = g_strdup_printf("{handwritten:%ld}", slpmsg->id);
-			msn_handwritten_msg_show(slpmsg->slplink->swboard, msgid, body_str+7, slplink->remote_user);
-			g_free(msgid); 
-		} else
-		{
-			body_str = g_strndup(body, body_len);
-			slpcall = msn_slp_sip_recv(slplink, body_str);
-		}
-		g_free(body_str);
-	}
-	else if (slpmsg->flags == 0x20 || slpmsg->flags == 0x1000020 || slpmsg->flags == 0x1000030)
-	{
-		slpcall = msn_slplink_find_slp_call_with_session_id(slplink, slpmsg->session_id);
+        /* Handwritten messages are just dumped down the line with no MSNObject */
+        if (slpmsg->session_id==64)
+        {
+            const char *start;
+            char *msgid;
+            int charsize;
+            /* Just to be evil they put a 0 in the string just before the data you want,
+               and then convert to utf-16 */
+            body_str = g_utf16_to_utf8((gunichar2*)body, body_len/2, NULL, NULL, NULL);
+            start = (char*)body+(strlen(body_str)+1)*2;
+            charsize = (body_len/2)-(strlen(body_str)+1);
+            g_free(body_str);
+            body_str = g_utf16_to_utf8((gunichar2*)start, charsize, NULL, NULL, NULL);
+            msgid = g_strdup_printf("{handwritten:%ld}", slpmsg->id);
+            msn_handwritten_msg_show(slpmsg->slplink->swboard, msgid, body_str+7, slplink->remote_user);
+            g_free(msgid); 
+        } else
+        {
+            body_str = g_strndup(body, body_len);
+            slpcall = msn_slp_sip_recv(slplink, body_str);
+        }
+        g_free(body_str);
+    }
+    else if (slpmsg->flags == 0x20 || slpmsg->flags == 0x1000020 || slpmsg->flags == 0x1000030)
+    {
+        slpcall = msn_slplink_find_slp_call_with_session_id(slplink, slpmsg->session_id);
 
-		if (slpcall != NULL)
-		{
-			if (slpcall->timer)
-				purple_timeout_remove(slpcall->timer);
+        if (slpcall != NULL)
+        {
+            if (slpcall->timer)
+                purple_timeout_remove(slpcall->timer);
 
-			/* clear the error cb, otherwise it will be called when
-			 * the slpcall is destroyed. */
-			slpcall->end_cb = NULL;
+            /* clear the error cb, otherwise it will be called when
+             * the slpcall is destroyed. */
+            slpcall->end_cb = NULL;
 
-			slpcall->cb(slpcall, body, body_len);
+            slpcall->cb(slpcall, body, body_len);
 
-			slpcall->wasted = TRUE;
-		}
-	}
+            slpcall->wasted = TRUE;
+        }
+    }
 #ifdef MSN_DIRECTCONN
-	else if (slpmsg->flags == 0x100)
-	{
-		slpcall = slplink->directconn->initial_call;
+    else if (slpmsg->flags == 0x100)
+    {
+        slpcall = slplink->directconn->initial_call;
 
-		if (slpcall != NULL)
-			msn_slp_call_session_init(slpcall);
-	}
+        if (slpcall != NULL)
+            msn_slp_call_session_init(slpcall);
+    }
 #endif /* MSN_DIRECTCONN */
-	else
-		pecan_warning ("slp_process_msg: unprocessed SLP message with flags 0x%08lx", slpmsg->flags);
+    else
+        pecan_warning ("slp_process_msg: unprocessed SLP message with flags 0x%08lx", slpmsg->flags);
 
-	return slpcall;
+    return slpcall;
 }

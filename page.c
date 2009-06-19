@@ -27,62 +27,62 @@
 MsnPage *
 msn_page_new(void)
 {
-	MsnPage *page;
+    MsnPage *page;
 
-	page = g_new0(MsnPage, 1);
+    page = g_new0(MsnPage, 1);
 
-	return page;
+    return page;
 }
 
 void
 msn_page_destroy(MsnPage *page)
 {
-	g_return_if_fail(page != NULL);
+    g_return_if_fail(page != NULL);
 
-	if (page->body != NULL)
-		g_free(page->body);
+    if (page->body != NULL)
+        g_free(page->body);
 
-	if (page->from_location != NULL)
-		g_free(page->from_location);
+    if (page->from_location != NULL)
+        g_free(page->from_location);
 
-	if (page->from_phone != NULL)
-		g_free(page->from_phone);
+    if (page->from_phone != NULL)
+        g_free(page->from_phone);
 
-	g_free(page);
+    g_free(page);
 }
 
 char *
 msn_page_gen_payload(const MsnPage *page, size_t *ret_size)
 {
-	char *str;
+    char *str;
 
-	g_return_val_if_fail(page != NULL, NULL);
+    g_return_val_if_fail(page != NULL, NULL);
 
-        str = g_strdup_printf("<TEXT xml:space=\"preserve\" enc=\"utf-8\">%s</TEXT>",
-                              msn_page_get_body(page));
+    str = g_strdup_printf("<TEXT xml:space=\"preserve\" enc=\"utf-8\">%s</TEXT>",
+                          msn_page_get_body(page));
 
-	if (ret_size != NULL)
-		*ret_size = strlen(str);
+    if (ret_size != NULL)
+        *ret_size = strlen(str);
 
-	return str;
+    return str;
 }
 
 void
 msn_page_set_body(MsnPage *page, const char *body)
 {
-	g_return_if_fail(page != NULL);
-	g_return_if_fail(body != NULL);
+    g_return_if_fail(page != NULL);
+    g_return_if_fail(body != NULL);
 
-	if (page->body != NULL)
-		g_free(page->body);
+    if (page->body != NULL)
+        g_free(page->body);
 
-	page->body = g_strdup(body);
+    page->body = g_strdup(body);
 }
 
 const char *
 msn_page_get_body(const MsnPage *page)
 {
-	g_return_val_if_fail(page != NULL, NULL);
+    g_return_val_if_fail(page != NULL, NULL);
 
-	return page->body;
+    return page->body;
 }

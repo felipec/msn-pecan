@@ -42,36 +42,34 @@ struct MsnMessage;
  */
 struct MsnSlpMessage
 {
-	struct MsnSlpSession *slpsession;
-	struct MsnSlpCall *slpcall; /**< The slpcall to which this slp message belongs (if applicable). */
-	struct MsnSlpLink *slplink; /**< The slplink through which this slp message is being sent. */
-	struct MsnSession *session;
+    struct MsnSlpSession *slpsession;
+    struct MsnSlpCall *slpcall; /**< The slpcall to which this slp message belongs (if applicable). */
+    struct MsnSlpLink *slplink; /**< The slplink through which this slp message is being sent. */
+    struct MsnSession *session;
 
-	long session_id;
-	long id;
-	long ack_id;
-	long ack_sub_id;
-	guint64 ack_size;
-	long app_id;
+    long session_id;
+    long id;
+    long ack_id;
+    long ack_sub_id;
+    guint64 ack_size;
+    long app_id;
 
-	gboolean sip; /**< A flag that states if this is a SIP slp message. */
-	int ref_count; /**< The reference count. */
-	long flags;
+    gboolean sip; /**< A flag that states if this is a SIP slp message. */
+    int ref_count; /**< The reference count. */
+    long flags;
 
-	FILE *fp;
-	gchar *buffer;
-	guint64 offset;
-	guint64 size;
+    FILE *fp;
+    gchar *buffer;
+    guint64 offset;
+    guint64 size;
 
-	GList *msgs; /**< The real messages. */
+    GList *msgs; /**< The real messages. */
 
-#if 1
-	struct MsnMessage *msg; /**< The temporary real message that will be sent. */
-#endif
+    struct MsnMessage *msg; /**< The temporary real message that will be sent. */
 
 #ifdef PECAN_DEBUG_SLP
-	const gchar *info;
-	gboolean text_body;
+    const gchar *info;
+    gboolean text_body;
 #endif
 };
 
@@ -91,16 +89,16 @@ MsnSlpMessage *msn_slpmsg_new(struct MsnSlpLink *slplink);
 void msn_slpmsg_destroy(MsnSlpMessage *slpmsg);
 
 void msn_slpmsg_set_body(MsnSlpMessage *slpmsg,
-						 gconstpointer *body,
-						 guint64 size);
+                         gconstpointer *body,
+                         guint64 size);
 void msn_slpmsg_set_image (MsnSlpMessage *slpmsg, PecanBuffer *image);
 void msn_slpmsg_open_file(MsnSlpMessage *slpmsg,
-						  const char *file_name);
+                          const char *file_name);
 MsnSlpMessage * msn_slpmsg_sip_new(struct MsnSlpCall *slpcall, int cseq,
-								   const char *header,
-								   const char *branch,
-								   const char *content_type,
-								   const char *content);
+                                   const char *header,
+                                   const char *branch,
+                                   const char *content_type,
+                                   const char *content);
 
 #ifdef PECAN_DEBUG_SLP
 void msn_slpmsg_show(struct MsnMessage *msg);

@@ -290,7 +290,7 @@ pecan_node_parse (PecanNode *conn,
 static void
 connect_cb (PecanSocket *sock,
             gboolean success,
-	    gpointer user_data)
+            gpointer user_data)
 {
     PecanNode *conn;
 
@@ -319,8 +319,8 @@ connect_cb (PecanSocket *sock,
     }
     else
     {
-	conn->error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
-					   "Unable to connect");
+        conn->error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
+                                           "Unable to connect");
 
         pecan_node_error (conn);
     }
@@ -415,7 +415,7 @@ connect_impl (PecanNode *conn,
         pecan_node_close (conn);
 
 #ifdef PECAN_SOCKET
-	pecan_socket_connect (hostname, port, connect_cb, conn);
+        pecan_socket_connect (hostname, port, connect_cb, conn);
 #else
 #ifdef HAVE_LIBPURPLE
         conn->connect_data = purple_proxy_connect (NULL, msn_session_get_user_data (conn->session),

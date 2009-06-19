@@ -38,46 +38,46 @@ typedef void (*MsnSlpCb_foo) (MsnSlpCall *slpcall, const guchar *data, gsize siz
 
 typedef enum
 {
-	MSN_SLPCALL_ANY,
-	MSN_SLPCALL_DC,
+    MSN_SLPCALL_ANY,
+    MSN_SLPCALL_DC,
 
 } MsnSlpCallType;
 
 struct MsnSlpCall
 {
-	MsnSlpCallType type;
+    MsnSlpCallType type;
 
-	/* Call-ID */
-	char *id;
-	char *branch;
+    /* Call-ID */
+    char *id;
+    char *branch;
 
-	long session_id;
-	long app_id;
+    long session_id;
+    long app_id;
 
-	gboolean pending; /**< A flag that states if we should wait for this
-						slpcall to start and do not time out. */
-	gboolean progress; /**< A flag that states if there has been progress since
-						 the last time out. */
-	gboolean wasted; /**< A flag that states if this slpcall is going to be
-					   destroyed. */
-	gboolean started; /**< A flag that states if this slpcall's session has
-						been initiated. */
+    gboolean pending; /**< A flag that states if we should wait for this
+                        slpcall to start and do not time out. */
+    gboolean progress; /**< A flag that states if there has been progress since
+                         the last time out. */
+    gboolean wasted; /**< A flag that states if this slpcall is going to be
+                       destroyed. */
+    gboolean started; /**< A flag that states if this slpcall's session has
+                        been initiated. */
 
-	void (*progress_cb)(MsnSlpCall *slpcall,
-						gsize total_length, gsize len, gsize offset);
-	void (*session_init_cb)(struct MsnSlpSession *slpsession);
+    void (*progress_cb)(MsnSlpCall *slpcall,
+                        gsize total_length, gsize len, gsize offset);
+    void (*session_init_cb)(struct MsnSlpSession *slpsession);
 
-	/* Can be checksum, or smile */
-	char *data_info;
+    /* Can be checksum, or smile */
+    char *data_info;
 
-	void *xfer;
+    void *xfer;
 
-	MsnSlpCb_foo cb;
-	void (*end_cb)(MsnSlpCall *slpcall, struct MsnSession *session);
+    MsnSlpCb_foo cb;
+    void (*end_cb)(MsnSlpCall *slpcall, struct MsnSession *session);
 
-	int timer;
+    int timer;
 
-        struct MsnSlpLink *slplink;
+    struct MsnSlpLink *slplink;
 };
 
 MsnSlpCall *msn_slp_call_new(struct MsnSlpLink *slplink);
@@ -85,7 +85,7 @@ void msn_slp_call_init(MsnSlpCall *slpcall, MsnSlpCallType type);
 void msn_slp_call_session_init(MsnSlpCall *slpcall);
 void msn_slp_call_destroy(MsnSlpCall *slpcall);
 void msn_slp_call_invite(MsnSlpCall *slpcall, const char *euf_guid,
-						 int app_id, const char *context);
+                         int app_id, const char *context);
 void msn_slp_call_close(MsnSlpCall *slpcall);
 gboolean msn_slp_call_timeout(gpointer data);
 

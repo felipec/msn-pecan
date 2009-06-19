@@ -30,16 +30,16 @@ struct MsnSlpCall;
 
 struct MsnSlpSession
 {
-	struct MsnSlpCall *slpcall;
+    struct MsnSlpCall *slpcall;
 
-	long id;
+    long id;
 
-	long app_id;
-	char *call_id;
+    long app_id;
+    char *call_id;
 };
 
 MsnSlpSession *msn_slp_session_new(struct MsnSlpCall *slpcall);
 void msn_slp_session_destroy(MsnSlpSession *slpsession);
 void msn_slpsession_send_slpmsg(MsnSlpSession *slpsession,
-								struct MsnSlpMessage *slpmsg);
+                                struct MsnSlpMessage *slpmsg);
 #endif /* MSN_SLPSESSION_H */

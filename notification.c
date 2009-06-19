@@ -1103,16 +1103,16 @@ syn_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     if (total_users > 0)
     {
-	sync = msn_sync_new(session);
-	sync->total_users = total_users;
-	sync->old_cbs_table = cmdproc->cbs_table;
+        sync = msn_sync_new(session);
+        sync->total_users = total_users;
+        sync->old_cbs_table = cmdproc->cbs_table;
 
-	session->sync = sync;
-	cmdproc->cbs_table = sync->cbs_table;
+        session->sync = sync;
+        cmdproc->cbs_table = sync->cbs_table;
     }
     else
     {
-	msn_session_finish_login (session);
+        msn_session_finish_login (session);
     }
 }
 
@@ -1143,8 +1143,9 @@ ubx_cmd_post (MsnCmdProc *cmdproc,
             start += 5;
             end = g_strstr_len (start, len - (start - payload), "</PSM>");
 
-            /*check that the closing <PSM> tag is there, and that the PSM isn't empty*/
-	    if (end > start)
+            /* check that the closing <PSM> tag is there, and that the PSM
+             * isn't empty */
+            if (end > start)
                 psm = g_strndup (start, end - start);
         }
 
@@ -1157,7 +1158,7 @@ ubx_cmd_post (MsnCmdProc *cmdproc,
             start += 14;
             end = g_strstr_len (start, len - (start - payload), "</CurrentMedia>");
 
-	    if (end > start)
+            if (end > start)
                 current_media = g_strndup (start, end - start);
         }
 
@@ -1533,7 +1534,6 @@ email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
         pecan_error ("no url");
         return;
     }
-
 
     table = msn_message_get_hashtable_from_body(msg);
 
