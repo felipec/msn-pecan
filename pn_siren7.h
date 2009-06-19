@@ -16,9 +16,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef SIREN7_DECODER_H
-#define SIREN7_DECODER_H
+#ifndef PN_SIREN7_H
+#define PN_SIREN7_H
 
-void decode_wav_using_siren7 (const char *input_file, const char *output_file);
+void pn_siren7_decode_file (const char *input_file, const char *output_file);
 
-#endif /* SIREN7_DECODER_H */
+#endif /* PN_SIREN7_H */

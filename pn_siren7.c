@@ -69,7 +69,7 @@ typedef struct
                                               IDX (val, 2) * 65536 + IDX (val, 3) * 16777216))
 
 void
-decode_wav_using_siren7 (const char *input_file, const char *output_file)
+pn_siren7_decode_file (const char *input_file, const char *output_file)
 {
     FILE * input;
     FILE * output;

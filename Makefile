@@ -128,7 +128,7 @@ ifdef LIBSIREN
 	     lib/libsiren/decoder.o \
 	     lib/libsiren/huffman.o \
 	     lib/libsiren/rmlt.o \
-	     pecan_siren7.o
+	     pn_siren7.o
 endif
 
 sources := $(objects:.o=.c)

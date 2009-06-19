@@ -31,7 +31,7 @@
 #endif /* defined(PECAN_CVR) */
 
 #if defined(PECAN_LIBSIREN)
-#include "pecan_siren7.h"
+#include "pn_siren7.h"
 #endif /* defined(PECAN_LIBSIREN) */
 
 #include "session_private.h"
@@ -1329,7 +1329,7 @@ got_voice_clip(MsnSlpCall *slpcall, const guchar *data, gsize size)
 
         decoded_file = g_strconcat (file, "_decoded.wav", NULL);
 
-        decode_wav_using_siren7 (file, decoded_file);
+        pn_siren7_decode_file (file, decoded_file);
 
 #ifndef ADIUM
         str = g_strdup_printf(_("sent you a voice clip. Click <a href='file://%s'>here</a> to play it."), decoded_file);
