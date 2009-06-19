@@ -23,7 +23,7 @@
 #include "pn_locale.h"
 #include "notification.h"
 #include "pecan_status.h"
-#include "pecan_dp_manager.h"
+#include "pn_dp_manager.h"
 #include "ab/pecan_contact_priv.h"
 
 #if defined(PECAN_CVR)
@@ -94,7 +94,7 @@ msn_session_new (const gchar *username,
     }
 #endif
 
-    session->dp_manager = pecan_dp_manager_new (session);
+    session->dp_manager = pn_dp_manager_new (session);
 
     session->notification = msn_notification_new (session);
     session->contactlist = pecan_contactlist_new (session);
@@ -137,7 +137,7 @@ msn_session_destroy (MsnSession *session)
         msn_slplink_destroy (session->slplinks->data);
 #endif /* defined(PECAN_CVR) */
 
-    pecan_dp_manager_free (session->dp_manager);
+    pn_dp_manager_free (session->dp_manager);
 
     g_hash_table_destroy (session->conversations);
     g_hash_table_destroy (session->chats);

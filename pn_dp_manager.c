@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "pecan_dp_manager.h"
+#include "pn_dp_manager.h"
 #include "pn_log.h"
 
 #include "cvr/slpcall.h"
@@ -31,7 +31,7 @@
 #include <account.h>
 #endif /* HAVE_LIBPURPLE */
 
-struct PecanDpManager
+struct PnDpManager
 {
     MsnSession *session;
     GQueue *requests;
@@ -39,13 +39,13 @@ struct PecanDpManager
     guint timer;
 };
 
-static void release (PecanDpManager *dpm);
+static void release (PnDpManager *dpm);
 
-PecanDpManager *
-pecan_dp_manager_new (MsnSession *session)
+PnDpManager *
+pn_dp_manager_new (MsnSession *session)
 {
-    PecanDpManager *dpm;
-    dpm = g_new0 (PecanDpManager, 1);
+    PnDpManager *dpm;
+    dpm = g_new0 (PnDpManager, 1);
     dpm->session = session;
     dpm->requests = g_queue_new ();
     dpm->window = 8; /** @todo this window should be for sbs in general */
@@ -53,7 +53,7 @@ pecan_dp_manager_new (MsnSession *session)
 }
 
 void
-pecan_dp_manager_free (PecanDpManager *dpm)
+pn_dp_manager_free (PnDpManager *dpm)
 {
     g_queue_free (dpm->requests);
 
@@ -85,7 +85,7 @@ userdisplay_ok (MsnSlpCall *slpcall,
 }
 
 static inline void
-queue (PecanDpManager *dpm,
+queue (PnDpManager *dpm,
        PecanContact *contact)
 {
     pn_debug ("passport=[%s],window=%u",
@@ -171,7 +171,7 @@ request (PecanContact *user)
 static gboolean
 timeout (gpointer data)
 {
-    PecanDpManager *dpm = data;
+    PnDpManager *dpm = data;
 
     dpm->window = 8;
     pn_log ("window=%d", dpm->window);
@@ -185,7 +185,7 @@ timeout (gpointer data)
 }
 
 static void
-release (PecanDpManager *dpm)
+release (PnDpManager *dpm)
 {
     PecanContact *user;
 
@@ -241,8 +241,8 @@ ud_cached (PurpleAccount *account,
 #endif /* HAVE_LIBPURPLE */
 
 void
-pecan_dp_manager_contact_set_object (PecanContact *contact,
-                                     MsnObject *obj)
+pn_dp_manager_contact_set_object (PecanContact *contact,
+                                  MsnObject *obj)
 {
     MsnSession *session;
 

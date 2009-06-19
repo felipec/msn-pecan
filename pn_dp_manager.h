@@ -16,18 +16,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef PECAN_DP_MANAGER_H
-#define PECAN_DP_MANAGER_H
+#ifndef PN_DP_MANAGER_H
+#define PN_DP_MANAGER_H
 
-typedef struct PecanDpManager PecanDpManager;
+typedef struct PnDpManager PnDpManager;
 
 #include <glib.h>
 #include "session.h"
 #include "ab/pecan_contact.h"
 #include "cvr/pecan_slp_object.h"
 
-PecanDpManager *pecan_dp_manager_new (MsnSession *session);
-void pecan_dp_manager_free (PecanDpManager *dpm);
-void pecan_dp_manager_contact_set_object (PecanContact *contact, MsnObject *obj);
+PnDpManager *pn_dp_manager_new (MsnSession *session);
+void pn_dp_manager_free (PnDpManager *dpm);
+void pn_dp_manager_contact_set_object (PecanContact *contact, MsnObject *obj);
 
-#endif /* PECAN_DP_MANAGER_H */
+#endif /* PN_DP_MANAGER_H */

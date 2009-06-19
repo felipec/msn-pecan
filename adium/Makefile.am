@@ -16,8 +16,8 @@ MSNSOURCES = msn.c \
 	     pn_error.c \
 	     pecan_status.c \
 	     pn_oim.c \
-	     pecan_dp_manager.c \
-	     pecan_siren7.c \
+	     pn_dp_manager.c \
+	     pn_siren7.c \
 	     cmd/cmdproc.c \
 	     cmd/command.c \
 	     cmd/history.c \

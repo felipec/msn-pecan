@@ -29,7 +29,7 @@
 #include "io/pecan_node.h"
 
 #include "pn_oim.h"
-#include "pecan_dp_manager.h"
+#include "pn_dp_manager.h"
 
 struct MsnNotification;
 struct MsnNexus;
@@ -47,7 +47,7 @@ struct MsnSession
 
     PecanContactList *contactlist;
     PecanOimSession *oim_session;
-    PecanDpManager *dp_manager;
+    PnDpManager *dp_manager;
 
     gboolean connected;
     gboolean logged_in; /** @todo move to libpurple user_data and cancel
