@@ -479,31 +479,7 @@ chl_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     MsnTransaction *trans;
     gchar buf[32];
 
-#if 0
-    PurpleCipher *cipher;
-    PurpleCipherContext *context;
-    guchar digest[16];
-    const char *challenge_resp;
-    int i;
-
-    cipher = purple_ciphers_find_cipher("md5");
-    context = purple_cipher_context_new(cipher, NULL);
-
-    purple_cipher_context_append(context, (const guchar *)cmd->params[1],
-                                 strlen(cmd->params[1]));
-
-    challenge_resp = "VT6PX?UQTM4WM%YR";
-
-    purple_cipher_context_append(context, (const guchar *)challenge_resp,
-                                 strlen(challenge_resp));
-    purple_cipher_context_digest(context, sizeof(digest), digest, NULL);
-    purple_cipher_context_destroy(context);
-
-    for (i = 0; i < 16; i++)
-        g_snprintf(buf + (i*2), 3, "%02x", digest[i]);
-#else
     pecan_handle_challenge (cmd->params[1], "PROD0101{0RM?UBW", buf);
-#endif
 
     /* trans = msn_transaction_new(cmdproc, "QRY", "%s 32", "PROD0038W!61ZTF9"); */
     trans = msn_transaction_new (cmdproc, "QRY", "%s 32", "PROD0101{0RM?UBW");

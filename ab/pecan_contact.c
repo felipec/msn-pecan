@@ -202,11 +202,8 @@ pecan_contact_set_friendly_name (PecanContact *contact,
 
     pecan_debug ("passport=[%s],name=[%s]", contact->passport, name);
 
-    if (contact->friendly_name && name &&
-        strcmp (contact->friendly_name, name) == 0)
-    {
+    if (g_strcmp0 (contact->friendly_name, name) == 0)
         return;
-    }
 
 #ifdef HAVE_LIBPURPLE
     PurpleAccount *account;
@@ -216,15 +213,17 @@ pecan_contact_set_friendly_name (PecanContact *contact,
 
     if (purple_account_get_bool (account, "hide_msgplus_tags", TRUE))
     {
-        char* parsed_name;
+        char *parsed_name;
 
         parsed_name = remove_plus_tags_from_str (name);
 
+        if (g_strcmp0 (contact->friendly_name, parsed_name) == 0) {
+            g_free (parsed_name);
+            return;
+        }
+
         if (!parsed_name)
             parsed_name = g_strdup (name);
-        if (contact->friendly_name && parsed_name &&
-            strcmp (contact->friendly_name, parsed_name) == 0)
-            return;
 
         g_free (contact->friendly_name);
         contact->friendly_name = parsed_name;

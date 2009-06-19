@@ -1119,7 +1119,7 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     body_enc = g_markup_escape_text(body_str, -1);
     g_free(body_str);
 
-    passport = strdup (msg->remote_user);
+    passport = g_strdup (msg->remote_user);
 
     buddy = purple_find_buddy(account, passport);
 

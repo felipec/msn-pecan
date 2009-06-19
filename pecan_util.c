@@ -60,7 +60,7 @@ check_if_first_char_str_is_number (const gchar* str)
         return FALSE;
 }
 
-gchar*
+gchar *
 remove_plus_tags_from_str (const gchar* str)
 {
     gchar *next_code, *final_str = NULL;
@@ -99,14 +99,14 @@ remove_plus_tags_from_str (const gchar* str)
         { NULL, -1 }
     };
 
-    final_str = strdup (str);
+    final_str = g_strdup (str);
 
     for (code_number = 0; codes[code_number].code; code_number++)
     {
         int occurences = 0;
         char *parsed_str = NULL;
 
-        parsed_str = calloc (strlen (final_str)+1, 1);
+        parsed_str = calloc (strlen (final_str) + 1, 1);
 
         next_code = strstr (final_str, codes[code_number].code);
         while (next_code)
@@ -114,7 +114,8 @@ remove_plus_tags_from_str (const gchar* str)
             if (code_number == 0 || code_number == 1 || code_number == 10 || code_number == 11)
             {
                 if (strstr (next_code, "]"))
-                    codes[code_number].len = strlen (next_code)-strlen (strstr (next_code, "]"))+1;
+                    codes[code_number].len = strlen (next_code) -
+                        strlen (strstr (next_code, "]")) + 1;
                 else
                     codes[code_number].len = 0;
             }
@@ -122,15 +123,15 @@ remove_plus_tags_from_str (const gchar* str)
             {
                 if (strlen (next_code) == 3)
                     codes[12].len = 3;
-                else if (strncmp (next_code+3, "#", 1) == 0)
+                else if (strncmp (next_code + 3, "#", 1) == 0)
                     codes[12].len = 10;
-                else if (strncmp (next_code+3, "(", 1) == 0 && strncmp (next_code+15, ")", 1) == 0)
+                else if (strncmp (next_code + 3, "(", 1) == 0 && strncmp (next_code + 15, ")", 1) == 0)
                 {
-                    if (strncmp (next_code+16, ",", 1) == 0)
+                    if (strncmp (next_code + 16, ",", 1) == 0)
                     {
                         codes[12].len = 18;
 
-                        if (check_if_first_char_str_is_number (next_code+codes[12].len))
+                        if (check_if_first_char_str_is_number (next_code + codes[12].len))
                             codes[12].len++;
                     }
                     else
@@ -140,10 +141,10 @@ remove_plus_tags_from_str (const gchar* str)
                 {
                     if (strstr (next_code, ","))
                     {
-                        if (strlen (next_code)-4 == strlen (strstr (next_code, ",")))
+                        if (strlen (next_code) - 4 == strlen (strstr (next_code, ",")))
                             codes[12].len = 6;
-                        else if (strlen (next_code)-5 == strlen (strstr (next_code, ",")) &&
-                                 check_if_first_char_str_is_number (next_code+4))
+                        else if (strlen (next_code) - 5 == strlen (strstr (next_code, ",")) &&
+                                 check_if_first_char_str_is_number (next_code + 4))
                             codes[12].len = 7;
                         else
                             codes[12].len = 4;
@@ -151,38 +152,41 @@ remove_plus_tags_from_str (const gchar* str)
                     else
                         codes[12].len = 4;
 
-                    if (check_if_first_char_str_is_number (next_code+codes[12].len))
+                    if (check_if_first_char_str_is_number (next_code + codes[12].len))
                         codes[12].len++;
                 }
             }
             else if (code_number == 18 || code_number == 19 || code_number == 28 || code_number == 29)
             {
                 if (strstr (next_code, "&#x5D;"))
-                    codes[code_number].len = strlen (next_code)-strlen (strstr (next_code, "&#x5D;"))+6;
+                    codes[code_number].len = strlen (next_code) -
+                        strlen (strstr (next_code, "&#x5D;")) + 6;
                 else
                     codes[code_number].len = 0;
             }
 
             if (codes[code_number].len != 0)
             {
-                strncat (parsed_str, final_str+occurences+strlen (parsed_str),
-                     strlen (final_str)-strlen (parsed_str)-strlen (next_code)-occurences);
+                strncat (parsed_str, final_str + occurences + strlen (parsed_str),
+                     strlen (final_str) -
+                     strlen (parsed_str) -
+                     strlen (next_code) - occurences);
                 occurences += codes[code_number].len;
 
-                if (next_code+codes[code_number].len)
-                    next_code = strstr (next_code+codes[code_number].len, codes[code_number].code);
+                if (next_code + codes[code_number].len)
+                    next_code = strstr (next_code + codes[code_number].len, codes[code_number].code);
                 else
                     next_code = NULL;
             }
             else
-                if (next_code+1)
-                    next_code = strstr (next_code+1, codes[code_number].code);
+                if (next_code + 1)
+                    next_code = strstr (next_code + 1, codes[code_number].code);
                 else
                     next_code = NULL;
         }
-        strcat (parsed_str, final_str+occurences+strlen (parsed_str));
+        strcat (parsed_str, final_str + occurences + strlen (parsed_str));
 
-        memcpy (final_str, parsed_str, strlen (parsed_str)+1);
+        memcpy (final_str, parsed_str, strlen (parsed_str) + 1);
         free (parsed_str);
     }
 
@@ -679,7 +683,7 @@ pecan_handle_challenge (const gchar *input,
     }
 
     /* make a new string and pad with '0' */
-    snprintf (buf, BUFSIZE - 5, "%s%s", input, product_id);
+    g_snprintf (buf, BUFSIZE - 5, "%s%s", input, product_id);
     i = strlen (buf);
     memset (&buf[i], '0', 8 - (i % 8));
     buf[i + (8 - (i % 8))] = '\0';
