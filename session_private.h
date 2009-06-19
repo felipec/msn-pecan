@@ -32,7 +32,7 @@
 #include "io/pecan_node.h"
 
 #include "pecan_oim.h"
-#include "pecan_ud.h"
+#include "pecan_dp_manager.h"
 
 struct MsnNotification;
 struct MsnNexus;
@@ -50,7 +50,7 @@ struct MsnSession
 
     PecanContactList *contactlist;
     PecanOimSession *oim_session;
-    PecanUdManager *udm;
+    PecanDpManager *dp_manager;
 
     gboolean connected;
     gboolean logged_in; /** @todo move to libpurple user_data and cancel

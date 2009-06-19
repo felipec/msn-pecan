@@ -80,7 +80,7 @@ objects := msn.o \
 	   pecan_error.o \
 	   pecan_status.o \
 	   pecan_oim.o \
-	   pecan_ud.o \
+	   pecan_dp_manager.o \
 	   cmd/cmdproc.o \
 	   cmd/command.o \
 	   cmd/history.o \

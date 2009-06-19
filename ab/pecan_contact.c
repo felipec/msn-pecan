@@ -27,7 +27,7 @@
 #include "pecan_util.h"
 
 #include "cvr/slp.h"
-#include "pecan_ud.h" /* for pecan_ud_manager_contact_set_object */
+#include "pecan_dp_manager.h" /* for pecan_dp_manager_contact_set_object */
 
 #include <string.h>
 #include <stdbool.h>
@@ -623,7 +623,7 @@ pecan_contact_set_object (PecanContact *contact,
     contact->msnobj = obj;
 
     /** @todo make this a hook. */
-    pecan_ud_manager_contact_set_object (contact, obj);
+    pecan_dp_manager_contact_set_object (contact, obj);
 }
 #endif /* defined(PECAN_CVR) */
 

@@ -16,30 +16,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#ifndef PECAN_UD_H
-#define PECAN_UD_H
+#ifndef PECAN_DP_MANAGER_H
+#define PECAN_DP_MANAGER_H
 
-typedef struct PecanUdManager PecanUdManager;
+typedef struct PecanDpManager PecanDpManager;
 
 #include <glib.h>
 #include "session.h"
 #include "ab/pecan_contact.h"
 #include "cvr/pecan_slp_object.h"
 
-/* #define PECAN_UDM_TIMED */
+/* #define PECAN_DP_MANAGER_TIMED */
 
-struct PecanUdManager
+struct PecanDpManager
 {
     MsnSession *session;
     GQueue *requests;
     gint window;
-#ifdef PECAN_UDM_TIMED
+#ifdef PECAN_DP_MANAGER_TIMED
     guint timer;
-#endif /* PECAN_UDM_TIMED */
+#endif /* PECAN_DP_MANAGER_TIMED */
 };
 
-PecanUdManager *pecan_ud_manager_new (MsnSession *session);
-void pecan_ud_manager_free (PecanUdManager *udm);
-void pecan_ud_manager_contact_set_object (PecanContact *contact, MsnObject *obj);
+PecanDpManager *pecan_dp_manager_new (MsnSession *session);
+void pecan_dp_manager_free (PecanDpManager *dpm);
+void pecan_dp_manager_contact_set_object (PecanContact *contact, MsnObject *obj);
 
-#endif /* PECAN_UD_H */
+#endif /* PECAN_DP_MANAGER_H */

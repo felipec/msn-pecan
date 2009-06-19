@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
  */
 
-#include "pecan_ud.h"
+#include "pecan_dp_manager.h"
 #include "pecan_log.h"
 
 #include "cvr/slpcall.h"
@@ -34,43 +34,43 @@
 /* ms to delay between sending userdisplay requests to the server. */
 #define USERDISPLAY_DELAY 20000
 
-static void release (PecanUdManager *udm);
+static void release (PecanDpManager *dpm);
 
-PecanUdManager *
-pecan_ud_manager_new (MsnSession *session)
+PecanDpManager *
+pecan_dp_manager_new (MsnSession *session)
 {
-    PecanUdManager *udm;
-    udm = g_new0 (PecanUdManager, 1);
-    udm->session = session;
-    udm->requests = g_queue_new ();
-    udm->window = 5;
-    return udm;
+    PecanDpManager *dpm;
+    dpm = g_new0 (PecanDpManager, 1);
+    dpm->session = session;
+    dpm->requests = g_queue_new ();
+    dpm->window = 5;
+    return dpm;
 }
 
 void
-pecan_ud_manager_free (PecanUdManager *udm)
+pecan_dp_manager_free (PecanDpManager *dpm)
 {
-    g_queue_free (udm->requests);
+    g_queue_free (dpm->requests);
 
-#ifdef PECAN_UDM_TIMED
+#ifdef PECAN_DP_MANAGER_TIMED
 #ifdef HAVE_LIBPURPLE
-    if (udm->timer)
-        purple_timeout_remove (udm->timer);
+    if (dpm->timer)
+        purple_timeout_remove (dpm->timer);
 #endif /* HAVE_LIBPURPLE */
-#endif /* PECAN_UDM_TIMED */
+#endif /* PECAN_DP_MANAGER_TIMED */
 
-    g_free (udm);
+    g_free (dpm);
 }
 
 static inline void
-skip_request (PecanUdManager *udm)
+skip_request (PecanDpManager *dpm)
 {
     /* Free one window slot */
-    udm->window++;
-    pecan_log ("window=%d", udm->window);
+    dpm->window++;
+    pecan_log ("window=%d", dpm->window);
 
     /* Request the next one */
-    release (udm);
+    release (dpm);
 }
 
 static void
@@ -96,7 +96,7 @@ userdisplay_ok (MsnSlpCall *slpcall,
 #endif /* HAVE_LIBPURPLE */
 }
 
-#ifdef PECAN_UDM_TIMED
+#ifdef PECAN_DP_MANAGER_TIMED
 /*
  * Called on a timeout from userdisplay_fail().
  * Frees a buddy icon window slow and dequeues the next buddy icon request if
@@ -105,34 +105,34 @@ userdisplay_ok (MsnSlpCall *slpcall,
 static gboolean
 timeout (gpointer data)
 {
-    PecanUdManager *udm = data;
+    PecanDpManager *dpm = data;
 
     /* Free one window slot */
-    udm->window++;
-    pecan_log ("window=%d", udm->window);
+    dpm->window++;
+    pecan_log ("window=%d", dpm->window);
 
     /* Clear the tag for our former request timer */
-    udm->timer = 0;
+    dpm->timer = 0;
 
-    release (udm);
+    release (dpm);
 
     return FALSE;
 }
-#endif /* PECAN_UDM_TIMED */
+#endif /* PECAN_DP_MANAGER_TIMED */
 
 static void
 userdisplay_fail (MsnSlpCall *slpcall,
                   MsnSession *session)
 {
-    PecanUdManager *udm;
+    PecanDpManager *dpm;
 
     g_return_if_fail (session);
 
     pecan_error ("unknown error");
 
-    udm = session->udm;
+    dpm = session->dp_manager;
 
-#ifdef PECAN_UDM_TIMED
+#ifdef PECAN_DP_MANAGER_TIMED
     /* Delay before freeing a buddy icon window slot and requesting the next icon, if appropriate.
      * If we don't delay, we'll rapidly hit the MSN equivalent of AIM's rate limiting; the server will
      * send us an error 800 like so:
@@ -140,25 +140,25 @@ userdisplay_fail (MsnSlpCall *slpcall,
      * C: NS 000: XFR 21 SB
      * S: NS 000: 800 21
      */
-    if (udm->timer)
+    if (dpm->timer)
     {
         /* Free the window slot used by this previous request */
-        udm->window++;
-        pecan_log ("window=%d", udm->window);
+        dpm->window++;
+        pecan_log ("window=%d", dpm->window);
 
 #ifdef HAVE_LIBPURPLE
         /* Clear our pending timeout */
-        purple_timeout_remove (udm->timer);
+        purple_timeout_remove (dpm->timer);
 #endif /* HAVE_LIBPURPLE */
     }
 
 #ifdef HAVE_LIBPURPLE
     /* Wait before freeing our window slot and requesting the next icon. */
-    udm->timer = purple_timeout_add (USERDISPLAY_DELAY, timeout, udm);
+    dpm->timer = purple_timeout_add (USERDISPLAY_DELAY, timeout, dpm);
 #endif /* HAVE_LIBPURPLE */
 #else
-    skip_request (udm);
-#endif /* PECAN_UDM_TIMED */
+    skip_request (dpm);
+#endif /* PECAN_DP_MANAGER_TIMED */
 }
 
 static void
@@ -183,7 +183,7 @@ request (PecanContact *user)
     if (!obj)
     {
         purple_buddy_icons_set_for_user (account, user->passport, NULL, 0, NULL);
-        skip_request (session->udm);
+        skip_request (session->dp_manager);
         return;
     }
 
@@ -214,22 +214,22 @@ request (PecanContact *user)
         purple_buddy_icons_set_for_user (account, user->passport,
                                          g_memdup (data, len), len, info);
 
-        skip_request (session->udm);
+        skip_request (session->dp_manager);
     }
 }
 
 static void
-release (PecanUdManager *udm)
+release (PecanDpManager *dpm)
 {
     PecanContact *user;
 
     pecan_info ("releasing ud");
 
-    while (udm->window > 0)
+    while (dpm->window > 0)
     {
         GQueue *queue;
 
-        queue = udm->requests;
+        queue = dpm->requests;
 
         if (g_queue_is_empty (queue))
         {
@@ -242,8 +242,8 @@ release (PecanUdManager *udm)
         if (!pecan_contact_can_receive (user))
             return;
 
-        udm->window--;
-        pecan_log ("window=%d", udm->window);
+        dpm->window--;
+        pecan_log ("window=%d", dpm->window);
 
         request (user);
     }
@@ -275,20 +275,20 @@ ud_cached (PurpleAccount *account,
 #endif /* HAVE_LIBPURPLE */
 
 static inline void
-queue (PecanUdManager *udm,
+queue (PecanDpManager *dpm,
        PecanContact *contact)
 {
     pecan_debug ("passport=[%s],window=%u",
-                 contact->passport, udm->window);
+                 contact->passport, dpm->window);
 
-    g_queue_push_tail (udm->requests, contact);
+    g_queue_push_tail (dpm->requests, contact);
 
-    if (udm->window > 0)
-        release (udm);
+    if (dpm->window > 0)
+        release (dpm);
 }
 
 void
-pecan_ud_manager_contact_set_object (PecanContact *contact,
+pecan_dp_manager_contact_set_object (PecanContact *contact,
                                      MsnObject *obj)
 {
     MsnSession *session;
@@ -311,7 +311,7 @@ pecan_ud_manager_contact_set_object (PecanContact *contact,
 #ifdef HAVE_LIBPURPLE
     if (!ud_cached (msn_session_get_user_data (session), obj))
     {
-        queue (session->udm, contact);
+        queue (session->dp_manager, contact);
     }
 #endif /* HAVE_LIBPURPLE */
 }
