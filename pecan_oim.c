@@ -1,6 +1,24 @@
+/*
+ * Copyright (C) 2006-2009 Felipe Contreras.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 #include <time.h> /* for strptime */
 
-#include "pecan_oim_private.h"
+#include "pecan_oim.h"
 #include "io/pecan_ssl_conn.h"
 #include "io/pecan_parser.h"
 
@@ -17,6 +35,12 @@
 #include <util.h> /* for base64_dec */
 #include <conversation.h> /* for conversation_new */
 #endif /* HAVE_LIBPURPLE */
+
+struct PecanOimSession
+{
+    MsnSession *session;
+    GQueue *request_queue;
+};
 
 typedef struct OimRequest OimRequest;
 
