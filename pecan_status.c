@@ -152,6 +152,8 @@ pecan_update_status (MsnSession *session)
     MsnCmdProc *cmdproc;
     PecanContact *user;
     const gchar *state_text;
+    int client_id;
+    int caps;
 
     g_return_if_fail (session);
 
@@ -161,6 +163,16 @@ pecan_update_status (MsnSession *session)
     user = msn_session_get_contact (session);
     cmdproc = session->notification->cmdproc;
     state_text = util_type_to_str (util_status_from_session (session));
+
+    caps = MSN_CLIENT_CAP_BASE;
+#if defined(PECAN_CVR)
+    caps |= MSN_CLIENT_CAP_VOICE_CLIP;
+#endif
+#if defined(PECAN_LIBSIREN)
+    caps |= MSN_CLIENT_CAP_INK_GIF;
+#endif
+
+    client_id = caps | (MSN_CLIENT_VER_7_5 << 24);
 
 #if defined(PECAN_CVR)
     {
@@ -175,19 +187,19 @@ pecan_update_status (MsnSession *session)
             msnobj_str = msn_object_to_string (obj);
 
             msn_cmdproc_send (cmdproc, "CHG", "%s %d %s", state_text,
-                              MSN_CLIENT_ID, purple_url_encode (msnobj_str));
+                              client_id, purple_url_encode (msnobj_str));
 
             g_free (msnobj_str);
         }
         else
         {
             msn_cmdproc_send (cmdproc, "CHG", "%s %d", state_text,
-                              MSN_CLIENT_ID);
+                              client_id);
         }
     }
 #else
     msn_cmdproc_send (cmdproc, "CHG", "%s %d", state_text,
-                      MSN_CLIENT_ID);
+                      client_id);
 #endif /* defined(PECAN_CVR) */
 }
 
