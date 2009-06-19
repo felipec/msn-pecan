@@ -66,9 +66,7 @@
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
 #endif /* defined(PECAN_CVR) */
 
-#define _Q(x) #x
-#define Q(x) _Q(x)
-#define PLUGIN_ID "prpl-" Q(PLUGIN_NAME)
+#define PLUGIN_ID "prpl-msn-pecan"
 
 typedef struct
 {
@@ -1872,4 +1870,22 @@ init_plugin (PurplePlugin *plugin)
     purple_prefs_remove ("/plugins/prpl/msn");
 }
 
-PURPLE_INIT_PLUGIN (PLUGIN_NAME, init_plugin, info)
+#if !defined(PURPLE_PLUGINS) || defined(PURPLE_STATIC_PRPL)
+gboolean
+purple_init_msn_pecan_plugin(void)
+{
+    PurplePlugin *plugin = purple_plugin_new(TRUE, NULL);
+    plugin->info = &info;
+    init_plugin(plugin);
+    purple_plugin_load(plugin);
+    return purple_plugin_register(plugin);
+}
+#else
+G_MODULE_EXPORT gboolean
+purple_init_plugin(PurplePlugin *plugin)
+{
+    plugin->info = &info;
+    init_plugin(plugin);
+    return purple_plugin_register(plugin);
+}
+#endif
