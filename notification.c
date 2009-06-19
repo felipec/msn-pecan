@@ -100,14 +100,14 @@ close_cb (PecanNode *conn,
             reason = conn->error->message;
 
             pecan_error ("connection error: (NS):reason=[%s]", reason);
-            tmp = pecan_strdup_printf (_("Error on notification server:\n%s"), reason);
+            tmp = g_strdup_printf (_("Error on notification server:\n%s"), reason);
 
             g_clear_error (&conn->error);
         }
         else
         {
             pecan_error ("connection error: (NS)");
-            tmp = pecan_strdup_printf (_("Error on notification server:\nUnknown"));
+            tmp = g_strdup_printf (_("Error on notification server:\nUnknown"));
         }
     }
 
@@ -145,7 +145,7 @@ error_handler (MsnCmdProc *cmdproc,
         default:
             {
                 char *tmp;
-                tmp = pecan_strdup_printf (_("Error on notification server:\n%s"), reason);
+                tmp = g_strdup_printf (_("Error on notification server:\n%s"), reason);
                 msn_session_set_error (notification->session, MSN_ERROR_SERVCONN, tmp);
                 g_free (tmp);
             }
@@ -259,17 +259,17 @@ group_error_helper(MsnSession *session, const char *msg, const gchar *group_guid
     {
         const char *group_name;
         group_name = pecan_contactlist_find_group_name(session->contactlist, group_guid);
-        reason = pecan_strdup_printf(_("%s is not a valid group."),
-                                     group_name);
+        reason = g_strdup_printf(_("%s is not a valid group."),
+                                 group_name);
     }
     else
     {
         reason = g_strdup(_("Unknown error."));
     }
 
-    title = pecan_strdup_printf(_("%s on %s (%s)"), msg,
-                                purple_account_get_username(account),
-                                purple_account_get_protocol_name(account));
+    title = g_strdup_printf(_("%s on %s (%s)"), msg,
+                            purple_account_get_username(account),
+                            purple_account_get_protocol_name(account));
     purple_notify_error(gc, NULL, title, reason);
     g_free(title);
     g_free(reason);
@@ -610,17 +610,17 @@ adc_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
     passport = params[1];
 
     if (!strcmp(list, "FL"))
-        msg = pecan_strdup_printf(_("Unable to add user on %s (%s)"),
-                                  purple_account_get_username(account),
-                                  purple_account_get_protocol_name(account));
+        msg = g_strdup_printf(_("Unable to add user on %s (%s)"),
+                              purple_account_get_username(account),
+                              purple_account_get_protocol_name(account));
     else if (!strcmp(list, "BL"))
-        msg = pecan_strdup_printf(_("Unable to block user on %s (%s)"),
-                                  purple_account_get_username(account),
-                                  purple_account_get_protocol_name(account));
+        msg = g_strdup_printf(_("Unable to block user on %s (%s)"),
+                              purple_account_get_username(account),
+                              purple_account_get_protocol_name(account));
     else if (!strcmp(list, "AL"))
-        msg = pecan_strdup_printf(_("Unable to permit user on %s (%s)"),
-                                  purple_account_get_username(account),
-                                  purple_account_get_protocol_name(account));
+        msg = g_strdup_printf(_("Unable to permit user on %s (%s)"),
+                              purple_account_get_username(account),
+                              purple_account_get_protocol_name(account));
 
     reason = pecan_error_to_string (error);
 
@@ -1209,10 +1209,10 @@ url_cmd (MsnCmdProc *cmdproc,
         guchar digest[16];
         gchar *buf;
 
-        buf = pecan_strdup_printf ("%s%ld%s",
-                                   session->passport_info.mspauth ? session->passport_info.mspauth : "BOGUS",
-                                   tmp_timestamp,
-                                   purple_connection_get_password (connection));
+        buf = g_strdup_printf ("%s%ld%s",
+                               session->passport_info.mspauth ? session->passport_info.mspauth : "BOGUS",
+                               tmp_timestamp,
+                               purple_connection_get_password (connection));
 
         cipher = purple_ciphers_find_cipher ("md5");
         context = purple_cipher_context_new (cipher, NULL);

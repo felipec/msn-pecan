@@ -24,7 +24,6 @@
 #define MSN_H
 
 #include "pecan_config.h"
-#include "pecan_printf.h" /** @todo remove this */
 
 #define USEROPT_MSNSERVER 3
 #define MSN_SERVER "messenger.hotmail.com"

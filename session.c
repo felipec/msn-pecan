@@ -387,8 +387,8 @@ msn_session_set_error (MsnSession *session,
             break;
         case MSN_ERROR_AUTH:
             connection->wants_to_die = TRUE;
-            msg = pecan_strdup_printf (_("Unable to authenticate: %s"),
-                                       info ? info : _("Unknown error"));
+            msg = g_strdup_printf (_("Unable to authenticate: %s"),
+                                   info ? info : _("Unknown error"));
             break;
         case MSN_ERROR_BAD_BLIST:
             msg = g_strdup (_("Your MSN buddy list is temporarily "

@@ -28,7 +28,6 @@
 #include "slpmsg.h"
 #include "session.h"
 #include "pecan_util.h"
-#include "pecan_printf.h"
 #include "pecan_log.h"
 
 #include <string.h>
@@ -160,18 +159,17 @@ msn_slp_call_invite(MsnSlpCall *slpcall, const char *euf_guid,
 
 	slpcall->branch = msn_rand_guid();
 
-        content = pecan_strdup_printf(
-                                      "EUF-GUID: {%s}\r\n"
-                                      "SessionID: %lu\r\n"
-                                      "AppID: %d\r\n"
-                                      "Context: %s\r\n\r\n",
-                                      euf_guid,
-                                      slpcall->session_id,
-                                      app_id,
-                                      context);
+        content = g_strdup_printf("EUF-GUID: {%s}\r\n"
+                                  "SessionID: %lu\r\n"
+                                  "AppID: %d\r\n"
+                                  "Context: %s\r\n\r\n",
+                                  euf_guid,
+                                  slpcall->session_id,
+                                  app_id,
+                                  context);
 
-        header = pecan_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
-                                     slplink->remote_user);
+        header = g_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
+                                 slplink->remote_user);
 
 	slpmsg = msn_slpmsg_sip_new(slpcall, 0, header, slpcall->branch,
 								"application/x-msnmsgr-sessionreqbody", content);

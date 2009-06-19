@@ -1684,8 +1684,8 @@ get_info (PurpleConnection *gc,
 
     {
         gchar *tmp;
-        tmp = pecan_strdup_printf ("<a href=\"%s%s\">%s%s</a>",
-                                   PROFILE_URL, name, PROFILE_URL, name);
+        tmp = g_strdup_printf ("<a href=\"%s%s\">%s%s</a>",
+                               PROFILE_URL, name, PROFILE_URL, name);
         purple_notify_user_info_add_pair (user_info, _("Profile URL"), tmp);
         g_free (tmp);
     }

@@ -59,7 +59,8 @@ pecan_set_personal_message (MsnSession *session,
     gchar *payload;
 
     cmdproc = session->notification->cmdproc;
-    payload = pecan_strdup_printf ("<Data><PSM>%s</PSM><CurrentMedia>%s</CurrentMedia></Data>", value ? value : "", current_media ? current_media : "");
+    payload = g_strdup_printf ("<Data><PSM>%s</PSM><CurrentMedia>%s</CurrentMedia></Data>",
+                               value ? value : "", current_media ? current_media : "");
 
     {
         MsnTransaction *trans;

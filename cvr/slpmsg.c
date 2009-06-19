@@ -27,7 +27,6 @@
 #include "slpcall.h"
 #include "slplink.h"
 #include "session.h"
-#include "pecan_printf.h"
 
 #include "cmd/msg_private.h"
 
@@ -200,25 +199,24 @@ msn_slpmsg_sip_new(MsnSlpCall *slpcall, int cseq,
 
 	content_len = (content != NULL) ? strlen(content) + 1 : 0;
 
-        body = pecan_strdup_printf(
-                                   "%s\r\n"
-                                   "To: <msnmsgr:%s>\r\n"
-                                   "From: <msnmsgr:%s>\r\n"
-                                   "Via: MSNSLP/1.0/TLP ;branch={%s}\r\n"
-                                   "CSeq: %d\r\n"
-                                   "Call-ID: {%s}\r\n"
-                                   "Max-Forwards: 0\r\n"
-                                   "Content-Type: %s\r\n"
-                                   "Content-Length: %" G_GSIZE_FORMAT "\r\n"
-                                   "\r\n",
-                                   header,
-                                   slplink->remote_user,
-                                   slplink->local_user,
-                                   branch,
-                                   cseq,
-                                   slpcall->id,
-                                   content_type,
-                                   content_len);
+	body = g_strdup_printf("%s\r\n"
+			       "To: <msnmsgr:%s>\r\n"
+			       "From: <msnmsgr:%s>\r\n"
+			       "Via: MSNSLP/1.0/TLP ;branch={%s}\r\n"
+			       "CSeq: %d\r\n"
+			       "Call-ID: {%s}\r\n"
+			       "Max-Forwards: 0\r\n"
+			       "Content-Type: %s\r\n"
+			       "Content-Length: %" G_GSIZE_FORMAT "\r\n"
+			       "\r\n",
+			       header,
+			       slplink->remote_user,
+			       slplink->local_user,
+			       branch,
+			       cseq,
+			       slpcall->id,
+			       content_type,
+			       content_len);
 
 	body_len = strlen(body);
 

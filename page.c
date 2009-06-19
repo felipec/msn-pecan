@@ -21,7 +21,6 @@
  */
 
 #include "page.h"
-#include "pecan_printf.h"
 
 #include <string.h>
 
@@ -59,8 +58,8 @@ msn_page_gen_payload(const MsnPage *page, size_t *ret_size)
 
 	g_return_val_if_fail(page != NULL, NULL);
 
-        str = pecan_strdup_printf("<TEXT xml:space=\"preserve\" enc=\"utf-8\">%s</TEXT>",
-                                  msn_page_get_body(page));
+        str = g_strdup_printf("<TEXT xml:space=\"preserve\" enc=\"utf-8\">%s</TEXT>",
+                              msn_page_get_body(page));
 
 	if (ret_size != NULL)
 		*ret_size = strlen(str);
