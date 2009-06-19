@@ -23,7 +23,7 @@
 #include <glib.h>
 
 #include "pecan_contactlist.h"
-#include "pecan_status.h"
+#include "pn_status.h"
 #if defined(PECAN_CVR)
 #include "cvr/pecan_slp_object.h"
 #endif /* defined(PECAN_CVR) */

@@ -25,7 +25,7 @@
 #include "pn_util.h"
 #include "pn_log.h"
 #include "pn_locale.h"
-#include "pecan_status.h"
+#include "pn_status.h"
 
 #include "switchboard.h"
 #include "notification.h"
@@ -220,7 +220,7 @@ msn_set_personal_message_cb (PurpleConnection *gc, const gchar *entry)
     session = gc->proto_data;
     purple_account_set_string(session->user_data, "personal_message", entry);
 
-    pecan_update_personal_message (session);
+    pn_update_personal_message (session);
 }
 #endif /* PECAN_USE_PSM */
 
@@ -1053,7 +1053,7 @@ send_im (PurpleConnection *gc,
     {
         PecanContact *contact;
         contact = pecan_contactlist_find_contact (session->contactlist, who);
-        if (contact && contact->status == PECAN_STATUS_OFFLINE && contact->mobile)
+        if (contact && contact->status == PN_STATUS_OFFLINE && contact->mobile)
         {
             gchar *text;
             text = purple_markup_strip_html (message);
@@ -1190,9 +1190,9 @@ set_status (PurpleAccount *account,
     if (gc)
     {
         session = gc->proto_data;
-        pecan_update_status (session);
+        pn_update_status (session);
 #ifdef PECAN_USE_PSM
-        pecan_update_personal_message (session);
+        pn_update_personal_message (session);
 #endif /* PECAN_USE_PSM */
     }
 }
@@ -1205,7 +1205,7 @@ set_idle (PurpleConnection *gc,
 
     session = gc->proto_data;
 
-    pecan_update_status (session);
+    pn_update_status (session);
 }
 
 /*
@@ -1637,7 +1637,7 @@ set_buddy_icon (PurpleConnection *gc,
         pecan_contact_set_buddy_icon (user, image);
     }
 
-    pecan_update_status (session);
+    pn_update_status (session);
 }
 
 static void

@@ -82,7 +82,7 @@ objects := msn.o \
 	   pn_printf.o \
 	   pn_util.o \
 	   pn_error.o \
-	   pecan_status.o \
+	   pn_status.o \
 	   pn_oim.o \
 	   pn_dp_manager.o \
 	   cmd/cmdproc.o \

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "pecan_status.h"
+#include "pn_status.h"
 #include "pn_log.h"
 #include "pn_global.h"
 
@@ -47,9 +47,9 @@ util_type_to_str (PecanStatus status)
 }
 
 static inline void
-pecan_set_personal_message (MsnSession *session,
-                            gchar *value,
-                            gchar *current_media)
+pn_set_personal_message (MsnSession *session,
+                         gchar *value,
+                         gchar *current_media)
 {
     MsnCmdProc *cmdproc;
     gchar *payload;
@@ -83,30 +83,30 @@ util_status_from_session (MsnSession *session)
     status_id = purple_status_get_id (status);
 
     if (strcmp (status_id, "available") == 0)
-        msnstatus = PECAN_STATUS_ONLINE;
+        msnstatus = PN_STATUS_ONLINE;
     else if (strcmp (status_id, "away") == 0)
-        msnstatus = PECAN_STATUS_AWAY;
+        msnstatus = PN_STATUS_AWAY;
     else if (strcmp (status_id, "brb") == 0)
-        msnstatus = PECAN_STATUS_BRB;
+        msnstatus = PN_STATUS_BRB;
     else if (strcmp (status_id, "busy") == 0)
-        msnstatus = PECAN_STATUS_BUSY;
+        msnstatus = PN_STATUS_BUSY;
     else if (strcmp (status_id, "phone") == 0)
-        msnstatus = PECAN_STATUS_PHONE;
+        msnstatus = PN_STATUS_PHONE;
     else if (strcmp (status_id, "lunch") == 0)
-        msnstatus = PECAN_STATUS_LUNCH;
+        msnstatus = PN_STATUS_LUNCH;
     else if (strcmp (status_id, "invisible") == 0)
-        msnstatus = PECAN_STATUS_HIDDEN;
+        msnstatus = PN_STATUS_HIDDEN;
     else if (strcmp (status_id, "online") == 0)
     {
         if (purple_presence_is_idle (presence))
-            msnstatus = PECAN_STATUS_IDLE;
+            msnstatus = PN_STATUS_IDLE;
         else
-            msnstatus = PECAN_STATUS_ONLINE;
+            msnstatus = PN_STATUS_ONLINE;
     }
     else
     {
         pn_error ("wrong: status_id=[%s]", status_id);
-        msnstatus = PECAN_STATUS_WRONG;
+        msnstatus = PN_STATUS_WRONG;
     }
 
     return msnstatus;
@@ -147,7 +147,7 @@ create_current_media_string (PurplePresence *presence)
 }
 
 void
-pecan_update_status (MsnSession *session)
+pn_update_status (MsnSession *session)
 {
     MsnCmdProc *cmdproc;
     PecanContact *user;
@@ -165,16 +165,16 @@ pecan_update_status (MsnSession *session)
     state_text = util_type_to_str (util_status_from_session (session));
 
     caps = PN_CLIENT_CAP_BASE;
-#if defined(PECAN_CVR)
+#if defined(PN_CVR)
     caps |= PN_CLIENT_CAP_INK_GIF;
-#if defined(PECAN_LIBSIREN)
+#if defined(PN_LIBSIREN)
     caps |= PN_CLIENT_CAP_VOICE_CLIP;
 #endif
 #endif
 
     client_id = caps | (PN_CLIENT_VER_7_5 << 24);
 
-#if defined(PECAN_CVR)
+#if defined(PN_CVR)
     {
         MsnObject *obj;
 
@@ -200,11 +200,11 @@ pecan_update_status (MsnSession *session)
 #else
     msn_cmdproc_send (cmdproc, "CHG", "%s %d", state_text,
                       client_id);
-#endif /* defined(PECAN_CVR) */
+#endif /* defined(PN_CVR) */
 }
 
 void
-pecan_update_personal_message (MsnSession *session)
+pn_update_personal_message (MsnSession *session)
 {
     PurpleAccount *account;
     PurplePresence *presence;
@@ -220,11 +220,11 @@ pecan_update_personal_message (MsnSession *session)
 
     current_media = create_current_media_string (presence);
 
-#ifndef PECAN_USE_PSM
+#ifndef PN_USE_PSM
     const gchar *msg;
 
     msg = purple_account_get_string (account, "personal_message", "");
-    pecan_set_personal_message (session, (gchar *) msg, current_media);
+    pn_set_personal_message (session, (gchar *) msg, current_media);
 #else
     PurpleStatus *status;
     const gchar *formatted_msg;
@@ -239,16 +239,16 @@ pecan_update_personal_message (MsnSession *session)
 
         tmp = purple_markup_strip_html (formatted_msg);
         msg = g_markup_escape_text (tmp, -1);
-        pecan_set_personal_message (session, msg, current_media);
+        pn_set_personal_message (session, msg, current_media);
 
         g_free (tmp);
         g_free (msg);
     }
     else
     {
-        pecan_set_personal_message (session, NULL, current_media);
+        pn_set_personal_message (session, NULL, current_media);
     }
-#endif /* PECAN_USE_PSM */
+#endif /* PN_USE_PSM */
 
     if (current_media)
         g_free (current_media);
@@ -256,7 +256,7 @@ pecan_update_personal_message (MsnSession *session)
 #endif /* HAVE_LIBPURPLE */
 
 gboolean
-pecan_timeout_tune_status (gpointer data)
+pn_timeout_tune_status (gpointer data)
 {
     MsnSession *session;
     PurpleAccount *account;
@@ -276,7 +276,7 @@ pecan_timeout_tune_status (gpointer data)
     {
         if (session->autoupdate_tune.enabled)
         {
-            pecan_update_personal_message (session);
+            pn_update_personal_message (session);
 
             if (!status || !purple_status_is_active (status))
                 session->autoupdate_tune.enabled = FALSE;
@@ -286,12 +286,12 @@ pecan_timeout_tune_status (gpointer data)
             if (status && purple_status_is_active (status))
             {
                 session->autoupdate_tune.enabled = TRUE;
-                pecan_update_personal_message (session);
+                pn_update_personal_message (session);
             }
         }
     }
 
-    session->autoupdate_tune.timer = g_timeout_add_seconds (10, pecan_timeout_tune_status, session);
+    session->autoupdate_tune.timer = g_timeout_add_seconds (10, pn_timeout_tune_status, session);
 
     return FALSE;
 }

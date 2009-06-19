@@ -22,7 +22,7 @@
 #include "pn_util.h"
 #include "pn_locale.h"
 #include "notification.h"
-#include "pecan_status.h"
+#include "pn_status.h"
 #include "pn_dp_manager.h"
 #include "ab/pecan_contact_priv.h"
 
@@ -430,9 +430,9 @@ msn_session_finish_login (MsnSession *session)
     session->logged_in = TRUE;
 
     /** @todo move this to msn.c */
-    pecan_update_status (session);
-    pecan_update_personal_message (session);
-    pecan_timeout_tune_status (session);
+    pn_update_status (session);
+    pn_update_personal_message (session);
+    pn_timeout_tune_status (session);
 
     {
         PurpleConnection *connection;

@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef PECAN_STATUS_H
-#define PECAN_STATUS_H
+#ifndef PN_STATUS_H
+#define PN_STATUS_H
 
 #include <glib.h>
 
@@ -27,16 +27,16 @@
  */
 typedef enum
 {
-    PECAN_STATUS_OFFLINE,
-    PECAN_STATUS_ONLINE,
-    PECAN_STATUS_BUSY,
-    PECAN_STATUS_IDLE,
-    PECAN_STATUS_BRB,
-    PECAN_STATUS_AWAY,
-    PECAN_STATUS_PHONE,
-    PECAN_STATUS_LUNCH,
-    PECAN_STATUS_HIDDEN,
-    PECAN_STATUS_WRONG,
+    PN_STATUS_OFFLINE,
+    PN_STATUS_ONLINE,
+    PN_STATUS_BUSY,
+    PN_STATUS_IDLE,
+    PN_STATUS_BRB,
+    PN_STATUS_AWAY,
+    PN_STATUS_PHONE,
+    PN_STATUS_LUNCH,
+    PN_STATUS_HIDDEN,
+    PN_STATUS_WRONG,
 } PecanStatus;
 
 struct MsnSession;
@@ -46,15 +46,15 @@ struct MsnSession;
  *
  * @param session The MSN session.
  */
-void pecan_update_status (struct MsnSession *session);
+void pn_update_status (struct MsnSession *session);
 
 /**
  * Updates the personal message of the user.
  *
  * @param session The MSN session.
  */
-void pecan_update_personal_message (struct MsnSession *session);
+void pn_update_personal_message (struct MsnSession *session);
 
-gboolean pecan_timeout_tune_status (gpointer data);
+gboolean pn_timeout_tune_status (gpointer data);
 
-#endif /* PECAN_STATUS_H */
+#endif /* PN_STATUS_H */
