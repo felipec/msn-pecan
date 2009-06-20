@@ -18,7 +18,15 @@
  */
 
 #include "pecan_group.h"
-#include "pecan_group_priv.h"
+
+/**
+ * A group.
+ */
+struct PecanGroup
+{
+    gchar *guid; /**< The GUID. */
+    gchar *name; /**< The name. */
+};
 
 PecanGroup *
 pecan_group_new (PecanContactList *contactlist,
@@ -41,7 +49,8 @@ pecan_group_new (PecanContactList *contactlist,
 void
 pecan_group_free (PecanGroup *group)
 {
-    g_return_if_fail (group);
+    if (!group)
+        return;
 
     g_free (group->guid);
     g_free (group->name);
@@ -52,8 +61,6 @@ void
 pecan_group_set_guid (PecanGroup *group,
                       const gchar *guid)
 {
-    g_return_if_fail (group);
-
     g_free (group->guid);
     group->guid = g_strdup (guid);
 }
@@ -62,8 +69,6 @@ void
 pecan_group_set_name (PecanGroup *group,
                       const gchar *name)
 {
-    g_return_if_fail (group);
-
     g_free (group->name);
     group->name = g_strdup (name);
 }
@@ -71,15 +76,11 @@ pecan_group_set_name (PecanGroup *group,
 const gchar *
 pecan_group_get_id (const PecanGroup *group)
 {
-    g_return_val_if_fail (group, NULL);
-
     return group->guid;
 }
 
 const gchar *
 pecan_group_get_name (const PecanGroup *group)
 {
-    g_return_val_if_fail (group, NULL);
-
     return group->name;
 }
