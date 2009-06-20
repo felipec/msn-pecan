@@ -22,19 +22,20 @@
 #include <glib-object.h>
 
 typedef struct PecanCmdServer PecanCmdServer;
+typedef struct PecanCmdServerClass PecanCmdServerClass;
 
 #include "pecan_node.h"
 
 #define CMD_PECAN_NODE_TYPE (pecan_cmd_server_get_type ())
 #define CMD_PECAN_NODE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), CMD_PECAN_NODE_TYPE, PecanCmdServer))
 #define CMD_PECAN_NODE_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), CMD_PECAN_NODE_TYPE, PecanCmdServerClass))
-#define CMD_PECAN_IS_NODE(obj) (G_TYPE_CHECK_TYPE ((obj), CMD_PECAN_NODE_TYPE))
-#define CMD_PECAN_IS_NODE_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), CMD_PECAN_NODE_TYPE))
 #define CMD_PECAN_NODE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), CMD_PECAN_NODE_TYPE, PecanCmdServerClass))
 
 PecanCmdServer *pecan_cmd_server_new (const gchar *name, PecanNodeType type);
 void pecan_cmd_server_free (PecanCmdServer *conn);
 
 void pecan_cmd_server_send (PecanCmdServer *conn, const char *command, const char *format, ...);
+
+GType pecan_cmd_server_get_type (void);
 
 #endif /* MSN_CMD_CONN_H */

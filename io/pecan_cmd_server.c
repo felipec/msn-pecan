@@ -16,7 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "pecan_cmd_server_priv.h"
+#include "pecan_cmd_server.h"
+#include "pecan_node_priv.h"
 #include "cmd/cmdproc_private.h"
 #include "cmd/command_private.h"
 
@@ -27,6 +28,22 @@
 #ifdef HAVE_LIBPURPLE
 #include "fix_purple_win32.h"
 #endif /* HAVE_LIBPURPLE */
+
+struct PecanCmdServer
+{
+    PecanNode parent;
+
+    gsize payload_len;
+    gchar *rx_buf;
+    gsize rx_len;
+
+    struct MsnCmdProc *cmdproc;
+};
+
+struct PecanCmdServerClass
+{
+    PecanNodeClass parent_class;
+};
 
 static PecanNodeClass *parent_class = NULL;
 
