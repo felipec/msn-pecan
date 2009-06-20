@@ -983,7 +983,7 @@ static void
 msn_emoticon_destroy(MsnEmoticon *emoticon)
 {
     if (emoticon->obj)
-        msn_object_destroy(emoticon->obj);
+        msn_object_free(emoticon->obj);
     g_free(emoticon->smile);
     g_free(emoticon);
 }

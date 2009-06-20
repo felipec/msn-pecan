@@ -714,11 +714,11 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     {
         if (cmd->param_count == 6)
         {
-            MsnObject *msnobj;
+            MsnObject *obj;
             gchar *tmp;
             tmp = pecan_url_decode (cmd->params[5]);
-            msnobj = msn_object_new_from_string (tmp);
-            pecan_contact_set_object(user, msnobj);
+            obj = msn_object_new_from_string (tmp);
+            pecan_contact_set_object(user, obj);
             g_free (tmp);
         }
     }
@@ -776,11 +776,11 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     {
         if (cmd->param_count == 5)
         {
-            MsnObject *msnobj;
+            MsnObject *obj;
             gchar *tmp;
             tmp = pecan_url_decode(cmd->params[4]);
-            msnobj = msn_object_new_from_string(tmp);
-            pecan_contact_set_object(user, msnobj);
+            obj = msn_object_new_from_string(tmp);
+            pecan_contact_set_object(user, obj);
             g_free (tmp);
         }
         else
@@ -812,10 +812,10 @@ contact_update (PecanContact *contact,
 
 #if defined(PECAN_CVR)
     {
-        MsnObject *msnobj;
-        msnobj = pecan_contact_get_object (contact);
-        if (msnobj)
-            pecan_contact_set_object (contact, msnobj);
+        MsnObject *obj;
+        obj = pecan_contact_get_object (contact);
+        if (obj)
+            pecan_contact_set_object (contact, obj);
     }
 #endif /* defined(PECAN_CVR) */
 }

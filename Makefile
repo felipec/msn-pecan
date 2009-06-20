@@ -106,7 +106,6 @@ ifdef CVR
 	     cvr/slpmsg.o \
 	     cvr/slpsession.o \
 	     cvr/pecan_slp_object.o
-
 endif
 
 ifdef SOCKET

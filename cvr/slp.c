@@ -317,14 +317,14 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
         else
         {
             pecan_error ("Wrong object?");
-            msn_object_destroy(obj);
+            msn_object_free(obj);
             g_return_if_reached();
         }
 
         if (!image)
         {
             pecan_error ("Wrong object");
-            msn_object_destroy (obj);
+            msn_object_free (obj);
             g_return_if_reached ();
         }
 
@@ -335,7 +335,7 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
             g_free (tmp);
         }
 
-        msn_object_destroy(obj);
+        msn_object_free(obj);
 
         slpsession = msn_slplink_find_slp_session(slplink,
                                                   slpcall->session_id);
@@ -911,7 +911,7 @@ msn_emoticon_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
             msn_slplink_request_object(slplink, smile, got_emoticon, NULL, obj);
         }
 
-        msn_object_destroy(obj);
+        msn_object_free(obj);
         obj =   NULL;
         who =   NULL;
         sha1 = NULL;

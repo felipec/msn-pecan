@@ -164,15 +164,15 @@ pecan_update_status (MsnSession *session)
 
 #if defined(PECAN_CVR)
     {
-        MsnObject *msnobj;
+        MsnObject *obj;
 
-        msnobj = pecan_contact_get_object (user);
+        obj = pecan_contact_get_object (user);
 
-        if (msnobj)
+        if (obj)
         {
             gchar *msnobj_str;
 
-            msnobj_str = msn_object_to_string (msnobj);
+            msnobj_str = msn_object_to_string (obj);
 
             msn_cmdproc_send (cmdproc, "CHG", "%s %d %s", state_text,
                               MSN_CLIENT_ID, purple_url_encode (msnobj_str));

@@ -1380,7 +1380,7 @@ datacast_msg (MsnCmdProc *cmdproc,
 
         msn_slplink_request_object(slplink, data, got_voice_clip, NULL, obj);
             
-        msn_object_destroy(obj);
+        msn_object_free(obj);
 #endif /* defined(PECAN_LIBSIREN) */
     }
     else

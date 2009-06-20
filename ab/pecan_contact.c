@@ -61,7 +61,7 @@ pecan_contact_free (PecanContact *contact)
 
 #if defined(PECAN_CVR)
     if (contact->msnobj)
-        msn_object_destroy (contact->msnobj);
+        msn_object_free (contact->msnobj);
 #endif /* defined(PECAN_CVR) */
 
     g_free (contact->passport);
@@ -463,13 +463,13 @@ pecan_contact_set_buddy_icon (PecanContact *contact,
 {
 #if defined(PECAN_CVR)
 #ifdef HAVE_LIBPURPLE
-    MsnObject *msnobj;
+    MsnObject *obj;
 
     g_return_if_fail (contact);
 
-    msnobj = msn_object_new_from_image (image, "TFR2C2.tmp", pecan_contact_get_passport (contact),
-                                        MSN_OBJECT_USERTILE);
-    pecan_contact_set_object (contact, msnobj);
+    obj = msn_object_new_from_image (image, "TFR2C2.tmp", pecan_contact_get_passport (contact),
+                                     MSN_OBJECT_USERTILE);
+    pecan_contact_set_object (contact, obj);
 #endif /* HAVE_LIBPURPLE */
 #endif /* defined(PECAN_CVR) */
 }
@@ -615,7 +615,7 @@ pecan_contact_set_object (PecanContact *contact,
         contact->msnobj = NULL;
 
     if (contact->msnobj)
-        msn_object_destroy (contact->msnobj);
+        msn_object_free (contact->msnobj);
 
     contact->msnobj = obj;
 
