@@ -24,7 +24,7 @@
 
 #include "session_private.h"
 #include "ab/pn_contact_priv.h"
-#include "ab/pecan_contactlist_priv.h"
+#include "ab/pn_contactlist_priv.h"
 
 #ifdef HAVE_LIBPURPLE
 #include "fix_purple.h"
@@ -108,7 +108,7 @@ userdisplay_fail (MsnSlpCall *slpcall,
 
     passport = slpcall->slplink->remote_user;
 
-    contact = pecan_contactlist_find_contact (session->contactlist, passport);
+    contact = pn_contactlist_find_contact (session->contactlist, passport);
 
     if (contact)
         queue (session->dp_manager, contact);

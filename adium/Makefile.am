@@ -28,7 +28,7 @@ MSNSOURCES = msn.c \
 	     io/pn_parser.c \
 	     ab/pn_group.c \
 	     ab/pn_contact.c \
-	     ab/pecan_contactlist.c \
+	     ab/pn_contactlist.c \
 	     io/pn_stream.c \
 	     io/pn_node.c \
 	     io/pn_cmd_server.c \

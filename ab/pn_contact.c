@@ -19,7 +19,7 @@
 
 #include "pn_contact.h"
 #include "pn_contact_priv.h"
-#include "pecan_contactlist_priv.h"
+#include "pn_contactlist_priv.h"
 #include "pn_log.h"
 #include "pn_util.h"
 
@@ -39,7 +39,7 @@
 #endif /* HAVE_LIBPURPLE */
 
 PnContact *
-pn_contact_new (PecanContactList *contactlist)
+pn_contact_new (PnContactList *contactlist)
 {
     PnContact *contact;
 
@@ -458,14 +458,14 @@ pn_contact_add_group_id (PnContact *contact,
 
 #ifdef HAVE_LIBPURPLE
     {
-        PecanContactList *contactlist;
+        PnContactList *contactlist;
         PurpleAccount *account;
         PurpleBuddy *b = NULL;
         PurpleGroup *g = NULL;
         const gchar *group_name;
 
         contactlist = contact->contactlist;
-        group_name = pecan_contactlist_find_group_name (contactlist, group_guid);
+        group_name = pn_contactlist_find_group_name (contactlist, group_guid);
         account = msn_session_get_user_data (contactlist->session);
 
         /* If this contact is in the no-group, remove him, since now he is in a
@@ -475,7 +475,7 @@ pn_contact_add_group_id (PnContact *contact,
             const gchar *t_group_name;
             PurpleGroup *t_g;
 
-            t_group_name = pecan_contactlist_find_group_name (contactlist, NULL);
+            t_group_name = pn_contactlist_find_group_name (contactlist, NULL);
             t_g = purple_find_group (t_group_name);
 
             if (t_g)

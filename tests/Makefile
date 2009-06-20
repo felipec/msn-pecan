@@ -24,7 +24,7 @@ buffer_test_objects := buffer.o \
 ab_test_objects := ab.o \
 		   ../ab/pn_contact.o \
 		   ../ab/pn_group.o \
-		   ../ab/pecan_contactlist.o \
+		   ../ab/pn_contactlist.o \
 		   ../pecan_util.o
 
 printf_test_objects := printf.o \

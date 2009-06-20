@@ -33,8 +33,8 @@
 #include "cmd/transaction_private.h"
 #include "cmd/msg_private.h"
 
-#include "ab/pecan_contactlist.h"
-#include "ab/pecan_contactlist_priv.h"
+#include "ab/pn_contactlist.h"
+#include "ab/pn_contactlist_priv.h"
 #include "ab/pn_contact_priv.h"
 
 #include "io/pn_cmd_server.h"
@@ -254,7 +254,7 @@ group_error_helper(MsnSession *session, const char *msg, const gchar *group_guid
     if (error == 224)
     {
         const char *group_name;
-        group_name = pecan_contactlist_find_group_name(session->contactlist, group_guid);
+        group_name = pn_contactlist_find_group_name(session->contactlist, group_guid);
         reason = g_strdup_printf(_("%s is not a valid group."),
                                  group_name);
     }
@@ -528,9 +528,9 @@ adc_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     session = cmdproc->session;
 
     if (passport)
-        user = pecan_contactlist_find_contact (session->contactlist, passport);
+        user = pn_contactlist_find_contact (session->contactlist, passport);
     else if (user_guid)
-        user = pecan_contactlist_find_contact_by_guid (session->contactlist, user_guid);
+        user = pn_contactlist_find_contact_by_guid (session->contactlist, user_guid);
 
     if (user == NULL)
     {
@@ -633,16 +633,16 @@ adg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     /* There is a user that must me moved to this group */
     if (cmd->trans && cmd->trans->data)
     {
-        /* pecan_contactlist_move_buddy(); */
-        PecanContactList *contactlist = cmdproc->session->contactlist;
+        /* pn_contactlist_move_buddy(); */
+        PnContactList *contactlist = cmdproc->session->contactlist;
         MsnMoveBuddy *data = cmd->trans->data;
 
-        pecan_contactlist_add_buddy(contactlist, data->who, MSN_LIST_FL, group_name);
+        pn_contactlist_add_buddy(contactlist, data->who, MSN_LIST_FL, group_name);
         g_free(data->who);
 
         if (data->old_group_guid != NULL)
         {
-            pecan_contactlist_rem_buddy(contactlist, data->who, MSN_LIST_FL, data->old_group_guid);
+            pn_contactlist_rem_buddy(contactlist, data->who, MSN_LIST_FL, data->old_group_guid);
             g_free(data->old_group_guid);
         }
         g_free (data);
@@ -662,7 +662,7 @@ fln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     PnContact *user;
 
-    user = pecan_contactlist_find_contact(cmdproc->session->contactlist, cmd->params[0]);
+    user = pn_contactlist_find_contact(cmdproc->session->contactlist, cmd->params[0]);
     pn_contact_set_state(user, NULL);
     pn_contact_update(user);
 
@@ -696,7 +696,7 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     passport = cmd->params[2];
     friendly = pn_url_decode(cmd->params[3]);
 
-    user = pecan_contactlist_find_contact(session->contactlist, passport);
+    user = pn_contactlist_find_contact(session->contactlist, passport);
 
     pn_contact_set_state(user, state);
     pn_contact_set_friendly_name(user, friendly);
@@ -760,7 +760,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     passport = cmd->params[1];
     friendly = pn_url_decode(cmd->params[2]);
 
-    user = pecan_contactlist_find_contact(session->contactlist, passport);
+    user = pn_contactlist_find_contact(session->contactlist, passport);
 
     if (!user)
     {
@@ -834,7 +834,7 @@ chg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     {
         /* now we are able to send messages and do p2p */
 
-        pecan_contactlist_foreach_contact (cmdproc->session->contactlist, contact_update, NULL);
+        pn_contactlist_foreach_contact (cmdproc->session->contactlist, contact_update, NULL);
     }
 }
 
@@ -874,7 +874,7 @@ rea_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     {
         /* This is for a buddy. */
         PnContact *user;
-        user = pecan_contactlist_find_contact(session->contactlist, who);
+        user = pn_contactlist_find_contact(session->contactlist, who);
         if (user)
         {
             pn_contact_set_store_name(user, alias);
@@ -903,7 +903,7 @@ sbp_cmd (MsnCmdProc *cmdproc,
     type = cmd->params[2];
     value = cmd->params[3];
 
-    contact = pecan_contactlist_find_contact_by_guid (session->contactlist, contact_guid);
+    contact = pn_contactlist_find_contact_by_guid (session->contactlist, contact_guid);
 
     if (contact)
     {
@@ -972,7 +972,7 @@ reg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     group_guid = cmd->params[1];
     group_name = pn_url_decode(cmd->params[2]);
 
-    pecan_contactlist_rename_group_id(session->contactlist, group_guid, group_name);
+    pn_contactlist_rename_group_id(session->contactlist, group_guid, group_name);
 
     g_free (group_name);
 }
@@ -1007,9 +1007,9 @@ rem_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     user_id = cmd->params[2];
 
     if (strcmp (list, "FL") == 0)
-        user = pecan_contactlist_find_contact_by_guid (session->contactlist, user_id);
+        user = pn_contactlist_find_contact_by_guid (session->contactlist, user_id);
     else
-        user = pecan_contactlist_find_contact (session->contactlist, user_id);
+        user = pn_contactlist_find_contact (session->contactlist, user_id);
 
     g_return_if_fail(user != NULL);
 
@@ -1033,7 +1033,7 @@ rmg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     session = cmdproc->session;
     group_guid = cmd->params[1];
 
-    pecan_contactlist_remove_group_id(session->contactlist, group_guid);
+    pn_contactlist_remove_group_id(session->contactlist, group_guid);
 }
 
 static void
@@ -1102,7 +1102,7 @@ ubx_cmd_post (MsnCmdProc *cmdproc,
     session = cmdproc->session;
 
     passport = cmd->params[0];
-    contact = pecan_contactlist_find_contact (session->contactlist, passport);
+    contact = pn_contactlist_find_contact (session->contactlist, passport);
 
     if (contact)
     {

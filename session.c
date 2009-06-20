@@ -49,7 +49,7 @@ conversation_created_cb (PurpleConversation *conv, gpointer data)
     PnContact *contact;
 
     tmp_user = purple_conversation_get_name (conv);
-    contact = pecan_contactlist_find_contact (session->contactlist, tmp_user);
+    contact = pn_contactlist_find_contact (session->contactlist, tmp_user);
     if (contact)
         friendly_name = pn_contact_get_friendly_name (contact);
     else
@@ -97,7 +97,7 @@ msn_session_new (const gchar *username,
     session->dp_manager = pn_dp_manager_new (session);
 
     session->notification = msn_notification_new (session);
-    session->contactlist = pecan_contactlist_new (session);
+    session->contactlist = pn_contactlist_new (session);
 
     session->user = pn_contact_new (NULL);
     pn_contact_set_passport (session->user, session->username);
@@ -142,7 +142,7 @@ msn_session_destroy (MsnSession *session)
     g_hash_table_destroy (session->conversations);
     g_hash_table_destroy (session->chats);
 
-    pecan_contactlist_destroy (session->contactlist);
+    pn_contactlist_destroy (session->contactlist);
 
     g_free (session->passport_info.kv);
     g_free (session->passport_info.sid);
@@ -440,7 +440,7 @@ msn_session_finish_login (MsnSession *session)
         purple_connection_set_state (connection, PURPLE_CONNECTED);
     }
 
-    pecan_contactlist_check_pending (session->contactlist);
+    pn_contactlist_check_pending (session->contactlist);
 }
 
 void

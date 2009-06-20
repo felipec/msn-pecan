@@ -1052,7 +1052,7 @@ send_im (PurpleConnection *gc,
     /* Send to mobile when contact is offline. */
     {
         PnContact *contact;
-        contact = pecan_contactlist_find_contact (session->contactlist, who);
+        contact = pn_contactlist_find_contact (session->contactlist, who);
         if (contact && contact->status == PN_STATUS_OFFLINE && contact->mobile)
         {
             gchar *text;
@@ -1218,7 +1218,7 @@ add_buddy (PurpleConnection *gc,
            PurpleGroup *group)
 {
     MsnSession *session;
-    PecanContactList *contactlist;
+    PnContactList *contactlist;
 
     session = gc->proto_data;
     contactlist = session->contactlist;
@@ -1229,7 +1229,7 @@ add_buddy (PurpleConnection *gc,
         return;
     }
 
-    pecan_contactlist_add_buddy_helper (contactlist, buddy, group);
+    pn_contactlist_add_buddy_helper (contactlist, buddy, group);
 }
 
 static void
@@ -1238,7 +1238,7 @@ rem_buddy (PurpleConnection *gc,
            PurpleGroup *group)
 {
     MsnSession *session;
-    PecanContactList *contactlist;
+    PnContactList *contactlist;
     const gchar *group_name;
 
     session = gc->proto_data;
@@ -1256,13 +1256,13 @@ rem_buddy (PurpleConnection *gc,
     {
         PnContact *user;
 
-        user = pecan_contactlist_find_contact (contactlist, buddy->name);
+        user = pn_contactlist_find_contact (contactlist, buddy->name);
 
         if (user && pn_contact_get_group_count (user) <= 1)
             group_name = NULL;
     }
 
-    pecan_contactlist_rem_buddy (contactlist, buddy->name, MSN_LIST_FL, group_name);
+    pn_contactlist_rem_buddy (contactlist, buddy->name, MSN_LIST_FL, group_name);
 }
 
 static void
@@ -1276,7 +1276,7 @@ alias_buddy (PurpleConnection *gc,
 
     session = gc->proto_data;
     cmdproc = session->notification->cmdproc;
-    contact = pecan_contactlist_find_contact (session->contactlist, name);
+    contact = pn_contactlist_find_contact (session->contactlist, name);
 
     if (!msn_session_get_bool (session, "use_server_alias"))
         return;
@@ -1296,12 +1296,12 @@ group_buddy (PurpleConnection *gc,
              const gchar *new_group_name)
 {
     MsnSession *session;
-    PecanContactList *contactlist;
+    PnContactList *contactlist;
 
     session = gc->proto_data;
     contactlist = session->contactlist;
 
-    pecan_contactlist_move_buddy (contactlist, who, old_group_name, new_group_name);
+    pn_contactlist_move_buddy (contactlist, who, old_group_name, new_group_name);
 }
 
 static void
@@ -1319,7 +1319,7 @@ rename_group( PurpleConnection *gc,
     cmdproc = session->notification->cmdproc;
     enc_new_group_name = purple_url_encode (group->name);
 
-    old_group_guid = pecan_contactlist_find_group_id (session->contactlist, old_name);
+    old_group_guid = pn_contactlist_find_group_id (session->contactlist, old_name);
 
     g_return_if_fail (old_group_guid);
     msn_cmdproc_send (cmdproc, "REG", "%s %s", old_group_guid, enc_new_group_name);
@@ -1338,7 +1338,7 @@ remove_group (PurpleConnection *gc,
 
     /* The server automatically removes the contacts and sends
      * notifications back. */
-    if ((group_guid = pecan_contactlist_find_group_id (session->contactlist, group->name)))
+    if ((group_guid = pn_contactlist_find_group_id (session->contactlist, group->name)))
     {
         msn_cmdproc_send (cmdproc, "RMG", "%s", group_guid);
     }
@@ -1353,12 +1353,12 @@ add_permit (PurpleConnection *gc,
             const gchar *who)
 {
     MsnSession *session;
-    PecanContactList *contactlist;
+    PnContactList *contactlist;
     PnContact *user;
 
     session = gc->proto_data;
     contactlist = session->contactlist;
-    user = pecan_contactlist_find_contact (contactlist, who);
+    user = pn_contactlist_find_contact (contactlist, who);
 
     if (!session->logged_in)
     {
@@ -1367,9 +1367,9 @@ add_permit (PurpleConnection *gc,
     }
 
     if (user && user->list_op & MSN_LIST_BL_OP)
-        pecan_contactlist_rem_buddy (contactlist, who, MSN_LIST_BL, NULL);
+        pn_contactlist_rem_buddy (contactlist, who, MSN_LIST_BL, NULL);
 
-    pecan_contactlist_add_buddy (contactlist, who, MSN_LIST_AL, NULL);
+    pn_contactlist_add_buddy (contactlist, who, MSN_LIST_AL, NULL);
 }
 
 static void
@@ -1377,12 +1377,12 @@ add_deny (PurpleConnection *gc,
           const gchar *who)
 {
     MsnSession *session;
-    PecanContactList *contactlist;
+    PnContactList *contactlist;
     PnContact *user;
 
     session = gc->proto_data;
     contactlist = session->contactlist;
-    user = pecan_contactlist_find_contact (contactlist, who);
+    user = pn_contactlist_find_contact (contactlist, who);
 
     if (!session->logged_in)
     {
@@ -1391,9 +1391,9 @@ add_deny (PurpleConnection *gc,
     }
 
     if (user && user->list_op & MSN_LIST_AL_OP)
-        pecan_contactlist_rem_buddy (contactlist, who, MSN_LIST_AL, NULL);
+        pn_contactlist_rem_buddy (contactlist, who, MSN_LIST_AL, NULL);
 
-    pecan_contactlist_add_buddy (contactlist, who, MSN_LIST_BL, NULL);
+    pn_contactlist_add_buddy (contactlist, who, MSN_LIST_BL, NULL);
 }
 
 static void
@@ -1401,7 +1401,7 @@ rem_permit (PurpleConnection *gc,
             const gchar *who)
 {
     MsnSession *session;
-    PecanContactList *contactlist;
+    PnContactList *contactlist;
     PnContact *user;
 
     session = gc->proto_data;
@@ -1413,12 +1413,12 @@ rem_permit (PurpleConnection *gc,
         g_return_if_reached ();
     }
 
-    user = pecan_contactlist_find_contact (contactlist, who);
+    user = pn_contactlist_find_contact (contactlist, who);
 
-    pecan_contactlist_rem_buddy (contactlist, who, MSN_LIST_AL, NULL);
+    pn_contactlist_rem_buddy (contactlist, who, MSN_LIST_AL, NULL);
 
     if (user && user->list_op & MSN_LIST_RL_OP)
-        pecan_contactlist_add_buddy (contactlist, who, MSN_LIST_BL, NULL);
+        pn_contactlist_add_buddy (contactlist, who, MSN_LIST_BL, NULL);
 }
 
 static void
@@ -1426,7 +1426,7 @@ rem_deny (PurpleConnection *gc,
           const gchar *who)
 {
     MsnSession *session;
-    PecanContactList *contactlist;
+    PnContactList *contactlist;
     PnContact *user;
 
     session = gc->proto_data;
@@ -1438,12 +1438,12 @@ rem_deny (PurpleConnection *gc,
         g_return_if_reached ();
     }
 
-    user = pecan_contactlist_find_contact (contactlist, who);
+    user = pn_contactlist_find_contact (contactlist, who);
 
-    pecan_contactlist_rem_buddy (contactlist, who, MSN_LIST_BL, NULL);
+    pn_contactlist_rem_buddy (contactlist, who, MSN_LIST_BL, NULL);
 
     if (user && user->list_op & MSN_LIST_RL_OP)
-        pecan_contactlist_add_buddy (contactlist, who, MSN_LIST_AL, NULL);
+        pn_contactlist_add_buddy (contactlist, who, MSN_LIST_AL, NULL);
 }
 
 static void

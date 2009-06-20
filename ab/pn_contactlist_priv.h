@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef PECAN_CONTACTLIST_PRIV_H
-#define PECAN_CONTACTLIST_PRIV_H
+#ifndef PN_CONTACTLIST_PRIV_H
+#define PN_CONTACTLIST_PRIV_H
 
 #include <glib.h>
 
@@ -32,7 +32,7 @@ typedef struct
 
 struct MsnSesion;
 
-struct PecanContactList
+struct PnContactList
 {
     struct MsnSession *session;
 
@@ -43,4 +43,4 @@ struct PecanContactList
     PnGroup *null_group;
 };
 
-#endif /* PECAN_CONTACTLIST_PRIV_H */
+#endif /* PN_CONTACTLIST_PRIV_H */

@@ -22,9 +22,9 @@
 
 typedef struct PnGroup PnGroup;
 
-#include "pecan_contactlist.h"
+#include "pn_contactlist.h"
 
-PnGroup *pn_group_new (PecanContactList *contactlist,
+PnGroup *pn_group_new (PnContactList *contactlist,
                        const gchar *name,
                        const gchar *guid);
 void pn_group_free (PnGroup *group);

@@ -29,7 +29,7 @@ typedef struct PnContact PnContact;
 
 #include "io/pn_buffer.h"
 
-#include "pecan_contactlist.h"
+#include "pn_contactlist.h"
 
 /**
  * Creates a new contact structure.
@@ -38,7 +38,7 @@ typedef struct PnContact PnContact;
  *
  * @return A new contact structure.
  */
-PnContact *pn_contact_new (PecanContactList *contactlist);
+PnContact *pn_contact_new (PnContactList *contactlist);
 
 /**
  * Destroys a contact structure.

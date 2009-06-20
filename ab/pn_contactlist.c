@@ -18,8 +18,8 @@
  */
 
 #include "session.h"
-#include "pecan_contactlist.h"
-#include "pecan_contactlist_priv.h"
+#include "pn_contactlist.h"
+#include "pn_contactlist_priv.h"
 #include "pn_contact_priv.h"
 #include "pn_log.h"
 #include "pn_locale.h"
@@ -67,7 +67,7 @@ msn_accept_add_cb (gpointer data)
     contact = pa->contact;
     passport = pn_contact_get_passport (contact);
 
-    pecan_contactlist_add_buddy (pa->session->contactlist, passport, MSN_LIST_AL, NULL);
+    pn_contactlist_add_buddy (pa->session->contactlist, passport, MSN_LIST_AL, NULL);
 
     g_free (pa);
 }
@@ -82,7 +82,7 @@ msn_cancel_add_cb (gpointer data)
     contact = pa->contact;
     passport = pn_contact_get_passport (contact);
 
-    pecan_contactlist_add_buddy (pa->session->contactlist, passport, MSN_LIST_BL, NULL);
+    pn_contactlist_add_buddy (pa->session->contactlist, passport, MSN_LIST_BL, NULL);
 
     g_free (pa);
 }
@@ -180,7 +180,7 @@ get_store_name (PnContact *contact)
 }
 
 static void
-request_add_group (PecanContactList *contactlist,
+request_add_group (PnContactList *contactlist,
                    const gchar *who,
                    const gchar *old_group_guid,
                    const gchar *new_group_name)
@@ -442,12 +442,12 @@ msn_got_lst_contact (MsnSession *session,
  * UserList functions
  **************************************************************************/
 
-PecanContactList *
-pecan_contactlist_new (MsnSession *session)
+PnContactList *
+pn_contactlist_new (MsnSession *session)
 {
-    PecanContactList *contactlist;
+    PnContactList *contactlist;
 
-    contactlist = g_new0 (PecanContactList, 1);
+    contactlist = g_new0 (PnContactList, 1);
 
     contactlist->session = session;
 
@@ -464,7 +464,7 @@ pecan_contactlist_new (MsnSession *session)
 }
 
 void
-pecan_contactlist_destroy (PecanContactList *contactlist)
+pn_contactlist_destroy (PnContactList *contactlist)
 {
     g_hash_table_destroy (contactlist->contact_guids);
     g_hash_table_destroy (contactlist->contact_names);
@@ -475,8 +475,8 @@ pecan_contactlist_destroy (PecanContactList *contactlist)
 }
 
 void
-pecan_contactlist_remove_contact (PecanContactList *contactlist,
-                                  PnContact *contact)
+pn_contactlist_remove_contact (PnContactList *contactlist,
+                               PnContact *contact)
 {
     {
         const gchar *guid;
@@ -489,8 +489,8 @@ pecan_contactlist_remove_contact (PecanContactList *contactlist,
 }
 
 PnContact *
-pecan_contactlist_find_contact (PecanContactList *contactlist,
-                                const gchar *passport)
+pn_contactlist_find_contact (PnContactList *contactlist,
+                             const gchar *passport)
 {
     g_return_val_if_fail (passport, NULL);
 
@@ -498,8 +498,8 @@ pecan_contactlist_find_contact (PecanContactList *contactlist,
 }
 
 PnContact *
-pecan_contactlist_find_contact_by_guid (PecanContactList *contactlist,
-                                        const gchar *guid)
+pn_contactlist_find_contact_by_guid (PnContactList *contactlist,
+                                     const gchar *guid)
 {
     g_return_val_if_fail (guid, NULL);
 
@@ -507,8 +507,8 @@ pecan_contactlist_find_contact_by_guid (PecanContactList *contactlist,
 }
 
 void
-pecan_contactlist_add_group (PecanContactList *contactlist,
-                             PnGroup *group)
+pn_contactlist_add_group (PnContactList *contactlist,
+                          PnGroup *group)
 {
     g_hash_table_insert (contactlist->group_names, g_strdup (pn_group_get_name (group)), group);
     {
@@ -520,8 +520,8 @@ pecan_contactlist_add_group (PecanContactList *contactlist,
 }
 
 void
-pecan_contactlist_remove_group (PecanContactList *contactlist,
-                                PnGroup *group)
+pn_contactlist_remove_group (PnContactList *contactlist,
+                             PnGroup *group)
 {
     {
         const gchar *guid;
@@ -533,8 +533,8 @@ pecan_contactlist_remove_group (PecanContactList *contactlist,
 }
 
 PnGroup *
-pecan_contactlist_find_group_with_id (PecanContactList *contactlist,
-                                      const gchar *guid)
+pn_contactlist_find_group_with_id (PnContactList *contactlist,
+                                   const gchar *guid)
 {
     g_return_val_if_fail (contactlist, NULL);
 
@@ -545,8 +545,8 @@ pecan_contactlist_find_group_with_id (PecanContactList *contactlist,
 }
 
 PnGroup *
-pecan_contactlist_find_group_with_name (PecanContactList *contactlist,
-                                        const gchar *name)
+pn_contactlist_find_group_with_name (PnContactList *contactlist,
+                                     const gchar *name)
 {
     g_return_val_if_fail (contactlist, NULL);
     g_return_val_if_fail (name, NULL);
@@ -558,12 +558,12 @@ pecan_contactlist_find_group_with_name (PecanContactList *contactlist,
 }
 
 const gchar *
-pecan_contactlist_find_group_id (PecanContactList *contactlist,
-                                 const gchar *group_name)
+pn_contactlist_find_group_id (PnContactList *contactlist,
+                              const gchar *group_name)
 {
     PnGroup *group;
 
-    group = pecan_contactlist_find_group_with_name (contactlist, group_name);
+    group = pn_contactlist_find_group_with_name (contactlist, group_name);
 
     if (group)
         return pn_group_get_id (group);
@@ -572,12 +572,12 @@ pecan_contactlist_find_group_id (PecanContactList *contactlist,
 }
 
 const gchar *
-pecan_contactlist_find_group_name (PecanContactList *contactlist,
-                                   const gchar *group_guid)
+pn_contactlist_find_group_name (PnContactList *contactlist,
+                                const gchar *group_guid)
 {
     PnGroup *group;
 
-    group = pecan_contactlist_find_group_with_id (contactlist, group_guid);
+    group = pn_contactlist_find_group_with_id (contactlist, group_guid);
 
     if (group)
         return pn_group_get_name (group);
@@ -586,43 +586,43 @@ pecan_contactlist_find_group_name (PecanContactList *contactlist,
 }
 
 void
-pecan_contactlist_rename_group_id (PecanContactList *contactlist,
-                                   const gchar *group_guid,
-                                   const gchar *new_name)
+pn_contactlist_rename_group_id (PnContactList *contactlist,
+                                const gchar *group_guid,
+                                const gchar *new_name)
 {
     PnGroup *group;
 
-    group = pecan_contactlist_find_group_with_id (contactlist, group_guid);
+    group = pn_contactlist_find_group_with_id (contactlist, group_guid);
 
     if (group)
         pn_group_set_name (group, new_name);
 }
 
 void
-pecan_contactlist_remove_group_id (PecanContactList *contactlist,
-                                   const gchar *group_guid)
+pn_contactlist_remove_group_id (PnContactList *contactlist,
+                                const gchar *group_guid)
 {
     PnGroup *group;
 
-    group = pecan_contactlist_find_group_with_id (contactlist, group_guid);
+    group = pn_contactlist_find_group_with_id (contactlist, group_guid);
 
     if (group)
     {
-        pecan_contactlist_remove_group (contactlist, group);
+        pn_contactlist_remove_group (contactlist, group);
     }
 }
 
 void
-pecan_contactlist_rem_buddy (PecanContactList *contactlist,
-                             const gchar *who,
-                             gint list_id,
-                             const gchar *group_name)
+pn_contactlist_rem_buddy (PnContactList *contactlist,
+                          const gchar *who,
+                          gint list_id,
+                          const gchar *group_name)
 {
     PnContact *contact;
     const gchar *group_guid;
     const gchar *list;
 
-    contact = pecan_contactlist_find_contact (contactlist, who);
+    contact = pn_contactlist_find_contact (contactlist, who);
     group_guid = NULL;
 
     pn_debug ("who=[%s],list_id=%d,group_name=[%s]", who, list_id, group_name);
@@ -631,7 +631,7 @@ pecan_contactlist_rem_buddy (PecanContactList *contactlist,
     {
         PnGroup *group;
 
-        group = pecan_contactlist_find_group_with_name (contactlist, group_name);
+        group = pn_contactlist_find_group_with_name (contactlist, group_name);
 
         if (!group)
         {
@@ -660,10 +660,10 @@ pecan_contactlist_rem_buddy (PecanContactList *contactlist,
 }
 
 void
-pecan_contactlist_add_buddy (PecanContactList *contactlist,
-                             const gchar *who,
-                             gint list_id,
-                             const gchar *group_name)
+pn_contactlist_add_buddy (PnContactList *contactlist,
+                          const gchar *who,
+                          gint list_id,
+                          const gchar *group_name)
 {
     PnContact *contact;
     const gchar *group_guid;
@@ -675,13 +675,13 @@ pecan_contactlist_add_buddy (PecanContactList *contactlist,
 
     pn_debug ("who=[%s],list_id=%d,group_name=[%s]", who, list_id, group_name);
 
-    contact = pecan_contactlist_find_contact (contactlist, who);
+    contact = pn_contactlist_find_contact (contactlist, who);
 
     if (group_name)
     {
         PnGroup *group;
 
-        group = pecan_contactlist_find_group_with_name (contactlist, group_name);
+        group = pn_contactlist_find_group_with_name (contactlist, group_name);
 
         if (!group)
         {
@@ -713,17 +713,17 @@ pecan_contactlist_add_buddy (PecanContactList *contactlist,
 }
 
 void
-pecan_contactlist_move_buddy (PecanContactList *contactlist,
-                              const gchar *who,
-                              const gchar *old_group_name,
-                              const gchar *new_group_name)
+pn_contactlist_move_buddy (PnContactList *contactlist,
+                           const gchar *who,
+                           const gchar *old_group_name,
+                           const gchar *new_group_name)
 {
     PnGroup *old_group;
     PnGroup *new_group;
     const gchar *old_group_guid;
 
-    old_group = pecan_contactlist_find_group_with_name (contactlist, old_group_name);
-    new_group = pecan_contactlist_find_group_with_name (contactlist, new_group_name);
+    old_group = pn_contactlist_find_group_with_name (contactlist, old_group_name);
+    new_group = pn_contactlist_find_group_with_name (contactlist, new_group_name);
 
     old_group_guid = pn_group_get_id (old_group);
 
@@ -733,9 +733,9 @@ pecan_contactlist_move_buddy (PecanContactList *contactlist,
         return;
     }
 
-    pecan_contactlist_add_buddy (contactlist, who, MSN_LIST_FL, new_group_name);
+    pn_contactlist_add_buddy (contactlist, who, MSN_LIST_FL, new_group_name);
     if (old_group_guid)
-        pecan_contactlist_rem_buddy (contactlist, who, MSN_LIST_FL, old_group_name);
+        pn_contactlist_rem_buddy (contactlist, who, MSN_LIST_FL, old_group_name);
 }
 
 static void
@@ -745,7 +745,7 @@ contact_check_pending (gpointer key,
 {
     const gchar *passport;
     PnContact *contact;
-    PecanContactList *contactlist;
+    PnContactList *contactlist;
 
     passport = key;
     contact = value;
@@ -755,20 +755,20 @@ contact_check_pending (gpointer key,
     {
         /* These are contacts who are pending for... something. */
 
-        pecan_contactlist_add_buddy (contactlist, passport, MSN_LIST_RL, NULL);
-        pecan_contactlist_rem_buddy (contactlist, passport, MSN_LIST_PL, NULL);
+        pn_contactlist_add_buddy (contactlist, passport, MSN_LIST_RL, NULL);
+        pn_contactlist_rem_buddy (contactlist, passport, MSN_LIST_PL, NULL);
     }
 }
 
 void
-pecan_contactlist_check_pending (PecanContactList *contactlist)
+pn_contactlist_check_pending (PnContactList *contactlist)
 {
     g_hash_table_foreach (contactlist->contact_names, contact_check_pending, contactlist);
 }
 
 typedef struct
 {
-    PecanContactListFunc func;
+    PnContactListFunc func;
     gpointer user_data;
 } EachContactData;
 
@@ -783,9 +783,9 @@ contact_each (gpointer key,
 }
 
 void
-pecan_contactlist_foreach_contact (PecanContactList *contactlist,
-                                   PecanContactListFunc func,
-                                   gpointer user_data)
+pn_contactlist_foreach_contact (PnContactList *contactlist,
+                                PnContactListFunc func,
+                                gpointer user_data)
 {
     EachContactData *tmp = g_new0 (EachContactData, 1);
     tmp->func = func;
@@ -799,9 +799,9 @@ pecan_contactlist_foreach_contact (PecanContactList *contactlist,
  * Purple functions
  **************************************************************************/
 void
-pecan_contactlist_add_buddy_helper (PecanContactList *contactlist,
-                                    PurpleBuddy *buddy,
-                                    PurpleGroup *purple_group)
+pn_contactlist_add_buddy_helper (PnContactList *contactlist,
+                                 PurpleBuddy *buddy,
+                                 PurpleGroup *purple_group)
 {
     const gchar *who;
     const gchar *group_name;
@@ -817,13 +817,13 @@ pecan_contactlist_add_buddy_helper (PecanContactList *contactlist,
         const gchar *group_guid = NULL;
 
         list_id = MSN_LIST_FL;
-        contact = pecan_contactlist_find_contact (contactlist, who);
+        contact = pn_contactlist_find_contact (contactlist, who);
 
         if (group_name)
         {
             PnGroup *group;
 
-            group = pecan_contactlist_find_group_with_name (contactlist, group_name);
+            group = pn_contactlist_find_group_with_name (contactlist, group_name);
 
             if (!group)
             {
@@ -871,6 +871,6 @@ pecan_contactlist_add_buddy_helper (PecanContactList *contactlist,
         }
     }
 
-    pecan_contactlist_add_buddy (contactlist, who, MSN_LIST_FL, group_name);
+    pn_contactlist_add_buddy (contactlist, who, MSN_LIST_FL, group_name);
 }
 #endif /* HAVE_LIBPURPLE */

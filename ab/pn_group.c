@@ -29,7 +29,7 @@ struct PnGroup
 };
 
 PnGroup *
-pn_group_new (PecanContactList *contactlist,
+pn_group_new (PnContactList *contactlist,
               const gchar *name,
               const gchar *guid)
 {
@@ -41,7 +41,7 @@ pn_group_new (PecanContactList *contactlist,
     group->name = g_strdup (name);
 
     if (contactlist)
-        pecan_contactlist_add_group (contactlist, group);
+        pn_contactlist_add_group (contactlist, group);
 
     return group;
 }

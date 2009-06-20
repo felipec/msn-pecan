@@ -1020,7 +1020,7 @@ got_datacast_inform_user (MsnCmdProc *cmdproc,
 
     account = msn_session_get_user_data (cmdproc->session);
     swboard = cmdproc->data;
-    contact = pecan_contactlist_find_contact(cmdproc->session->contactlist, passport);
+    contact = pn_contactlist_find_contact(cmdproc->session->contactlist, passport);
     friendly_name = pn_contact_get_friendly_name(contact);
     if (!friendly_name)
         friendly_name = passport;

@@ -22,7 +22,7 @@
 
 #include <glib.h>
 
-#include "pecan_contactlist.h"
+#include "pn_contactlist.h"
 #include "pn_status.h"
 #if defined(PECAN_CVR)
 #include "cvr/pn_msnobj.h"
@@ -52,7 +52,7 @@ typedef struct _CurrentMedia
  */
 struct PnContact
 {
-    PecanContactList *contactlist;
+    PnContactList *contactlist;
 
     gchar *passport; /**< The passport account. */
     gchar *store_name; /**< The name stored in the server. */

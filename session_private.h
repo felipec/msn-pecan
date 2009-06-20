@@ -23,7 +23,7 @@
 #include "session.h"
 
 #include "ab/pn_contact.h"
-#include "ab/pecan_contactlist.h"
+#include "ab/pn_contactlist.h"
 
 #include "io/pn_node.h"
 
@@ -44,7 +44,7 @@ struct MsnSession
 
     GHashTable *config; /**< Configuration options. */
 
-    PecanContactList *contactlist;
+    PnContactList *contactlist;
     PecanOimSession *oim_session;
     PnDpManager *dp_manager;
 
