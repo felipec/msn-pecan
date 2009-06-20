@@ -21,7 +21,6 @@
 #include "slplink.h"
 #include "slpcall.h"
 #include "slpmsg.h"
-#include "slpsession.h"
 #include "pecan_log.h"
 #include "io/pecan_buffer.h"
 
@@ -272,7 +271,6 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
         /* Emoticon or UserDisplay */
         char *content;
         gsize len;
-        MsnSlpSession *slpsession;
         MsnSlpLink *slplink;
         MsnSlpMessage *slpmsg;
         MsnObject *obj;
@@ -337,14 +335,10 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 
         msn_object_free(obj);
 
-        slpsession = msn_slplink_find_slp_session(slplink,
-                                                  slpcall->session_id);
-
         /* DATA PREP */
         slpmsg = msn_slpmsg_new(slplink);
         slpmsg->slpcall = slpcall;
-        slpmsg->slpsession = slpsession;
-        slpmsg->session_id = slpsession->id;
+        slpmsg->session_id = slpcall->session_id;
         msn_slpmsg_set_body(slpmsg, NULL, 4);
 #ifdef PECAN_DEBUG_SLP
         slpmsg->info = "SLP DATA PREP";
@@ -354,7 +348,6 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
         /* DATA */
         slpmsg = msn_slpmsg_new(slplink);
         slpmsg->slpcall = slpcall;
-        slpmsg->slpsession = slpsession;
         slpmsg->flags = 0x20;
 #ifdef PECAN_DEBUG_SLP
         slpmsg->info = "SLP DATA";

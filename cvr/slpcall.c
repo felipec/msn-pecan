@@ -21,7 +21,6 @@
 
 #include "slp.h"
 #include "slplink.h"
-#include "slpsession.h"
 #include "slpmsg.h"
 #include "session.h"
 #include "pecan_util.h"
@@ -130,12 +129,8 @@ msn_slp_call_init(MsnSlpCall *slpcall, MsnSlpCallType type)
 void
 msn_slp_call_session_init(MsnSlpCall *slpcall)
 {
-    MsnSlpSession *slpsession;
-
-    slpsession = msn_slp_session_new(slpcall);
-
-    if (slpcall->session_init_cb)
-        slpcall->session_init_cb(slpsession);
+    if (slpcall->init_cb)
+        slpcall->init_cb(slpcall);
 
     slpcall->started = TRUE;
 }

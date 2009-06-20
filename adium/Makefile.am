@@ -37,7 +37,6 @@ MSNSOURCES = msn.c \
 	     cvr/slpcall.c \
 	     cvr/slplink.c \
 	     cvr/slpmsg.c \
-	     cvr/slpsession.c \
 	     cvr/pecan_slp_object.c \
 	     fix_purple.c
 

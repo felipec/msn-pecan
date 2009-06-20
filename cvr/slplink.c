@@ -21,7 +21,6 @@
 
 #include "session.h"
 #include "switchboard.h"
-#include "slpsession.h"
 #include "slpcall.h"
 #include "slpmsg.h"
 #include "slp.h"
@@ -176,23 +175,6 @@ msn_session_get_slplink(MsnSession *session, const char *username)
         slplink = msn_slplink_new(session, username);
 
     return slplink;
-}
-
-MsnSlpSession *
-msn_slplink_find_slp_session(MsnSlpLink *slplink, long session_id)
-{
-    GList *l;
-    MsnSlpSession *slpsession;
-
-    for (l = slplink->slp_sessions; l != NULL; l = l->next)
-    {
-        slpsession = l->data;
-
-        if (slpsession->id == session_id)
-            return slpsession;
-    }
-
-    return NULL;
 }
 
 void
@@ -428,12 +410,12 @@ msn_slplink_release_slpmsg(MsnSlpLink *slplink, MsnSlpMessage *slpmsg)
     }
     else if (slpmsg->flags == 0x20 || slpmsg->flags == 0x1000020 || slpmsg->flags == 0x1000030)
     {
-        MsnSlpSession *slpsession;
-        slpsession = slpmsg->slpsession;
+        MsnSlpCall *slpcall = slpmsg->slpcall;
 
-        g_return_if_fail(slpsession != NULL);
-        msg->msnslp_header.session_id = slpsession->id;
-        msg->msnslp_footer.value = slpsession->app_id;
+        if (slpcall) {
+            msg->msnslp_header.session_id = slpcall->session_id;
+            msg->msnslp_footer.value = slpcall->app_id;
+        }
         msg->msnslp_header.ack_id = rand() % 0xFFFFFF00;
     }
     else if (slpmsg->flags == 0x100)
@@ -510,18 +492,15 @@ msn_slplink_send_ack(MsnSlpLink *slplink, MsnMessage *msg)
 }
 
 static void
-send_file_cb(MsnSlpSession *slpsession)
+send_file_cb(MsnSlpCall *slpcall)
 {
-    MsnSlpCall *slpcall;
     MsnSlpMessage *slpmsg;
     struct stat st;
     PurpleXfer *xfer;
 
-    slpcall = slpsession->slpcall;
     slpmsg = msn_slpmsg_new(slpcall->slplink);
     slpmsg->slpcall = slpcall;
     slpmsg->flags = 0x1000030;
-    slpmsg->slpsession = slpsession;
 #ifdef PECAN_DEBUG_SLP
     slpmsg->info = "SLP FILE";
 #endif
@@ -807,7 +786,7 @@ msn_slplink_request_ft(MsnSlpLink *slplink, PurpleXfer *xfer)
     slpcall = msn_slp_call_new(slplink);
     msn_slp_call_init(slpcall, MSN_SLPCALL_DC);
 
-    slpcall->session_init_cb = send_file_cb;
+    slpcall->init_cb = send_file_cb;
     slpcall->end_cb = msn_xfer_end_cb;
     slpcall->progress_cb = msn_xfer_progress_cb;
     slpcall->cb = msn_xfer_completed_cb;

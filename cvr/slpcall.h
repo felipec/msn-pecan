@@ -62,7 +62,7 @@ struct MsnSlpCall
 
     void (*progress_cb)(MsnSlpCall *slpcall,
                         gsize total_length, gsize len, gsize offset);
-    void (*session_init_cb)(struct MsnSlpSession *slpsession);
+    void (*init_cb)(struct MsnSlpCall *slpcall);
 
     /* Can be checksum, or smile */
     char *data_info;

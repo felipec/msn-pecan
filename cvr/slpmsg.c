@@ -20,7 +20,6 @@
 #include "slpmsg.h"
 #include "slplink.h"
 
-#include "slpsession.h"
 #include "slpcall.h"
 #include "slplink.h"
 #include "session.h"

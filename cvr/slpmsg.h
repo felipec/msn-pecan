@@ -39,7 +39,6 @@ struct MsnMessage;
  */
 struct MsnSlpMessage
 {
-    struct MsnSlpSession *slpsession;
     struct MsnSlpCall *slpcall; /**< The slpcall to which this slp message belongs (if applicable). */
     struct MsnSlpLink *slplink; /**< The slplink through which this slp message is being sent. */
     struct MsnSession *session;
