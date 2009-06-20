@@ -19,13 +19,13 @@
 
 #include <glib.h>
 
-#include "msn.h"
 #include "page.h"
 #include "session.h"
 #include "pecan_util.h"
 #include "pecan_status.h"
 #include "pecan_log.h"
 #include "pecan_locale.h"
+#include "pecan_global.h"
 
 #include "switchboard.h"
 #include "notification.h"
@@ -164,7 +164,7 @@ msn_cmd_nudge(PurpleConversation *conv, const gchar *cmd, gchar **args, gchar **
 
     username = purple_conversation_get_name(conv);
 
-    serv_send_attention(gc, username, MSN_NUDGE);
+    serv_send_attention(gc, username, 0);
 
     return PURPLE_CMD_RET_OK;
 }
@@ -874,8 +874,8 @@ login (PurpleAccount *account)
         return;
     }
 
-    host = purple_account_get_string (account, "server", MSN_SERVER);
-    port = purple_account_get_int (account, "port", MSN_PORT);
+    host = purple_account_get_string (account, "server", "messenger.hotmail.com");
+    port = purple_account_get_int (account, "port", 1863);
 
     session = msn_session_new (purple_account_get_username (account),
                                purple_account_get_password (account),
@@ -1135,7 +1135,7 @@ send_typing (PurpleConnection *gc,
 
     /* a message to ourselves? */
     if (contact_is_account_quick (session, who))
-        return MSN_TYPING_SEND_TIMEOUT;
+        goto leave;
 
     swboard = msn_session_find_swboard (session, who);
 
@@ -1158,7 +1158,9 @@ send_typing (PurpleConnection *gc,
         msn_message_destroy (msg);
     }
 
-    return MSN_TYPING_SEND_TIMEOUT;
+leave:
+    /* timeout */
+    return 4;
 }
 
 static void
@@ -1669,8 +1671,9 @@ get_info (PurpleConnection *gc,
 
     {
         gchar *tmp;
+        static char *profile_url = "http://spaces.live.com/profile.aspx?mem=";
         tmp = g_strdup_printf ("<a href=\"%s%s\">%s%s</a>",
-                               PROFILE_URL, name, PROFILE_URL, name);
+                               profile_url, name, profile_url, name);
         purple_notify_user_info_add_pair (user_info, _("Profile URL"), tmp);
         g_free (tmp);
     }
@@ -1824,7 +1827,7 @@ init_plugin (PurplePlugin *plugin)
     {
         PurpleAccountOption *option;
 
-        option = purple_account_option_string_new (_("Server"), "server", MSN_SERVER);
+        option = purple_account_option_string_new (_("Server"), "server", "messenger.hotmail.com");
         prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
 
         option = purple_account_option_int_new (_("Port"), "port", 1863);

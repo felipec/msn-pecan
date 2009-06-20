@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "msn.h"
 #include "session.h"
 #include "switchboard.h"
 #include "notification.h"
@@ -346,11 +345,13 @@ static void
 send_clientcaps(MsnSwitchBoard *swboard)
 {
     MsnMessage *msg;
+    static char *client_info = "Client-Name: msn-pecan/" VERSION "\r\n" \
+                                "Chat-Logging: Y\r\n";
 
     msg = msn_message_new(MSN_MSG_CAPS);
     msn_message_set_content_type(msg, "text/x-clientcaps");
     msn_message_set_flag(msg, 'U');
-    msn_message_set_bin_data(msg, MSN_CLIENTINFO, strlen(MSN_CLIENTINFO));
+    msn_message_set_bin_data(msg, client_info, strlen(client_info));
 
     msn_switchboard_send_msg(swboard, msg, TRUE);
 
@@ -1303,7 +1304,7 @@ control_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
         PurpleConnection *connection;
         account = msn_session_get_user_data (cmdproc->session);
         connection = purple_account_get_connection (account);
-        serv_got_typing (connection, passport, MSN_TYPING_RECV_TIMEOUT, PURPLE_TYPING);
+        serv_got_typing (connection, passport, 6, PURPLE_TYPING);
     }
 }
 
@@ -1359,7 +1360,7 @@ datacast_msg (MsnCmdProc *cmdproc,
 
     if (strcmp (id, "1") == 0)
     {
-        serv_got_attention (connection, passport, MSN_NUDGE);
+        serv_got_attention (connection, passport, 0);
     }
     else if (strcmp (id, "2") == 0)
     {
@@ -1384,7 +1385,7 @@ datacast_msg (MsnCmdProc *cmdproc,
     else
     {
         pecan_warning ("Got unknown datacast with ID %s.\n", id);
-        serv_got_attention (connection, passport, MSN_NUDGE);
+        serv_got_attention (connection, passport, 0);
     }
 }
 

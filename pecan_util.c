@@ -20,12 +20,12 @@
  */
 
 #include "pecan_util.h"
+#include "pecan_config.h"
 
 #include <string.h>
 #include <stdio.h>
 
 #include <glib.h>
-#include "msn.h"
 
 #include <string.h>
 

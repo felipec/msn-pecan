@@ -23,6 +23,5 @@
 #define PURPLE_PLUGINS
 
 #define MSN_BUF_LEN 8192
-#define PECAN_MAX_MESSAGE_LENGTH 1564
 
 #endif /* PECAN_CONFIG_H */

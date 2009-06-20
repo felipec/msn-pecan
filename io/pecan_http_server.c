@@ -29,6 +29,7 @@
 #include "pecan_node_priv.h"
 #include "pecan_stream.h"
 #include "pecan_log.h"
+#include "pecan_config.h"
 
 #include <glib.h>
 #include <string.h>

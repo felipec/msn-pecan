@@ -22,6 +22,7 @@
 #ifdef PECAN_SOCKET
 #include "pecan_socket.h"
 #endif /* PECAN_SOCKET */
+#include "pecan_config.h"
 
 #include "session.h" /* for libpurple account */
 

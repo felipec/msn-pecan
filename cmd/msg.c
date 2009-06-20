@@ -21,6 +21,7 @@
 #include "command_private.h"
 #include "transaction_private.h"
 #include "pecan_log.h"
+#include "pecan_config.h"
 
 #include <string.h> /* for strlen. */
 
@@ -29,8 +30,6 @@
 #include "fix_purple_win32.h"
 #include <util.h>
 #endif /* HAVE_LIBPURPLE */
-
-#include "msn.h"
 
 MsnMessage *
 msn_message_new(MsnMsgType type)

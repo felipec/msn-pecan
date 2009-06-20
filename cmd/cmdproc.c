@@ -31,7 +31,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "msn.h"
 #include "session.h"
 
 MsnCmdProc *

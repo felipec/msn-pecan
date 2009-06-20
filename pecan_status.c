@@ -19,6 +19,7 @@
 
 #include "pecan_status.h"
 #include "pecan_log.h"
+#include "pecan_global.h"
 
 #include "session.h"
 #include "notification.h"
@@ -26,8 +27,6 @@
 #include "ab/pecan_contact.h"
 
 #include "session_private.h"
-
-#include "msn.h"
 
 #include <string.h>
 

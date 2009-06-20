@@ -20,7 +20,6 @@
 #define PECAN_LOG_H
 
 #include <glib.h>
-#include "msn.h"
 
 #define PECAN_DEBUG
 

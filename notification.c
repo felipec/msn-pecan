@@ -22,6 +22,7 @@
 #include "pecan_locale.h"
 #include "sync.h"
 #include "nexus.h"
+#include "pecan_global.h"
 
 #include "session.h"
 #include "session_private.h"
