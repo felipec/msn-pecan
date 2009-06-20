@@ -27,7 +27,7 @@
 
 #include "pecan_http_server.h"
 #include "pecan_node_priv.h"
-#include "pecan_stream.h"
+#include "pn_stream.h"
 #include "pn_log.h"
 #include "pn_global.h"
 
@@ -284,11 +284,11 @@ http_poll (gpointer data)
 
     g_free (params);
 
-    status = pecan_stream_write_full (conn->stream, header, strlen (header), &bytes_written, &tmp_error);
+    status = pn_stream_write_full (conn->stream, header, strlen (header), &bytes_written, &tmp_error);
 
     if (status == G_IO_STATUS_NORMAL)
     {
-        status = pecan_stream_flush (conn->stream, &tmp_error);
+        status = pn_stream_flush (conn->stream, &tmp_error);
 
         g_free (header);
 
@@ -330,8 +330,8 @@ connect_cb (gpointer data,
     {
         GIOChannel *channel;
 
-        pecan_stream_free (conn->stream);
-        conn->stream = pecan_stream_new (source);
+        pn_stream_free (conn->stream);
+        conn->stream = pn_stream_new (source);
         channel = conn->stream->channel;
 
         g_io_channel_set_encoding (channel, NULL, NULL);
@@ -473,8 +473,8 @@ read_impl (PecanNode *conn,
 
             {
                 gsize terminator_pos;
-                status = pecan_stream_read_line (conn->stream,
-                                                 &str, NULL, &terminator_pos, &tmp_error);
+                status = pn_stream_read_line (conn->stream,
+                                              &str, NULL, &terminator_pos, &tmp_error);
                 if (str)
                     str[terminator_pos] = '\0';
             }
@@ -536,8 +536,8 @@ read_impl (PecanNode *conn,
             {
                 {
                     gsize terminator_pos;
-                    status = pecan_stream_read_line (conn->stream,
-                                                     &str, NULL, &terminator_pos, &tmp_error);
+                    status = pn_stream_read_line (conn->stream,
+                                                  &str, NULL, &terminator_pos, &tmp_error);
                     if (str)
                         str[terminator_pos] = '\0';
                 }
@@ -690,7 +690,7 @@ read_impl (PecanNode *conn,
                 g_free (session_id);
             }
 
-            status = pecan_stream_read (conn->stream, buf, MIN (http_conn->content_length, count), &bytes_read, &tmp_error);
+            status = pn_stream_read (conn->stream, buf, MIN (http_conn->content_length, count), &bytes_read, &tmp_error);
 
             pn_log ("status=%d", status);
             pn_log ("bytes_read=%d", bytes_read);
@@ -805,7 +805,7 @@ foo_write (PecanNode *conn,
 
         if (body)
         {
-            status = pecan_stream_write_full (conn->stream, body, body_len, &bytes_written, &tmp_error);
+            status = pn_stream_write_full (conn->stream, body, body_len, &bytes_written, &tmp_error);
 
             g_free (body);
         }
@@ -821,12 +821,12 @@ foo_write (PecanNode *conn,
 #if 0
     if (status == G_IO_STATUS_NORMAL)
     {
-        status = pecan_stream_write_full (conn->stream, buf, count, &bytes_written, &tmp_error);
+        status = pn_stream_write_full (conn->stream, buf, count, &bytes_written, &tmp_error);
     }
 #endif
 
     if (status == G_IO_STATUS_NORMAL)
-        status = pecan_stream_flush (conn->stream, &tmp_error);
+        status = pn_stream_flush (conn->stream, &tmp_error);
 
     if (status == G_IO_STATUS_NORMAL)
     {

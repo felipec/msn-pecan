@@ -16,14 +16,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef PECAN_STREAM_H
-#define PECAN_STREAM_H
+#ifndef PN_STREAM_H
+#define PN_STREAM_H
 
 #include <glib.h>
 
-typedef struct PecanStream PecanStream;
+typedef struct PnStream PnStream;
 
-struct PecanStream
+struct PnStream
 {
     GIOChannel *channel;
 #ifdef PECAN_DUMP_FILE
@@ -31,13 +31,13 @@ struct PecanStream
 #endif /* PECAN_DUMP_FILE */
 };
 
-PecanStream *pecan_stream_new (gint source);
-void pecan_stream_free (PecanStream *stream);
-GIOStatus pecan_stream_read (PecanStream *stream, gchar *buf, gsize count, gsize *bytes_read, GError **error);
-GIOStatus pecan_stream_write (PecanStream *stream, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
-GIOStatus pecan_stream_read_full (PecanStream *stream, gchar *buf, gsize count, gsize *bytes_read, GError **error);
-GIOStatus pecan_stream_write_full (PecanStream *stream, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
-GIOStatus pecan_stream_flush (PecanStream *stream, GError **error);
-GIOStatus pecan_stream_read_line (PecanStream *stream, gchar **str_return, gsize *length, gsize *terminator_pos, GError **error);
+PnStream *pn_stream_new (gint source);
+void pn_stream_free (PnStream *stream);
+GIOStatus pn_stream_read (PnStream *stream, gchar *buf, gsize count, gsize *bytes_read, GError **error);
+GIOStatus pn_stream_write (PnStream *stream, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
+GIOStatus pn_stream_read_full (PnStream *stream, gchar *buf, gsize count, gsize *bytes_read, GError **error);
+GIOStatus pn_stream_write_full (PnStream *stream, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
+GIOStatus pn_stream_flush (PnStream *stream, GError **error);
+GIOStatus pn_stream_read_line (PnStream *stream, gchar **str_return, gsize *length, gsize *terminator_pos, GError **error);
 
-#endif /* PECAN_STREAM_H */
+#endif /* PN_STREAM_H */

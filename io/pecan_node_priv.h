@@ -22,7 +22,7 @@
 #include <glib-object.h>
 
 #include "pecan_node.h"
-#include "pecan_stream.h"
+#include "pn_stream.h"
 
 typedef struct PecanNodeClass PecanNodeClass;
 
@@ -52,7 +52,7 @@ struct PecanNode
     PecanNode *prev;
     PecanNode *next;
 
-    PecanStream *stream; /**< The current IO stream .*/
+    PnStream *stream; /**< The current IO stream .*/
 
     gchar *hostname;
     guint port;

@@ -26,7 +26,7 @@ typedef struct MsnDirectConn MsnDirectConn;
 #include "cvr/slp.h"
 
 #include "cmd/msg.h"
-#include "io/pecan_stream.h"
+#include "io/pn_stream.h"
 
 struct PecanNode;
 struct _PurpleProxyConnectData;

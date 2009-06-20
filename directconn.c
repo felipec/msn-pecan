@@ -18,7 +18,7 @@
  */
 
 #include "directconn.h"
-#include "io/pecan_stream.h"
+#include "io/pn_stream.h"
 #include "pn_log.h"
 
 #include "session.h"
@@ -190,12 +190,12 @@ msn_directconn_write(MsnDirectConn *directconn,
     body_len = GUINT32_TO_LE(len);
 
     /* Let's write the length of the data. */
-    status = pecan_stream_write (directconn->stream, (gchar *) &body_len, sizeof(body_len), &tmp, NULL);
+    status = pn_stream_write (directconn->stream, (gchar *) &body_len, sizeof(body_len), &tmp, NULL);
 
     if (status == G_IO_STATUS_NORMAL)
     {
         /* Let's write the data. */
-        status = pecan_stream_write (directconn->stream, data, len, &tmp, NULL);
+        status = pn_stream_write (directconn->stream, data, len, &tmp, NULL);
     }
 
     if (status == G_IO_STATUS_NORMAL)
@@ -286,7 +286,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     directconn = data;
 
     /* Let's read the length of the data. */
-    if (pecan_stream_read_full (directconn->stream, (gchar *) &body_len, sizeof(body_len), &len, NULL) != G_IO_STATUS_NORMAL)
+    if (pn_stream_read_full (directconn->stream, (gchar *) &body_len, sizeof(body_len), &len, NULL) != G_IO_STATUS_NORMAL)
     {
         msn_directconn_destroy(directconn);
         return FALSE;
@@ -306,7 +306,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     }
 
     /* Let's read the data. */
-    if (pecan_stream_read_full (directconn->stream, body, body_len, &len, NULL) != G_IO_STATUS_NORMAL)
+    if (pn_stream_read_full (directconn->stream, body, body_len, &len, NULL) != G_IO_STATUS_NORMAL)
     {
         msn_directconn_destroy(directconn);
         return FALSE;
@@ -371,7 +371,7 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
         /* directconn->conn = pecan_node_new (channel); */
         directconn->connected = TRUE;
 
-        directconn->stream = pecan_stream_new (fd);
+        directconn->stream = pn_stream_new (fd);
         channel = directconn->stream->channel;
 
         pn_info ("connected: %p", channel);
@@ -477,7 +477,7 @@ msn_directconn_destroy(MsnDirectConn *directconn)
     if (directconn->stream)
     {
         pn_info ("stream shutdown: %p", directconn->stream);
-        pecan_stream_free (directconn->stream);
+        pn_stream_free (directconn->stream);
         directconn->stream = NULL;
     }
 

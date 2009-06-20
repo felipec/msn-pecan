@@ -16,16 +16,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "pecan_stream.h"
+#include "pn_stream.h"
 #include "pn_log.h"
 
 #include <string.h>
 
-PecanStream *
-pecan_stream_new (gint fd)
+PnStream *
+pn_stream_new (gint fd)
 {
-    PecanStream *stream;
-    stream = g_new (PecanStream, 1);
+    PnStream *stream;
+    stream = g_new (PnStream, 1);
     stream->channel = g_io_channel_unix_new (fd);
 #ifdef PECAN_DUMP_FILE
     stream->dump = FALSE;
@@ -34,7 +34,7 @@ pecan_stream_new (gint fd)
 }
 
 void
-pecan_stream_free (PecanStream *stream)
+pn_stream_free (PnStream *stream)
 {
     if (!stream)
         return;
@@ -46,11 +46,11 @@ pecan_stream_free (PecanStream *stream)
 }
 
 GIOStatus
-pecan_stream_read (PecanStream *stream,
-                   gchar *buf,
-                   gsize count,
-                   gsize *bytes_read,
-                   GError **error)
+pn_stream_read (PnStream *stream,
+                gchar *buf,
+                gsize count,
+                gsize *bytes_read,
+                GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
     GError *tmp_error = NULL;
@@ -58,14 +58,14 @@ pecan_stream_read (PecanStream *stream,
 
     g_return_val_if_fail (stream, G_IO_STATUS_ERROR);
 
-#if defined(PECAN_STREAM_RANDOM_ERRORS)
+#if defined(PN_STREAM_RANDOM_ERRORS)
     if (g_random_int_range (0, 75) == 1)
     {
         tmp_error = g_error_new_literal (G_IO_CHANNEL_ERROR, G_IO_CHANNEL_ERROR_FAILED,
                                          "Randomly introduced error");
         goto skip;
     }
-#endif /* defined(PECAN_STREAM_RANDOM_ERRORS) */
+#endif /* defined(PN_STREAM_RANDOM_ERRORS) */
 
     status = g_io_channel_read_chars (stream->channel, buf, count,
                                       &tmp_bytes_read, &tmp_error);
@@ -75,9 +75,9 @@ pecan_stream_read (PecanStream *stream,
         pn_dump_file (buf, tmp_bytes_read);
 #endif /* PECAN_DUMP_FILE */
 
-#if defined(PECAN_STREAM_RANDOM_ERRORS)
+#if defined(PN_STREAM_RANDOM_ERRORS)
 skip:
-#endif /* defined(PECAN_STREAM_RANDOM_ERRORS) */
+#endif /* defined(PN_STREAM_RANDOM_ERRORS) */
 
     if (tmp_error)
     {
@@ -92,11 +92,11 @@ skip:
 }
 
 GIOStatus
-pecan_stream_write (PecanStream *stream,
-                    const gchar *buf,
-                    gsize count,
-                    gsize *bytes_written,
-                    GError **error)
+pn_stream_write (PnStream *stream,
+                 const gchar *buf,
+                 gsize count,
+                 gsize *bytes_written,
+                 GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
     GError *tmp_error = NULL;
@@ -104,14 +104,14 @@ pecan_stream_write (PecanStream *stream,
 
     g_return_val_if_fail (stream, G_IO_STATUS_ERROR);
 
-#if defined(PECAN_STREAM_RANDOM_ERRORS)
+#if defined(PN_STREAM_RANDOM_ERRORS)
     if (g_random_int_range (0, 75) == 1)
     {
         tmp_error = g_error_new_literal (G_IO_CHANNEL_ERROR, G_IO_CHANNEL_ERROR_FAILED,
                                          "Randomly introduced error");
         goto skip;
     }
-#endif /* defined(PECAN_STREAM_RANDOM_ERRORS) */
+#endif /* defined(PN_STREAM_RANDOM_ERRORS) */
 
     status = g_io_channel_write_chars (stream->channel, buf, count,
                                        &tmp_bytes_written, &tmp_error);
@@ -121,9 +121,9 @@ pecan_stream_write (PecanStream *stream,
         pn_dump_file (buf, tmp_bytes_written);
 #endif /* PECAN_DUMP_FILE */
 
-#if defined(PECAN_STREAM_RANDOM_ERRORS)
+#if defined(PN_STREAM_RANDOM_ERRORS)
 skip:
-#endif /* defined(PECAN_STREAM_RANDOM_ERRORS) */
+#endif /* defined(PN_STREAM_RANDOM_ERRORS) */
 
     if (tmp_error)
     {
@@ -138,11 +138,11 @@ skip:
 }
 
 GIOStatus
-pecan_stream_read_full (PecanStream *stream,
-                        gchar *buf,
-                        gsize count,
-                        gsize *bytes_read,
-                        GError **error)
+pn_stream_read_full (PnStream *stream,
+                     gchar *buf,
+                     gsize count,
+                     gsize *bytes_read,
+                     GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
     gsize tmp_bytes_read = 0;
@@ -180,11 +180,11 @@ pecan_stream_read_full (PecanStream *stream,
 }
 
 GIOStatus
-pecan_stream_write_full (PecanStream *stream,
-                         const gchar *buf,
-                         gsize count,
-                         gsize *bytes_written,
-                         GError **error)
+pn_stream_write_full (PnStream *stream,
+                      const gchar *buf,
+                      gsize count,
+                      gsize *bytes_written,
+                      GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
     gsize tmp_bytes_written = 0;
@@ -222,8 +222,8 @@ pecan_stream_write_full (PecanStream *stream,
 }
 
 GIOStatus
-pecan_stream_flush (PecanStream *stream,
-                    GError **error)
+pn_stream_flush (PnStream *stream,
+                 GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
     GError *tmp_error = NULL;
@@ -242,11 +242,11 @@ pecan_stream_flush (PecanStream *stream,
 }
 
 GIOStatus
-pecan_stream_read_line (PecanStream *stream,
-                        gchar **str_return,
-                        gsize *length,
-                        gsize *terminator_pos,
-                        GError **error)
+pn_stream_read_line (PnStream *stream,
+                     gchar **str_return,
+                     gsize *length,
+                     gsize *terminator_pos,
+                     GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
     GError *tmp_error = NULL;

@@ -17,7 +17,7 @@
  */
 
 #include "pecan_node_priv.h"
-#include "pecan_stream.h"
+#include "pn_stream.h"
 #include "pn_log.h"
 #include "pn_global.h"
 #ifdef PECAN_SOCKET
@@ -306,7 +306,7 @@ connect_cb (PecanSocket *sock,
     {
         GIOChannel *channel;
 
-        conn->stream = pecan_stream_new (sock->fd);
+        conn->stream = pn_stream_new (sock->fd);
         channel = conn->stream->channel;
 
         g_io_channel_set_encoding (channel, NULL, NULL);
@@ -355,7 +355,7 @@ connect_cb (gpointer data,
     {
         GIOChannel *channel;
 
-        conn->stream = pecan_stream_new (source);
+        conn->stream = pn_stream_new (source);
         channel = conn->stream->channel;
 
         g_io_channel_set_encoding (channel, NULL, NULL);
@@ -469,7 +469,7 @@ close_impl (PecanNode *conn)
     if (conn->stream)
     {
         pn_info ("stream shutdown: %p", conn->stream);
-        pecan_stream_free (conn->stream);
+        pn_stream_free (conn->stream);
         conn->stream = NULL;
     }
 
@@ -514,7 +514,7 @@ write_impl (PecanNode *conn,
 
         pn_debug ("stream=%p", conn->stream);
 
-        status = pecan_stream_write_full (conn->stream, buf, count, &bytes_written, &tmp_error);
+        status = pn_stream_write_full (conn->stream, buf, count, &bytes_written, &tmp_error);
 
         pn_log ("bytes_written=%d", bytes_written);
 
@@ -571,7 +571,7 @@ read_impl (PecanNode *conn,
 
         pn_debug ("stream=%p", conn->stream);
 
-        status = pecan_stream_read (conn->stream, buf, count, &bytes_read, &tmp_error);
+        status = pn_stream_read (conn->stream, buf, count, &bytes_read, &tmp_error);
 
         if (status != G_IO_STATUS_NORMAL)
         {

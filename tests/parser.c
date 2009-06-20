@@ -25,7 +25,7 @@
 
 #include "io/pecan_parser.h"
 #include "io/pecan_node_priv.h"
-#include "io/pecan_stream.h"
+#include "io/pn_stream.h"
 
 START_TEST (test_basic)
 {
@@ -48,7 +48,7 @@ START_TEST (test_simple)
     parser = pecan_parser_new (node);
 
     fd = g_open ("stream_test/000", O_RDONLY);
-    node->stream = pecan_stream_new (fd);
+    node->stream = pn_stream_new (fd);
     pecan_parser_read_line (parser, &str, NULL, &terminator_pos, NULL);
     if (str)
     {
@@ -73,7 +73,7 @@ START_TEST (test_through)
     parser = pecan_parser_new (node);
 
     fd = g_open ("stream_test/000", O_RDONLY);
-    node->stream = pecan_stream_new (fd);
+    node->stream = pn_stream_new (fd);
     {
         GIOStatus status;
 
@@ -105,7 +105,7 @@ START_TEST (test_cut)
     parser = pecan_parser_new (node);
 
     fd = g_open ("stream_test/001", O_RDONLY);
-    node->stream = pecan_stream_new (fd);
+    node->stream = pn_stream_new (fd);
     {
         GIOStatus status;
 
@@ -137,7 +137,7 @@ START_TEST (test_span)
     parser = pecan_parser_new (node);
 
     fd = g_open ("stream_test/001", O_RDONLY);
-    node->stream = pecan_stream_new (fd);
+    node->stream = pn_stream_new (fd);
     {
         GIOStatus status;
         do
@@ -150,10 +150,10 @@ START_TEST (test_span)
             }
         } while (status == G_IO_STATUS_NORMAL);
     }
-    pecan_stream_free (node->stream);
+    pn_stream_free (node->stream);
 
     fd = g_open ("stream_test/002", O_RDONLY);
-    node->stream = pecan_stream_new (fd);
+    node->stream = pn_stream_new (fd);
     {
         GIOStatus status;
         do
