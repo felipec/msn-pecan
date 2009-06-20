@@ -98,7 +98,7 @@ objects := msn.o \
 	   ab/pecan_contactlist.o \
 	   io/pn_stream.o \
 	   io/pn_node.o \
-	   io/pecan_cmd_server.o \
+	   io/pn_cmd_server.o \
 	   io/pn_http_server.o \
 	   io/pn_ssl_conn.o \
 	   fix_purple.o

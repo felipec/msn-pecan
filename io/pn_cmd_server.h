@@ -16,26 +16,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef MSN_CMD_CONN_H
-#define MSN_CMD_CONN_H
+#ifndef PN_CMD_SERVER_H
+#define PN_CMD_SERVER_H
 
 #include <glib-object.h>
 
-typedef struct PecanCmdServer PecanCmdServer;
-typedef struct PecanCmdServerClass PecanCmdServerClass;
+typedef struct PnCmdServer PnCmdServer;
+typedef struct PnCmdServerClass PnCmdServerClass;
 
 #include "pn_node.h"
 
-#define CMD_PECAN_NODE_TYPE (pecan_cmd_server_get_type ())
-#define CMD_PECAN_NODE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), CMD_PECAN_NODE_TYPE, PecanCmdServer))
-#define CMD_PECAN_NODE_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), CMD_PECAN_NODE_TYPE, PecanCmdServerClass))
-#define CMD_PECAN_NODE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), CMD_PECAN_NODE_TYPE, PecanCmdServerClass))
+#define PN_CMD_SERVER_TYPE (pn_cmd_server_get_type ())
+#define PN_CMD_SERVER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), PN_CMD_SERVER_TYPE, PnCmdServer))
+#define PN_CMD_SERVER_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), PN_CMD_SERVER_TYPE, PnCmdServerClass))
+#define PN_CMD_SERVER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), PN_CMD_SERVER_TYPE, PnCmdServerClass))
 
-PecanCmdServer *pecan_cmd_server_new (const gchar *name, PnNodeType type);
-void pecan_cmd_server_free (PecanCmdServer *conn);
+PnCmdServer *pn_cmd_server_new (const gchar *name, PnNodeType type);
+void pn_cmd_server_free (PnCmdServer *conn);
 
-void pecan_cmd_server_send (PecanCmdServer *conn, const char *command, const char *format, ...);
+void pn_cmd_server_send (PnCmdServer *conn, const char *command, const char *format, ...);
 
-GType pecan_cmd_server_get_type (void);
+GType pn_cmd_server_get_type (void);
 
-#endif /* MSN_CMD_CONN_H */
+#endif /* PN_CMD_SERVER_H */

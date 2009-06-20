@@ -9,7 +9,7 @@ CHECK_LIBS := $(shell pkg-config --libs check)
 CFLAGS := -Wall -ggdb -I..
 
 cmd_parser_test_objects := cmd_parser.o \
-			   ../io/pecan_cmd_server.o \
+			   ../io/pn_cmd_server.o \
 			   ../io/pn_node.o \
 			   ../cmd/cmdproc.o \
 			   ../cmd/command.o \

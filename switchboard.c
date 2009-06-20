@@ -43,7 +43,7 @@
 #include "cmd/table.h"
 
 #include "io/pn_node_private.h"
-#include "io/pecan_cmd_server.h"
+#include "io/pn_cmd_server.h"
 #include "io/pn_http_server.h"
 
 #include <string.h>
@@ -146,7 +146,7 @@ msn_switchboard_new(MsnSession *session)
 
     {
         PnNode *conn;
-        swboard->conn = pecan_cmd_server_new ("switchboard server", PN_NODE_SB);
+        swboard->conn = pn_cmd_server_new ("switchboard server", PN_NODE_SB);
         conn = PN_NODE (swboard->conn);
 
         {

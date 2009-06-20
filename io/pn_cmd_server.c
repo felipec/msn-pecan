@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "pecan_cmd_server.h"
+#include "pn_cmd_server.h"
 #include "pn_node_private.h"
 #include "cmd/cmdproc_private.h"
 #include "cmd/command_private.h"
@@ -29,7 +29,7 @@
 #include "fix_purple_win32.h"
 #endif /* HAVE_LIBPURPLE */
 
-struct PecanCmdServer
+struct PnCmdServer
 {
     PnNode parent;
 
@@ -40,22 +40,22 @@ struct PecanCmdServer
     struct MsnCmdProc *cmdproc;
 };
 
-struct PecanCmdServerClass
+struct PnCmdServerClass
 {
     PnNodeClass parent_class;
 };
 
 static PnNodeClass *parent_class = NULL;
 
-PecanCmdServer *
-pecan_cmd_server_new (const gchar *name,
-                      PnNodeType type)
+PnCmdServer *
+pn_cmd_server_new (const gchar *name,
+                   PnNodeType type)
 {
-    PecanCmdServer *conn;
+    PnCmdServer *conn;
 
     pn_log ("begin");
 
-    conn = CMD_PECAN_NODE (g_type_create_instance (CMD_PECAN_NODE_TYPE));
+    conn = PN_CMD_SERVER (g_type_create_instance (PN_CMD_SERVER_TYPE));
 
     {
         PnNode *tmp = PN_NODE (conn);
@@ -69,7 +69,7 @@ pecan_cmd_server_new (const gchar *name,
 }
 
 void
-pecan_cmd_server_free (PecanCmdServer *conn)
+pn_cmd_server_free (PnCmdServer *conn)
 {
     pn_log ("begin");
     g_object_unref (G_OBJECT (conn));
@@ -77,10 +77,10 @@ pecan_cmd_server_free (PecanCmdServer *conn)
 }
 
 void
-pecan_cmd_server_send (PecanCmdServer *conn,
-                       const gchar *command,
-                       const gchar *format,
-                       ...)
+pn_cmd_server_send (PnCmdServer *conn,
+                    const gchar *command,
+                    const gchar *format,
+                    ...)
 {
     va_list args;
 
@@ -96,7 +96,7 @@ parse_impl (PnNode *base_conn,
             gchar *buf,
             gsize bytes_read)
 {
-    PecanCmdServer *cmd_conn;
+    PnCmdServer *cmd_conn;
     gchar *cur, *next, *old_rx_buf;
     gint cur_len;
 
@@ -104,7 +104,7 @@ parse_impl (PnNode *base_conn,
 
     pn_debug ("conn=%p,name=%s", base_conn, base_conn->name);
 
-    cmd_conn = CMD_PECAN_NODE (base_conn);
+    cmd_conn = PN_CMD_SERVER (base_conn);
 
     buf[bytes_read] = '\0';
 
@@ -170,11 +170,11 @@ parse_impl (PnNode *base_conn,
 static void
 close_impl (PnNode *conn)
 {
-    PecanCmdServer *cmd_conn;
+    PnCmdServer *cmd_conn;
 
     pn_log ("begin");
 
-    cmd_conn = CMD_PECAN_NODE (conn);
+    cmd_conn = PN_CMD_SERVER (conn);
 
     g_free (cmd_conn->rx_buf);
     cmd_conn->rx_buf = NULL;
@@ -283,7 +283,7 @@ read_impl (PnNode *conn)
 static void
 dispose (GObject *obj)
 {
-    PecanCmdServer *cmd_conn = CMD_PECAN_NODE (obj);
+    PnCmdServer *cmd_conn = PN_CMD_SERVER (obj);
 
     pn_log ("begin");
 
@@ -324,14 +324,14 @@ static void
 instance_init (GTypeInstance *instance,
                gpointer g_class)
 {
-    PecanCmdServer *conn = CMD_PECAN_NODE (instance);
+    PnCmdServer *conn = PN_CMD_SERVER (instance);
 
     conn->cmdproc = msn_cmdproc_new ();
     g_object_set_data(G_OBJECT(conn), "cmdproc", conn->cmdproc);
 }
 
 GType
-pecan_cmd_server_get_type (void)
+pn_cmd_server_get_type (void)
 {
     static GType type = 0;
 
@@ -340,12 +340,12 @@ pecan_cmd_server_get_type (void)
         GTypeInfo *type_info;
 
         type_info = g_new0 (GTypeInfo, 1);
-        type_info->class_size = sizeof (PecanCmdServerClass);
+        type_info->class_size = sizeof (PnCmdServerClass);
         type_info->class_init = class_init;
-        type_info->instance_size = sizeof (PecanCmdServer);
+        type_info->instance_size = sizeof (PnCmdServer);
         type_info->instance_init = instance_init;
 
-        type = g_type_register_static (PN_NODE_TYPE, "PecanCmdServerType", type_info, 0);
+        type = g_type_register_static (PN_NODE_TYPE, "PnCmdServerType", type_info, 0);
     }
 
     return type;

@@ -17,7 +17,7 @@
  */
 
 #include <glib.h>
-#include "io/pecan_cmd_server.h"
+#include "io/pn_cmd_server.h"
 
 #include <string.h>
 
@@ -25,7 +25,7 @@ void
 run_simple_test (const gchar *str,
                  gsize buf_size)
 {
-    PecanCmdServer *cmdserv;
+    PnCmdServer *cmdserv;
     gchar *buf;
 
     buf = g_malloc (buf_size);
@@ -33,9 +33,9 @@ run_simple_test (const gchar *str,
     if (str)
         strcpy (buf, str);
 
-    cmdserv = pecan_cmd_server_new ("foo", 0);
+    cmdserv = pn_cmd_server_new ("foo", 0);
     pn_node_parse (PN_NODE (cmdserv), buf, buf_size - 1);
-    pecan_cmd_server_free (cmdserv);
+    pn_cmd_server_free (cmdserv);
 
     g_free (buf);
 }

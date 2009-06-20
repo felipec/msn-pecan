@@ -37,10 +37,9 @@
 #include "ab/pecan_contactlist_priv.h"
 #include "ab/pecan_contact_priv.h"
 
-#include "io/pecan_cmd_server.h"
+#include "io/pn_cmd_server.h"
 #include "io/pn_http_server.h"
 #include "io/pn_node_private.h"
-#include "io/pecan_cmd_server.h"
 
 #if defined(PECAN_CVR)
 #include "cvr/slplink.h" /* for slplink_destroy */
@@ -78,7 +77,7 @@ open_cb (PnNode *conn,
 
     session = conn->session;
 
-    pecan_cmd_server_send (CMD_PECAN_NODE (conn), "VER", "MSNP12 CVR0");
+    pn_cmd_server_send (PN_CMD_SERVER (conn), "VER", "MSNP12 CVR0");
 
     pn_log ("end");
 }
@@ -164,7 +163,7 @@ msn_notification_new(MsnSession *session)
 
     {
         PnNode *conn;
-        notification->conn = pecan_cmd_server_new ("notification server", PN_NODE_NS);
+        notification->conn = pn_cmd_server_new ("notification server", PN_NODE_NS);
         conn = PN_NODE (notification->conn);
 
         {
@@ -218,7 +217,7 @@ msn_notification_destroy(MsnNotification *notification)
     g_signal_handler_disconnect (notification->conn, notification->close_handler);
     g_signal_handler_disconnect (notification->conn, notification->error_handler);
 
-    pecan_cmd_server_free (notification->conn);
+    pn_cmd_server_free (notification->conn);
 
     g_free(notification);
 }
