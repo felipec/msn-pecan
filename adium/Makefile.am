@@ -38,6 +38,7 @@ MSNSOURCES = msn.c \
 	     cvr/slplink.c \
 	     cvr/slpmsg.c \
 	     cvr/pecan_slp_object.c \
+	     cvr/xfer.c \
 	     fix_purple.c
 
 AM_CFLAGS = $(st)

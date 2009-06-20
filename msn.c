@@ -41,6 +41,7 @@
 
 #if defined(PECAN_CVR)
 #include "cvr/slplink.h"
+#include "cvr/xfer.h"
 #endif /* defined(PECAN_CVR) */
 
 /* libpurple stuff. */
@@ -501,31 +502,20 @@ initiate_chat_cb(PurpleBlistNode *node, gpointer data)
 }
 
 #if defined(PECAN_CVR)
-static void
-t_msn_xfer_init(PurpleXfer *xfer)
-{
-    MsnSlpLink *slplink = xfer->data;
-    msn_slplink_request_ft(slplink, xfer);
-}
-
 static PurpleXfer*
 msn_new_xfer(PurpleConnection *gc, const char *who)
 {
     MsnSession *session;
-    MsnSlpLink *slplink;
     PurpleXfer *xfer;
 
     session = gc->proto_data;
 
     xfer = purple_xfer_new(gc->account, PURPLE_XFER_SEND, who);
-    if (xfer)
-    {
-        slplink = msn_session_get_slplink(session, who);
+    if (!xfer)
+        return NULL;
 
-        xfer->data = slplink;
-
-        purple_xfer_set_init_fnc(xfer, t_msn_xfer_init);
-    }
+    xfer->data = msn_session_get_slplink(session, who);
+    purple_xfer_set_init_fnc(xfer, msn_xfer_invite);
 
     return xfer;
 }

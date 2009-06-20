@@ -104,7 +104,8 @@ ifdef CVR
 	     cvr/slpcall.o \
 	     cvr/slplink.o \
 	     cvr/slpmsg.o \
-	     cvr/pecan_slp_object.o
+	     cvr/pecan_slp_object.o \
+	     cvr/xfer.o
 endif
 
 ifdef SOCKET

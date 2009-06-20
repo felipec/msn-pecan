@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2008-2009 Felipe Contreras
+ * Copyright (C) 2007-2009 Felipe Contreras
  * Copyright (C) 1998-2006 Pidgin (see pidgin-copyright)
  *
  * This program is free software; you can redistribute it and/or
@@ -17,28 +17,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef MSN_SLP_H
-#define MSN_SLP_H
-
-#include <glib.h>
+#ifndef MSN_XFER_H
+#define MSN_XFER_H
 
 struct MsnSlpCall;
-struct MsnSlpLink;
+struct _PurpleXfer;
 
-struct MsnSlpCall *msn_slp_sip_recv(struct MsnSlpLink *slplink,
-                                    const char *body);
-
-void msn_slp_sip_send_ok(struct MsnSlpCall *slpcall,
+void msn_xfer_invite(struct _PurpleXfer *xfer);
+void msn_xfer_got_invite(struct MsnSlpCall *slpcall,
                          const char *branch,
-                         const char *type,
-                         const char *content);
+                         const char *context);
 
-void msn_slp_sip_send_decline(struct MsnSlpCall *slpcall,
-                              const char *branch,
-                              const char *type,
-                              const char *content);
-
-void msn_slp_sip_send_bye(struct MsnSlpCall *slpcall,
-                          const char *type);
-
-#endif /* MSN_SLP_H */
+#endif /* MSN_XFER_H */

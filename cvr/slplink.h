@@ -93,7 +93,6 @@ void msn_slplink_append_slp_msg(MsnSlpLink *slplink,
                                 struct MsnSlpMessage *slpmsg);
 void msn_slplink_remove_slp_msg(MsnSlpLink *slplink,
                                 struct MsnSlpMessage *slpmsg);
-void msn_slplink_request_ft(MsnSlpLink *slplink, struct _PurpleXfer *xfer);
 
 void msn_slplink_request_object(MsnSlpLink *slplink,
                                 const char *info,

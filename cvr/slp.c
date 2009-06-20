@@ -24,6 +24,8 @@
 #include "pecan_log.h"
 #include "io/pecan_buffer.h"
 
+#include "xfer.h"
+
 #include "cmd/cmdproc_private.h"
 #include "cmd/msg_private.h"
 
@@ -57,115 +59,21 @@ get_token(const char *str,
 {
     const char *c, *c2;
 
-    if ((c = strstr(str, start)) == NULL)
+    if (!(c = strstr(str, start)))
         return NULL;
 
     c += strlen(start);
 
-    if (end != NULL)
-    {
-        if ((c2 = strstr(c, end)) == NULL)
+    if (end) {
+        if (!(c2 = strstr(c, end)))
             return NULL;
 
         return g_strndup(c, c2 - c);
     }
-    else
-    {
-        /* This has to be changed */
+    else {
+        /** @todo this has to be changed */
         return g_strdup(c);
     }
-
-}
-
-/**************************************************************************
- * Xfer
- **************************************************************************/
-
-static void
-msn_xfer_init(PurpleXfer *xfer)
-{
-    MsnSlpCall *slpcall;
-    /* MsnSlpLink *slplink; */
-    char *content;
-
-    pecan_info ("xfer_init");
-
-    slpcall = xfer->data;
-
-    /* Send Ok */
-    content = g_strdup_printf("SessionID: %lu\r\n\r\n",
-                              slpcall->session_id);
-
-    msn_slp_sip_send_ok(slpcall, slpcall->branch,
-                        "application/x-msnmsgr-sessionreqbody",
-                        content);
-
-    g_free(content);
-    msn_slplink_unleash(slpcall->slplink);
-}
-
-void
-msn_xfer_cancel(PurpleXfer *xfer)
-{
-    MsnSlpCall *slpcall;
-    char *content;
-
-    slpcall = xfer->data;
-
-    if (purple_xfer_get_status(xfer) == PURPLE_XFER_STATUS_CANCEL_LOCAL) {
-        if (slpcall->started)
-            msn_slp_call_close(slpcall);
-        else {
-            content = g_strdup_printf("SessionID: %lu\r\n\r\n",
-                                      slpcall->session_id);
-
-            msn_slp_sip_send_decline(slpcall, slpcall->branch,
-                                     "application/x-msnmsgr-sessionreqbody",
-                                     content);
-
-            g_free(content);
-            msn_slplink_unleash(slpcall->slplink);
-
-            msn_slp_call_destroy(slpcall);
-        }
-    }
-}
-
-void
-msn_xfer_progress_cb(MsnSlpCall *slpcall,
-                     gsize total_length,
-                     gsize len,
-                     gsize offset)
-{
-    PurpleXfer *xfer;
-
-    xfer = slpcall->xfer;
-
-    xfer->bytes_sent = (offset + len);
-    xfer->bytes_remaining = total_length - (offset + len);
-
-    purple_xfer_update_progress(xfer);
-}
-
-void
-msn_xfer_end_cb(MsnSlpCall *slpcall, MsnSession *session)
-{
-    if ((purple_xfer_get_status(slpcall->xfer) != PURPLE_XFER_STATUS_DONE) &&
-        (purple_xfer_get_status(slpcall->xfer) != PURPLE_XFER_STATUS_CANCEL_REMOTE) &&
-        (purple_xfer_get_status(slpcall->xfer) != PURPLE_XFER_STATUS_CANCEL_LOCAL))
-    {
-        purple_xfer_cancel_remote(slpcall->xfer);
-    }
-}
-
-void
-msn_xfer_completed_cb(MsnSlpCall *slpcall,
-                      const guchar *body,
-                      gsize size)
-{
-    PurpleXfer *xfer = slpcall->xfer;
-    purple_xfer_set_completed(xfer, TRUE);
-    purple_xfer_end(xfer);
 }
 
 #ifdef MSN_DIRECTCONN
@@ -342,57 +250,8 @@ got_sessionreq(MsnSlpCall *slpcall,
         msn_slpmsg_set_image(slpmsg, image);
         msn_slplink_queue_slpmsg(slplink, slpmsg);
     }
-    else if (!strcmp(euf_guid, "5D3E02AB-6190-11D3-BBBB-00C04F795683"))
-    {
-        /* File Transfer */
-        PurpleAccount *account;
-        PurpleXfer *xfer;
-        char *bin;
-        gsize bin_len;
-        guint32 file_size;
-        char *file_name;
-        gunichar2 *uni_name;
-
-        account = msn_session_get_user_data (slpcall->slplink->session);
-
-        slpcall->cb = msn_xfer_completed_cb;
-        slpcall->end_cb = msn_xfer_end_cb;
-        slpcall->progress_cb = msn_xfer_progress_cb;
-        slpcall->branch = g_strdup(branch);
-
-        slpcall->pending = TRUE;
-
-        xfer = purple_xfer_new(account, PURPLE_XFER_RECEIVE,
-                               slpcall->slplink->remote_user);
-        if (xfer) {
-            bin = (char *) purple_base64_decode(context, &bin_len);
-            file_size = GUINT32_FROM_LE(*(gsize *) (bin + 8));
-
-            uni_name = (gunichar2 *)(bin + 20);
-            while (*uni_name != 0 && ((char *)uni_name - (bin + 20)) < MAX_FILE_NAME_LEN) {
-                *uni_name = GUINT16_FROM_LE(*uni_name);
-                uni_name++;
-            }
-
-            file_name = g_utf16_to_utf8((const gunichar2 *) (bin + 20), -1,
-                                        NULL, NULL, NULL);
-
-            g_free(bin);
-
-            purple_xfer_set_filename(xfer, file_name);
-            purple_xfer_set_size(xfer, file_size);
-            purple_xfer_set_init_fnc(xfer, msn_xfer_init);
-            purple_xfer_set_request_denied_fnc(xfer, msn_xfer_cancel);
-            purple_xfer_set_cancel_recv_fnc(xfer, msn_xfer_cancel);
-
-            slpcall->xfer = xfer;
-            purple_xfer_ref(slpcall->xfer);
-
-            xfer->data = slpcall;
-
-            purple_xfer_request(xfer);
-        }
-    }
+    else if (strcmp(euf_guid, "5D3E02AB-6190-11D3-BBBB-00C04F795683") == 0)
+        msn_xfer_got_invite(slpcall, branch, context);
 }
 
 void

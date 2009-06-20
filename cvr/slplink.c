@@ -26,6 +26,8 @@
 #include "slp.h"
 #include "pecan_log.h"
 
+#include "xfer.h"
+
 #include "ab/pecan_contact.h"
 
 #include "session_private.h"
@@ -442,29 +444,6 @@ msn_slplink_send_ack(MsnSlpLink *slplink,
     msn_slplink_send_slpmsg(slplink, slpmsg);
 }
 
-static void
-send_file_cb(MsnSlpCall *slpcall)
-{
-    MsnSlpMessage *slpmsg;
-    struct stat st;
-    PurpleXfer *xfer;
-
-    slpmsg = msn_slpmsg_new(slpcall->slplink);
-    slpmsg->slpcall = slpcall;
-    slpmsg->flags = 0x1000030;
-#ifdef PECAN_DEBUG_SLP
-    slpmsg->info = "SLP FILE";
-#endif
-    xfer = (PurpleXfer *)slpcall->xfer;
-    purple_xfer_start(slpcall->xfer, 0, NULL, 0);
-    slpmsg->fp = xfer->dest_fp;
-    if (g_stat(purple_xfer_get_local_filename(xfer), &st) == 0)
-        slpmsg->size = st.st_size;
-    xfer->dest_fp = NULL; /* Disable double fclose() */
-
-    msn_slplink_send_slpmsg(slpcall->slplink, slpmsg);
-}
-
 void
 msn_slplink_process_msg(MsnSlpLink *slplink,
                         MsnMessage *msg)
@@ -626,115 +605,6 @@ msn_slplink_message_find(MsnSlpLink *slplink,
     }
 
     return NULL;
-}
-
-typedef struct
-{
-    guint32 length;
-    guint32 unk1;
-    guint32 file_size;
-    guint32 unk2;
-    guint32 unk3;
-} MsnContextHeader;
-
-#define MAX_FILE_NAME_LEN 0x226
-
-static gchar *
-gen_context(const char *file_name, const char *file_path)
-{
-    struct stat st;
-    gsize size = 0;
-    MsnContextHeader header;
-    gchar *u8 = NULL;
-    guchar *base;
-    guchar *n;
-    gchar *ret;
-    gunichar2 *uni = NULL;
-    glong currentChar = 0;
-    glong uni_len = 0;
-    gsize len;
-
-    if (g_stat(file_path, &st) == 0)
-        size = st.st_size;
-
-    if(!file_name) {
-        u8 = purple_utf8_try_convert(g_basename(file_path));
-        file_name = u8;
-    }
-
-    uni = g_utf8_to_utf16(file_name, -1, NULL, &uni_len, NULL);
-
-    if(u8) {
-        g_free(u8);
-        file_name = NULL;
-        u8 = NULL;
-    }
-
-    len = sizeof(MsnContextHeader) + MAX_FILE_NAME_LEN + 4;
-
-    header.length = GUINT32_TO_LE(len);
-    header.unk1 = GUINT32_TO_LE(2);
-    header.file_size = GUINT32_TO_LE(size);
-    header.unk2 = GUINT32_TO_LE(0);
-    header.unk3 = GUINT32_TO_LE(0);
-
-    base = g_malloc(len + 1);
-    n = base;
-
-    memcpy(n, &header, sizeof(MsnContextHeader));
-    n += sizeof(MsnContextHeader);
-
-    memset(n, 0x00, MAX_FILE_NAME_LEN);
-    for(currentChar = 0; currentChar < uni_len; currentChar++) {
-        *((gunichar2 *)n + currentChar) = GUINT16_TO_LE(uni[currentChar]);
-    }
-    n += MAX_FILE_NAME_LEN;
-
-    memset(n, 0xFF, 4);
-    n += 4;
-
-    g_free(uni);
-    ret = purple_base64_encode(base, len);
-    g_free(base);
-    return ret;
-}
-
-void
-msn_slplink_request_ft(MsnSlpLink *slplink, PurpleXfer *xfer)
-{
-    MsnSlpCall *slpcall;
-    char *context;
-    const char *fn;
-    const char *fp;
-
-    fn = purple_xfer_get_filename(xfer);
-    fp = purple_xfer_get_local_filename(xfer);
-
-    g_return_if_fail(slplink != NULL);
-    g_return_if_fail(fp != NULL);
-
-    slpcall = msn_slp_call_new(slplink);
-    msn_slp_call_init(slpcall, MSN_SLPCALL_DC);
-
-    slpcall->init_cb = send_file_cb;
-    slpcall->end_cb = msn_xfer_end_cb;
-    slpcall->progress_cb = msn_xfer_progress_cb;
-    slpcall->cb = msn_xfer_completed_cb;
-    slpcall->xfer = xfer;
-    purple_xfer_ref(slpcall->xfer);
-
-    slpcall->pending = TRUE;
-
-    purple_xfer_set_cancel_send_fnc(xfer, msn_xfer_cancel);
-
-    xfer->data = slpcall;
-
-    context = gen_context(fn, fp);
-
-    msn_slp_call_invite(slpcall, "5D3E02AB-6190-11D3-BBBB-00C04F795683", 2,
-                        context);
-
-    g_free(context);
 }
 
 void
