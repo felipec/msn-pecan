@@ -24,7 +24,7 @@
 #include "session.h"
 #include "notification.h"
 
-#include "ab/pecan_contact.h"
+#include "ab/pn_contact.h"
 
 #include "session_private.h"
 
@@ -150,7 +150,7 @@ void
 pn_update_status (MsnSession *session)
 {
     MsnCmdProc *cmdproc;
-    PecanContact *user;
+    PnContact *user;
     const gchar *state_text;
     int client_id;
     int caps;
@@ -178,7 +178,7 @@ pn_update_status (MsnSession *session)
     {
         PnMsnObj *obj;
 
-        obj = pecan_contact_get_object (user);
+        obj = pn_contact_get_object (user);
 
         if (obj)
         {

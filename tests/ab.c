@@ -64,20 +64,20 @@ basic_group_tests (void)
 void
 basic_contact_tests (void)
 {
-    PecanContact *contact;
+    PnContact *contact;
 
-    contact = pecan_contact_new (NULL, "foo@bar.com", "12345678");
-    pecan_contact_free (contact);
+    contact = pn_contact_new (NULL, "foo@bar.com", "12345678");
+    pn_contact_free (contact);
 
-    contact = pecan_contact_new (NULL, "bar", NULL);
-    pecan_contact_set_guid (contact, "foo");
-    pecan_contact_set_passport (contact, "other name");
-    pecan_contact_free (contact);
+    contact = pn_contact_new (NULL, "bar", NULL);
+    pn_contact_set_guid (contact, "foo");
+    pn_contact_set_passport (contact, "other name");
+    pn_contact_free (contact);
 
-    contact = pecan_contact_new (NULL, NULL, NULL);
-    pecan_contact_set_guid (contact, NULL);
-    pecan_contact_set_passport (contact, NULL);
-    pecan_contact_free (contact);
+    contact = pn_contact_new (NULL, NULL, NULL);
+    pn_contact_set_guid (contact, NULL);
+    pn_contact_set_passport (contact, NULL);
+    pn_contact_free (contact);
 }
 
 int

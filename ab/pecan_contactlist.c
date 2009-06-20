@@ -20,7 +20,7 @@
 #include "session.h"
 #include "pecan_contactlist.h"
 #include "pecan_contactlist_priv.h"
-#include "pecan_contact_priv.h"
+#include "pn_contact_priv.h"
 #include "pn_log.h"
 #include "pn_locale.h"
 #include "pn_util.h"
@@ -50,7 +50,7 @@ const char *lists[] = { "FL", "AL", "BL", "RL", "PL" };
 typedef struct
 {
     MsnSession *session;
-    PecanContact *contact;
+    PnContact *contact;
 } MsnPermitAdd;
 
 #ifdef HAVE_LIBPURPLE
@@ -62,10 +62,10 @@ msn_accept_add_cb (gpointer data)
 {
     MsnPermitAdd *pa = data;
     const gchar *passport;
-    PecanContact *contact;
+    PnContact *contact;
 
     contact = pa->contact;
-    passport = pecan_contact_get_passport (contact);
+    passport = pn_contact_get_passport (contact);
 
     pecan_contactlist_add_buddy (pa->session->contactlist, passport, MSN_LIST_AL, NULL);
 
@@ -76,11 +76,11 @@ static void
 msn_cancel_add_cb (gpointer data)
 {
     MsnPermitAdd *pa = data;
-    PecanContact *contact;
+    PnContact *contact;
     const gchar *passport;
 
     contact = pa->contact;
-    passport = pecan_contact_get_passport (contact);
+    passport = pn_contact_get_passport (contact);
 
     pecan_contactlist_add_buddy (pa->session->contactlist, passport, MSN_LIST_BL, NULL);
 
@@ -89,13 +89,13 @@ msn_cancel_add_cb (gpointer data)
 
 static void
 got_new_entry (PurpleConnection *gc,
-               PecanContact *contact,
+               PnContact *contact,
                const gchar *friendly)
 {
     MsnPermitAdd *pa;
     const gchar *passport;
 
-    passport = pecan_contact_get_passport (contact);
+    passport = pn_contact_get_passport (contact);
 
     pa = g_new0 (MsnPermitAdd, 1);
     pa->session = gc->proto_data;
@@ -112,7 +112,7 @@ got_new_entry (PurpleConnection *gc,
  **************************************************************************/
 
 static gboolean
-contact_is_in_group (PecanContact *contact,
+contact_is_in_group (PnContact *contact,
                      const gchar *group_guid)
 {
     if (!contact)
@@ -134,7 +134,7 @@ contact_is_in_group (PecanContact *contact,
 }
 
 static gboolean
-contact_is_there (PecanContact *contact,
+contact_is_there (PnContact *contact,
                   gint list_id,
                   gboolean check_group,
                   const gchar *group_guid)
@@ -158,7 +158,7 @@ contact_is_there (PecanContact *contact,
 }
 
 static const gchar*
-get_store_name (PecanContact *contact)
+get_store_name (PnContact *contact)
 {
     const gchar *store_name;
 
@@ -166,15 +166,15 @@ get_store_name (PecanContact *contact)
 
     if (msn_session_get_bool (contact->contactlist->session, "use_server_alias"))
     {
-        store_name = pecan_contact_get_store_name (contact);
+        store_name = pn_contact_get_store_name (contact);
     }
     else
     {
-        store_name = pecan_contact_get_friendly_name (contact);
+        store_name = pn_contact_get_friendly_name (contact);
     }
 
     if (!store_name)
-        store_name = pecan_contact_get_passport (contact);
+        store_name = pn_contact_get_passport (contact);
 
     return store_name;
 }
@@ -231,7 +231,7 @@ msn_get_list_id (const gchar *list)
 
 void
 msn_got_add_contact (MsnSession *session,
-                     PecanContact *contact,
+                     PnContact *contact,
                      MsnListId list_id,
                      const gchar *group_guid)
 {
@@ -241,13 +241,13 @@ msn_got_add_contact (MsnSession *session,
 
     account = msn_session_get_user_data (session);
 
-    passport = pecan_contact_get_passport (contact);
+    passport = pn_contact_get_passport (contact);
 
     if (list_id == MSN_LIST_FL)
     {
         if (group_guid)
         {
-            pecan_contact_add_group_id (contact, group_guid);
+            pn_contact_add_group_id (contact, group_guid);
         }
     }
     else if (list_id == MSN_LIST_AL)
@@ -287,7 +287,7 @@ msn_got_add_contact (MsnSession *session,
         if (!(contact->list_op & (MSN_LIST_AL_OP | MSN_LIST_BL_OP)))
         {
             got_new_entry (gc, contact,
-                           pecan_contact_get_friendly_name (contact));
+                           pn_contact_get_friendly_name (contact));
         }
     }
 
@@ -298,7 +298,7 @@ msn_got_add_contact (MsnSession *session,
 
 void
 msn_got_rem_contact (MsnSession *session,
-                     PecanContact *contact,
+                     PnContact *contact,
                      MsnListId list_id,
                      const gchar *group_guid)
 {
@@ -308,7 +308,7 @@ msn_got_rem_contact (MsnSession *session,
 
     account = msn_session_get_user_data (session);
 
-    passport = pecan_contact_get_passport (contact);
+    passport = pn_contact_get_passport (contact);
 
     if (list_id == MSN_LIST_FL)
     {
@@ -316,7 +316,7 @@ msn_got_rem_contact (MsnSession *session,
         /** when the group count reaches 0, and there's no list_op */
         if (group_guid)
         {
-            pecan_contact_remove_group_id (contact, group_guid);
+            pn_contact_remove_group_id (contact, group_guid);
             return;
         }
 
@@ -364,7 +364,7 @@ msn_got_rem_contact (MsnSession *session,
 
 void
 msn_got_lst_contact (MsnSession *session,
-                     PecanContact *contact,
+                     PnContact *contact,
                      const gchar *extra,
                      gint list_op,
                      GSList *group_ids)
@@ -375,7 +375,7 @@ msn_got_lst_contact (MsnSession *session,
 
     account = msn_session_get_user_data (session);
 
-    passport = pecan_contact_get_passport (contact);
+    passport = pn_contact_get_passport (contact);
 
     pn_debug ("passport=%s,extra=%s,list_op=%d", contact->passport, extra, list_op);
 
@@ -388,21 +388,21 @@ msn_got_lst_contact (MsnSession *session,
             {
                 const gchar *group_guid;
                 group_guid = (const gchar *) c->data;
-                pecan_contact_add_group_id (contact, group_guid);
+                pn_contact_add_group_id (contact, group_guid);
             }
         }
         else
         {
-            pecan_contact_add_group_id (contact, NULL);
+            pn_contact_add_group_id (contact, NULL);
         }
 
         if (msn_session_get_bool (session, "use_server_alias"))
         {
-            pecan_contact_set_store_name (contact, extra);
+            pn_contact_set_store_name (contact, extra);
         }
         else
         {
-            pecan_contact_set_friendly_name (contact, extra);
+            pn_contact_set_friendly_name (contact, extra);
         }
     }
 
@@ -452,7 +452,7 @@ pecan_contactlist_new (MsnSession *session)
     contactlist->session = session;
 
     contactlist->contact_names = g_hash_table_new_full (g_str_hash, g_str_equal, g_free,
-                                                        (GDestroyNotify) pecan_contact_free);
+                                                        (GDestroyNotify) pn_contact_free);
     contactlist->contact_guids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 
     contactlist->group_names = g_hash_table_new_full (g_ascii_strcase_hash, g_ascii_strcase_equal, g_free,
@@ -476,19 +476,19 @@ pecan_contactlist_destroy (PecanContactList *contactlist)
 
 void
 pecan_contactlist_remove_contact (PecanContactList *contactlist,
-                                  PecanContact *contact)
+                                  PnContact *contact)
 {
     {
         const gchar *guid;
-        guid = pecan_contact_get_guid (contact);
+        guid = pn_contact_get_guid (contact);
         if (guid)
             g_hash_table_remove (contactlist->contact_guids, guid);
     }
     g_hash_table_remove (contactlist->contact_names,
-                         pecan_contact_get_passport (contact));
+                         pn_contact_get_passport (contact));
 }
 
-PecanContact *
+PnContact *
 pecan_contactlist_find_contact (PecanContactList *contactlist,
                                 const gchar *passport)
 {
@@ -497,7 +497,7 @@ pecan_contactlist_find_contact (PecanContactList *contactlist,
     return g_hash_table_lookup (contactlist->contact_names, passport);
 }
 
-PecanContact *
+PnContact *
 pecan_contactlist_find_contact_by_guid (PecanContactList *contactlist,
                                         const gchar *guid)
 {
@@ -618,7 +618,7 @@ pecan_contactlist_rem_buddy (PecanContactList *contactlist,
                              gint list_id,
                              const gchar *group_name)
 {
-    PecanContact *contact;
+    PnContact *contact;
     const gchar *group_guid;
     const gchar *list;
 
@@ -665,7 +665,7 @@ pecan_contactlist_add_buddy (PecanContactList *contactlist,
                              gint list_id,
                              const gchar *group_name)
 {
-    PecanContact *contact;
+    PnContact *contact;
     const gchar *group_guid;
     const gchar *contact_guid;
     const gchar *list;
@@ -694,7 +694,7 @@ pecan_contactlist_add_buddy (PecanContactList *contactlist,
 
         /* There's no way to add a contact to the no-group. */
         /* Removing from other groups does that. */
-        if (contact && pecan_contact_get_group_count (contact) > 0 && !group_guid)
+        if (contact && pn_contact_get_group_count (contact) > 0 && !group_guid)
         {
             pn_error ("trying to add contact to a virtual group: who=[%s]",
                       who);
@@ -744,7 +744,7 @@ contact_check_pending (gpointer key,
                        gpointer user_data)
 {
     const gchar *passport;
-    PecanContact *contact;
+    PnContact *contact;
     PecanContactList *contactlist;
 
     passport = key;
@@ -812,7 +812,7 @@ pecan_contactlist_add_buddy_helper (PecanContactList *contactlist,
     pn_debug ("who=[%s],group_name=[%s]", who, group_name);
 
     {
-        PecanContact *contact;
+        PnContact *contact;
         int list_id;
         const gchar *group_guid = NULL;
 
@@ -838,12 +838,12 @@ pecan_contactlist_add_buddy_helper (PecanContactList *contactlist,
             pn_error ("group_guid=[%s]", group_guid);
             pn_error ("contact=[%p]", contact);
             if (contact)
-                pn_error ("group_count=[%d]", pecan_contact_get_group_count (contact));
+                pn_error ("group_count=[%d]", pn_contact_get_group_count (contact));
 #endif
 
             /* There's no way to add a contact to the no-group. */
             /* Removing from other groups does that. */
-            if (contact && pecan_contact_get_group_count (contact) > 0 && !group_guid)
+            if (contact && pn_contact_get_group_count (contact) > 0 && !group_guid)
             {
                 pn_error ("trying to add contact to a virtual group: who=[%s]",
                           who);

@@ -35,7 +35,7 @@
 
 #include "ab/pecan_contactlist.h"
 #include "ab/pecan_contactlist_priv.h"
-#include "ab/pecan_contact_priv.h"
+#include "ab/pn_contact_priv.h"
 
 #include "io/pn_cmd_server.h"
 #include "io/pn_http_server.h"
@@ -493,7 +493,7 @@ static void
 adc_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSession *session;
-    PecanContact *user = NULL;
+    PnContact *user = NULL;
     const gchar *list = NULL;
     const gchar *passport = NULL;
     gchar *friendly = NULL;
@@ -534,14 +534,14 @@ adc_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     if (user == NULL)
     {
-        user = pecan_contact_new (session->contactlist);
-        pecan_contact_set_passport (user, passport);
+        user = pn_contact_new (session->contactlist);
+        pn_contact_set_passport (user, passport);
     }
 
     list_id = msn_get_list_id(list);
 
     if (list_id == MSN_LIST_FL)
-        pecan_contact_set_guid (user, user_guid);
+        pn_contact_set_guid (user, user_guid);
 
     msn_got_add_contact(session, user, list_id, group_guid);
 
@@ -557,7 +557,7 @@ adc_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         g_free (data->group_guid);
     }
 
-    pecan_contact_update(user);
+    pn_contact_update(user);
 
     g_free (friendly);
 }
@@ -660,11 +660,11 @@ qng_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 static void
 fln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
-    PecanContact *user;
+    PnContact *user;
 
     user = pecan_contactlist_find_contact(cmdproc->session->contactlist, cmd->params[0]);
-    pecan_contact_set_state(user, NULL);
-    pecan_contact_update(user);
+    pn_contact_set_state(user, NULL);
+    pn_contact_update(user);
 
 #if defined(PECAN_CVR)
     {
@@ -684,7 +684,7 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     MsnSession *session;
     PurpleAccount *account;
     PurpleConnection *gc;
-    PecanContact *user;
+    PnContact *user;
     const char *state, *passport;
     gchar *friendly;
 
@@ -698,14 +698,14 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     user = pecan_contactlist_find_contact(session->contactlist, passport);
 
-    pecan_contact_set_state(user, state);
-    pecan_contact_set_friendly_name(user, friendly);
+    pn_contact_set_state(user, state);
+    pn_contact_set_friendly_name(user, friendly);
 
     if (cmd->param_count >= 5)
     {
         gulong client_id;
         client_id = atol (cmd->params[4]);
-        pecan_contact_set_client_id (user, client_id);
+        pn_contact_set_client_id (user, client_id);
     }
 
 #if defined(PECAN_CVR)
@@ -717,13 +717,13 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
             gchar *tmp;
             tmp = pn_url_decode (cmd->params[5]);
             obj = pn_msnobj_new_from_string (tmp);
-            pecan_contact_set_object(user, obj);
+            pn_contact_set_object(user, obj);
             g_free (tmp);
         }
     }
 #endif /* defined(PECAN_CVR) */
 
-    pecan_contact_update(user);
+    pn_contact_update(user);
 
     g_free (friendly);
 }
@@ -747,7 +747,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     MsnSession *session;
     PurpleAccount *account;
     PurpleConnection *gc;
-    PecanContact *user;
+    PnContact *user;
     unsigned long clientid;
     const char *state, *passport;
     gchar *friendly;
@@ -768,12 +768,12 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         return;
     }
 
-    pecan_contact_set_friendly_name(user, friendly);
+    pn_contact_set_friendly_name(user, friendly);
 
     clientid = strtoul (cmd->params[3], NULL, 10);
     user->mobile = (clientid & PN_CLIENT_CAP_MSNMOBILE);
 
-    pecan_contact_set_state(user, state);
+    pn_contact_set_state(user, state);
 
 #if defined(PECAN_CVR)
     if (msn_session_get_bool (session, "use_userdisplay"))
@@ -784,27 +784,27 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
             gchar *tmp;
             tmp = pn_url_decode(cmd->params[4]);
             obj = pn_msnobj_new_from_string(tmp);
-            pecan_contact_set_object(user, obj);
+            pn_contact_set_object(user, obj);
             g_free (tmp);
         }
         else
         {
-            pecan_contact_set_object(user, NULL);
+            pn_contact_set_object(user, NULL);
         }
     }
 #endif /* defined(PECAN_CVR) */
 
-    pecan_contact_update(user);
+    pn_contact_update(user);
 
     /* store the friendly name on the server. */
     if (!msn_session_get_bool (session, "use_server_alias"))
-        msn_cmdproc_send (cmdproc, "SBP", "%s %s %s", pecan_contact_get_guid (user), "MFN", cmd->params[2]);
+        msn_cmdproc_send (cmdproc, "SBP", "%s %s %s", pn_contact_get_guid (user), "MFN", cmd->params[2]);
 
     g_free (friendly);
 }
 
 static void
-contact_update (PecanContact *contact,
+contact_update (PnContact *contact,
                 gpointer user_data)
 {
     if (contact->status == PN_STATUS_OFFLINE)
@@ -813,9 +813,9 @@ contact_update (PecanContact *contact,
 #if defined(PECAN_CVR)
     {
         PnMsnObj *obj;
-        obj = pecan_contact_get_object (contact);
+        obj = pn_contact_get_object (contact);
         if (obj)
-            pecan_contact_set_object (contact, obj);
+            pn_contact_set_object (contact, obj);
     }
 #endif /* defined(PECAN_CVR) */
 }
@@ -823,12 +823,12 @@ contact_update (PecanContact *contact,
 static void
 chg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
-    PecanContact *user;
+    PnContact *user;
     PecanStatus old_status;
 
     user = msn_session_get_contact (cmdproc->session);
     old_status = user->status;
-    pecan_contact_set_state (user, cmd->params[1]);
+    pn_contact_set_state (user, cmd->params[1]);
 
     if (old_status == PN_STATUS_HIDDEN)
     {
@@ -873,11 +873,11 @@ rea_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     else
     {
         /* This is for a buddy. */
-        PecanContact *user;
+        PnContact *user;
         user = pecan_contactlist_find_contact(session->contactlist, who);
         if (user)
         {
-            pecan_contact_set_store_name(user, alias);
+            pn_contact_set_store_name(user, alias);
         }
         else
         {
@@ -896,7 +896,7 @@ sbp_cmd (MsnCmdProc *cmdproc,
     const gchar *contact_guid;
     const gchar *type;
     const gchar *value;
-    PecanContact *contact;
+    PnContact *contact;
 
     session = cmdproc->session;
     contact_guid = cmd->params[1];
@@ -912,7 +912,7 @@ sbp_cmd (MsnCmdProc *cmdproc,
             gchar *tmp;
             tmp = pn_url_decode (value);
             if (msn_session_get_bool (session, "use_server_alias"))
-                pecan_contact_set_store_name (contact, tmp);
+                pn_contact_set_store_name (contact, tmp);
             g_free (tmp);
         }
     }
@@ -925,7 +925,7 @@ prp_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     PurpleConnection *gc;
     PurpleAccount *account;
     const gchar *type, *value;
-    PecanContact *user;
+    PnContact *user;
 
     g_return_if_fail(cmd->param_count >= 3);
 
@@ -941,11 +941,11 @@ prp_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         value = cmd->params[2];
         tmp = pn_url_decode (value);
         if (!strcmp(type, "PHH"))
-            pecan_contact_set_home_phone(user, tmp);
+            pn_contact_set_home_phone(user, tmp);
         else if (!strcmp(type, "PHW"))
-            pecan_contact_set_work_phone(user, tmp);
+            pn_contact_set_work_phone(user, tmp);
         else if (!strcmp(type, "PHM"))
-            pecan_contact_set_mobile_phone(user, tmp);
+            pn_contact_set_mobile_phone(user, tmp);
         else if (!strcmp(type, "MFN"))
             purple_connection_set_display_name(gc, tmp);
         g_free (tmp);
@@ -953,11 +953,11 @@ prp_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     else
     {
         if (!strcmp(type, "PHH"))
-            pecan_contact_set_home_phone(user, NULL);
+            pn_contact_set_home_phone(user, NULL);
         else if (!strcmp(type, "PHW"))
-            pecan_contact_set_work_phone(user, NULL);
+            pn_contact_set_work_phone(user, NULL);
         else if (!strcmp(type, "PHM"))
-            pecan_contact_set_mobile_phone(user, NULL);
+            pn_contact_set_mobile_phone(user, NULL);
     }
 }
 
@@ -996,7 +996,7 @@ static void
 rem_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSession *session;
-    PecanContact *user;
+    PnContact *user;
     const char *list;
     const gchar *user_id; /* passport or guid */
     MsnListId list_id;
@@ -1021,7 +1021,7 @@ rem_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         group_guid = NULL;
 
     msn_got_rem_contact(session, user, list_id, group_guid);
-    pecan_contact_update(user);
+    pn_contact_update(user);
 }
 
 static void
@@ -1096,7 +1096,7 @@ ubx_cmd_post (MsnCmdProc *cmdproc,
               gsize len)
 {
     MsnSession *session;
-    PecanContact *contact;
+    PnContact *contact;
     const gchar *passport;
 
     session = cmdproc->session;
@@ -1122,7 +1122,7 @@ ubx_cmd_post (MsnCmdProc *cmdproc,
                 psm = g_strndup (start, end - start);
         }
 
-        pecan_contact_set_personal_message (contact, psm);
+        pn_contact_set_personal_message (contact, psm);
         g_free (psm);
 
         start = g_strstr_len (payload, len, "<CurrentMedia>");
@@ -1135,10 +1135,10 @@ ubx_cmd_post (MsnCmdProc *cmdproc,
                 current_media = g_strndup (start, end - start);
         }
 
-        pecan_contact_set_current_media (contact, current_media);
+        pn_contact_set_current_media (contact, current_media);
         g_free (current_media);
 
-        pecan_contact_update (contact);
+        pn_contact_update (contact);
     }
 }
 

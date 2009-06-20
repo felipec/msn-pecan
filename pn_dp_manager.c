@@ -23,7 +23,7 @@
 #include "cvr/slplink.h"
 
 #include "session_private.h"
-#include "ab/pecan_contact_priv.h"
+#include "ab/pn_contact_priv.h"
 #include "ab/pecan_contactlist_priv.h"
 
 #ifdef HAVE_LIBPURPLE
@@ -86,7 +86,7 @@ userdisplay_ok (MsnSlpCall *slpcall,
 
 static inline void
 queue (PnDpManager *dpm,
-       PecanContact *contact)
+       PnContact *contact)
 {
     pn_debug ("passport=[%s],window=%u",
               contact->passport, dpm->window);
@@ -102,7 +102,7 @@ userdisplay_fail (MsnSlpCall *slpcall,
                   MsnSession *session)
 {
     const gchar *passport;
-    PecanContact *contact;
+    PnContact *contact;
 
     pn_error ("unknown error");
 
@@ -115,7 +115,7 @@ userdisplay_fail (MsnSlpCall *slpcall,
 }
 
 static void
-request (PecanContact *user)
+request (PnContact *user)
 {
     PurpleAccount *account;
     MsnSession *session;
@@ -128,7 +128,7 @@ request (PecanContact *user)
 
     slplink = msn_session_get_slplink (session, user->passport);
 
-    obj = pecan_contact_get_object (user);
+    obj = pn_contact_get_object (user);
 
     /* Changed while in the queue. */
     if (!obj)
@@ -153,7 +153,7 @@ request (PecanContact *user)
 
         pn_debug ("requesting our own user display");
 
-        my_obj = pecan_contact_get_object (msn_session_get_contact (session));
+        my_obj = pn_contact_get_object (msn_session_get_contact (session));
 
         if (my_obj)
         {
@@ -187,7 +187,7 @@ timeout (gpointer data)
 static void
 release (PnDpManager *dpm)
 {
-    PecanContact *user;
+    PnContact *user;
 
     pn_info ("releasing ud");
 
@@ -205,7 +205,7 @@ release (PnDpManager *dpm)
 
         user = g_queue_pop_head (queue);
 
-        if (!pecan_contact_can_receive (user))
+        if (!pn_contact_can_receive (user))
             continue;
 
         dpm->window--;
@@ -241,7 +241,7 @@ ud_cached (PurpleAccount *account,
 #endif /* HAVE_LIBPURPLE */
 
 void
-pn_dp_manager_contact_set_object (PecanContact *contact,
+pn_dp_manager_contact_set_object (PnContact *contact,
                                   PnMsnObj *obj)
 {
     MsnSession *session;

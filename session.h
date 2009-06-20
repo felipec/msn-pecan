@@ -22,7 +22,7 @@
 
 typedef struct MsnSession MsnSession;
 
-#include "ab/pecan_contact.h"
+#include "ab/pn_contact.h"
 
 struct MsnSwitchBoard;
 struct _PurpleAccount;
@@ -73,7 +73,7 @@ msn_session_get_password (MsnSession *session);
  *
  * @return The contact.
  */
-PecanContact *
+PnContact *
 msn_session_get_contact (MsnSession *session);
 
 void

@@ -22,7 +22,7 @@
 
 #include "session.h"
 
-#include "ab/pecan_contact.h"
+#include "ab/pn_contact.h"
 #include "ab/pecan_contactlist.h"
 
 #include "io/pn_node.h"
@@ -40,7 +40,7 @@ struct MsnSession
     gchar *password;
 
     void *user_data;
-    PecanContact *user; /**< Store contact information. */
+    PnContact *user; /**< Store contact information. */
 
     GHashTable *config; /**< Configuration options. */
 

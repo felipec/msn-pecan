@@ -28,7 +28,7 @@
 
 #include "xfer.h"
 
-#include "ab/pecan_contact.h"
+#include "ab/pn_contact.h"
 
 #include "session_private.h"
 

@@ -29,8 +29,8 @@
 #include "cmd/cmdproc_private.h"
 #include "cmd/msg_private.h"
 
-#include "ab/pecan_contact.h"
-#include "ab/pecan_contact_priv.h"
+#include "ab/pn_contact.h"
+#include "ab/pn_contact_priv.h"
 #include "ab/pecan_contactlist_priv.h"
 
 #include "cvr/pn_msnobj.h"

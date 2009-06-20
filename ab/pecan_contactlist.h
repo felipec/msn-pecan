@@ -22,7 +22,7 @@
 
 typedef struct PecanContactList PecanContactList;
 
-#include "pecan_contact.h"
+#include "pn_contact.h"
 #include "pn_group.h"
 
 #include "cmd/cmdproc.h"
@@ -45,7 +45,7 @@ typedef enum
     MSN_LIST_PL_OP = 0x10,
 } MsnListOp;
 
-typedef void (*PecanContactListFunc) (PecanContact *contact, gpointer user_data);
+typedef void (*PecanContactListFunc) (PnContact *contact, gpointer user_data);
 
 struct _PurpleBuddy;
 struct _PurpleGroup;
@@ -53,15 +53,15 @@ struct _PurpleGroup;
 MsnListId msn_get_list_id (const gchar *list);
 
 void msn_got_add_contact (MsnSession *session,
-                          PecanContact *contact,
+                          PnContact *contact,
                           MsnListId list_id,
                           const gchar *group_guid);
 void msn_got_rem_contact (MsnSession *session,
-                          PecanContact *contact,
+                          PnContact *contact,
                           MsnListId list_id,
                           const gchar *group_guid);
 void msn_got_lst_contact (MsnSession *session,
-                          PecanContact *contact,
+                          PnContact *contact,
                           const gchar *extra,
                           gint list_op,
                           GSList *group_ids);
@@ -69,10 +69,10 @@ void msn_got_lst_contact (MsnSession *session,
 PecanContactList *pecan_contactlist_new (MsnSession *session);
 void pecan_contactlist_destroy (PecanContactList *contactlist);
 void pecan_contactlist_remove_contact (PecanContactList *contactlist,
-                                       PecanContact *contact);
-PecanContact *pecan_contactlist_find_contact (PecanContactList *contactlist,
+                                       PnContact *contact);
+PnContact *pecan_contactlist_find_contact (PecanContactList *contactlist,
                                               const gchar *passport);
-PecanContact *pecan_contactlist_find_contact_by_guid (PecanContactList *contactlist,
+PnContact *pecan_contactlist_find_contact_by_guid (PecanContactList *contactlist,
                                                       const gchar *contact_guid);
 void pecan_contactlist_add_group (PecanContactList *contactlist, PnGroup *group);
 void pecan_contactlist_remove_group (PecanContactList *contactlist, PnGroup *group);

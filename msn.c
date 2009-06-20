@@ -35,7 +35,7 @@
 
 #include "cmd/msg.h"
 
-#include "ab/pecan_contact_priv.h"
+#include "ab/pn_contact_priv.h"
 
 #include <string.h> /* For strcmp, strstr, strlen */
 
@@ -345,7 +345,7 @@ msn_show_set_home_phone(PurplePluginAction *action)
     session = gc->proto_data;
 
     purple_request_input(gc, NULL, _("Set your home phone number."), NULL,
-                         pecan_contact_get_home_phone(msn_session_get_contact (session)), FALSE, FALSE, NULL,
+                         pn_contact_get_home_phone(msn_session_get_contact (session)), FALSE, FALSE, NULL,
                          _("OK"), G_CALLBACK(msn_set_home_phone_cb),
                          _("Cancel"), NULL,
                          purple_connection_get_account(gc), NULL, NULL,
@@ -362,7 +362,7 @@ msn_show_set_work_phone(PurplePluginAction *action)
     session = gc->proto_data;
 
     purple_request_input(gc, NULL, _("Set your work phone number."), NULL,
-                         pecan_contact_get_work_phone(msn_session_get_contact (session)), FALSE, FALSE, NULL,
+                         pn_contact_get_work_phone(msn_session_get_contact (session)), FALSE, FALSE, NULL,
                          _("OK"), G_CALLBACK(msn_set_work_phone_cb),
                          _("Cancel"), NULL,
                          purple_connection_get_account(gc), NULL, NULL,
@@ -379,7 +379,7 @@ msn_show_set_mobile_phone(PurplePluginAction *action)
     session = gc->proto_data;
 
     purple_request_input(gc, NULL, _("Set your mobile phone number."), NULL,
-                         pecan_contact_get_mobile_phone(msn_session_get_contact (session)), FALSE, FALSE, NULL,
+                         pn_contact_get_mobile_phone(msn_session_get_contact (session)), FALSE, FALSE, NULL,
                          _("OK"), G_CALLBACK(msn_set_mobile_phone_cb),
                          _("Cancel"), NULL,
                          purple_connection_get_account(gc), NULL, NULL,
@@ -470,7 +470,7 @@ show_send_to_mobile_cb(PurpleBlistNode *node, gpointer ignored)
 
 static gboolean
 msn_offline_message(const PurpleBuddy *buddy) {
-    PecanContact *user;
+    PnContact *user;
     if (buddy == NULL)
         return FALSE;
     user = buddy->proto_data;
@@ -572,7 +572,7 @@ list_icon (PurpleAccount *a,
 static const char *
 list_emblems (PurpleBuddy *b)
 {
-    PecanContact *contact;
+    PnContact *contact;
 
     contact = b->proto_data;
 
@@ -585,7 +585,7 @@ list_emblems (PurpleBuddy *b)
 static gchar *
 status_text (PurpleBuddy *buddy)
 {
-    PecanContact *contact;
+    PnContact *contact;
 
     contact = buddy->proto_data;
 
@@ -617,7 +617,7 @@ status_text (PurpleBuddy *buddy)
 
     {
         const gchar *personal_message;
-        personal_message = pecan_contact_get_personal_message (contact);
+        personal_message = pn_contact_get_personal_message (contact);
         if (personal_message)
             return g_strdup (personal_message);
     }
@@ -646,7 +646,7 @@ tooltip_text (PurpleBuddy *buddy,
               PurpleNotifyUserInfo *user_info,
               gboolean full)
 {
-    PecanContact *user;
+    PnContact *user;
     PurplePresence *presence;
     PurpleStatus *status;
 
@@ -668,10 +668,10 @@ tooltip_text (PurpleBuddy *buddy,
 
     if (full)
     {
-        if (pecan_contact_get_personal_message (user))
+        if (pn_contact_get_personal_message (user))
         {
             purple_notify_user_info_add_pair (user_info, _("Personal Message"),
-                                              pecan_contact_get_personal_message (user));
+                                              pn_contact_get_personal_message (user));
         }
 
         if (user->media.title)
@@ -841,7 +841,7 @@ blist_node_menu (PurpleBlistNode *node)
         buddy = (PurpleBuddy *) node;
 
         {
-            PecanContact *user;
+            PnContact *user;
 
             user = buddy->proto_data;
 
@@ -856,7 +856,7 @@ blist_node_menu (PurpleBlistNode *node)
                     m = g_list_append (m, act);
                 }
 
-                if (!pecan_contact_is_account (user))
+                if (!pn_contact_is_account (user))
                 {
                     act = purple_menu_action_new (_("Initiate _Chat"),
                                                   PURPLE_CALLBACK (initiate_chat_cb),
@@ -1051,7 +1051,7 @@ send_im (PurpleConnection *gc,
 
     /* Send to mobile when contact is offline. */
     {
-        PecanContact *contact;
+        PnContact *contact;
         contact = pecan_contactlist_find_contact (session->contactlist, who);
         if (contact && contact->status == PN_STATUS_OFFLINE && contact->mobile)
         {
@@ -1254,11 +1254,11 @@ rem_buddy (PurpleConnection *gc,
     /* Are we going to remove him completely? */
     if (group_name)
     {
-        PecanContact *user;
+        PnContact *user;
 
         user = pecan_contactlist_find_contact (contactlist, buddy->name);
 
-        if (user && pecan_contact_get_group_count (user) <= 1)
+        if (user && pn_contact_get_group_count (user) <= 1)
             group_name = NULL;
     }
 
@@ -1272,7 +1272,7 @@ alias_buddy (PurpleConnection *gc,
 {
     MsnSession *session;
     MsnCmdProc *cmdproc;
-    PecanContact *contact;
+    PnContact *contact;
 
     session = gc->proto_data;
     cmdproc = session->notification->cmdproc;
@@ -1284,9 +1284,9 @@ alias_buddy (PurpleConnection *gc,
     if (alias && strlen (alias))
         alias = purple_url_encode (alias);
     else
-        alias = pecan_contact_get_passport (contact);
+        alias = pn_contact_get_passport (contact);
 
-    msn_cmdproc_send (cmdproc, "SBP", "%s %s %s", pecan_contact_get_guid (contact), "MFN", alias);
+    msn_cmdproc_send (cmdproc, "SBP", "%s %s %s", pn_contact_get_guid (contact), "MFN", alias);
 }
 
 static void
@@ -1354,7 +1354,7 @@ add_permit (PurpleConnection *gc,
 {
     MsnSession *session;
     PecanContactList *contactlist;
-    PecanContact *user;
+    PnContact *user;
 
     session = gc->proto_data;
     contactlist = session->contactlist;
@@ -1378,7 +1378,7 @@ add_deny (PurpleConnection *gc,
 {
     MsnSession *session;
     PecanContactList *contactlist;
-    PecanContact *user;
+    PnContact *user;
 
     session = gc->proto_data;
     contactlist = session->contactlist;
@@ -1402,7 +1402,7 @@ rem_permit (PurpleConnection *gc,
 {
     MsnSession *session;
     PecanContactList *contactlist;
-    PecanContact *user;
+    PnContact *user;
 
     session = gc->proto_data;
     contactlist = session->contactlist;
@@ -1427,7 +1427,7 @@ rem_deny (PurpleConnection *gc,
 {
     MsnSession *session;
     PecanContactList *contactlist;
-    PecanContact *user;
+    PnContact *user;
 
     session = gc->proto_data;
     contactlist = session->contactlist;
@@ -1622,7 +1622,7 @@ set_buddy_icon (PurpleConnection *gc,
                 PurpleStoredImage *img)
 {
     MsnSession *session;
-    PecanContact *user;
+    PnContact *user;
 
     session = gc->proto_data;
     user = msn_session_get_contact (session);
@@ -1634,7 +1634,7 @@ set_buddy_icon (PurpleConnection *gc,
                                           purple_imgstore_get_size (img));
         else
             image = NULL;
-        pecan_contact_set_buddy_icon (user, image);
+        pn_contact_set_buddy_icon (user, image);
     }
 
     pn_update_status (session);
@@ -1645,7 +1645,7 @@ get_info (PurpleConnection *gc,
           const char *name)
 {
     PurpleNotifyUserInfo *user_info;
-    PecanContact *user;
+    PnContact *user;
     PurpleBuddy *buddy;
 
     user_info = purple_notify_user_info_new ();
@@ -1657,7 +1657,7 @@ get_info (PurpleConnection *gc,
     if (user)
     {
         const gchar *friendly_name;
-        friendly_name = pecan_contact_get_friendly_name (user);
+        friendly_name = pn_contact_get_friendly_name (user);
         if (friendly_name && strcmp (friendly_name, name) != 0)
             purple_notify_user_info_add_pair (user_info, _("Friendly Name"), friendly_name);
     }
@@ -1670,9 +1670,9 @@ get_info (PurpleConnection *gc,
         const gchar *mobile_phone;
         const gchar *work_phone;
 
-        home_phone = pecan_contact_get_home_phone (user);
-        mobile_phone = pecan_contact_get_mobile_phone (user);
-        work_phone = pecan_contact_get_work_phone (user);
+        home_phone = pn_contact_get_home_phone (user);
+        mobile_phone = pn_contact_get_mobile_phone (user);
+        work_phone = pn_contact_get_work_phone (user);
 
         if (home_phone)
             purple_notify_user_info_add_pair (user_info, _("Home Phone"), home_phone);

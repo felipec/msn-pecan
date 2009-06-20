@@ -94,7 +94,7 @@ objects := msn.o \
 	   io/pn_buffer.o \
 	   io/pn_parser.o \
 	   ab/pn_group.o \
-	   ab/pecan_contact.o \
+	   ab/pn_contact.o \
 	   ab/pecan_contactlist.o \
 	   io/pn_stream.o \
 	   io/pn_node.o \

@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef PECAN_CONTACT_PRIV_H
-#define PECAN_CONTACT_PRIV_H
+#ifndef PN_CONTACT_PRIV_H
+#define PN_CONTACT_PRIV_H
 
 #include <glib.h>
 
@@ -50,7 +50,7 @@ typedef struct _CurrentMedia
 /**
  * A contact.
  */
-struct PecanContact
+struct PnContact
 {
     PecanContactList *contactlist;
 
@@ -86,4 +86,4 @@ struct PecanContact
     gint list_op;
 };
 
-#endif /* PECAN_CONTACT_PRIV_H */
+#endif /* PN_CONTACT_PRIV_H */

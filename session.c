@@ -24,7 +24,7 @@
 #include "notification.h"
 #include "pn_status.h"
 #include "pn_dp_manager.h"
-#include "ab/pecan_contact_priv.h"
+#include "ab/pn_contact_priv.h"
 
 #if defined(PECAN_CVR)
 #include "cvr/slplink.h"
@@ -46,12 +46,12 @@ conversation_created_cb (PurpleConversation *conv, gpointer data)
     gchar *str;
     const gchar *tmp_user, *friendly_name;
     MsnSession *session = data;
-    PecanContact *contact;
+    PnContact *contact;
 
     tmp_user = purple_conversation_get_name (conv);
     contact = pecan_contactlist_find_contact (session->contactlist, tmp_user);
     if (contact)
-        friendly_name = pecan_contact_get_friendly_name (contact);
+        friendly_name = pn_contact_get_friendly_name (contact);
     else
         friendly_name = tmp_user;
     if (!friendly_name)
@@ -99,8 +99,8 @@ msn_session_new (const gchar *username,
     session->notification = msn_notification_new (session);
     session->contactlist = pecan_contactlist_new (session);
 
-    session->user = pecan_contact_new (NULL);
-    pecan_contact_set_passport (session->user, session->username);
+    session->user = pn_contact_new (NULL);
+    pn_contact_set_passport (session->user, session->username);
 
     session->conv_seq = 1;
 
@@ -163,7 +163,7 @@ msn_session_destroy (MsnSession *session)
     if (session->nexus)
         msn_nexus_destroy (session->nexus);
 
-    pecan_contact_free (session->user);
+    pn_contact_free (session->user);
 
     g_hash_table_destroy (session->config);
 
@@ -185,7 +185,7 @@ msn_session_get_password (MsnSession *session)
     return session->password;
 }
 
-PecanContact *
+PnContact *
 msn_session_get_contact (MsnSession *session)
 {
     g_return_val_if_fail (session, NULL);
@@ -422,7 +422,7 @@ msn_session_finish_login (MsnSession *session)
                                              purple_imgstore_get_size (img));
         else
             image = NULL;
-        pecan_contact_set_buddy_icon (session->user, image);
+        pn_contact_set_buddy_icon (session->user, image);
     }
 
     purple_imgstore_unref (img);

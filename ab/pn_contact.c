@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "pecan_contact.h"
-#include "pecan_contact_priv.h"
+#include "pn_contact.h"
+#include "pn_contact_priv.h"
 #include "pecan_contactlist_priv.h"
 #include "pn_log.h"
 #include "pn_util.h"
@@ -38,12 +38,12 @@
 #include <account.h>
 #endif /* HAVE_LIBPURPLE */
 
-PecanContact *
-pecan_contact_new (PecanContactList *contactlist)
+PnContact *
+pn_contact_new (PecanContactList *contactlist)
 {
-    PecanContact *contact;
+    PnContact *contact;
 
-    contact = g_new0 (PecanContact, 1);
+    contact = g_new0 (PnContact, 1);
 
     contact->contactlist = contactlist;
     contact->groups = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
@@ -52,7 +52,7 @@ pecan_contact_new (PecanContactList *contactlist)
 }
 
 void
-pecan_contact_free (PecanContact *contact)
+pn_contact_free (PnContact *contact)
 {
     if (!contact)
         return;
@@ -80,7 +80,7 @@ pecan_contact_free (PecanContact *contact)
 }
 
 void
-pecan_contact_update (PecanContact *contact)
+pn_contact_update (PnContact *contact)
 {
 #ifdef HAVE_LIBPURPLE
     PurpleAccount *account;
@@ -125,7 +125,7 @@ pecan_contact_update (PecanContact *contact)
 }
 
 gboolean
-pecan_contact_is_account (PecanContact *contact)
+pn_contact_is_account (PnContact *contact)
 {
     if (strcmp (msn_session_get_username (contact->contactlist->session), contact->passport) == 0)
         return TRUE;
@@ -134,7 +134,7 @@ pecan_contact_is_account (PecanContact *contact)
 }
 
 void
-pecan_contact_set_state (PecanContact *contact,
+pn_contact_set_state (PnContact *contact,
                          const gchar *state)
 {
     PecanStatus status;
@@ -164,8 +164,8 @@ pecan_contact_set_state (PecanContact *contact,
 }
 
 void
-pecan_contact_set_passport (PecanContact *contact,
-                            const gchar *passport)
+pn_contact_set_passport (PnContact *contact,
+                         const gchar *passport)
 {
     g_free (contact->passport);
     contact->passport = pn_normalize (passport);
@@ -178,21 +178,21 @@ pecan_contact_set_passport (PecanContact *contact,
 }
 
 void
-pecan_contact_set_client_id (PecanContact *contact,
-                             gulong client_id)
+pn_contact_set_client_id (PnContact *contact,
+                          gulong client_id)
 {
     contact->client_id = client_id;
 }
 
 gulong
-pecan_contact_get_client_id (PecanContact *contact)
+pn_contact_get_client_id (PnContact *contact)
 {
     return contact->client_id;
 }
 
 void
-pecan_contact_set_friendly_name (PecanContact *contact,
-                                 const gchar *name)
+pn_contact_set_friendly_name (PnContact *contact,
+                              const gchar *name)
 {
     pn_debug ("passport=[%s],name=[%s]", contact->passport, name);
 
@@ -234,10 +234,10 @@ pecan_contact_set_friendly_name (PecanContact *contact,
 #if 0
     /* If contact == account; display and friendly are the same thing. */
     /** @todo this is a libpurple specific thing */
-    if (pecan_contact_is_account (contact))
+    if (pn_contact_is_account (contact))
     {
         pn_debug ("contact is account");
-        pecan_contact_set_store_name (contact, name);
+        pn_contact_set_store_name (contact, name);
     }
 #endif
 #else
@@ -247,8 +247,8 @@ pecan_contact_set_friendly_name (PecanContact *contact,
 }
 
 void
-pecan_contact_set_personal_message (PecanContact *contact,
-                                    const gchar *value)
+pn_contact_set_personal_message (PnContact *contact,
+                                 const gchar *value)
 {
     pn_debug ("passport=[%s],value=[%s]", contact->passport, value);
 
@@ -289,8 +289,8 @@ pecan_contact_set_personal_message (PecanContact *contact,
 }
 
 void
-pecan_contact_set_current_media (PecanContact *contact,
-                                 const gchar *value)
+pn_contact_set_current_media (PnContact *contact,
+                              const gchar *value)
 {
     gchar **array;
     char *dec;
@@ -360,8 +360,8 @@ pecan_contact_set_current_media (PecanContact *contact,
 }
 
 void
-pecan_contact_set_store_name (PecanContact *contact,
-                              const gchar *name)
+pn_contact_set_store_name (PnContact *contact,
+                           const gchar *name)
 {
     pn_debug ("passport=[%s],name=[%s]", contact->passport, name);
 
@@ -405,18 +405,18 @@ pecan_contact_set_store_name (PecanContact *contact,
 #if 0
     /* If contact == account; display and friendly are the same thing. */
     /** @todo this is a libpurple specific thing */
-    if (pecan_contact_is_account (contact))
+    if (pn_contact_is_account (contact))
     {
         pn_debug ("contact is account");
-        pecan_contact_set_friendly_name (contact, name);
+        pn_contact_set_friendly_name (contact, name);
     }
 #endif
 #endif /* HAVE_LIBPURPLE */
 }
 
 void
-pecan_contact_set_guid (PecanContact *contact,
-                        const gchar *guid)
+pn_contact_set_guid (PnContact *contact,
+                     const gchar *guid)
 {
     g_free (contact->guid);
     contact->guid = g_strdup (guid);
@@ -427,27 +427,27 @@ pecan_contact_set_guid (PecanContact *contact,
 }
 
 void
-pecan_contact_set_buddy_icon (PecanContact *contact,
-                              PnBuffer *image)
+pn_contact_set_buddy_icon (PnContact *contact,
+                           PnBuffer *image)
 {
 #if defined(PECAN_CVR)
 #ifdef HAVE_LIBPURPLE
     PnMsnObj *obj;
 
-    obj = pn_msnobj_new_from_image (image, "TFR2C2.tmp", pecan_contact_get_passport (contact),
+    obj = pn_msnobj_new_from_image (image, "TFR2C2.tmp", pn_contact_get_passport (contact),
                                     PN_MSNOBJ_USERTILE);
-    pecan_contact_set_object (contact, obj);
+    pn_contact_set_object (contact, obj);
 #endif /* HAVE_LIBPURPLE */
 #endif /* defined(PECAN_CVR) */
 }
 
 void
-pecan_contact_add_group_id (PecanContact *contact,
-                            const gchar *group_guid)
+pn_contact_add_group_id (PnContact *contact,
+                         const gchar *group_guid)
 {
     const gchar *passport;
 
-    passport = pecan_contact_get_passport (contact);
+    passport = pn_contact_get_passport (contact);
 
     pn_debug ("passport=[%s],group_guid=[%s]", passport, group_guid);
 
@@ -513,8 +513,8 @@ pecan_contact_add_group_id (PecanContact *contact,
 }
 
 void
-pecan_contact_remove_group_id (PecanContact *contact,
-                               const gchar *group_guid)
+pn_contact_remove_group_id (PnContact *contact,
+                            const gchar *group_guid)
 {
     pn_debug ("passport=[%s],group_guid=[%s]", contact->passport, group_guid);
 
@@ -522,14 +522,14 @@ pecan_contact_remove_group_id (PecanContact *contact,
 }
 
 guint
-pecan_contact_get_group_count (PecanContact *contact)
+pn_contact_get_group_count (PnContact *contact)
 {
     return g_hash_table_size (contact->groups);
 }
 
 void
-pecan_contact_set_home_phone (PecanContact *contact,
-                              const gchar *number)
+pn_contact_set_home_phone (PnContact *contact,
+                           const gchar *number)
 {
     g_free (contact->phone.home);
 
@@ -537,8 +537,8 @@ pecan_contact_set_home_phone (PecanContact *contact,
 }
 
 void
-pecan_contact_set_work_phone (PecanContact *contact,
-                              const gchar *number)
+pn_contact_set_work_phone (PnContact *contact,
+                           const gchar *number)
 {
     g_free (contact->phone.work);
 
@@ -546,8 +546,8 @@ pecan_contact_set_work_phone (PecanContact *contact,
 }
 
 void
-pecan_contact_set_mobile_phone (PecanContact *contact,
-                                const gchar *number)
+pn_contact_set_mobile_phone (PnContact *contact,
+                             const gchar *number)
 {
     g_free (contact->phone.mobile);
 
@@ -556,8 +556,8 @@ pecan_contact_set_mobile_phone (PecanContact *contact,
 
 #if defined(PECAN_CVR)
 void
-pecan_contact_set_object (PecanContact *contact,
-                          PnMsnObj *obj)
+pn_contact_set_object (PnContact *contact,
+                       PnMsnObj *obj)
 {
     /** @todo sometimes we need to force an update, in those cases the old and
      * new object will be the same, we must not free the object, so in order to
@@ -577,8 +577,8 @@ pecan_contact_set_object (PecanContact *contact,
 #endif /* defined(PECAN_CVR) */
 
 void
-pecan_contact_set_client_caps (PecanContact *contact,
-                               GHashTable *info)
+pn_contact_set_client_caps (PnContact *contact,
+                            GHashTable *info)
 {
     if (contact->clientcaps)
         g_hash_table_destroy (contact->clientcaps);
@@ -587,81 +587,81 @@ pecan_contact_set_client_caps (PecanContact *contact,
 }
 
 const gchar *
-pecan_contact_get_passport (const PecanContact *contact)
+pn_contact_get_passport (const PnContact *contact)
 {
     return contact->passport;
 }
 
 const gchar *
-pecan_contact_get_friendly_name (const PecanContact *contact)
+pn_contact_get_friendly_name (const PnContact *contact)
 {
     return contact->friendly_name;
 }
 
 const gchar *
-pecan_contact_get_personal_message (const PecanContact *contact)
+pn_contact_get_personal_message (const PnContact *contact)
 {
     return contact->personal_message;
 }
 
 const gchar *
-pecan_contact_get_store_name (const PecanContact *contact)
+pn_contact_get_store_name (const PnContact *contact)
 {
     return contact->store_name;
 }
 
 const gchar *
-pecan_contact_get_guid (const PecanContact *contact)
+pn_contact_get_guid (const PnContact *contact)
 {
     return contact->guid;
 }
 
 const gchar *
-pecan_contact_get_home_phone (const PecanContact *contact)
+pn_contact_get_home_phone (const PnContact *contact)
 {
     return contact->phone.home;
 }
 
 const gchar *
-pecan_contact_get_work_phone (const PecanContact *contact)
+pn_contact_get_work_phone (const PnContact *contact)
 {
     return contact->phone.work;
 }
 
 const gchar *
-pecan_contact_get_mobile_phone (const PecanContact *contact)
+pn_contact_get_mobile_phone (const PnContact *contact)
 {
     return contact->phone.mobile;
 }
 
 #if defined(PECAN_CVR)
 PnMsnObj *
-pecan_contact_get_object (const PecanContact *contact)
+pn_contact_get_object (const PnContact *contact)
 {
     return contact->msnobj;
 }
 #endif /* defined(PECAN_CVR) */
 
 GHashTable *
-pecan_contact_get_client_caps (const PecanContact *contact)
+pn_contact_get_client_caps (const PnContact *contact)
 {
     return contact->clientcaps;
 }
 
 static inline gboolean
-is_blocked (const PecanContact *contact)
+is_blocked (const PnContact *contact)
 {
     return ((contact->list_op & (1 << MSN_LIST_BL)) ? true : false);
 }
 
 static inline gboolean
-is_offline (const PecanContact *contact)
+is_offline (const PnContact *contact)
 {
     return (contact->status == PN_STATUS_OFFLINE ? true : false);
 }
 
 gboolean
-pecan_contact_can_receive (const PecanContact *contact)
+pn_contact_can_receive (const PnContact *contact)
 {
     if (is_blocked (contact))
         return false;
