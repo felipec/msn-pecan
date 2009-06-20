@@ -59,27 +59,18 @@ pecan_cmd_server_free (PecanCmdServer *conn)
     pecan_log ("end");
 }
 
-#if 0
 void
 pecan_cmd_server_send (PecanCmdServer *conn,
-                      const gchar *command,
-                      const gchar *format,
-                      ...)
+                       const gchar *command,
+                       const gchar *format,
+                       ...)
 {
     va_list args;
 
-    if (format != NULL)
-    {
-        va_start (args, format);
-        msn_cmdproc_send_valist (conn->cmdproc, command, format, args);
-        va_end (args);
-    }
-    else
-    {
-        msn_cmdproc_send_valist (conn->cmdproc, command, format, args);
-    }
+    va_start (args, format);
+    msn_cmdproc_send_valist (conn->cmdproc, command, format, args);
+    va_end (args);
 }
-#endif
 
 /** @todo reimplement this in a safer way (GIOChannel) */
 /** @todo add extensive tests for this */
@@ -319,6 +310,7 @@ instance_init (GTypeInstance *instance,
     PecanCmdServer *conn = CMD_PECAN_NODE (instance);
 
     conn->cmdproc = msn_cmdproc_new ();
+    g_object_set_data(G_OBJECT(conn), "cmdproc", conn->cmdproc);
 }
 
 GType

@@ -35,4 +35,6 @@ typedef struct PecanCmdServer PecanCmdServer;
 PecanCmdServer *pecan_cmd_server_new (const gchar *name, PecanNodeType type);
 void pecan_cmd_server_free (PecanCmdServer *conn);
 
+void pecan_cmd_server_send (PecanCmdServer *conn, const char *command, const char *format, ...);
+
 #endif /* MSN_CMD_CONN_H */

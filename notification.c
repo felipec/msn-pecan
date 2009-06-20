@@ -38,7 +38,7 @@
 #include "io/pecan_cmd_server.h"
 #include "io/pecan_http_server.h"
 #include "io/pecan_node_priv.h"
-#include "io/pecan_cmd_server_priv.h"
+#include "io/pecan_cmd_server.h"
 
 #if defined(PECAN_CVR)
 #include "cvr/slplink.h" /* for slplink_destroy */
@@ -69,16 +69,14 @@ open_cb (PecanNode *conn,
          MsnNotification *notification)
 {
     MsnSession *session;
-    PecanCmdServer *cmd_conn;
 
     g_return_if_fail (conn != NULL);
 
     pecan_log ("begin");
 
     session = conn->session;
-    cmd_conn = CMD_PECAN_NODE (conn);
 
-    msn_cmdproc_send (cmd_conn->cmdproc, "VER", "MSNP12 CVR0");
+    pecan_cmd_server_send (CMD_PECAN_NODE (conn), "VER", "MSNP12 CVR0");
 
     pecan_log ("end");
 }
@@ -169,7 +167,7 @@ msn_notification_new(MsnSession *session)
 
         {
             MsnCmdProc *cmdproc;
-            cmdproc = notification->conn->cmdproc;
+            cmdproc = g_object_get_data(G_OBJECT(notification->conn), "cmdproc");
             cmdproc->session = session;
             cmdproc->cbs_table = cbs_table;
             cmdproc->conn = conn;

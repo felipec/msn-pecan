@@ -40,7 +40,7 @@
 #include "cmd/table.h"
 
 #include "io/pecan_node_priv.h"
-#include "io/pecan_cmd_server_priv.h"
+#include "io/pecan_cmd_server.h"
 #include "io/pecan_http_server.h"
 
 #include "pecan_util.h"
@@ -70,14 +70,12 @@ open_cb (PecanNode *conn,
          MsnSwitchBoard *swboard)
 {
     MsnSession *session;
-    PecanCmdServer *cmd_conn;
     MsnCmdProc *cmdproc;
 
     g_return_if_fail (conn != NULL);
 
     session = conn->session;
-    cmd_conn = CMD_PECAN_NODE (conn);
-    cmdproc = cmd_conn->cmdproc;
+    cmdproc = g_object_get_data(G_OBJECT(conn), "cmdproc");
 
     {
         MsnTransaction *trans;
@@ -154,7 +152,7 @@ msn_switchboard_new(MsnSession *session)
 
         {
             MsnCmdProc *cmdproc;
-            cmdproc = swboard->conn->cmdproc;
+            cmdproc = g_object_get_data(G_OBJECT(swboard->conn), "cmdproc");
             cmdproc->session = session;
             cmdproc->cbs_table = cbs_table;
             cmdproc->conn = conn;
