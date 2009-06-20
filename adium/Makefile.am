@@ -25,7 +25,7 @@ MSNSOURCES = msn.c \
 	     cmd/table.c \
 	     cmd/transaction.c \
 	     io/pn_buffer.c \
-	     io/pecan_parser.c \
+	     io/pn_parser.c \
 	     ab/pecan_group.c \
 	     ab/pecan_contact.c \
 	     ab/pecan_contactlist.c \

@@ -23,7 +23,7 @@
 
 #include <fcntl.h>
 
-#include "io/pecan_parser.h"
+#include "io/pn_parser.h"
 #include "io/pn_node_private.h"
 #include "io/pn_stream.h"
 
@@ -39,24 +39,24 @@ END_TEST
 START_TEST (test_simple)
 {
     PnNode *node;
-    PecanParser *parser;
+    PnParser *parser;
     gchar *str;
     gsize terminator_pos;
     gint fd;
 
     node = pn_node_new ("foo", 0);
-    parser = pecan_parser_new (node);
+    parser = pn_parser_new (node);
 
     fd = g_open ("stream_test/000", O_RDONLY);
     node->stream = pn_stream_new (fd);
-    pecan_parser_read_line (parser, &str, NULL, &terminator_pos, NULL);
+    pn_parser_read_line (parser, &str, NULL, &terminator_pos, NULL);
     if (str)
     {
         str[terminator_pos] = '\0';
         g_debug ("str={%s}", str);
     }
 
-    pecan_parser_free (parser);
+    pn_parser_free (parser);
     pn_node_free (node);
 }
 END_TEST
@@ -64,13 +64,13 @@ END_TEST
 START_TEST (test_through)
 {
     PnNode *node;
-    PecanParser *parser;
+    PnParser *parser;
     gchar *str;
     gsize terminator_pos;
     gint fd;
 
     node = pn_node_new ("foo", 0);
-    parser = pecan_parser_new (node);
+    parser = pn_parser_new (node);
 
     fd = g_open ("stream_test/000", O_RDONLY);
     node->stream = pn_stream_new (fd);
@@ -79,7 +79,7 @@ START_TEST (test_through)
 
         do
         {
-            status = pecan_parser_read_line (parser, &str, NULL, &terminator_pos, NULL);
+            status = pn_parser_read_line (parser, &str, NULL, &terminator_pos, NULL);
             if (str)
             {
                 str[terminator_pos] = '\0';
@@ -88,7 +88,7 @@ START_TEST (test_through)
         } while (status == G_IO_STATUS_NORMAL);
     }
 
-    pecan_parser_free (parser);
+    pn_parser_free (parser);
     pn_node_free (node);
 }
 END_TEST
@@ -96,13 +96,13 @@ END_TEST
 START_TEST (test_cut)
 {
     PnNode *node;
-    PecanParser *parser;
+    PnParser *parser;
     gchar *str;
     gsize terminator_pos;
     gint fd;
 
     node = pn_node_new ("foo", 0);
-    parser = pecan_parser_new (node);
+    parser = pn_parser_new (node);
 
     fd = g_open ("stream_test/001", O_RDONLY);
     node->stream = pn_stream_new (fd);
@@ -111,7 +111,7 @@ START_TEST (test_cut)
 
         do
         {
-            status = pecan_parser_read_line (parser, &str, NULL, &terminator_pos, NULL);
+            status = pn_parser_read_line (parser, &str, NULL, &terminator_pos, NULL);
             if (str)
             {
                 str[terminator_pos] = '\0';
@@ -120,7 +120,7 @@ START_TEST (test_cut)
         } while (status == G_IO_STATUS_NORMAL);
     }
 
-    pecan_parser_free (parser);
+    pn_parser_free (parser);
     pn_node_free (node);
 }
 END_TEST
@@ -128,13 +128,13 @@ END_TEST
 START_TEST (test_span)
 {
     PnNode *node;
-    PecanParser *parser;
+    PnParser *parser;
     gchar *str;
     gsize terminator_pos;
     gint fd;
 
     node = pn_node_new ("foo", 0);
-    parser = pecan_parser_new (node);
+    parser = pn_parser_new (node);
 
     fd = g_open ("stream_test/001", O_RDONLY);
     node->stream = pn_stream_new (fd);
@@ -142,7 +142,7 @@ START_TEST (test_span)
         GIOStatus status;
         do
         {
-            status = pecan_parser_read_line (parser, &str, NULL, &terminator_pos, NULL);
+            status = pn_parser_read_line (parser, &str, NULL, &terminator_pos, NULL);
             if (str)
             {
                 str[terminator_pos] = '\0';
@@ -158,7 +158,7 @@ START_TEST (test_span)
         GIOStatus status;
         do
         {
-            status = pecan_parser_read_line (parser, &str, NULL, &terminator_pos, NULL);
+            status = pn_parser_read_line (parser, &str, NULL, &terminator_pos, NULL);
             if (str)
             {
                 str[terminator_pos] = '\0';
@@ -167,7 +167,7 @@ START_TEST (test_span)
         } while (status == G_IO_STATUS_NORMAL);
     }
 
-    pecan_parser_free (parser);
+    pn_parser_free (parser);
     pn_node_free (node);
 }
 END_TEST

@@ -16,19 +16,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef PECAN_PARSER_H
-#define PECAN_PARSER_H
+#ifndef PN_PARSER_H
+#define PN_PARSER_H
 
-typedef struct PecanParser PecanParser;
+typedef struct PnParser PnParser;
 
 #include "io/pn_node.h"
 
-PecanParser *pecan_parser_new (PnNode *node);
-void pecan_parser_free (PecanParser *parser);
-GIOStatus pecan_parser_read_line (PecanParser *parser,
-                                  gchar **str_return,
-                                  gsize *length,
-                                  gsize *terminator_pos,
-                                  GError **error);
+PnParser *pn_parser_new (PnNode *node);
+void pn_parser_free (PnParser *parser);
+GIOStatus pn_parser_read_line (PnParser *parser,
+                               gchar **str_return,
+                               gsize *length,
+                               gsize *terminator_pos,
+                               GError **error);
 
-#endif /* PECAN_PARSER_H */
+#endif /* PN_PARSER_H */

@@ -18,14 +18,14 @@
 
 #include <glib.h>
 
-#include "io/pecan_parser.h"
+#include "io/pn_parser.h"
 #include "io/pn_node.h"
 
 #include "pn_log.h"
 
 #include <string.h> /* for memcpy */
 
-struct PecanParser
+struct PnParser
 {
     PnNode *node;
     gchar *rx_buf;
@@ -33,18 +33,18 @@ struct PecanParser
     gboolean need_more;
 };
 
-PecanParser *
-pecan_parser_new (PnNode *node)
+PnParser *
+pn_parser_new (PnNode *node)
 {
-    PecanParser *parser;
-    parser = g_new0 (PecanParser, 1);
+    PnParser *parser;
+    parser = g_new0 (PnParser, 1);
     parser->node = node;
     parser->need_more = TRUE;
     return parser;
 }
 
 void
-pecan_parser_free (PecanParser *parser)
+pn_parser_free (PnParser *parser)
 {
     if (!parser)
         return;
@@ -53,7 +53,7 @@ pecan_parser_free (PecanParser *parser)
 }
 
 GIOStatus
-pecan_parser_read_line (PecanParser *parser,
+pn_parser_read_line (PnParser *parser,
                         gchar **str_return,
                         gsize *length,
                         gsize *terminator_pos,

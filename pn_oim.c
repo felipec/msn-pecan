@@ -20,7 +20,7 @@
 
 #include "pn_oim.h"
 #include "io/pn_ssl_conn.h"
-#include "io/pecan_parser.h"
+#include "io/pn_parser.h"
 
 #include "io/pn_node_private.h"
 #include "session_private.h"
@@ -49,7 +49,7 @@ struct OimRequest
     PecanOimSession *oim_session;
     gchar *passport;
     gchar *message_id;
-    PecanParser *parser;
+    PnParser *parser;
     guint parser_state;
     guint32 date;
     gsize payload;
@@ -80,7 +80,7 @@ oim_request_free (OimRequest *oim_request)
         g_signal_handler_disconnect (oim_request->conn, oim_request->open_sig_handler);
 
     pn_node_free (oim_request->conn);
-    pecan_parser_free (oim_request->parser);
+    pn_parser_free (oim_request->parser);
     g_free (oim_request->passport);
     g_free (oim_request->message_id);
     g_free (oim_request);
@@ -221,7 +221,7 @@ read_cb (PnNode *conn,
     {
         gsize terminator_pos;
 
-        status = pecan_parser_read_line (oim_request->parser, &str, NULL, &terminator_pos, NULL);
+        status = pn_parser_read_line (oim_request->parser, &str, NULL, &terminator_pos, NULL);
 
         if (status == G_IO_STATUS_AGAIN)
             return;
@@ -261,7 +261,7 @@ read_cb (PnNode *conn,
     {
         gsize terminator_pos;
 
-        status = pecan_parser_read_line (oim_request->parser, &str, NULL, &terminator_pos, NULL);
+        status = pn_parser_read_line (oim_request->parser, &str, NULL, &terminator_pos, NULL);
 
         if (status == G_IO_STATUS_AGAIN)
             return;
@@ -314,7 +314,7 @@ oim_process_requests (PecanOimSession *oim_session)
         conn = PN_NODE (ssl_conn);
         conn->session = oim_session->session;
 
-        oim_request->parser = pecan_parser_new (conn);
+        oim_request->parser = pn_parser_new (conn);
         pn_ssl_conn_set_read_cb (ssl_conn, read_cb, oim_request);
 
         pn_node_connect (conn, "rsi.hotmail.com", 443);
