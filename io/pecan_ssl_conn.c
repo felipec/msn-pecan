@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "pecan_ssl_conn_priv.h"
+#include "pecan_ssl_conn.h"
 #include "pecan_node_priv.h"
 #include "pecan_log.h"
 
@@ -33,6 +33,20 @@
 #endif /* HAVE_LIBPURPLE */
 
 #include <errno.h>
+
+struct PecanSslConn
+{
+    PecanNode parent;
+
+    struct _PurpleSslConnection *ssl_data;
+    PecanSslConnReadCb read_cb;
+    gpointer read_cb_data;
+};
+
+struct PecanSslConnClass
+{
+    PecanNodeClass parent_class;
+};
 
 static GObjectClass *parent_class = NULL;
 
@@ -422,12 +436,6 @@ class_init (gpointer g_class,
     parent_class = g_type_class_peek_parent (g_class);
 }
 
-static void
-instance_init (GTypeInstance *instance,
-               gpointer g_class)
-{
-}
-
 GType
 pecan_ssl_conn_get_type (void)
 {
@@ -441,7 +449,6 @@ pecan_ssl_conn_get_type (void)
         type_info->class_size = sizeof (PecanSslConnClass);
         type_info->class_init = class_init;
         type_info->instance_size = sizeof (PecanSslConn);
-        type_info->instance_init = instance_init;
 
         type = g_type_register_static (PECAN_NODE_TYPE, "PecanSslConnType", type_info, 0);
 
