@@ -17,22 +17,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef PECAN_GROUP_H
-#define PECAN_GROUP_H
+#ifndef PN_GROUP_H
+#define PN_GROUP_H
 
-typedef struct PecanGroup  PecanGroup;
+typedef struct PnGroup PnGroup;
 
 #include "pecan_contactlist.h"
 
-PecanGroup *pecan_group_new (PecanContactList *contactlist,
-                             const gchar *name,
-                             const gchar *guid);
-void pecan_group_free (PecanGroup *group);
-void pecan_group_set_guid (PecanGroup *group,
-                           const gchar *guid);
-void pecan_group_set_name (PecanGroup *group,
-                           const gchar *name);
-const gchar *pecan_group_get_id (const PecanGroup *group);
-const gchar *pecan_group_get_name (const PecanGroup *group);
+PnGroup *pn_group_new (PecanContactList *contactlist,
+                       const gchar *name,
+                       const gchar *guid);
+void pn_group_free (PnGroup *group);
+void pn_group_set_guid (PnGroup *group,
+                        const gchar *guid);
+void pn_group_set_name (PnGroup *group,
+                        const gchar *name);
+const gchar *pn_group_get_id (const PnGroup *group);
+const gchar *pn_group_get_name (const PnGroup *group);
 
-#endif /* PECAN_GROUP_H */
+#endif /* PN_GROUP_H */

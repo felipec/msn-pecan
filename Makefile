@@ -93,7 +93,7 @@ objects := msn.o \
 	   cmd/transaction.o \
 	   io/pn_buffer.o \
 	   io/pn_parser.o \
-	   ab/pecan_group.o \
+	   ab/pn_group.o \
 	   ab/pecan_contact.o \
 	   ab/pecan_contactlist.o \
 	   io/pn_stream.o \

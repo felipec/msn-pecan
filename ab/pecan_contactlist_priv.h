@@ -22,7 +22,7 @@
 
 #include <glib.h>
 
-#include "pecan_group.h"
+#include "pn_group.h"
 
 typedef struct
 {
@@ -40,7 +40,7 @@ struct PecanContactList
     GHashTable *contact_guids;
     GHashTable *group_names;
     GHashTable *group_guids;
-    PecanGroup *null_group;
+    PnGroup *null_group;
 };
 
 #endif /* PECAN_CONTACTLIST_PRIV_H */

@@ -23,7 +23,7 @@
 typedef struct PecanContactList PecanContactList;
 
 #include "pecan_contact.h"
-#include "pecan_group.h"
+#include "pn_group.h"
 
 #include "cmd/cmdproc.h"
 
@@ -74,11 +74,11 @@ PecanContact *pecan_contactlist_find_contact (PecanContactList *contactlist,
                                               const gchar *passport);
 PecanContact *pecan_contactlist_find_contact_by_guid (PecanContactList *contactlist,
                                                       const gchar *contact_guid);
-void pecan_contactlist_add_group (PecanContactList *contactlist, PecanGroup *group);
-void pecan_contactlist_remove_group (PecanContactList *contactlist, PecanGroup *group);
-PecanGroup *pecan_contactlist_find_group_with_id (PecanContactList *contactlist,
+void pecan_contactlist_add_group (PecanContactList *contactlist, PnGroup *group);
+void pecan_contactlist_remove_group (PecanContactList *contactlist, PnGroup *group);
+PnGroup *pecan_contactlist_find_group_with_id (PecanContactList *contactlist,
                                                   const gchar *group_guid);
-PecanGroup *pecan_contactlist_find_group_with_name (PecanContactList *contactlist,
+PnGroup *pecan_contactlist_find_group_with_name (PecanContactList *contactlist,
                                                     const gchar *name);
 const gchar *pecan_contactlist_find_group_id (PecanContactList *contactlist,
                                               const gchar *group_name);

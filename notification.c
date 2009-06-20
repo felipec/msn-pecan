@@ -628,7 +628,7 @@ adg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     group_name = pn_url_decode(cmd->params[1]);
 
-    pecan_group_new(session->contactlist, group_name, group_guid);
+    pn_group_new(session->contactlist, group_name, group_guid);
 
     /* There is a user that must me moved to this group */
     if (cmd->trans && cmd->trans->data)

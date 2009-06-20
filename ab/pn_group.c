@@ -17,25 +17,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "pecan_group.h"
+#include "pn_group.h"
 
 /**
  * A group.
  */
-struct PecanGroup
+struct PnGroup
 {
     gchar *guid; /**< The GUID. */
     gchar *name; /**< The name. */
 };
 
-PecanGroup *
-pecan_group_new (PecanContactList *contactlist,
-                 const gchar *name,
-                 const gchar *guid)
+PnGroup *
+pn_group_new (PecanContactList *contactlist,
+              const gchar *name,
+              const gchar *guid)
 {
-    PecanGroup *group;
+    PnGroup *group;
 
-    group = g_new0 (PecanGroup, 1);
+    group = g_new0 (PnGroup, 1);
 
     group->guid = g_strdup (guid);
     group->name = g_strdup (name);
@@ -47,7 +47,7 @@ pecan_group_new (PecanContactList *contactlist,
 }
 
 void
-pecan_group_free (PecanGroup *group)
+pn_group_free (PnGroup *group)
 {
     if (!group)
         return;
@@ -58,29 +58,29 @@ pecan_group_free (PecanGroup *group)
 }
 
 void
-pecan_group_set_guid (PecanGroup *group,
-                      const gchar *guid)
+pn_group_set_guid (PnGroup *group,
+                   const gchar *guid)
 {
     g_free (group->guid);
     group->guid = g_strdup (guid);
 }
 
 void
-pecan_group_set_name (PecanGroup *group,
-                      const gchar *name)
+pn_group_set_name (PnGroup *group,
+                   const gchar *name)
 {
     g_free (group->name);
     group->name = g_strdup (name);
 }
 
 const gchar *
-pecan_group_get_id (const PecanGroup *group)
+pn_group_get_id (const PnGroup *group)
 {
     return group->guid;
 }
 
 const gchar *
-pecan_group_get_name (const PecanGroup *group)
+pn_group_get_name (const PnGroup *group)
 {
     return group->name;
 }

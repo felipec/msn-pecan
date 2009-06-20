@@ -18,7 +18,7 @@
 
 #include <glib.h>
 
-#include "ab/pecan_group.h"
+#include "ab/pn_group.h"
 
 struct MsnNotification;
 
@@ -45,20 +45,20 @@ msn_notification_rem_buddy (struct MsnNotification *notification,
 void
 basic_group_tests (void)
 {
-    PecanGroup *group;
+    PnGroup *group;
 
-    group = pecan_group_new (NULL, "foo", "bar");
-    pecan_group_free (group);
+    group = pn_group_new (NULL, "foo", "bar");
+    pn_group_free (group);
 
-    group = pecan_group_new (NULL, "bar", NULL);
-    pecan_group_set_guid (group, "foo");
-    pecan_group_set_name (group, "other name");
-    pecan_group_free (group);
+    group = pn_group_new (NULL, "bar", NULL);
+    pn_group_set_guid (group, "foo");
+    pn_group_set_name (group, "other name");
+    pn_group_free (group);
 
-    group = pecan_group_new (NULL, NULL, NULL);
-    pecan_group_set_guid (group, NULL);
-    pecan_group_set_name (group, NULL);
-    pecan_group_free (group);
+    group = pn_group_new (NULL, NULL, NULL);
+    pn_group_set_guid (group, NULL);
+    pn_group_set_name (group, NULL);
+    pn_group_free (group);
 }
 
 void

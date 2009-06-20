@@ -123,7 +123,7 @@ lsg_cmd (MsnCmdProc *cmdproc,
     name = pn_url_decode (cmd->params[0]);
     group_guid = cmd->params[1];
 
-    pecan_group_new (session->contactlist, name, group_guid);
+    pn_group_new (session->contactlist, name, group_guid);
 
     if (!purple_find_group (name))
     {
