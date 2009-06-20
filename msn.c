@@ -1857,7 +1857,15 @@ init_plugin (PurplePlugin *plugin)
     purple_prefs_remove ("/plugins/prpl/msn");
 }
 
-#if !defined(PURPLE_PLUGINS) || defined(PURPLE_STATIC_PRPL)
+#ifndef STATIC_PECAN
+G_MODULE_EXPORT gboolean
+purple_init_plugin(PurplePlugin *plugin)
+{
+    plugin->info = &info;
+    init_plugin(plugin);
+    return purple_plugin_register(plugin);
+}
+#else
 gboolean
 purple_init_msn_pecan_plugin(void)
 {
@@ -1865,14 +1873,6 @@ purple_init_msn_pecan_plugin(void)
     plugin->info = &info;
     init_plugin(plugin);
     purple_plugin_load(plugin);
-    return purple_plugin_register(plugin);
-}
-#else
-G_MODULE_EXPORT gboolean
-purple_init_plugin(PurplePlugin *plugin)
-{
-    plugin->info = &info;
-    init_plugin(plugin);
     return purple_plugin_register(plugin);
 }
 #endif
