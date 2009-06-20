@@ -18,12 +18,21 @@
 
 #include <glib.h>
 
-#include "io/pecan_parser_priv.h"
+#include "io/pecan_parser.h"
+#include "io/pecan_node.h"
 
 #include "pecan_config.h"
 #include "pecan_log.h"
 
 #include <string.h> /* for memcpy */
+
+struct PecanParser
+{
+    PecanNode *node;
+    gchar *rx_buf;
+    gsize rx_len;
+    gboolean need_more;
+};
 
 PecanParser *
 pecan_parser_new (PecanNode *node)
