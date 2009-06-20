@@ -21,7 +21,7 @@
 #include "pn_log.h"
 #include "pn_global.h"
 #ifdef PECAN_SOCKET
-#include "pecan_socket.h"
+#include "pn_socket.h"
 #endif /* PECAN_SOCKET */
 
 #include "session.h" /* for libpurple account */
@@ -289,7 +289,7 @@ pecan_node_parse (PecanNode *conn,
 
 #ifdef PECAN_SOCKET
 static void
-connect_cb (PecanSocket *sock,
+connect_cb (PnSocket *sock,
             gboolean success,
             gpointer user_data)
 {
@@ -416,7 +416,7 @@ connect_impl (PecanNode *conn,
         pecan_node_close (conn);
 
 #ifdef PECAN_SOCKET
-        pecan_socket_connect (hostname, port, connect_cb, conn);
+        pn_socket_connect (hostname, port, connect_cb, conn);
 #else
 #ifdef HAVE_LIBPURPLE
         conn->connect_data = purple_proxy_connect (NULL, msn_session_get_user_data (conn->session),

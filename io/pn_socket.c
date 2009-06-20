@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "pecan_socket.h"
+#include "pn_socket.h"
 #include "pn_log.h"
 
 #include <stdbool.h>
@@ -25,10 +25,10 @@
 #include <string.h> /* for memcpy */
 
 void
-pecan_socket_connect (const gchar *hostname,
-                      guint port,
-                      PecanSocketCb connect_cb,
-                      gpointer user_data)
+pn_socket_connect (const gchar *hostname,
+                   guint port,
+                   PnSocketCb connect_cb,
+                   gpointer user_data)
 {
     int fd;
     struct hostent* host;
@@ -72,8 +72,8 @@ pecan_socket_connect (const gchar *hostname,
 
 leave:
     {
-        PecanSocket *sock;
-        sock = g_new0 (PecanSocket, 1);
+        PnSocket *sock;
+        sock = g_new0 (PnSocket, 1);
         sock->fd = fd;
         connect_cb (sock, success, user_data);
         g_free (sock);

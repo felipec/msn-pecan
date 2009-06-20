@@ -113,7 +113,7 @@ ifdef CVR
 endif
 
 ifdef SOCKET
-  objects += io/pecan_socket.o
+  objects += io/pn_socket.o
   override CFLAGS += -DPECAN_SOCKET -D__USE_GNU
 endif
 

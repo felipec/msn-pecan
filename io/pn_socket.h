@@ -16,20 +16,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef PECAN_SOCKET_H
-#define PECAN_SOCKET_H
+#ifndef PN_SOCKET_H
+#define PN_SOCKET_H
 
 #include <glib.h>
 
-typedef struct PecanSocket PecanSocket;
+typedef struct PnSocket PnSocket;
 
-typedef void (*PecanSocketCb) (PecanSocket *sock, gboolean success, gpointer user_data);
+typedef void (*PnSocketCb) (PnSocket *sock, gboolean success, gpointer user_data);
 
-struct PecanSocket
+struct PnSocket
 {
     int fd;
 };
 
-void pecan_socket_connect (const gchar *hostname, guint port, PecanSocketCb connect_cb, gpointer user_data);
+void pn_socket_connect (const gchar *hostname, guint port, PnSocketCb connect_cb, gpointer user_data);
 
-#endif /* PECAN_SOCKET_H */
+#endif /* PN_SOCKET_H */
