@@ -32,10 +32,6 @@
 /* libpurple stuff. */
 #include "fix_purple.h"
 
-/**************************************************************************
- * SLP Message
- **************************************************************************/
-
 MsnSlpMessage *
 msn_slpmsg_new(MsnSlpLink *slplink)
 {
@@ -44,13 +40,12 @@ msn_slpmsg_new(MsnSlpLink *slplink)
     slpmsg = g_new0(MsnSlpMessage, 1);
 
 #ifdef PECAN_DEBUG_SLPMSG
-    pecan_info ("slpmsg new (%p)\n", slpmsg);
+    pecan_info("slpmsg new (%p)\n", slpmsg);
 #endif
 
     slpmsg->slplink = slplink;
 
-    slplink->slp_msgs =
-        g_list_append(slplink->slp_msgs, slpmsg);
+    slplink->slp_msgs = g_list_append(slplink->slp_msgs, slpmsg);
 
     return slpmsg;
 }
@@ -61,28 +56,18 @@ msn_slpmsg_destroy(MsnSlpMessage *slpmsg)
     MsnSlpLink *slplink;
     GList *cur;
 
-    g_return_if_fail(slpmsg != NULL);
-
 #ifdef PECAN_DEBUG_SLPMSG
-    pecan_info ("slpmsg destroy (%p)\n", slpmsg);
+    pecan_info("slpmsg destroy (%p)\n", slpmsg);
 #endif
 
     slplink = slpmsg->slplink;
 
-    if (slpmsg->fp != NULL)
+    if (slpmsg->fp)
         fclose(slpmsg->fp);
 
     g_free(slpmsg->buffer);
 
-#ifdef PECAN_DEBUG_SLP
-    /*
-       if (slpmsg->info != NULL)
-       g_free(slpmsg->info);
-       */
-#endif
-
-    for (cur = slpmsg->msgs; cur != NULL; cur = cur->next)
-    {
+    for (cur = slpmsg->msgs; cur; cur = cur->next) {
         /* Something is pointing to this slpmsg, so we should remove that
          * pointer to prevent a crash. */
         /* Ex: a user goes offline and after that we receive an ACK */
@@ -90,7 +75,7 @@ msn_slpmsg_destroy(MsnSlpMessage *slpmsg)
         MsnMessage *msg = cur->data;
 
 #ifdef PECAN_DEBUG_SLPMSG
-        pecan_info ("Unlink slpmsg callbacks.\n");
+        pecan_info("Unlink slpmsg callbacks.\n");
 #endif
 
         msg->ack_cb = NULL;
@@ -108,11 +93,7 @@ msn_slpmsg_set_body(MsnSlpMessage *slpmsg,
                     gconstpointer *body,
                     guint64 size)
 {
-    /* We can only have one data source at a time. */
-    g_return_if_fail(slpmsg->buffer == NULL);
-    g_return_if_fail(slpmsg->fp == NULL);
-
-    if (body != NULL)
+    if (body)
         slpmsg->buffer = g_memdup(body, size);
     else
         slpmsg->buffer = g_malloc0(size);
@@ -121,23 +102,18 @@ msn_slpmsg_set_body(MsnSlpMessage *slpmsg,
 }
 
 void
-msn_slpmsg_set_image (MsnSlpMessage *slpmsg,
+msn_slpmsg_set_image(MsnSlpMessage *slpmsg,
                       PecanBuffer *image)
 {
-    g_return_if_fail (!slpmsg->buffer);
-    g_return_if_fail (!slpmsg->fp);
-
     slpmsg->size = image->len;
-    slpmsg->buffer = g_memdup (image->data, slpmsg->size);
+    slpmsg->buffer = g_memdup(image->data, slpmsg->size);
 }
 
 void
-msn_slpmsg_open_file(MsnSlpMessage *slpmsg, const char *file_name)
+msn_slpmsg_open_file(MsnSlpMessage *slpmsg,
+                     const char *file_name)
 {
     struct stat st;
-
-    g_return_if_fail(slpmsg->buffer == NULL);
-    g_return_if_fail(slpmsg->fp == NULL);
 
     slpmsg->fp = g_fopen(file_name, "rb");
 
@@ -154,8 +130,7 @@ msn_slpmsg_show(MsnMessage *msg)
 
     text = FALSE;
 
-    switch (msg->msnslp_header.flags)
-    {
+    switch (msg->msnslp_header.flags) {
         case 0x0:
             info = "SLP CONTROL";
             text = TRUE;
@@ -176,9 +151,12 @@ msn_slpmsg_show(MsnMessage *msg)
 #endif
 
 MsnSlpMessage *
-msn_slpmsg_sip_new(MsnSlpCall *slpcall, int cseq,
-                   const char *header, const char *branch,
-                   const char *content_type, const char *content)
+msn_slpmsg_sip_new(MsnSlpCall *slpcall,
+                   int cseq,
+                   const char *header,
+                   const char *branch,
+                   const char *content_type,
+                   const char *content)
 {
     MsnSlpLink *slplink;
     MsnSlpMessage *slpmsg;
@@ -186,14 +164,11 @@ msn_slpmsg_sip_new(MsnSlpCall *slpcall, int cseq,
     gsize body_len;
     gsize content_len;
 
-    g_return_val_if_fail(slpcall != NULL, NULL);
-    g_return_val_if_fail(header  != NULL, NULL);
-
     slplink = slpcall->slplink;
 
     /* Let's remember that "content" should end with a 0x00 */
 
-    content_len = (content != NULL) ? strlen(content) + 1 : 0;
+    content_len = content ? strlen(content) + 1 : 0;
 
     body = g_strdup_printf("%s\r\n"
                            "To: <msnmsgr:%s>\r\n"
@@ -216,8 +191,7 @@ msn_slpmsg_sip_new(MsnSlpCall *slpcall, int cseq,
 
     body_len = strlen(body);
 
-    if (content_len > 0)
-    {
+    if (content_len > 0) {
         body_len += content_len;
         body = g_realloc(body, body_len);
         g_strlcat(body, content, body_len);

@@ -50,21 +50,10 @@
 #include <smiley.h>
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
 
-/* ms to delay between sending buddy icon requests to the server. */
-#define BUDDY_ICON_DELAY 20000
-
-static void send_ok(MsnSlpCall *slpcall, const char *branch,
-                    const char *type, const char *content);
-
-static void send_decline(MsnSlpCall *slpcall, const char *branch,
-                         const char *type, const char *content);
-
-/**************************************************************************
- * Util
- **************************************************************************/
-
-static char *
-get_token(const char *str, const char *start, const char *end)
+static inline char *
+get_token(const char *str,
+          const char *start,
+          const char *end)
 {
     const char *c, *c2;
 
@@ -107,8 +96,9 @@ msn_xfer_init(PurpleXfer *xfer)
     content = g_strdup_printf("SessionID: %lu\r\n\r\n",
                               slpcall->session_id);
 
-    send_ok(slpcall, slpcall->branch, "application/x-msnmsgr-sessionreqbody",
-            content);
+    msn_slp_sip_send_ok(slpcall, slpcall->branch,
+                        "application/x-msnmsgr-sessionreqbody",
+                        content);
 
     g_free(content);
     msn_slplink_unleash(slpcall->slplink);
@@ -120,24 +110,18 @@ msn_xfer_cancel(PurpleXfer *xfer)
     MsnSlpCall *slpcall;
     char *content;
 
-    g_return_if_fail(xfer != NULL);
-    g_return_if_fail(xfer->data != NULL);
-
     slpcall = xfer->data;
 
-    if (purple_xfer_get_status(xfer) == PURPLE_XFER_STATUS_CANCEL_LOCAL)
-    {
+    if (purple_xfer_get_status(xfer) == PURPLE_XFER_STATUS_CANCEL_LOCAL) {
         if (slpcall->started)
-        {
             msn_slp_call_close(slpcall);
-        }
-        else
-        {
+        else {
             content = g_strdup_printf("SessionID: %lu\r\n\r\n",
                                       slpcall->session_id);
 
-            send_decline(slpcall, slpcall->branch, "application/x-msnmsgr-sessionreqbody",
-                         content);
+            msn_slp_sip_send_decline(slpcall, slpcall->branch,
+                                     "application/x-msnmsgr-sessionreqbody",
+                                     content);
 
             g_free(content);
             msn_slplink_unleash(slpcall->slplink);
@@ -148,7 +132,10 @@ msn_xfer_cancel(PurpleXfer *xfer)
 }
 
 void
-msn_xfer_progress_cb(MsnSlpCall *slpcall, gsize total_length, gsize len, gsize offset)
+msn_xfer_progress_cb(MsnSlpCall *slpcall,
+                     gsize total_length,
+                     gsize len,
+                     gsize offset)
 {
     PurpleXfer *xfer;
 
@@ -172,7 +159,8 @@ msn_xfer_end_cb(MsnSlpCall *slpcall, MsnSession *session)
 }
 
 void
-msn_xfer_completed_cb(MsnSlpCall *slpcall, const guchar *body,
+msn_xfer_completed_cb(MsnSlpCall *slpcall,
+                      const guchar *body,
                       gsize size)
 {
     PurpleXfer *xfer = slpcall->xfer;
@@ -180,14 +168,12 @@ msn_xfer_completed_cb(MsnSlpCall *slpcall, const guchar *body,
     purple_xfer_end(xfer);
 }
 
-/**************************************************************************
- * SLP Control
- **************************************************************************/
-
 #ifdef MSN_DIRECTCONN
 static void
-got_transresp(MsnSlpCall *slpcall, const char *nonce,
-              const char *ips_str, int port)
+got_transresp(MsnSlpCall *slpcall,
+              const char *nonce,
+              const char *ips_str,
+              int port)
 {
     MsnDirectConn *directconn;
     char **ip_addrs, **c;
@@ -201,9 +187,8 @@ got_transresp(MsnSlpCall *slpcall, const char *nonce,
 
     ip_addrs = g_strsplit(ips_str, " ", -1);
 
-    for (c = ip_addrs; *c != NULL; c++)
-    {
-        pecan_info ("ip_addr = %s", *c);
+    for (c = ip_addrs; *c; c++) {
+        pecan_info("ip_addr = %s", *c);
         if (msn_directconn_connect(directconn, *c, port))
             break;
     }
@@ -212,9 +197,11 @@ got_transresp(MsnSlpCall *slpcall, const char *nonce,
 }
 #endif /* MSN_DIRECTCONN */
 
-static void
-send_ok(MsnSlpCall *slpcall, const char *branch,
-        const char *type, const char *content)
+void
+msn_slp_sip_send_ok(MsnSlpCall *slpcall,
+                    const char *branch,
+                    const char *type,
+                    const char *content)
 {
     MsnSlpLink *slplink;
     MsnSlpMessage *slpmsg;
@@ -236,9 +223,11 @@ send_ok(MsnSlpCall *slpcall, const char *branch,
     msn_slp_call_session_init(slpcall);
 }
 
-static void
-send_decline(MsnSlpCall *slpcall, const char *branch,
-             const char *type, const char *content)
+void
+msn_slp_sip_send_decline(MsnSlpCall *slpcall,
+                         const char *branch,
+                         const char *type,
+                         const char *content)
 {
     MsnSlpLink *slplink;
     MsnSlpMessage *slpmsg;
@@ -261,13 +250,14 @@ send_decline(MsnSlpCall *slpcall, const char *branch,
 #define MAX_FILE_NAME_LEN 0x226
 
 static void
-got_sessionreq(MsnSlpCall *slpcall, const char *branch,
-               const char *euf_guid, const char *context)
+got_sessionreq(MsnSlpCall *slpcall,
+               const char *branch,
+               const char *euf_guid,
+               const char *context)
 {
     pecan_debug ("euf_guid=[%s]", euf_guid);
 
-    if (!strcmp(euf_guid, "A4268EEC-FEC5-49E5-95C3-F126696BDBF6"))
-    {
+    if (strcmp(euf_guid, "A4268EEC-FEC5-49E5-95C3-F126696BDBF6") == 0) {
         /* Emoticon or UserDisplay */
         char *content;
         gsize len;
@@ -282,55 +272,52 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
         content = g_strdup_printf("SessionID: %lu\r\n\r\n",
                                   slpcall->session_id);
 
-        send_ok(slpcall, branch, "application/x-msnmsgr-sessionreqbody",
-                content);
+        msn_slp_sip_send_ok(slpcall, branch,
+                            "application/x-msnmsgr-sessionreqbody",
+                            content);
 
         g_free(content);
 
         slplink = slpcall->slplink;
 
-        msnobj_data = (char *)purple_base64_decode(context, &len);
+        msnobj_data = (char *) purple_base64_decode(context, &len);
         obj = msn_object_new_from_string(msnobj_data);
         type = msn_object_get_type(obj);
         g_free(msnobj_data);
 
-        if (type == MSN_OBJECT_USERTILE)
-        {
+        if (type == MSN_OBJECT_USERTILE) {
             /* image is owned by a local object, not obj */
             image = msn_object_get_image(obj);
         }
 #if PURPLE_VERSION_CHECK(2,5,0)
-        else if (type == MSN_OBJECT_EMOTICON)
-        {
+        else if (type == MSN_OBJECT_EMOTICON) {
             PurpleStoredImage *img;
             char *path;
             path = g_build_filename(purple_smileys_get_storing_dir(), msn_object_get_location(obj), NULL);
             img = purple_imgstore_new_from_file(path);
-            image = pecan_buffer_new_memdup ((const gpointer) purple_imgstore_get_data (img),
-                                             purple_imgstore_get_size (img));
+            image = pecan_buffer_new_memdup((const gpointer) purple_imgstore_get_data (img),
+                                            purple_imgstore_get_size (img));
             purple_imgstore_unref(img);
             g_free(path);
         }
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
-        else
-        {
-            pecan_error ("Wrong object?");
+        else {
+            pecan_error("Wrong object?");
             msn_object_free(obj);
             g_return_if_reached();
         }
 
-        if (!image)
-        {
-            pecan_error ("Wrong object");
-            msn_object_free (obj);
-            g_return_if_reached ();
+        if (!image) {
+            pecan_error("Wrong object");
+            msn_object_free(obj);
+            g_return_if_reached();
         }
 
         {
             gchar *tmp;
-            tmp = msn_object_to_string (obj);
-            pecan_info ("object requested: %s", tmp);
-            g_free (tmp);
+            tmp = msn_object_to_string(obj);
+            pecan_info("object requested: %s", tmp);
+            g_free(tmp);
         }
 
         msn_object_free(obj);
@@ -352,7 +339,7 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 #ifdef PECAN_DEBUG_SLP
         slpmsg->info = "SLP DATA";
 #endif
-        msn_slpmsg_set_image (slpmsg, image);
+        msn_slpmsg_set_image(slpmsg, image);
         msn_slplink_queue_slpmsg(slplink, slpmsg);
     }
     else if (!strcmp(euf_guid, "5D3E02AB-6190-11D3-BBBB-00C04F795683"))
@@ -377,18 +364,17 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 
         xfer = purple_xfer_new(account, PURPLE_XFER_RECEIVE,
                                slpcall->slplink->remote_user);
-        if (xfer)
-        {
-            bin = (char *)purple_base64_decode(context, &bin_len);
-            file_size = GUINT32_FROM_LE(*(gsize *)(bin + 8));
+        if (xfer) {
+            bin = (char *) purple_base64_decode(context, &bin_len);
+            file_size = GUINT32_FROM_LE(*(gsize *) (bin + 8));
 
             uni_name = (gunichar2 *)(bin + 20);
-            while(*uni_name != 0 && ((char *)uni_name - (bin + 20)) < MAX_FILE_NAME_LEN) {
+            while (*uni_name != 0 && ((char *)uni_name - (bin + 20)) < MAX_FILE_NAME_LEN) {
                 *uni_name = GUINT16_FROM_LE(*uni_name);
                 uni_name++;
             }
 
-            file_name = g_utf16_to_utf8((const gunichar2 *)(bin + 20), -1,
+            file_name = g_utf16_to_utf8((const gunichar2 *) (bin + 20), -1,
                                         NULL, NULL, NULL);
 
             g_free(bin);
@@ -410,15 +396,14 @@ got_sessionreq(MsnSlpCall *slpcall, const char *branch,
 }
 
 void
-send_bye(MsnSlpCall *slpcall, const char *type)
+msn_slp_sip_send_bye(MsnSlpCall *slpcall,
+                     const char *type)
 {
     MsnSlpLink *slplink;
     MsnSlpMessage *slpmsg;
     char *header;
 
     slplink = slpcall->slplink;
-
-    g_return_if_fail(slplink != NULL);
 
     header = g_strdup_printf("BYE MSNMSGR:%s MSNSLP/1.0",
                              slplink->local_user);
@@ -439,48 +424,47 @@ send_bye(MsnSlpCall *slpcall, const char *type)
 
 static void
 got_invite(MsnSlpCall *slpcall,
-           const char *branch, const char *type, const char *content)
+           const char *branch,
+           const char *type,
+           const char *content)
 {
     MsnSlpLink *slplink;
 
     slplink = slpcall->slplink;
 
-    pecan_log ("type=%s", type);
+    pecan_log("type=%s", type);
 
-    if (!strcmp(type, "application/x-msnmsgr-sessionreqbody"))
-    {
+    if (strcmp(type, "application/x-msnmsgr-sessionreqbody") == 0) {
         char *euf_guid, *context;
         char *temp;
 
         euf_guid = get_token(content, "EUF-GUID: {", "}\r\n");
 
         temp = get_token(content, "SessionID: ", "\r\n");
-        if (temp != NULL)
+        if (temp)
             slpcall->session_id = atoi(temp);
         g_free(temp);
 
         temp = get_token(content, "AppID: ", "\r\n");
-        if (temp != NULL)
+        if (temp)
             slpcall->app_id = atoi(temp);
         g_free(temp);
 
         context = get_token(content, "Context: ", "\r\n");
 
-        if (context != NULL)
+        if (context)
             got_sessionreq(slpcall, branch, euf_guid, context);
 
         g_free(context);
         g_free(euf_guid);
     }
-    else if (!strcmp(type, "application/x-msnmsgr-transreqbody"))
-    {
+    else if (strcmp(type, "application/x-msnmsgr-transreqbody") == 0) {
         /* A direct connection? */
 
         const gchar *listening;
         gchar *new_content, *nonce;
 
-        if (FALSE)
-        {
+        if (FALSE) {
 #if 0
             MsnDirectConn *directconn;
             /* const char *ip_addr; */
@@ -512,8 +496,7 @@ got_invite(MsnSlpCall *slpcall,
                                           port);
 #endif
         }
-        else
-        {
+        else {
             listening = "false";
             nonce = g_strdup("00000000-0000-0000-0000-000000000000");
 
@@ -525,15 +508,15 @@ got_invite(MsnSlpCall *slpcall,
                                           nonce);
         }
 
-        send_ok(slpcall, branch,
-                "application/x-msnmsgr-transrespbody", new_content);
+        msn_slp_sip_send_ok(slpcall, branch,
+                            "application/x-msnmsgr-transrespbody",
+                            new_content);
 
         g_free(new_content);
         g_free(nonce);
     }
 #ifdef MSN_DIRECTCONN
-    else if (!strcmp(type, "application/x-msnmsgr-transrespbody"))
-    {
+    else if (!strcmp(type, "application/x-msnmsgr-transrespbody") == 0) {
         char *ip_addrs;
         char *temp;
         char *nonce;
@@ -543,13 +526,10 @@ got_invite(MsnSlpCall *slpcall,
         ip_addrs = get_token(content, "IPv4Internal-Addrs: ", "\r\n");
 
         temp = get_token(content, "IPv4Internal-Port: ", "\r\n");
-        if (temp != NULL)
-            port = atoi(temp);
-        else
-            port = -1;
+        port = temp ? atoi(temp) : -1;
         g_free(temp);
 
-        if (ip_addrs == NULL)
+        if (!ip_addrs)
             return;
 
         if (port > 0)
@@ -563,15 +543,12 @@ got_invite(MsnSlpCall *slpcall,
 
 static void
 got_ok(MsnSlpCall *slpcall,
-       const char *type, const char *content)
+       const char *type,
+       const char *content)
 {
-    g_return_if_fail(slpcall != NULL);
-    g_return_if_fail(type    != NULL);
+    pecan_log("type=%s", type);
 
-    pecan_log ("type=%s", type);
-
-    if (!strcmp(type, "application/x-msnmsgr-sessionreqbody"))
-    {
+    if (strcmp(type, "application/x-msnmsgr-sessionreqbody") == 0) {
 #ifdef MSN_DIRECTCONN
         if (slpcall->slplink->session->use_directconn &&
             slpcall->type == MSN_SLPCALL_DC)
@@ -613,21 +590,17 @@ got_ok(MsnSlpCall *slpcall,
             g_free(branch);
         }
         else
-        {
             msn_slp_call_session_init(slpcall);
-        }
 #else
         msn_slp_call_session_init(slpcall);
 #endif /* MSN_DIRECTCONN */
     }
-    else if (!strcmp(type, "application/x-msnmsgr-transreqbody"))
-    {
-        /* Do we get this? */
-        pecan_info ("OK with transreqbody");
+    else if (strcmp(type, "application/x-msnmsgr-transreqbody") == 0) {
+        /** @todo do we ever get this? */
+        pecan_info("OK with transreqbody");
     }
 #ifdef MSN_DIRECTCONN
-    else if (!strcmp(type, "application/x-msnmsgr-transrespbody"))
-    {
+    else if (strcmp(type, "application/x-msnmsgr-transrespbody") == 0) {
         char *ip_addrs;
         char *temp;
         char *nonce;
@@ -636,27 +609,23 @@ got_ok(MsnSlpCall *slpcall,
         {
             char *listening;
             listening = get_token(content, "Listening: ", "\r\n");
-            if (strcmp (listening, "false") == 0)
-            {
+            if (strcmp(listening, "false") == 0) {
                 /** @todo I'm not sure if this is OK. */
                 msn_slp_call_session_init(slpcall);
-                g_free (listening);
+                g_free(listening);
                 return;
             }
-            g_free (listening);
+            g_free(listening);
         }
 
         nonce = get_token(content, "Nonce: {", "}\r\n");
         ip_addrs = get_token(content, "IPv4Internal-Addrs: ", "\r\n");
 
         temp = get_token(content, "IPv4Internal-Port: ", "\r\n");
-        if (temp != NULL)
-            port = atoi(temp);
-        else
-            port = -1;
+        port = temp ? atoi(temp) : -1;
         g_free(temp);
 
-        if (ip_addrs == NULL)
+        if (!ip_addrs)
             return;
 
         if (port > 0)
@@ -669,18 +638,17 @@ got_ok(MsnSlpCall *slpcall,
 }
 
 MsnSlpCall *
-msn_slp_sip_recv(MsnSlpLink *slplink, const char *body)
+msn_slp_sip_recv(MsnSlpLink *slplink,
+                 const char *body)
 {
     MsnSlpCall *slpcall;
 
-    if (body == NULL)
-    {
-        pecan_warning ("received bogus message");
+    if (!body) {
+        pecan_warning("received bogus message");
         return NULL;
     }
 
-    if (!strncmp(body, "INVITE", strlen("INVITE")))
-    {
+    if (strncmp(body, "INVITE", strlen("INVITE")) == 0) {
         char *branch;
         char *content;
         char *content_type;
@@ -714,8 +682,7 @@ msn_slp_sip_recv(MsnSlpLink *slplink, const char *body)
         g_free(content_type);
         g_free(content);
     }
-    else if (!strncmp(body, "MSNSLP/1.0 ", strlen("MSNSLP/1.0 ")))
-    {
+    else if (strncmp(body, "MSNSLP/1.0 ", strlen("MSNSLP/1.0 ")) == 0) {
         char *content;
         char *content_type;
         /* Make sure this is "OK" */
@@ -728,14 +695,14 @@ msn_slp_sip_recv(MsnSlpLink *slplink, const char *body)
 
         g_return_val_if_fail(slpcall != NULL, NULL);
 
-        if (strncmp(status, "200 OK", 6))
-        {
+        if (strncmp(status, "200 OK", 6) != 0) {
             /* It's not valid. Kill this off. */
             char temp[32];
             const char *c;
 
             /* Eww */
-            if ((c = strchr(status, '\r')) || (c = strchr(status, '\n')) ||
+            if ((c = strchr(status, '\r')) ||
+                (c = strchr(status, '\n')) ||
                 (c = strchr(status, '\0')))
             {
                 size_t offset =  c - status;
@@ -746,7 +713,7 @@ msn_slp_sip_recv(MsnSlpLink *slplink, const char *body)
                 temp[offset] = '\0';
             }
 
-            pecan_error ("received non-OK result: %s", temp);
+            pecan_error("received non-OK result: %s", temp);
 
             slpcall->wasted = TRUE;
 
@@ -763,15 +730,14 @@ msn_slp_sip_recv(MsnSlpLink *slplink, const char *body)
         g_free(content_type);
         g_free(content);
     }
-    else if (!strncmp(body, "BYE", strlen("BYE")))
-    {
+    else if (strncmp(body, "BYE", strlen("BYE")) == 0) {
         char *call_id;
 
         call_id = get_token(body, "Call-ID: {", "}");
         slpcall = msn_slplink_find_slp_call(slplink, call_id);
         g_free(call_id);
 
-        if (slpcall != NULL)
+        if (slpcall)
             slpcall->wasted = TRUE;
 
         /* msn_slp_call_destroy(slpcall); */
@@ -782,12 +748,9 @@ msn_slp_sip_recv(MsnSlpLink *slplink, const char *body)
     return slpcall;
 }
 
-/**************************************************************************
- * Msg Callbacks
- **************************************************************************/
-
 void
-msn_p2p_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
+msn_p2p_msg(MsnCmdProc *cmdproc,
+            MsnMessage *msg)
 {
     MsnSession *session;
     MsnSlpLink *slplink;
@@ -795,19 +758,18 @@ msn_p2p_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     session = cmdproc->session;
     slplink = msn_session_get_slplink(session, msg->remote_user);
 
-    if (slplink->swboard == NULL)
-    {
+    if (!slplink->swboard) {
         /* We will need this in order to change its flags. */
-        slplink->swboard = (MsnSwitchBoard *)cmdproc->data;
+        slplink->swboard = cmdproc->data;
         /* If swboard is NULL, something has probably gone wrong earlier on
          * I didn't want to do this, but MSN 7 is somehow causing us to crash
          * here, I couldn't reproduce it to debug more, and people are
          * reporting bugs. Hopefully this doesn't cause more crashes. Stu.
          */
-        if (slplink->swboard != NULL)
+        if (slplink->swboard)
             slplink->swboard->slplinks = g_list_prepend(slplink->swboard->slplinks, slplink);
         else
-            pecan_error ("msn_p2p_msg, swboard is NULL, ouch!");
+            pecan_error("msn_p2p_msg, swboard is NULL, ouch!");
     }
 
     msn_slplink_process_msg(slplink, msg);
@@ -815,18 +777,19 @@ msn_p2p_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
 static void
 got_emoticon(MsnSlpCall *slpcall,
-             const guchar *data, gsize size)
+             const guchar *data,
+             gsize size)
 {
 
     PurpleConversation *conv;
     PurpleAccount *account;
     const char *who;
 
-    account = msn_session_get_user_data (slpcall->slplink->session);
+    account = msn_session_get_user_data(slpcall->slplink->session);
     who = slpcall->slplink->remote_user;
 
-    if ((conv = purple_find_conversation_with_account(PURPLE_CONV_TYPE_ANY, who, account)))
-    {
+    conv = purple_find_conversation_with_account(PURPLE_CONV_TYPE_ANY, who, account);
+    if (conv) {
         /* FIXME: it would be better if we wrote the data as we received it
            instead of all at once, calling write multiple times and
            close once at the very end
@@ -835,11 +798,12 @@ got_emoticon(MsnSlpCall *slpcall,
         purple_conv_custom_smiley_close(conv, slpcall->data_info);
     }
 
-    pecan_debug ("got smiley: %s", slpcall->data_info);
+    pecan_debug("got smiley: %s", slpcall->data_info);
 }
 
 void
-msn_emoticon_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
+msn_emoticon_msg(MsnCmdProc *cmdproc,
+                 MsnMessage *msg)
 {
     MsnSession *session;
     MsnSlpLink *slplink;
@@ -851,12 +815,10 @@ msn_emoticon_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     size_t body_len;
     PurpleAccount *account;
 
-    PurpleConversation *conv;
-
     session = cmdproc->session;
-    account = msn_session_get_user_data (session);
+    account = msn_session_get_user_data(session);
 
-    if  (!purple_account_get_bool (account, "custom_smileys", TRUE))
+    if  (!purple_account_get_bool(account, "custom_smileys", TRUE))
         return;
 
     body = msn_message_get_bin_data(msg, &body_len);
@@ -869,19 +831,18 @@ msn_emoticon_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     g_free(body_str);
 
     for (tok = 0; tok < 9; tok += 2) {
-        if (tokens[tok] == NULL || tokens[tok + 1] == NULL) {
+        gchar *tmp;
+
+        if (!tokens[tok] || !tokens[tok + 1])
             break;
-        }
 
         smile = tokens[tok];
-        {
-            gchar *tmp;
-            tmp = pecan_url_decode (tokens[tok + 1]);
-            obj = msn_object_new_from_string(tmp);
-            g_free(tmp);
-        }
 
-        if (obj == NULL)
+        tmp = pecan_url_decode (tokens[tok + 1]);
+        obj = msn_object_new_from_string(tmp);
+        g_free(tmp);
+
+        if (!obj)
             break;
 
         who = msn_object_get_creator(obj);
@@ -889,25 +850,28 @@ msn_emoticon_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
         slplink = msn_session_get_slplink(session, who);
 
-        conv = purple_find_conversation_with_account (PURPLE_CONV_TYPE_ANY, who, account);
+#ifdef HAVE_LIBPURPLE
+        {
+            PurpleConversation *conv;
 
-        /* If the conversation doesn't exist then this is a custom smiley
-         * used in the first message in a MSN conversation: we need to create
-         * the conversation now, otherwise the custom smiley won't be shown.
-         * This happens because every GtkIMHtml has its own smiley tree: if
-         * the conversation doesn't exist then we cannot associate the new
-         * smiley with its GtkIMHtml widget. */
-        if (!conv)
-            conv = purple_conversation_new (PURPLE_CONV_TYPE_IM, account, who);
+            conv = purple_find_conversation_with_account(PURPLE_CONV_TYPE_ANY, who, account);
 
-        if (purple_conv_custom_smiley_add(conv, smile, "sha1", sha1, TRUE)) {
-            msn_slplink_request_object(slplink, smile, got_emoticon, NULL, obj);
+            /* If the conversation doesn't exist then this is a custom smiley
+             * used in the first message in a MSN conversation: we need to create
+             * the conversation now, otherwise the custom smiley won't be shown.
+             * This happens because every GtkIMHtml has its own smiley tree: if
+             * the conversation doesn't exist then we cannot associate the new
+             * smiley with its GtkIMHtml widget. */
+            if (!conv)
+                conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, who);
+
+            if (purple_conv_custom_smiley_add(conv, smile, "sha1", sha1, TRUE))
+                msn_slplink_request_object(slplink, smile, got_emoticon, NULL, obj);
         }
+#endif /* HAVE_LIBPURPLE */
 
         msn_object_free(obj);
-        obj =   NULL;
-        who =   NULL;
-        sha1 = NULL;
     }
+
     g_strfreev(tokens);
 }
