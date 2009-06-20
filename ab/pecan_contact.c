@@ -54,6 +54,9 @@ pecan_contact_new (PecanContactList *contactlist)
 void
 pecan_contact_free (PecanContact *contact)
 {
+    if (!contact)
+        return;
+
     if (contact->clientcaps)
         g_hash_table_destroy (contact->clientcaps);
 
@@ -83,8 +86,6 @@ pecan_contact_update (PecanContact *contact)
     PurpleAccount *account;
     const char *pidgin_status;
     gboolean idle = FALSE;
-
-    g_return_if_fail (contact->contactlist);
 
     account = msn_session_get_user_data (contact->contactlist->session);
 
@@ -166,8 +167,6 @@ void
 pecan_contact_set_passport (PecanContact *contact,
                             const gchar *passport)
 {
-    g_return_if_fail (contact);
-
     g_free (contact->passport);
     contact->passport = pecan_normalize (passport);
 
@@ -195,8 +194,6 @@ void
 pecan_contact_set_friendly_name (PecanContact *contact,
                                  const gchar *name)
 {
-    g_return_if_fail (contact);
-
     pecan_debug ("passport=[%s],name=[%s]", contact->passport, name);
 
     if (g_strcmp0 (contact->friendly_name, name) == 0)
@@ -205,8 +202,6 @@ pecan_contact_set_friendly_name (PecanContact *contact,
 #ifdef HAVE_LIBPURPLE
     PurpleAccount *account;
     account = msn_session_get_user_data (contact->contactlist->session);
-
-    g_return_if_fail (contact->contactlist);
 
     if (purple_account_get_bool (account, "hide_msgplus_tags", TRUE))
     {
@@ -255,8 +250,6 @@ void
 pecan_contact_set_personal_message (PecanContact *contact,
                                     const gchar *value)
 {
-    g_return_if_fail (contact);
-
     pecan_debug ("passport=[%s],value=[%s]", contact->passport, value);
 
     if (contact->personal_message && value &&
@@ -268,8 +261,6 @@ pecan_contact_set_personal_message (PecanContact *contact,
 #ifdef HAVE_LIBPURPLE
     PurpleAccount *account;
     account = msn_session_get_user_data (contact->contactlist->session);
-
-    g_return_if_fail (contact->contactlist);
 
     if (value && purple_account_get_bool (account, "hide_msgplus_tags", TRUE))
     {
@@ -303,9 +294,6 @@ pecan_contact_set_current_media (PecanContact *contact,
 {
     gchar **current_media_array;
     int strings = 0;
-
-    g_return_if_fail (contact);
-    g_return_if_fail (current_media);
 
     /*
     * 0: Application
@@ -388,8 +376,6 @@ void
 pecan_contact_set_store_name (PecanContact *contact,
                               const gchar *name)
 {
-    g_return_if_fail (contact);
-
     pecan_debug ("passport=[%s],name=[%s]", contact->passport, name);
 
     if (contact->contactlist)
@@ -415,8 +401,6 @@ pecan_contact_set_store_name (PecanContact *contact,
     contact->store_name = g_strdup (name);
 
 #ifdef HAVE_LIBPURPLE
-    g_return_if_fail (contact->contactlist);
-
     {
         PurpleAccount *account;
         PurpleConnection *connection;
@@ -447,8 +431,6 @@ void
 pecan_contact_set_guid (PecanContact *contact,
                         const gchar *guid)
 {
-    g_return_if_fail (contact);
-
     g_free (contact->guid);
     contact->guid = g_strdup (guid);
     if (contact->contactlist && guid)
@@ -465,8 +447,6 @@ pecan_contact_set_buddy_icon (PecanContact *contact,
 #ifdef HAVE_LIBPURPLE
     MsnObject *obj;
 
-    g_return_if_fail (contact);
-
     obj = msn_object_new_from_image (image, "TFR2C2.tmp", pecan_contact_get_passport (contact),
                                      MSN_OBJECT_USERTILE);
     pecan_contact_set_object (contact, obj);
@@ -480,8 +460,6 @@ pecan_contact_add_group_id (PecanContact *contact,
 {
     const gchar *passport;
 
-    g_return_if_fail (contact);
-
     passport = pecan_contact_get_passport (contact);
 
     pecan_debug ("passport=[%s],group_guid=[%s]", passport, group_guid);
@@ -492,8 +470,6 @@ pecan_contact_add_group_id (PecanContact *contact,
     }
 
 #ifdef HAVE_LIBPURPLE
-    g_return_if_fail (contact->contactlist);
-
     {
         PecanContactList *contactlist;
         PurpleAccount *account;
@@ -553,9 +529,6 @@ void
 pecan_contact_remove_group_id (PecanContact *contact,
                                const gchar *group_guid)
 {
-    g_return_if_fail (contact);
-    g_return_if_fail (group_guid);
-
     pecan_debug ("passport=[%s],group_guid=[%s]", contact->passport, group_guid);
 
     g_hash_table_remove (contact->groups, group_guid);
@@ -571,8 +544,6 @@ void
 pecan_contact_set_home_phone (PecanContact *contact,
                               const gchar *number)
 {
-    g_return_if_fail (contact);
-
     g_free (contact->phone.home);
 
     contact->phone.home = (!number ? NULL : g_strdup (number));
@@ -582,8 +553,6 @@ void
 pecan_contact_set_work_phone (PecanContact *contact,
                               const gchar *number)
 {
-    g_return_if_fail (contact);
-
     g_free (contact->phone.work);
 
     contact->phone.work = (!number ? NULL : g_strdup (number));
@@ -593,8 +562,6 @@ void
 pecan_contact_set_mobile_phone (PecanContact *contact,
                                 const gchar *number)
 {
-    g_return_if_fail (contact);
-
     g_free (contact->phone.mobile);
 
     contact->phone.mobile = (!number ? NULL : g_strdup (number));
@@ -605,8 +572,6 @@ void
 pecan_contact_set_object (PecanContact *contact,
                           MsnObject *obj)
 {
-    g_return_if_fail (contact);
-
     /** @todo sometimes we need to force an update, in those cases the old and
      * new object will be the same, we must not free the object, so in order to
      * do that properly we need to implement msnobj ref/unref. */
@@ -628,9 +593,6 @@ void
 pecan_contact_set_client_caps (PecanContact *contact,
                                GHashTable *info)
 {
-    g_return_if_fail (contact);
-    g_return_if_fail (info);
-
     if (contact->clientcaps)
         g_hash_table_destroy (contact->clientcaps);
 
@@ -640,64 +602,48 @@ pecan_contact_set_client_caps (PecanContact *contact,
 const gchar *
 pecan_contact_get_passport (const PecanContact *contact)
 {
-    g_return_val_if_fail (contact, NULL);
-
     return contact->passport;
 }
 
 const gchar *
 pecan_contact_get_friendly_name (const PecanContact *contact)
 {
-    g_return_val_if_fail (contact, NULL);
-
     return contact->friendly_name;
 }
 
 const gchar *
 pecan_contact_get_personal_message (const PecanContact *contact)
 {
-    g_return_val_if_fail (contact, NULL);
-
     return contact->personal_message;
 }
 
 const gchar *
 pecan_contact_get_store_name (const PecanContact *contact)
 {
-    g_return_val_if_fail (contact, NULL);
-
     return contact->store_name;
 }
 
 const gchar *
 pecan_contact_get_guid (const PecanContact *contact)
 {
-    g_return_val_if_fail (contact, NULL);
-
     return contact->guid;
 }
 
 const gchar *
 pecan_contact_get_home_phone (const PecanContact *contact)
 {
-    g_return_val_if_fail (contact, NULL);
-
     return contact->phone.home;
 }
 
 const gchar *
 pecan_contact_get_work_phone (const PecanContact *contact)
 {
-    g_return_val_if_fail (contact, NULL);
-
     return contact->phone.work;
 }
 
 const gchar *
 pecan_contact_get_mobile_phone (const PecanContact *contact)
 {
-    g_return_val_if_fail (contact, NULL);
-
     return contact->phone.mobile;
 }
 
@@ -705,8 +651,6 @@ pecan_contact_get_mobile_phone (const PecanContact *contact)
 MsnObject *
 pecan_contact_get_object (const PecanContact *contact)
 {
-    g_return_val_if_fail (contact, NULL);
-
     return contact->msnobj;
 }
 #endif /* defined(PECAN_CVR) */
@@ -714,25 +658,23 @@ pecan_contact_get_object (const PecanContact *contact)
 GHashTable *
 pecan_contact_get_client_caps (const PecanContact *contact)
 {
-    g_return_val_if_fail (contact, NULL);
-
     return contact->clientcaps;
 }
 
 static inline gboolean
-is_blocked (PecanContact *contact)
+is_blocked (const PecanContact *contact)
 {
     return ((contact->list_op & (1 << MSN_LIST_BL)) ? true : false);
 }
 
 static inline gboolean
-is_offline (PecanContact *contact)
+is_offline (const PecanContact *contact)
 {
     return (contact->status == PECAN_STATUS_OFFLINE ? true : false);
 }
 
 gboolean
-pecan_contact_can_receive (PecanContact *contact)
+pecan_contact_can_receive (const PecanContact *contact)
 {
     if (is_blocked (contact))
         return false;

@@ -59,7 +59,8 @@ void pecan_contact_update (PecanContact *contact);
 
 gboolean pecan_contact_is_account (PecanContact *contact);
 
-void pecan_contact_set_client_id (PecanContact *contact, gulong client_id);
+void pecan_contact_set_client_id (PecanContact *contact,
+                                  gulong client_id);
 gulong pecan_contact_get_client_id (PecanContact *contact);
 
 /**
@@ -68,7 +69,8 @@ gulong pecan_contact_get_client_id (PecanContact *contact);
  * @param contact The contact.
  * @param state The state string.
  */
-void pecan_contact_set_state (PecanContact *contact, const gchar *state);
+void pecan_contact_set_state (PecanContact *contact,
+                              const gchar *state);
 
 /**
  * Sets the passport account for a contact.
@@ -76,7 +78,8 @@ void pecan_contact_set_state (PecanContact *contact, const gchar *state);
  * @param contact The contact.
  * @param passport The passport account.
  */
-void pecan_contact_set_passport (PecanContact *contact, const gchar *passport);
+void pecan_contact_set_passport (PecanContact *contact,
+                                 const gchar *passport);
 
 /**
  * Sets the friendly name for a contact.
@@ -84,7 +87,8 @@ void pecan_contact_set_passport (PecanContact *contact, const gchar *passport);
  * @param contact The contact.
  * @param name The friendly name.
  */
-void pecan_contact_set_friendly_name (PecanContact *contact, const gchar *name);
+void pecan_contact_set_friendly_name (PecanContact *contact,
+                                      const gchar *name);
 
 /**
  * Sets the personal message for a contact.
@@ -92,7 +96,8 @@ void pecan_contact_set_friendly_name (PecanContact *contact, const gchar *name);
  * @param contact The contact.
  * @param name The personal message.
  */
-void pecan_contact_set_personal_message (PecanContact *contact, const gchar *value);
+void pecan_contact_set_personal_message (PecanContact *contact,
+                                         const gchar *value);
 
 /**
  * Sets the current media for a contact.
@@ -100,7 +105,8 @@ void pecan_contact_set_personal_message (PecanContact *contact, const gchar *val
  * @param contact The contact.
  * @param current_media The current media.
  */
-void pecan_contact_set_current_media (PecanContact *contact, const gchar *current_media);
+void pecan_contact_set_current_media (PecanContact *contact,
+                                      const gchar *current_media);
 
 /**
  * Sets the store name for a contact.
@@ -108,7 +114,8 @@ void pecan_contact_set_current_media (PecanContact *contact, const gchar *curren
  * @param contact The contact.
  * @param name The store name.
  */
-void pecan_contact_set_store_name (PecanContact *contact, const gchar *name);
+void pecan_contact_set_store_name (PecanContact *contact,
+                                   const gchar *name);
 
 /**
  * Sets the contact guid for a contact.
@@ -116,7 +123,8 @@ void pecan_contact_set_store_name (PecanContact *contact, const gchar *name);
  * @param contact The contact.
  * @param name The contact guid.
  */
-void pecan_contact_set_guid (PecanContact *contact, const gchar *guid);
+void pecan_contact_set_guid (PecanContact *contact,
+                             const gchar *guid);
 
 /**
  * Sets the buddy icon for a local contact.
@@ -124,7 +132,8 @@ void pecan_contact_set_guid (PecanContact *contact, const gchar *guid);
  * @param contact The contact.
  * @param img The buddy icon image
  */
-void pecan_contact_set_buddy_icon (PecanContact *contact, PecanBuffer *buffer);
+void pecan_contact_set_buddy_icon (PecanContact *contact,
+                                   PecanBuffer *buffer);
 
 /**
  * Adds the group ID for a contact.
@@ -132,7 +141,8 @@ void pecan_contact_set_buddy_icon (PecanContact *contact, PecanBuffer *buffer);
  * @param contact The contact.
  * @param id   The group ID.
  */
-void pecan_contact_add_group_id (PecanContact *contact, const gchar *group_guid);
+void pecan_contact_add_group_id (PecanContact *contact,
+                                 const gchar *group_guid);
 
 /**
  * Removes the group ID from a contact.
@@ -140,7 +150,8 @@ void pecan_contact_add_group_id (PecanContact *contact, const gchar *group_guid)
  * @param contact The contact.
  * @param id   The group ID.
  */
-void pecan_contact_remove_group_id (PecanContact *contact, const gchar *group_guid);
+void pecan_contact_remove_group_id (PecanContact *contact,
+                                    const gchar *group_guid);
 
 /**
  * Returns the number of groups this contact is in.
@@ -155,7 +166,8 @@ guint pecan_contact_get_group_count (PecanContact *contact);
  * @param contact The contact.
  * @param number The home phone number.
  */
-void pecan_contact_set_home_phone (PecanContact *contact, const gchar *number);
+void pecan_contact_set_home_phone (PecanContact *contact,
+                                   const gchar *number);
 
 /**
  * Sets the work phone number for a contact.
@@ -163,7 +175,8 @@ void pecan_contact_set_home_phone (PecanContact *contact, const gchar *number);
  * @param contact The contact.
  * @param number The work phone number.
  */
-void pecan_contact_set_work_phone (PecanContact *contact, const gchar *number);
+void pecan_contact_set_work_phone (PecanContact *contact,
+                                   const gchar *number);
 
 /**
  * Sets the mobile phone number for a contact.
@@ -171,7 +184,8 @@ void pecan_contact_set_work_phone (PecanContact *contact, const gchar *number);
  * @param contact The contact.
  * @param number The mobile phone number.
  */
-void pecan_contact_set_mobile_phone (PecanContact *contact, const gchar *number);
+void pecan_contact_set_mobile_phone (PecanContact *contact,
+                                     const gchar *number);
 
 #if defined(PECAN_CVR)
 /**
@@ -180,7 +194,8 @@ void pecan_contact_set_mobile_phone (PecanContact *contact, const gchar *number)
  * @param contact The contact.
  * @param obj  The MSNObject.
  */
-void pecan_contact_set_object (PecanContact *contact, MsnObject *obj);
+void pecan_contact_set_object (PecanContact *contact,
+                               MsnObject *obj);
 #endif /* defined(PECAN_CVR) */
 
 /**
@@ -189,7 +204,8 @@ void pecan_contact_set_object (PecanContact *contact, MsnObject *obj);
  * @param contact The contact.
  * @param info The client information.
  */
-void pecan_contact_set_client_caps (PecanContact *contact, GHashTable *info);
+void pecan_contact_set_client_caps (PecanContact *contact,
+                                    GHashTable *info);
 
 /**
  * Returns the passport account for a contact.
@@ -283,6 +299,6 @@ MsnObject *pecan_contact_get_object (const PecanContact *contact);
  */
 GHashTable *pecan_contact_get_client_caps (const PecanContact *contact);
 
-gboolean pecan_contact_can_receive (PecanContact *contact);
+gboolean pecan_contact_can_receive (const PecanContact *contact);
 
 #endif /* PECAN_CONTACT_H */

@@ -24,10 +24,14 @@ typedef struct PecanGroup  PecanGroup;
 
 #include "pecan_contactlist.h"
 
-PecanGroup *pecan_group_new (PecanContactList *contactlist, const gchar *name, const gchar *guid);
+PecanGroup *pecan_group_new (PecanContactList *contactlist,
+                             const gchar *name,
+                             const gchar *guid);
 void pecan_group_free (PecanGroup *group);
-void pecan_group_set_guid (PecanGroup *group, const gchar *guid);
-void pecan_group_set_name (PecanGroup *group, const gchar *name);
+void pecan_group_set_guid (PecanGroup *group,
+                           const gchar *guid);
+void pecan_group_set_name (PecanGroup *group,
+                           const gchar *name);
 const gchar *pecan_group_get_id (const PecanGroup *group);
 const gchar *pecan_group_get_name (const PecanGroup *group);
 
