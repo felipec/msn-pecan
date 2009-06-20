@@ -31,8 +31,6 @@ struct PecanBuffer
     gsize len;
 };
 
-#define PECAN_BUF_SIZE 0x1000
-
 PecanBuffer *pecan_buffer_new (void);
 PecanBuffer *pecan_buffer_new_and_alloc (gsize size);
 PecanBuffer *pecan_buffer_new_memdup (const gpointer data, gsize size);

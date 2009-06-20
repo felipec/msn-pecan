@@ -18,6 +18,8 @@
 
 #include "pecan_buffer.h"
 
+#define BUFFER_SIZE 0x1000
+
 PecanBuffer *
 pecan_buffer_new (void)
 {
@@ -36,7 +38,7 @@ pecan_buffer_new_and_alloc (gsize size)
     PecanBuffer *buffer;
 
     if (size <= 0)
-        size = PECAN_BUF_SIZE;
+        size = BUFFER_SIZE;
 
     buffer = g_new (PecanBuffer, 1);
     buffer->data = buffer->alloc_data = g_malloc (size);
@@ -72,7 +74,7 @@ void
 pecan_buffer_resize (PecanBuffer *buffer,
                      gsize new_size)
 {
-    new_size = ((new_size / PECAN_BUF_SIZE) + 1) * PECAN_BUF_SIZE;
+    new_size = ((new_size / BUFFER_SIZE) + 1) * BUFFER_SIZE;
     buffer->data = buffer->alloc_data = g_realloc (buffer->data, new_size);
     buffer->size = new_size;
 }

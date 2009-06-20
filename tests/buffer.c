@@ -23,6 +23,8 @@
 
 #include <string.h>
 
+#define BUFFER_SIZE 0x1000
+
 static guint times = 0x10;
 
 /** @todo tests should be split */
@@ -34,19 +36,19 @@ START_TEST (test_basic)
     buf = pecan_buffer_new ();
     pecan_buffer_free (buf);
 
-    buf = pecan_buffer_new_and_alloc (PECAN_BUF_SIZE);
+    buf = pecan_buffer_new_and_alloc (BUFFER_SIZE);
     pecan_buffer_free (buf);
 
     buf = pecan_buffer_new ();
-    pecan_buffer_resize (buf, PECAN_BUF_SIZE);
+    pecan_buffer_resize (buf, BUFFER_SIZE);
     pecan_buffer_free (buf);
 
-    buf = pecan_buffer_new_and_alloc (PECAN_BUF_SIZE);
-    pecan_buffer_resize (buf, 2 * PECAN_BUF_SIZE);
+    buf = pecan_buffer_new_and_alloc (BUFFER_SIZE);
+    pecan_buffer_resize (buf, 2 * BUFFER_SIZE);
     pecan_buffer_free (buf);
 
-    buf = pecan_buffer_new_and_alloc (PECAN_BUF_SIZE);
-    pecan_buffer_prepare (buf, 2 * PECAN_BUF_SIZE);
+    buf = pecan_buffer_new_and_alloc (BUFFER_SIZE);
+    pecan_buffer_prepare (buf, 2 * BUFFER_SIZE);
     pecan_buffer_free (buf);
 }
 END_TEST
@@ -61,24 +63,24 @@ prepare_helper (guint times,
     buf = pecan_buffer_new ();
     pecan_buffer_free (buf);
 
-    buf = pecan_buffer_new_and_alloc (PECAN_BUF_SIZE);
+    buf = pecan_buffer_new_and_alloc (BUFFER_SIZE);
     for (i = 0; i < times; i++)
     {
-        pecan_buffer_prepare (buf, i * PECAN_BUF_SIZE);
+        pecan_buffer_prepare (buf, i * BUFFER_SIZE);
         if (write) memset (buf->data, 0, buf->size);
     }
     pecan_buffer_free (buf);
 
     buf = pecan_buffer_new ();
-    pecan_buffer_resize (buf, PECAN_BUF_SIZE);
+    pecan_buffer_resize (buf, BUFFER_SIZE);
     for (i = 0; i < times; i++)
     {
-        pecan_buffer_prepare (buf, i * PECAN_BUF_SIZE);
+        pecan_buffer_prepare (buf, i * BUFFER_SIZE);
         if (write) memset (buf->data, 0, buf->size);
     }
     pecan_buffer_free (buf);
 
-    buf = pecan_buffer_new_and_alloc (PECAN_BUF_SIZE);
+    buf = pecan_buffer_new_and_alloc (BUFFER_SIZE);
     for (i = 0; i < times; i++)
     {
         pecan_buffer_prepare (buf, i * g_random_double ());
@@ -87,7 +89,7 @@ prepare_helper (guint times,
     pecan_buffer_free (buf);
 
     buf = pecan_buffer_new ();
-    pecan_buffer_resize (buf, PECAN_BUF_SIZE);
+    pecan_buffer_resize (buf, BUFFER_SIZE);
     for (i = 0; i < times; i++)
     {
         pecan_buffer_prepare (buf, i * g_random_double ());
