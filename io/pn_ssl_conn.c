@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "pecan_ssl_conn.h"
+#include "pn_ssl_conn.h"
 #include "pn_node_private.h"
 #include "pn_log.h"
 
@@ -34,16 +34,16 @@
 
 #include <errno.h>
 
-struct PecanSslConn
+struct PnSslConn
 {
     PnNode parent;
 
     struct _PurpleSslConnection *ssl_data;
-    PecanSslConnReadCb read_cb;
+    PnSslConnReadCb read_cb;
     gpointer read_cb_data;
 };
 
-struct PecanSslConnClass
+struct PnSslConnClass
 {
     PnNodeClass parent_class;
 };
@@ -56,12 +56,12 @@ read_cb (gpointer data,
          PurpleInputCondition cond)
 {
     PnNode *conn;
-    PecanSslConn *ssl_conn;
+    PnSslConn *ssl_conn;
 
     pn_log ("begin");
 
     conn = PN_NODE (data);
-    ssl_conn = PECAN_SSL_CONN (data);
+    ssl_conn = PN_SSL_CONN (data);
 
     pn_debug ("conn=%p,name=%s", conn, conn->name);
 
@@ -114,16 +114,16 @@ leave:
     pn_log ("end");
 }
 
-PecanSslConn *
-pecan_ssl_conn_new (gchar *name,
-                    PnNodeType type)
+PnSslConn *
+pn_ssl_conn_new (gchar *name,
+                 PnNodeType type)
 {
-    PecanSslConn *ssl_conn;
+    PnSslConn *ssl_conn;
     PnNode *conn;
 
     pn_log ("begin");
 
-    ssl_conn = PECAN_SSL_CONN (g_type_create_instance (PECAN_SSL_CONN_TYPE));
+    ssl_conn = PN_SSL_CONN (g_type_create_instance (PN_SSL_CONN_TYPE));
     conn = PN_NODE (ssl_conn);
 
     conn->name = g_strdup (name);
@@ -135,7 +135,7 @@ pecan_ssl_conn_new (gchar *name,
 }
 
 void
-pecan_ssl_conn_free (PecanSslConn *conn)
+pn_ssl_conn_free (PnSslConn *conn)
 {
     g_return_if_fail (conn);
 
@@ -145,8 +145,8 @@ pecan_ssl_conn_free (PecanSslConn *conn)
 }
 
 void
-pecan_ssl_conn_set_read_cb (PecanSslConn *ssl_conn,
-                            PecanSslConnReadCb cb,
+pn_ssl_conn_set_read_cb (PnSslConn *ssl_conn,
+                            PnSslConnReadCb cb,
                             gpointer data)
 {
     ssl_conn->read_cb = cb;
@@ -161,12 +161,12 @@ connect_cb (gpointer data,
             PurpleInputCondition cond)
 {
     PnNode *conn;
-    PecanSslConn *ssl_conn;
+    PnSslConn *ssl_conn;
 
     pn_log ("begin");
 
     conn = PN_NODE (data);
-    ssl_conn = PECAN_SSL_CONN (data);
+    ssl_conn = PN_SSL_CONN (data);
 
     g_object_ref (conn);
 
@@ -199,12 +199,12 @@ connect_impl (PnNode *conn,
               const gchar *hostname,
               gint port)
 {
-    PecanSslConn *ssl_conn;
+    PnSslConn *ssl_conn;
     g_return_if_fail (conn);
 
     pn_log ("begin");
 
-    ssl_conn = PECAN_SSL_CONN (conn);
+    ssl_conn = PN_SSL_CONN (conn);
 
     pn_debug ("conn=%p,name=%s", conn, conn->name);
     pn_debug ("hostname=%s,port=%d", hostname, port);
@@ -226,13 +226,13 @@ connect_impl (PnNode *conn,
 static void
 close_impl (PnNode *conn)
 {
-    PecanSslConn *ssl_conn;
+    PnSslConn *ssl_conn;
 
     g_return_if_fail (conn);
 
     pn_log ("begin");
 
-    ssl_conn = PECAN_SSL_CONN (conn);
+    ssl_conn = PN_SSL_CONN (conn);
 
     pn_log ("conn=%p,name=%s", conn, conn->name);
 
@@ -289,11 +289,11 @@ write_impl (PnNode *conn,
             GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
-    PecanSslConn *ssl_conn;
+    PnSslConn *ssl_conn;
 
     pn_debug ("name=%s", conn->name);
 
-    ssl_conn = PECAN_SSL_CONN (conn);
+    ssl_conn = PN_SSL_CONN (conn);
 
     {
         gint bytes_written = 0;
@@ -349,9 +349,9 @@ read_impl (PnNode *conn,
            GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
-    PecanSslConn *ssl_conn;
+    PnSslConn *ssl_conn;
 
-    ssl_conn = PECAN_SSL_CONN (conn);
+    ssl_conn = PN_SSL_CONN (conn);
 
     pn_debug ("name=%s", conn->name);
 
@@ -437,7 +437,7 @@ class_init (gpointer g_class,
 }
 
 GType
-pecan_ssl_conn_get_type (void)
+pn_ssl_conn_get_type (void)
 {
     static GType type = 0;
 
@@ -446,11 +446,11 @@ pecan_ssl_conn_get_type (void)
         GTypeInfo *type_info;
 
         type_info = g_new0 (GTypeInfo, 1);
-        type_info->class_size = sizeof (PecanSslConnClass);
+        type_info->class_size = sizeof (PnSslConnClass);
         type_info->class_init = class_init;
-        type_info->instance_size = sizeof (PecanSslConn);
+        type_info->instance_size = sizeof (PnSslConn);
 
-        type = g_type_register_static (PN_NODE_TYPE, "PecanSslConnType", type_info, 0);
+        type = g_type_register_static (PN_NODE_TYPE, "PnSslConnType", type_info, 0);
 
         g_free (type_info);
     }

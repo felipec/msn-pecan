@@ -100,7 +100,7 @@ objects := msn.o \
 	   io/pn_node.o \
 	   io/pecan_cmd_server.o \
 	   io/pecan_http_server.o \
-	   io/pecan_ssl_conn.o \
+	   io/pn_ssl_conn.o \
 	   fix_purple.o
 
 ifdef CVR

@@ -33,7 +33,7 @@ MSNSOURCES = msn.c \
 	     io/pn_node.c \
 	     io/pecan_cmd_server.c \
 	     io/pecan_http_server.c \
-	     io/pecan_ssl_conn.c \
+	     io/pn_ssl_conn.c \
 	     cvr/slp.c \
 	     cvr/slpcall.c \
 	     cvr/slplink.c \

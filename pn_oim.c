@@ -19,7 +19,7 @@
 #include <time.h> /* for strptime */
 
 #include "pn_oim.h"
-#include "io/pecan_ssl_conn.h"
+#include "io/pn_ssl_conn.h"
 #include "io/pecan_parser.h"
 
 #include "io/pn_node_private.h"
@@ -306,16 +306,16 @@ oim_process_requests (PecanOimSession *oim_session)
         return;
 
     {
-        PecanSslConn *ssl_conn;
+        PnSslConn *ssl_conn;
         PnNode *conn;
 
-        ssl_conn = pecan_ssl_conn_new ("oim", PN_NODE_NULL);
+        ssl_conn = pn_ssl_conn_new ("oim", PN_NODE_NULL);
 
         conn = PN_NODE (ssl_conn);
         conn->session = oim_session->session;
 
         oim_request->parser = pecan_parser_new (conn);
-        pecan_ssl_conn_set_read_cb (ssl_conn, read_cb, oim_request);
+        pn_ssl_conn_set_read_cb (ssl_conn, read_cb, oim_request);
 
         pn_node_connect (conn, "rsi.hotmail.com", 443);
 

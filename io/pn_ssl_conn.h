@@ -16,28 +16,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef PECAN_SSL_CONN_H
-#define PECAN_SSL_CONN_H
+#ifndef PN_SSL_CONN_H
+#define PN_SSL_CONN_H
 
 #include <glib-object.h>
 
 #include "io/pn_node.h"
 
-typedef struct PecanSslConn PecanSslConn;
-typedef struct PecanSslConnClass PecanSslConnClass;
+typedef struct PnSslConn PnSslConn;
+typedef struct PnSslConnClass PnSslConnClass;
 
-typedef void (*PecanSslConnReadCb) (PnNode *conn, gpointer data);
+typedef void (*PnSslConnReadCb) (PnNode *conn, gpointer data);
 
-#define PECAN_SSL_CONN_TYPE (pecan_ssl_conn_get_type ())
-#define PECAN_SSL_CONN(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), PECAN_SSL_CONN_TYPE, PecanSslConn))
-#define PECAN_SSL_CONN_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), PECAN_SSL_CONN_TYPE, PecanSslConnClass))
-#define PECAN_SSL_CONN_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), PECAN_SSL_CONN_TYPE, PecanSslConnClass))
+#define PN_SSL_CONN_TYPE (pn_ssl_conn_get_type ())
+#define PN_SSL_CONN(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), PN_SSL_CONN_TYPE, PnSslConn))
+#define PN_SSL_CONN_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), PN_SSL_CONN_TYPE, PnSslConnClass))
+#define PN_SSL_CONN_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), PN_SSL_CONN_TYPE, PnSslConnClass))
 
-PecanSslConn *pecan_ssl_conn_new (gchar *name, PnNodeType type);
-void pecan_ssl_conn_free (PecanSslConn *ssl_conn);
+PnSslConn *pn_ssl_conn_new (gchar *name, PnNodeType type);
+void pn_ssl_conn_free (PnSslConn *ssl_conn);
 /** @todo this thing should be on the main class */
-void pecan_ssl_conn_set_read_cb (PecanSslConn *ssl_conn, PecanSslConnReadCb read_cb, gpointer data);
+void pn_ssl_conn_set_read_cb (PnSslConn *ssl_conn, PnSslConnReadCb read_cb, gpointer data);
 
-GType pecan_ssl_conn_get_type (void);
+GType pn_ssl_conn_get_type (void);
 
-#endif /* PECAN_SSL_CONN_H */
+#endif /* PN_SSL_CONN_H */
