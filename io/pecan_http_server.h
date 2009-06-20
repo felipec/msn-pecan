@@ -22,17 +22,18 @@
 #include <glib-object.h>
 
 typedef struct PecanHttpServer PecanHttpServer;
+typedef struct PecanHttpServerClass PecanHttpServerClass;
 
 #include "pecan_node.h"
 
 #define PECAN_HTTP_SERVER_TYPE (pecan_http_server_get_type ())
 #define PECAN_HTTP_SERVER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), PECAN_HTTP_SERVER_TYPE, PecanHttpServer))
 #define PECAN_HTTP_SERVER_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), PECAN_HTTP_SERVER_TYPE, PecanHttpServerClass))
-#define PECAN_IS_HTTP_SERVER(obj) (G_TYPE_CHECK_TYPE ((obj), PECAN_HTTP_SERVER_TYPE))
-#define PECAN_IS_HTTP_SERVER_CLASS(c) (G_TYPE_CHECK_CLASS_TYPE ((c), PECAN_HTTP_SERVER_TYPE))
 #define PECAN_HTTP_SERVER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), PECAN_HTTP_SERVER_TYPE, PecanHttpServerClass))
 
 PecanHttpServer *pecan_http_server_new (const gchar *name);
 void pecan_http_server_free (PecanHttpServer *http_conn);
+
+GType pecan_http_server_get_type (void);
 
 #endif /* PECAN_HTTP_SERVER_H */

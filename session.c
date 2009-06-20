@@ -33,8 +33,6 @@
 #include "sync.h"
 #include "nexus.h"
 
-#include "io/pecan_http_server_priv.h"
-
 #include <glib/gstdio.h>
 #include <string.h>
 

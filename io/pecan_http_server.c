@@ -25,7 +25,8 @@
  * That seems to work.
  */
 
-#include "pecan_http_server_priv.h"
+#include "pecan_http_server.h"
+#include "pecan_node_priv.h"
 #include "pecan_stream.h"
 #include "pecan_log.h"
 
@@ -46,6 +47,30 @@
 #undef read
 #undef close
 #endif /* HAVE_LIBPURPLE */
+
+struct PecanHttpServer
+{
+    PecanNode parent;
+    gboolean dispose_has_run;
+
+    guint parser_state;
+    gboolean waiting_response;
+    GQueue *write_queue;
+    guint content_length;
+    guint timeout_id;
+    gchar *last_session_id;
+    gchar *session;
+    gchar *gateway;
+
+    GHashTable *childs;
+    PecanNode *cur;
+    gchar *old_buffer;
+};
+
+struct PecanHttpServerClass
+{
+    PecanNodeClass parent_class;
+};
 
 static PecanNodeClass *parent_class = NULL;
 
