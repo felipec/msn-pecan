@@ -612,13 +612,13 @@ msn_slplink_request_object(MsnSlpLink *slplink,
                            const char *info,
                            MsnSlpCb cb,
                            MsnSlpEndCb end_cb,
-                           const MsnObject *obj)
+                           const PnMsnObj *obj)
 {
     MsnSlpCall *slpcall;
     char *msnobj_data;
     char *msnobj_base64;
 
-    msnobj_data = msn_object_to_string(obj);
+    msnobj_data = pn_msnobj_to_string(obj);
     msnobj_base64 = purple_base64_encode((const guchar *)msnobj_data, strlen(msnobj_data));
     g_free(msnobj_data);
 

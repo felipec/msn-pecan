@@ -24,10 +24,10 @@ typedef struct PnDpManager PnDpManager;
 #include <glib.h>
 #include "session.h"
 #include "ab/pecan_contact.h"
-#include "cvr/pecan_slp_object.h"
+#include "cvr/pn_msnobj.h"
 
 PnDpManager *pn_dp_manager_new (MsnSession *session);
 void pn_dp_manager_free (PnDpManager *dpm);
-void pn_dp_manager_contact_set_object (PecanContact *contact, MsnObject *obj);
+void pn_dp_manager_contact_set_object (PecanContact *contact, PnMsnObj *obj);
 
 #endif /* PN_DP_MANAGER_H */

@@ -33,7 +33,7 @@
 #include "ab/pecan_contact_priv.h"
 #include "ab/pecan_contactlist_priv.h"
 
-#include "cvr/pecan_slp_object.h"
+#include "cvr/pn_msnobj.h"
 #include "switchboard.h"
 
 #ifdef MSN_DIRECTCONN
@@ -171,7 +171,7 @@ got_sessionreq(MsnSlpCall *slpcall,
         gsize len;
         MsnSlpLink *slplink;
         MsnSlpMessage *slpmsg;
-        MsnObject *obj;
+        PnMsnObj *obj;
         char *msnobj_data;
         PecanBuffer *image;
         int type;
@@ -189,7 +189,7 @@ got_sessionreq(MsnSlpCall *slpcall,
         slplink = slpcall->slplink;
 
         msnobj_data = (char *) purple_base64_decode(context, &len);
-        obj = msn_object_new_from_string(msnobj_data);
+        obj = pn_msnobj_new_from_string(msnobj_data);
         g_free(msnobj_data);
 
         if (!obj) {
@@ -198,17 +198,17 @@ got_sessionreq(MsnSlpCall *slpcall,
             return;
         }
 
-        type = msn_object_get_type(obj);
+        type = pn_msnobj_get_type(obj);
 
-        if (type == MSN_OBJECT_USERTILE) {
+        if (type == PN_MSNOBJ_USERTILE) {
             /* image is owned by a local object, not obj */
-            image = msn_object_get_image(obj);
+            image = pn_msnobj_get_image(obj);
         }
 #if PURPLE_VERSION_CHECK(2,5,0)
-        else if (type == MSN_OBJECT_EMOTICON) {
+        else if (type == PN_MSNOBJ_EMOTICON) {
             PurpleStoredImage *img;
             char *path;
-            path = g_build_filename(purple_smileys_get_storing_dir(), msn_object_get_location(obj), NULL);
+            path = g_build_filename(purple_smileys_get_storing_dir(), pn_msnobj_get_location(obj), NULL);
             img = purple_imgstore_new_from_file(path);
             image = pecan_buffer_new_memdup((const gpointer) purple_imgstore_get_data (img),
                                             purple_imgstore_get_size (img));
@@ -218,24 +218,24 @@ got_sessionreq(MsnSlpCall *slpcall,
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
         else {
             pn_error("Wrong object?");
-            msn_object_free(obj);
+            pn_msnobj_free(obj);
             g_return_if_reached();
         }
 
         if (!image) {
             pn_error("Wrong object");
-            msn_object_free(obj);
+            pn_msnobj_free(obj);
             g_return_if_reached();
         }
 
         {
             gchar *tmp;
-            tmp = msn_object_to_string(obj);
+            tmp = pn_msnobj_to_string(obj);
             pn_info("object requested: %s", tmp);
             g_free(tmp);
         }
 
-        msn_object_free(obj);
+        pn_msnobj_free(obj);
 
         /* DATA PREP */
         slpmsg = msn_slpmsg_new(slplink);
@@ -672,7 +672,7 @@ msn_emoticon_msg(MsnCmdProc *cmdproc,
     MsnSession *session;
     MsnSlpLink *slplink;
     MsnSwitchBoard *swboard;
-    MsnObject *obj;
+    PnMsnObj *obj;
     char **tokens;
     char *smile, *body_str;
     const char *body, *who, *sha1;
@@ -704,14 +704,14 @@ msn_emoticon_msg(MsnCmdProc *cmdproc,
         smile = tokens[tok];
 
         tmp = pn_url_decode (tokens[tok + 1]);
-        obj = msn_object_new_from_string(tmp);
+        obj = pn_msnobj_new_from_string(tmp);
         g_free(tmp);
 
         if (!obj)
             break;
 
-        who = msn_object_get_creator(obj);
-        sha1 = msn_object_get_sha1(obj);
+        who = pn_msnobj_get_creator(obj);
+        sha1 = pn_msnobj_get_sha1(obj);
 
         slplink = msn_session_get_slplink(session, who);
 
@@ -737,7 +737,7 @@ msn_emoticon_msg(MsnCmdProc *cmdproc,
         }
 #endif /* HAVE_LIBPURPLE */
 
-        msn_object_free(obj);
+        pn_msnobj_free(obj);
     }
 
     g_strfreev(tokens);

@@ -108,7 +108,7 @@ ifdef CVR
 	     cvr/slpcall.o \
 	     cvr/slplink.o \
 	     cvr/slpmsg.o \
-	     cvr/pecan_slp_object.o \
+	     cvr/pn_msnobj.o \
 	     cvr/xfer.o
 endif
 

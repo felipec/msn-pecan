@@ -1388,15 +1388,15 @@ datacast_msg (MsnCmdProc *cmdproc,
 #if defined(PECAN_LIBSIREN)
         const char *data;
         MsnSlpLink *slplink;
-        MsnObject *obj;
+        PnMsnObj *obj;
 
         data = g_hash_table_lookup(body, "Data");
-        obj = msn_object_new_from_string(data);
+        obj = pn_msnobj_new_from_string(data);
         slplink = msn_session_get_slplink(cmdproc->session, passport);
 
         msn_slplink_request_object(slplink, data, got_voice_clip, NULL, obj);
             
-        msn_object_free(obj);
+        pn_msnobj_free(obj);
 #endif /* defined(PECAN_LIBSIREN) */
     }
     else

@@ -120,7 +120,7 @@ request (PecanContact *user)
     PurpleAccount *account;
     MsnSession *session;
     MsnSlpLink *slplink;
-    MsnObject *obj;
+    PnMsnObj *obj;
     const char *info;
 
     session = user->contactlist->session;
@@ -137,7 +137,7 @@ request (PecanContact *user)
         return;
     }
 
-    info = msn_object_get_sha1 (obj);
+    info = pn_msnobj_get_sha1 (obj);
 
     if (g_ascii_strcasecmp (user->passport,
                             msn_session_get_username (session)))
@@ -147,7 +147,7 @@ request (PecanContact *user)
     }
     else
     {
-        MsnObject *my_obj = NULL;
+        PnMsnObj *my_obj = NULL;
         gconstpointer data = NULL;
         size_t len = 0;
 
@@ -158,7 +158,7 @@ request (PecanContact *user)
         if (my_obj)
         {
             PecanBuffer *image;
-            image = msn_object_get_image (my_obj);
+            image = pn_msnobj_get_image (my_obj);
             data = image->data;
             len = image->len;
         }
@@ -220,18 +220,18 @@ release (PnDpManager *dpm)
 #ifdef HAVE_LIBPURPLE
 static inline gboolean
 ud_cached (PurpleAccount *account,
-           MsnObject *obj)
+           PnMsnObj *obj)
 {
     PurpleBuddy *buddy;
     const char *old;
     const char *new;
 
-    buddy = purple_find_buddy (account, msn_object_get_creator (obj));
+    buddy = purple_find_buddy (account, pn_msnobj_get_creator (obj));
     if (!buddy)
         return FALSE;
 
     old = purple_buddy_icons_get_checksum_for_user (buddy);
-    new = msn_object_get_sha1 (obj);
+    new = pn_msnobj_get_sha1 (obj);
 
     if (g_strcmp0 (old, new) == 0)
         return TRUE;
@@ -242,7 +242,7 @@ ud_cached (PurpleAccount *account,
 
 void
 pn_dp_manager_contact_set_object (PecanContact *contact,
-                                  MsnObject *obj)
+                                  PnMsnObj *obj)
 {
     MsnSession *session;
 
@@ -258,7 +258,7 @@ pn_dp_manager_contact_set_object (PecanContact *contact,
         return;
     }
 
-    if (msn_object_get_type (obj) != MSN_OBJECT_USERTILE)
+    if (pn_msnobj_get_type (obj) != PN_MSNOBJ_USERTILE)
         return;
 
 #ifdef HAVE_LIBPURPLE

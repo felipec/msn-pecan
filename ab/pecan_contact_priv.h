@@ -25,7 +25,7 @@
 #include "pecan_contactlist.h"
 #include "pn_status.h"
 #if defined(PECAN_CVR)
-#include "cvr/pecan_slp_object.h"
+#include "cvr/pn_msnobj.h"
 #endif /* defined(PECAN_CVR) */
 
 /**
@@ -77,7 +77,7 @@ struct PecanContact
     GHashTable *groups; /**< The groups this contact is on. */
 
 #if defined(PECAN_CVR)
-    MsnObject *msnobj; /**< The contact's MSN Object. */
+    PnMsnObj *msnobj; /**< The contact's MSN Object. */
 #endif /* defined(PECAN_CVR) */
 
     GHashTable *clientcaps; /**< The client's capabilities. */

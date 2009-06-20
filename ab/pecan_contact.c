@@ -64,7 +64,7 @@ pecan_contact_free (PecanContact *contact)
 
 #if defined(PECAN_CVR)
     if (contact->msnobj)
-        msn_object_free (contact->msnobj);
+        pn_msnobj_free (contact->msnobj);
 #endif /* defined(PECAN_CVR) */
 
     g_free (contact->passport);
@@ -432,10 +432,10 @@ pecan_contact_set_buddy_icon (PecanContact *contact,
 {
 #if defined(PECAN_CVR)
 #ifdef HAVE_LIBPURPLE
-    MsnObject *obj;
+    PnMsnObj *obj;
 
-    obj = msn_object_new_from_image (image, "TFR2C2.tmp", pecan_contact_get_passport (contact),
-                                     MSN_OBJECT_USERTILE);
+    obj = pn_msnobj_new_from_image (image, "TFR2C2.tmp", pecan_contact_get_passport (contact),
+                                    PN_MSNOBJ_USERTILE);
     pecan_contact_set_object (contact, obj);
 #endif /* HAVE_LIBPURPLE */
 #endif /* defined(PECAN_CVR) */
@@ -557,7 +557,7 @@ pecan_contact_set_mobile_phone (PecanContact *contact,
 #if defined(PECAN_CVR)
 void
 pecan_contact_set_object (PecanContact *contact,
-                          MsnObject *obj)
+                          PnMsnObj *obj)
 {
     /** @todo sometimes we need to force an update, in those cases the old and
      * new object will be the same, we must not free the object, so in order to
@@ -567,7 +567,7 @@ pecan_contact_set_object (PecanContact *contact,
         contact->msnobj = NULL;
 
     if (contact->msnobj)
-        msn_object_free (contact->msnobj);
+        pn_msnobj_free (contact->msnobj);
 
     contact->msnobj = obj;
 
@@ -635,7 +635,7 @@ pecan_contact_get_mobile_phone (const PecanContact *contact)
 }
 
 #if defined(PECAN_CVR)
-MsnObject *
+PnMsnObj *
 pecan_contact_get_object (const PecanContact *contact)
 {
     return contact->msnobj;

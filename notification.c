@@ -714,10 +714,10 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     {
         if (cmd->param_count == 6)
         {
-            MsnObject *obj;
+            PnMsnObj *obj;
             gchar *tmp;
             tmp = pn_url_decode (cmd->params[5]);
-            obj = msn_object_new_from_string (tmp);
+            obj = pn_msnobj_new_from_string (tmp);
             pecan_contact_set_object(user, obj);
             g_free (tmp);
         }
@@ -781,10 +781,10 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     {
         if (cmd->param_count == 5)
         {
-            MsnObject *obj;
+            PnMsnObj *obj;
             gchar *tmp;
             tmp = pn_url_decode(cmd->params[4]);
-            obj = msn_object_new_from_string(tmp);
+            obj = pn_msnobj_new_from_string(tmp);
             pecan_contact_set_object(user, obj);
             g_free (tmp);
         }
@@ -813,7 +813,7 @@ contact_update (PecanContact *contact,
 
 #if defined(PECAN_CVR)
     {
-        MsnObject *obj;
+        PnMsnObj *obj;
         obj = pecan_contact_get_object (contact);
         if (obj)
             pecan_contact_set_object (contact, obj);

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "cvr/pecan_slp_object.h"
+#include "cvr/pn_msnobj.h"
 #include "pn_log.h"
 
 #include "io/pecan_buffer.h"
@@ -35,13 +35,13 @@
 #include <util.h>
 #endif /* HAVE_LIBPURPLE */
 
-struct MsnObject
+struct PnMsnObj
 {
     gboolean local;
 
     gchar *creator;
     gsize size;
-    MsnObjectType type;
+    PnMsnObjType type;
     gchar *location;
     gchar *friendly;
     gchar *sha1d;
@@ -83,26 +83,26 @@ struct MsnObject
 
 static GList *local_objs;
 
-MsnObject *
-msn_object_new(void)
+PnMsnObj *
+pn_msnobj_new(void)
 {
-    MsnObject *obj;
+    PnMsnObj *obj;
 
-    obj = g_new0(MsnObject, 1);
+    obj = g_new0(PnMsnObj, 1);
 
     return obj;
 }
 
-MsnObject *
-msn_object_new_from_string(const gchar *str)
+PnMsnObj *
+pn_msnobj_new_from_string(const gchar *str)
 {
-    MsnObject *obj;
+    PnMsnObj *obj;
     gchar *tag, *c;
 
     if (strncmp(str, "<msnobj ", 8))
         return NULL;
 
-    obj = msn_object_new();
+    obj = pn_msnobj_new();
 
     GET_STRING_TAG(creator,  "Creator");
     GET_INT_TAG(size,        "Size");
@@ -117,20 +117,20 @@ msn_object_new_from_string(const gchar *str)
         !obj->location || !obj->friendly || !obj->sha1d)
     {
         pn_error("discarding: str=[%s]", str);
-        msn_object_free(obj);
+        pn_msnobj_free(obj);
         obj = NULL;
     }
 
     return obj;
 }
 
-MsnObject *
-msn_object_new_from_image(PecanBuffer *image,
-                          const char *location,
-                          const char *creator,
-                          MsnObjectType type)
+PnMsnObj *
+pn_msnobj_new_from_image(PecanBuffer *image,
+                         const char *location,
+                         const char *creator,
+                         PnMsnObjType type)
 {
-    MsnObject *obj = NULL;
+    PnMsnObj *obj = NULL;
     PurpleCipherContext *ctx;
     char *buf;
     char *base64;
@@ -139,7 +139,7 @@ msn_object_new_from_image(PecanBuffer *image,
     if (!image)
         return obj;
 
-    obj = msn_object_new();
+    obj = pn_msnobj_new();
     obj->local = TRUE;
     obj->type = type;
     obj->location = g_strdup(location);
@@ -147,7 +147,7 @@ msn_object_new_from_image(PecanBuffer *image,
     obj->friendly = g_strdup("AAA=");
 
     local_objs = g_list_append(local_objs, obj);
-    msn_object_set_image(obj, image);
+    pn_msnobj_set_image(obj, image);
 
     /* Compute the SHA1D field. */
     memset(digest, 0, sizeof(digest));
@@ -185,7 +185,7 @@ msn_object_new_from_image(PecanBuffer *image,
 }
 
 void
-msn_object_free(MsnObject *obj)
+pn_msnobj_free(PnMsnObj *obj)
 {
     if (!obj)
         return;
@@ -205,7 +205,7 @@ msn_object_free(MsnObject *obj)
 }
 
 gchar *
-msn_object_to_string(const MsnObject *obj)
+pn_msnobj_to_string(const PnMsnObj *obj)
 {
     gchar *str;
     const gchar *sha1c;
@@ -229,46 +229,46 @@ msn_object_to_string(const MsnObject *obj)
 }
 
 const gchar *
-msn_object_get_creator(const MsnObject *obj)
+pn_msnobj_get_creator(const PnMsnObj *obj)
 {
     return obj->creator;
 }
 
-MsnObjectType
-msn_object_get_type(const MsnObject *obj)
+PnMsnObjType
+pn_msnobj_get_type(const PnMsnObj *obj)
 {
     return obj->type;
 }
 
 const gchar *
-msn_object_get_location(const MsnObject *obj)
+pn_msnobj_get_location(const PnMsnObj *obj)
 {
     return obj->location;
 }
 
 const gchar *
-msn_object_get_sha1(const MsnObject *obj)
+pn_msnobj_get_sha1(const PnMsnObj *obj)
 {
     return (obj->sha1c) ? obj->sha1c : obj->sha1d;
 }
 
 void
-msn_object_set_image(MsnObject *obj,
-                     PecanBuffer *buffer)
+pn_msnobj_set_image(PnMsnObj *obj,
+                    PecanBuffer *buffer)
 {
     pecan_buffer_free(obj->image);
     obj->image = buffer;
 }
 
-static MsnObject *
+static PnMsnObj *
 find_local(const gchar *sha1)
 {
     GList *l;
 
     for (l = local_objs; l; l = l->next) {
-        MsnObject *local_obj = l->data;
+        PnMsnObj *local_obj = l->data;
 
-        if (strcmp(msn_object_get_sha1(local_obj), sha1) == 0)
+        if (strcmp(pn_msnobj_get_sha1(local_obj), sha1) == 0)
             return local_obj;
     }
 
@@ -276,11 +276,11 @@ find_local(const gchar *sha1)
 }
 
 PecanBuffer *
-msn_object_get_image(const MsnObject *obj)
+pn_msnobj_get_image(const PnMsnObj *obj)
 {
-    MsnObject *local_obj;
+    PnMsnObj *local_obj;
 
-    local_obj = find_local(msn_object_get_sha1(obj));
+    local_obj = find_local(pn_msnobj_get_sha1(obj));
 
     if (!local_obj)
         return NULL;

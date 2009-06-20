@@ -24,7 +24,7 @@ typedef struct PecanContact PecanContact;
 
 #include "session.h"
 #if defined(PECAN_CVR)
-#include "cvr/pecan_slp_object.h"
+#include "cvr/pn_msnobj.h"
 #endif /* defined(PECAN_CVR) */
 
 #include "io/pecan_buffer.h"
@@ -195,7 +195,7 @@ void pecan_contact_set_mobile_phone (PecanContact *contact,
  * @param obj  The MSNObject.
  */
 void pecan_contact_set_object (PecanContact *contact,
-                               MsnObject *obj);
+                               PnMsnObj *obj);
 #endif /* defined(PECAN_CVR) */
 
 /**
@@ -287,7 +287,7 @@ const gchar *pecan_contact_get_mobile_phone (const PecanContact *contact);
  *
  * @return The MSNObject.
  */
-MsnObject *pecan_contact_get_object (const PecanContact *contact);
+PnMsnObj *pecan_contact_get_object (const PecanContact *contact);
 #endif /* defined(PECAN_CVR) */
 
 /**

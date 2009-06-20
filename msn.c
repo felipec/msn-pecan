@@ -83,7 +83,7 @@ typedef struct
 typedef struct
 {
     char *smile;
-    MsnObject *obj;
+    PnMsnObj *obj;
 } MsnEmoticon;
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
 
@@ -940,7 +940,7 @@ logout (PurpleConnection *gc)
 static GString*
 msn_msg_emoticon_add(GString *current, MsnEmoticon *emoticon)
 {
-    MsnObject *obj;
+    PnMsnObj *obj;
     char *strobj;
 
     if (emoticon == NULL)
@@ -951,7 +951,7 @@ msn_msg_emoticon_add(GString *current, MsnEmoticon *emoticon)
     if (!obj)
         return current;
 
-    strobj = msn_object_to_string(obj);
+    strobj = pn_msnobj_to_string(obj);
 
     if (current)
     {
@@ -988,7 +988,7 @@ static void
 msn_emoticon_destroy(MsnEmoticon *emoticon)
 {
     if (emoticon->obj)
-        msn_object_free(emoticon->obj);
+        pn_msnobj_free(emoticon->obj);
     g_free(emoticon->smile);
     g_free(emoticon);
 }
@@ -1024,9 +1024,9 @@ msn_msg_grab_emoticons(const char *msg, const char *username)
 
         emoticon = g_new0(MsnEmoticon, 1);
         emoticon->smile = g_strdup(purple_smiley_get_shortcut(smiley));
-        emoticon->obj = msn_object_new_from_image(buffer,
-                                                  purple_imgstore_get_filename(image),
-                                                  username, MSN_OBJECT_EMOTICON);
+        emoticon->obj = pn_msnobj_new_from_image(buffer,
+                                                 purple_imgstore_get_filename(image),
+                                                 username, PN_MSNOBJ_EMOTICON);
 
         purple_imgstore_unref(image);
         list = g_slist_prepend(list, emoticon);

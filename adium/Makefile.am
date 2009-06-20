@@ -38,7 +38,7 @@ MSNSOURCES = msn.c \
 	     cvr/slpcall.c \
 	     cvr/slplink.c \
 	     cvr/slpmsg.c \
-	     cvr/pecan_slp_object.c \
+	     cvr/pn_msnobj.c \
 	     cvr/xfer.c \
 	     lib/libsiren/common.c \
 	     lib/libsiren/dct4.c \

@@ -176,7 +176,7 @@ pn_update_status (MsnSession *session)
 
 #if defined(PN_CVR)
     {
-        MsnObject *obj;
+        PnMsnObj *obj;
 
         obj = pecan_contact_get_object (user);
 
@@ -184,7 +184,7 @@ pn_update_status (MsnSession *session)
         {
             gchar *msnobj_str;
 
-            msnobj_str = msn_object_to_string (obj);
+            msnobj_str = pn_msnobj_to_string (obj);
 
             msn_cmdproc_send (cmdproc, "CHG", "%s %d %s", state_text,
                               client_id, purple_url_encode (msnobj_str));
