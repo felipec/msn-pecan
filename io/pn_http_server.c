@@ -25,7 +25,7 @@
  * That seems to work.
  */
 
-#include "pecan_http_server.h"
+#include "pn_http_server.h"
 #include "pn_node_private.h"
 #include "pn_stream.h"
 #include "pn_log.h"
@@ -49,7 +49,7 @@
 #undef close
 #endif /* HAVE_LIBPURPLE */
 
-struct PecanHttpServer
+struct PnHttpServer
 {
     PnNode parent;
     gboolean dispose_has_run;
@@ -68,7 +68,7 @@ struct PecanHttpServer
     gchar *old_buffer;
 };
 
-struct PecanHttpServerClass
+struct PnHttpServerClass
 {
     PnNodeClass parent_class;
 };
@@ -91,7 +91,7 @@ foo_write (PnNode *conn,
            GError **error);
 
 static void
-process_queue (PecanHttpServer *http_conn,
+process_queue (PnHttpServer *http_conn,
                GError **error)
 {
     HttpQueueData *queue_data;
@@ -157,9 +157,9 @@ read_cb (GIOChannel *source,
 
     if (!conn->error)
     {
-        PecanHttpServer *http_conn;
+        PnHttpServer *http_conn;
 
-        http_conn = PECAN_HTTP_SERVER (conn);
+        http_conn = PN_HTTP_SERVER (conn);
 
         if (http_conn->cur)
         {
@@ -194,14 +194,14 @@ read_cb (GIOChannel *source,
     return TRUE;
 }
 
-PecanHttpServer *
-pecan_http_server_new (const gchar *name)
+PnHttpServer *
+pn_http_server_new (const gchar *name)
 {
-    PecanHttpServer *http_conn;
+    PnHttpServer *http_conn;
 
     pn_log ("begin");
 
-    http_conn = PECAN_HTTP_SERVER (g_type_create_instance (PECAN_HTTP_SERVER_TYPE));
+    http_conn = PN_HTTP_SERVER (g_type_create_instance (PN_HTTP_SERVER_TYPE));
 
     {
         PnNode *tmp = PN_NODE (http_conn);
@@ -215,7 +215,7 @@ pecan_http_server_new (const gchar *name)
 }
 
 void
-pecan_http_server_free (PecanHttpServer *http_conn)
+pn_http_server_free (PnHttpServer *http_conn)
 {
     pn_log ("begin");
     g_object_unref (G_OBJECT (http_conn));
@@ -226,7 +226,7 @@ static gboolean
 http_poll (gpointer data)
 {
     PnNode *conn;
-    PecanHttpServer *http_conn;
+    PnHttpServer *http_conn;
     GIOStatus status = G_IO_STATUS_NORMAL;
     GError *tmp_error = NULL;
     gsize bytes_written = 0;
@@ -239,7 +239,7 @@ http_poll (gpointer data)
     g_return_val_if_fail (data != NULL, FALSE);
 
     conn = PN_NODE (data);
-    http_conn = PECAN_HTTP_SERVER (data);
+    http_conn = PN_HTTP_SERVER (data);
 
     pn_debug ("stream=%p", conn->stream);
 
@@ -317,12 +317,12 @@ connect_cb (gpointer data,
             const gchar *error_message)
 {
     PnNode *conn;
-    PecanHttpServer *http_conn;
+    PnHttpServer *http_conn;
 
     pn_log ("begin");
 
     conn = PN_NODE (data);
-    http_conn = PECAN_HTTP_SERVER (data);
+    http_conn = PN_HTTP_SERVER (data);
 
     conn->connect_data = NULL;
 
@@ -365,9 +365,9 @@ connect_impl (PnNode *conn,
               const gchar *hostname,
               gint port)
 {
-    PecanHttpServer *http_conn;
+    PnHttpServer *http_conn;
 
-    http_conn = PECAN_HTTP_SERVER (conn);
+    http_conn = PN_HTTP_SERVER (conn);
 
     g_return_if_fail (conn->session);
 
@@ -404,11 +404,11 @@ connect_impl (PnNode *conn,
 static void
 close_impl (PnNode *conn)
 {
-    PecanHttpServer *http_conn;
+    PnHttpServer *http_conn;
 
     pn_log ("begin");
 
-    http_conn = PECAN_HTTP_SERVER (conn);
+    http_conn = PN_HTTP_SERVER (conn);
 
     if (http_conn->timeout_id)
     {
@@ -452,14 +452,14 @@ read_impl (PnNode *conn,
            gsize *ret_bytes_read,
            GError **error)
 {
-    PecanHttpServer *http_conn;
+    PnHttpServer *http_conn;
     GIOStatus status = G_IO_STATUS_NORMAL;
     GError *tmp_error = NULL;
     gsize bytes_read = 0;
 
     pn_log ("begin");
 
-    http_conn = PECAN_HTTP_SERVER (conn);
+    http_conn = PN_HTTP_SERVER (conn);
 
     pn_debug ("stream=%p", conn->stream);
 
@@ -720,7 +720,7 @@ leave:
 }
 
 static inline void
-reset_timer (PecanHttpServer *http_conn)
+reset_timer (PnHttpServer *http_conn)
 {
     if (http_conn->timeout_id)
         g_source_remove (http_conn->timeout_id);
@@ -737,11 +737,11 @@ foo_write (PnNode *conn,
            GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
-    PecanHttpServer *http_conn;
+    PnHttpServer *http_conn;
     GError *tmp_error = NULL;
     gsize bytes_written = 0;
 
-    http_conn = PECAN_HTTP_SERVER (conn);
+    http_conn = PN_HTTP_SERVER (conn);
 
     pn_debug ("stream=%p", conn->stream);
 
@@ -860,11 +860,11 @@ write_impl (PnNode *conn,
             gsize *ret_bytes_written,
             GError **error)
 {
-    PecanHttpServer *http_conn;
+    PnHttpServer *http_conn;
     PnNode *prev;
     GIOStatus status = G_IO_STATUS_NORMAL;
 
-    http_conn = PECAN_HTTP_SERVER (conn);
+    http_conn = PN_HTTP_SERVER (conn);
     prev = PN_NODE (conn->prev);
 
     pn_debug ("stream=%p", conn->stream);
@@ -897,7 +897,7 @@ write_impl (PnNode *conn,
 static void
 dispose (GObject *obj)
 {
-    PecanHttpServer *http_conn = PECAN_HTTP_SERVER (obj);
+    PnHttpServer *http_conn = PN_HTTP_SERVER (obj);
 
     pn_log ("begin");
 
@@ -946,7 +946,7 @@ static void
 instance_init (GTypeInstance *instance,
                gpointer g_class)
 {
-    PecanHttpServer *http_conn = PECAN_HTTP_SERVER (instance);
+    PnHttpServer *http_conn = PN_HTTP_SERVER (instance);
 
     http_conn->gateway = g_strdup ("gateway.messenger.hotmail.com");
     http_conn->write_queue = g_queue_new ();
@@ -954,7 +954,7 @@ instance_init (GTypeInstance *instance,
 }
 
 GType
-pecan_http_server_get_type (void)
+pn_http_server_get_type (void)
 {
     static GType type = 0;
 
@@ -963,12 +963,12 @@ pecan_http_server_get_type (void)
         GTypeInfo *type_info;
 
         type_info = g_new0 (GTypeInfo, 1);
-        type_info->class_size = sizeof (PecanHttpServerClass);
+        type_info->class_size = sizeof (PnHttpServerClass);
         type_info->class_init = class_init;
-        type_info->instance_size = sizeof (PecanHttpServer);
+        type_info->instance_size = sizeof (PnHttpServer);
         type_info->instance_init = instance_init;
 
-        type = g_type_register_static (PN_NODE_TYPE, "PecanHttpServerType", type_info, 0);
+        type = g_type_register_static (PN_NODE_TYPE, "PnHttpServerType", type_info, 0);
     }
 
     return type;

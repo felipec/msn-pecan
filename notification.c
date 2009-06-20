@@ -38,7 +38,7 @@
 #include "ab/pecan_contact_priv.h"
 
 #include "io/pecan_cmd_server.h"
-#include "io/pecan_http_server.h"
+#include "io/pn_http_server.h"
 #include "io/pn_node_private.h"
 #include "io/pecan_cmd_server.h"
 
@@ -193,7 +193,7 @@ msn_notification_new(MsnSession *session)
                 /* Each node has it's own http connection. */
                 PnNode *foo;
 
-                foo = PN_NODE (pecan_http_server_new ("foo server"));
+                foo = PN_NODE (pn_http_server_new ("foo server"));
                 foo->session = session;
                 pn_node_link (conn, foo);
                 g_object_unref (foo);

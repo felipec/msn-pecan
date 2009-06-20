@@ -16,24 +16,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef PECAN_HTTP_SERVER_H
-#define PECAN_HTTP_SERVER_H
+#ifndef PN_HTTP_SERVER_H
+#define PN_HTTP_SERVER_H
 
 #include <glib-object.h>
 
-typedef struct PecanHttpServer PecanHttpServer;
-typedef struct PecanHttpServerClass PecanHttpServerClass;
+typedef struct PnHttpServer PnHttpServer;
+typedef struct PnHttpServerClass PnHttpServerClass;
 
 #include "pn_node.h"
 
-#define PECAN_HTTP_SERVER_TYPE (pecan_http_server_get_type ())
-#define PECAN_HTTP_SERVER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), PECAN_HTTP_SERVER_TYPE, PecanHttpServer))
-#define PECAN_HTTP_SERVER_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), PECAN_HTTP_SERVER_TYPE, PecanHttpServerClass))
-#define PECAN_HTTP_SERVER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), PECAN_HTTP_SERVER_TYPE, PecanHttpServerClass))
+#define PN_HTTP_SERVER_TYPE (pn_http_server_get_type ())
+#define PN_HTTP_SERVER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), PN_HTTP_SERVER_TYPE, PnHttpServer))
+#define PN_HTTP_SERVER_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), PN_HTTP_SERVER_TYPE, PnHttpServerClass))
+#define PN_HTTP_SERVER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), PN_HTTP_SERVER_TYPE, PnHttpServerClass))
 
-PecanHttpServer *pecan_http_server_new (const gchar *name);
-void pecan_http_server_free (PecanHttpServer *http_conn);
+PnHttpServer *pn_http_server_new (const gchar *name);
+void pn_http_server_free (PnHttpServer *http_conn);
 
-GType pecan_http_server_get_type (void);
+GType pn_http_server_get_type (void);
 
-#endif /* PECAN_HTTP_SERVER_H */
+#endif /* PN_HTTP_SERVER_H */

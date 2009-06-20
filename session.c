@@ -88,7 +88,7 @@ msn_session_new (const gchar *username,
     if (session->http_method)
     {
         PnNode *foo;
-        foo = PN_NODE (pecan_http_server_new ("foo server"));
+        foo = PN_NODE (pn_http_server_new ("foo server"));
         foo->session = session;
         session->http_conn = foo;
     }
