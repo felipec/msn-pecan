@@ -32,7 +32,19 @@
 #endif /* HAVE_LIBPURPLE */
 
 /* ms to delay between sending userdisplay requests to the server. */
-#define USERDISPLAY_DELAY 20000
+#define DP_DELAY 20000
+
+/* #define PECAN_DP_MANAGER_TIMED */
+
+struct PecanDpManager
+{
+    MsnSession *session;
+    GQueue *requests;
+    gint window;
+#ifdef PECAN_DP_MANAGER_TIMED
+    guint timer;
+#endif /* PECAN_DP_MANAGER_TIMED */
+};
 
 static void release (PecanDpManager *dpm);
 
@@ -154,7 +166,7 @@ userdisplay_fail (MsnSlpCall *slpcall,
 
 #ifdef HAVE_LIBPURPLE
     /* Wait before freeing our window slot and requesting the next icon. */
-    dpm->timer = purple_timeout_add (USERDISPLAY_DELAY, timeout, dpm);
+    dpm->timer = purple_timeout_add (DP_DELAY, timeout, dpm);
 #endif /* HAVE_LIBPURPLE */
 #else
     skip_request (dpm);

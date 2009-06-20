@@ -26,18 +26,6 @@ typedef struct PecanDpManager PecanDpManager;
 #include "ab/pecan_contact.h"
 #include "cvr/pecan_slp_object.h"
 
-/* #define PECAN_DP_MANAGER_TIMED */
-
-struct PecanDpManager
-{
-    MsnSession *session;
-    GQueue *requests;
-    gint window;
-#ifdef PECAN_DP_MANAGER_TIMED
-    guint timer;
-#endif /* PECAN_DP_MANAGER_TIMED */
-};
-
 PecanDpManager *pecan_dp_manager_new (MsnSession *session);
 void pecan_dp_manager_free (PecanDpManager *dpm);
 void pecan_dp_manager_contact_set_object (PecanContact *contact, MsnObject *obj);
