@@ -30,7 +30,7 @@ MSNSOURCES = msn.c \
 	     ab/pecan_contact.c \
 	     ab/pecan_contactlist.c \
 	     io/pn_stream.c \
-	     io/pecan_node.c \
+	     io/pn_node.c \
 	     io/pecan_cmd_server.c \
 	     io/pecan_http_server.c \
 	     io/pecan_ssl_conn.c \

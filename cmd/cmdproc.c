@@ -22,7 +22,7 @@
 #include "table_private.h"
 #include "command_private.h"
 
-#include "io/pecan_node.h"
+#include "io/pn_node.h"
 
 #include "pn_log.h"
 
@@ -126,10 +126,10 @@ msn_cmdproc_send_trans (MsnCmdProc *cmdproc,
     {
         GIOStatus status;
 
-        status = pecan_node_write (cmdproc->conn, data, len, NULL, NULL);
+        status = pn_node_write (cmdproc->conn, data, len, NULL, NULL);
 
         if (status != G_IO_STATUS_NORMAL)
-            pecan_node_error (cmdproc->conn);
+            pn_node_error (cmdproc->conn);
     }
 
     g_free (data);
@@ -170,10 +170,10 @@ msn_cmdproc_send_quick (MsnCmdProc *cmdproc,
     {
         GIOStatus status;
 
-        status = pecan_node_write (cmdproc->conn, data, len, NULL, NULL);
+        status = pn_node_write (cmdproc->conn, data, len, NULL, NULL);
 
         if (status != G_IO_STATUS_NORMAL)
-            pecan_node_error (cmdproc->conn);
+            pn_node_error (cmdproc->conn);
     }
 
     g_free (data);

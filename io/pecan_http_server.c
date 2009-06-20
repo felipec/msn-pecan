@@ -26,7 +26,7 @@
  */
 
 #include "pecan_http_server.h"
-#include "pecan_node_priv.h"
+#include "pn_node_private.h"
 #include "pn_stream.h"
 #include "pn_log.h"
 #include "pn_global.h"
@@ -51,7 +51,7 @@
 
 struct PecanHttpServer
 {
-    PecanNode parent;
+    PnNode parent;
     gboolean dispose_has_run;
 
     guint parser_state;
@@ -64,27 +64,27 @@ struct PecanHttpServer
     gchar *gateway;
 
     GHashTable *childs;
-    PecanNode *cur;
+    PnNode *cur;
     gchar *old_buffer;
 };
 
 struct PecanHttpServerClass
 {
-    PecanNodeClass parent_class;
+    PnNodeClass parent_class;
 };
 
-static PecanNodeClass *parent_class = NULL;
+static PnNodeClass *parent_class = NULL;
 
 typedef struct
 {
-    PecanNode *conn;
+    PnNode *conn;
     gchar *body;
     gsize body_len;
 } HttpQueueData;
 
 static GIOStatus
-foo_write (PecanNode *conn,
-           PecanNode *prev,
+foo_write (PnNode *conn,
+           PnNode *prev,
            const gchar *buf,
            gsize count,
            gsize *ret_bytes_written,
@@ -100,7 +100,7 @@ process_queue (PecanHttpServer *http_conn,
 
     if (queue_data)
     {
-        foo_write (PECAN_NODE (http_conn),
+        foo_write (PN_NODE (http_conn),
                    queue_data->conn,
                    queue_data->body,
                    queue_data->body_len,
@@ -117,13 +117,13 @@ read_cb (GIOChannel *source,
          GIOCondition condition,
          gpointer data)
 {
-    PecanNode *conn;
+    PnNode *conn;
     gchar buf[PN_BUF_LEN + 1];
     gsize bytes_read;
 
     pn_log ("begin");
 
-    conn = PECAN_NODE (data);
+    conn = PN_NODE (data);
 
     pn_debug ("conn=%p,source=%p", conn, source);
 
@@ -132,7 +132,7 @@ read_cb (GIOChannel *source,
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
-        status = pecan_node_read (conn, buf, PN_BUF_LEN, &bytes_read, &conn->error);
+        status = pn_node_read (conn, buf, PN_BUF_LEN, &bytes_read, &conn->error);
 
         if (status == G_IO_STATUS_AGAIN)
         {
@@ -142,7 +142,7 @@ read_cb (GIOChannel *source,
 
         if (conn->error)
         {
-            pecan_node_error (conn);
+            pn_node_error (conn);
             g_object_unref (conn);
             return FALSE;
         }
@@ -168,7 +168,7 @@ read_cb (GIOChannel *source,
             if (!(http_conn->old_buffer &&
                   strncmp (buf, http_conn->old_buffer, bytes_read) == 0))
             {
-                pecan_node_parse (http_conn->cur, buf, bytes_read);
+                pn_node_parse (http_conn->cur, buf, bytes_read);
 
                 g_free (http_conn->old_buffer);
                 http_conn->old_buffer = g_strndup (buf, bytes_read);
@@ -181,7 +181,7 @@ read_cb (GIOChannel *source,
 
         if (conn->error)
         {
-            pecan_node_error (conn);
+            pn_node_error (conn);
             g_object_unref (conn);
             return FALSE;
         }
@@ -204,9 +204,9 @@ pecan_http_server_new (const gchar *name)
     http_conn = PECAN_HTTP_SERVER (g_type_create_instance (PECAN_HTTP_SERVER_TYPE));
 
     {
-        PecanNode *tmp = PECAN_NODE (http_conn);
+        PnNode *tmp = PN_NODE (http_conn);
         tmp->name = g_strdup (name);
-        tmp->type = PECAN_NODE_HTTP;
+        tmp->type = PN_NODE_HTTP;
     }
 
     pn_log ("end");
@@ -225,7 +225,7 @@ pecan_http_server_free (PecanHttpServer *http_conn)
 static gboolean
 http_poll (gpointer data)
 {
-    PecanNode *conn;
+    PnNode *conn;
     PecanHttpServer *http_conn;
     GIOStatus status = G_IO_STATUS_NORMAL;
     GError *tmp_error = NULL;
@@ -238,7 +238,7 @@ http_poll (gpointer data)
 
     g_return_val_if_fail (data != NULL, FALSE);
 
-    conn = PECAN_NODE (data);
+    conn = PN_NODE (data);
     http_conn = PECAN_HTTP_SERVER (data);
 
     pn_debug ("stream=%p", conn->stream);
@@ -301,9 +301,9 @@ http_poll (gpointer data)
 
     if (status != G_IO_STATUS_NORMAL)
     {
-        PecanNodeClass *class;
+        PnNodeClass *class;
         pn_error ("not normal: status=%d", status);
-        class = g_type_class_peek (PECAN_NODE_TYPE);
+        class = g_type_class_peek (PN_NODE_TYPE);
         g_signal_emit (G_OBJECT (conn), class->error_sig, 0, conn);
         return FALSE;
     }
@@ -316,12 +316,12 @@ connect_cb (gpointer data,
             gint source,
             const gchar *error_message)
 {
-    PecanNode *conn;
+    PnNode *conn;
     PecanHttpServer *http_conn;
 
     pn_log ("begin");
 
-    conn = PECAN_NODE (data);
+    conn = PN_NODE (data);
     http_conn = PECAN_HTTP_SERVER (data);
 
     conn->connect_data = NULL;
@@ -341,17 +341,17 @@ connect_cb (gpointer data,
         conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, conn);
 
         {
-            PecanNodeClass *class;
-            class = g_type_class_peek (PECAN_NODE_TYPE);
+            PnNodeClass *class;
+            class = g_type_class_peek (PN_NODE_TYPE);
             g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
         }
     }
     else
     {
-        PecanNodeClass *class;
-        class = g_type_class_peek (PECAN_NODE_TYPE);
+        PnNodeClass *class;
+        class = g_type_class_peek (PN_NODE_TYPE);
 
-        conn->error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
+        conn->error = g_error_new_literal (PN_NODE_ERROR, PN_NODE_ERROR_OPEN,
                                            error_message ? error_message : "Unable to connect");
 
         g_signal_emit (G_OBJECT (conn), class->error_sig, 0, conn);
@@ -361,7 +361,7 @@ connect_cb (gpointer data,
 }
 
 static void
-connect_impl (PecanNode *conn,
+connect_impl (PnNode *conn,
               const gchar *hostname,
               gint port)
 {
@@ -381,7 +381,7 @@ connect_impl (PecanNode *conn,
             purple_proxy_connect_cancel (conn->connect_data);
         }
 
-        if (conn->prev->type == PECAN_NODE_NS)
+        if (conn->prev->type == PN_NODE_NS)
             hostname = http_conn->gateway;
         port = 80;
         pn_debug ("conn=%p,hostname=%s,port=%d", conn, hostname, port);
@@ -394,15 +394,15 @@ connect_impl (PecanNode *conn,
         if (conn->prev)
         {
             /* fake open */
-            PecanNodeClass *class;
-            class = g_type_class_peek (PECAN_NODE_TYPE);
+            PnNodeClass *class;
+            class = g_type_class_peek (PN_NODE_TYPE);
             g_signal_emit (G_OBJECT (conn->prev), class->open_sig, 0, conn->prev);
         }
     }
 }
 
 static void
-close_impl (PecanNode *conn)
+close_impl (PnNode *conn)
 {
     PecanHttpServer *http_conn;
 
@@ -440,13 +440,13 @@ close_impl (PecanNode *conn)
     g_hash_table_remove_all (http_conn->childs);
 #endif
 
-    PECAN_NODE_CLASS (parent_class)->close (conn);
+    PN_NODE_CLASS (parent_class)->close (conn);
 
     pn_log ("end");
 }
 
 static GIOStatus
-read_impl (PecanNode *conn,
+read_impl (PnNode *conn,
            gchar *buf,
            gsize count,
            gsize *ret_bytes_read,
@@ -499,7 +499,7 @@ read_impl (PecanNode *conn,
                    (strcmp (tokens[0], "HTTP/1.0") == 0))))
             {
                 pn_debug ("error reading: parse error");
-                tmp_error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
+                tmp_error = g_error_new_literal (PN_NODE_ERROR, PN_NODE_ERROR_OPEN,
                                                  "Parse error");
                 goto leave;
             }
@@ -507,7 +507,7 @@ read_impl (PecanNode *conn,
             if (!(tokens[1]))
             {
                 pn_debug ("error reading: parse error");
-                tmp_error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
+                tmp_error = g_error_new_literal (PN_NODE_ERROR, PN_NODE_ERROR_OPEN,
                                                  "Parse error");
                 goto leave;
             }
@@ -517,7 +517,7 @@ read_impl (PecanNode *conn,
             if (code != 200 && code != 100)
             {
                 pn_debug ("error reading: %d %s", code, tokens[2]);
-                tmp_error = g_error_new (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
+                tmp_error = g_error_new (PN_NODE_ERROR, PN_NODE_ERROR_OPEN,
                                          "%s",  tokens[2]);
                 goto leave;
             }
@@ -563,7 +563,7 @@ read_impl (PecanNode *conn,
                 if (!(tokens[0] && tokens[1]))
                 {
                     pn_debug ("error reading: parse error");
-                    tmp_error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
+                    tmp_error = g_error_new_literal (PN_NODE_ERROR, PN_NODE_ERROR_OPEN,
                                                      "Parse error");
                     goto leave;
                 }
@@ -629,7 +629,7 @@ read_impl (PecanNode *conn,
         if (http_conn->parser_state == 2)
         {
             {
-                PecanNode *child;
+                PnNode *child;
                 gchar *session_id;
                 gchar *t;
 
@@ -644,16 +644,16 @@ read_impl (PecanNode *conn,
                 {
                     if (child)
                     {
-                        PecanNode *foo;
+                        PnNode *foo;
 
                         pn_info ("removing child");
-                        pecan_node_close (child);
+                        pn_node_close (child);
                         g_hash_table_remove (http_conn->childs, session_id);
 
                         g_object_unref (G_OBJECT (http_conn->cur));
                         g_free (http_conn->gateway);
                         g_free (http_conn->last_session_id);
-                        if ((foo = PECAN_NODE (g_hash_table_peek_first (http_conn->childs))))
+                        if ((foo = PN_NODE (g_hash_table_peek_first (http_conn->childs))))
                         {
                             http_conn->cur = foo;
                             http_conn->gateway = g_strdup (foo->hostname);
@@ -665,7 +665,7 @@ read_impl (PecanNode *conn,
                             http_conn->cur = NULL;
                             http_conn->gateway = NULL;
                             http_conn->last_session_id = NULL;
-                            pecan_node_close (conn);
+                            pn_node_close (conn);
                         }
                     }
                 }
@@ -729,8 +729,8 @@ reset_timer (PecanHttpServer *http_conn)
 }
 
 static GIOStatus
-foo_write (PecanNode *conn,
-           PecanNode *prev,
+foo_write (PnNode *conn,
+           PnNode *prev,
            const gchar *buf,
            gsize count,
            gsize *ret_bytes_written,
@@ -763,7 +763,7 @@ foo_write (PecanNode *conn,
         else
         {
             params = g_strdup_printf ("Action=open&Server=%s&IP=%s",
-                                      prev->type == PECAN_NODE_NS ? "NS" : "SB",
+                                      prev->type == PN_NODE_NS ? "NS" : "SB",
                                       prev->hostname);
         }
 
@@ -854,18 +854,18 @@ foo_write (PecanNode *conn,
 }
 
 static GIOStatus
-write_impl (PecanNode *conn,
+write_impl (PnNode *conn,
             const gchar *buf,
             gsize count,
             gsize *ret_bytes_written,
             GError **error)
 {
     PecanHttpServer *http_conn;
-    PecanNode *prev;
+    PnNode *prev;
     GIOStatus status = G_IO_STATUS_NORMAL;
 
     http_conn = PECAN_HTTP_SERVER (conn);
-    prev = PECAN_NODE (conn->prev);
+    prev = PN_NODE (conn->prev);
 
     pn_debug ("stream=%p", conn->stream);
     pn_debug ("conn=%p,prev=%p", conn, prev);
@@ -928,7 +928,7 @@ static void
 class_init (gpointer g_class,
             gpointer class_data)
 {
-    PecanNodeClass *conn_class = PECAN_NODE_CLASS (g_class);
+    PnNodeClass *conn_class = PN_NODE_CLASS (g_class);
     GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
 
     conn_class->connect = &connect_impl;
@@ -968,7 +968,7 @@ pecan_http_server_get_type (void)
         type_info->instance_size = sizeof (PecanHttpServer);
         type_info->instance_init = instance_init;
 
-        type = g_type_register_static (PECAN_NODE_TYPE, "PecanHttpServerType", type_info, 0);
+        type = g_type_register_static (PN_NODE_TYPE, "PecanHttpServerType", type_info, 0);
     }
 
     return type;

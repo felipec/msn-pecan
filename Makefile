@@ -97,7 +97,7 @@ objects := msn.o \
 	   ab/pecan_contact.o \
 	   ab/pecan_contactlist.o \
 	   io/pn_stream.o \
-	   io/pecan_node.o \
+	   io/pn_node.o \
 	   io/pecan_cmd_server.o \
 	   io/pecan_http_server.o \
 	   io/pecan_ssl_conn.o \

@@ -22,7 +22,7 @@
 #include "io/pecan_ssl_conn.h"
 #include "io/pecan_parser.h"
 
-#include "io/pecan_node_priv.h"
+#include "io/pn_node_private.h"
 #include "session_private.h"
 #include <string.h> /* for strlen */
 #include <stdlib.h> /* for atoi */
@@ -55,7 +55,7 @@ struct OimRequest
     gsize payload;
 
     gulong open_sig_handler;
-    PecanNode *conn;
+    PnNode *conn;
 };
 
 static inline OimRequest *
@@ -79,7 +79,7 @@ oim_request_free (OimRequest *oim_request)
     if (oim_request->open_sig_handler)
         g_signal_handler_disconnect (oim_request->conn, oim_request->open_sig_handler);
 
-    pecan_node_free (oim_request->conn);
+    pn_node_free (oim_request->conn);
     pecan_parser_free (oim_request->parser);
     g_free (oim_request->passport);
     g_free (oim_request->message_id);
@@ -117,7 +117,7 @@ pn_oim_session_free (PecanOimSession *oim_session)
 }
 
 static inline void
-oim_send_request (PecanNode *conn,
+oim_send_request (PnNode *conn,
                   OimRequest *oim_request)
 {
     gchar *body;
@@ -171,7 +171,7 @@ oim_send_request (PecanNode *conn,
 
     {
         gsize len;
-        pecan_node_write (conn, header, strlen (header), &len, NULL);
+        pn_node_write (conn, header, strlen (header), &len, NULL);
         pn_debug ("write_len=%d", len);
     }
 
@@ -181,7 +181,7 @@ oim_send_request (PecanNode *conn,
 }
 
 static void
-open_cb (PecanNode *conn,
+open_cb (PnNode *conn,
          OimRequest *oim_request)
 {
     g_return_if_fail (conn);
@@ -208,7 +208,7 @@ next_request (PecanOimSession *oim_session)
 }
 
 static void
-read_cb (PecanNode *conn,
+read_cb (PnNode *conn,
          gpointer data)
 {
     OimRequest *oim_request;
@@ -291,7 +291,7 @@ read_cb (PecanNode *conn,
     }
 
 leave:
-    pecan_node_close (conn);
+    pn_node_close (conn);
     next_request (oim_request->oim_session);
 }
 
@@ -307,17 +307,17 @@ oim_process_requests (PecanOimSession *oim_session)
 
     {
         PecanSslConn *ssl_conn;
-        PecanNode *conn;
+        PnNode *conn;
 
-        ssl_conn = pecan_ssl_conn_new ("oim", PECAN_NODE_NULL);
+        ssl_conn = pecan_ssl_conn_new ("oim", PN_NODE_NULL);
 
-        conn = PECAN_NODE (ssl_conn);
+        conn = PN_NODE (ssl_conn);
         conn->session = oim_session->session;
 
         oim_request->parser = pecan_parser_new (conn);
         pecan_ssl_conn_set_read_cb (ssl_conn, read_cb, oim_request);
 
-        pecan_node_connect (conn, "rsi.hotmail.com", 443);
+        pn_node_connect (conn, "rsi.hotmail.com", 443);
 
         oim_request->conn = conn;
         oim_request->open_sig_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), oim_request);

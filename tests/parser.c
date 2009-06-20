@@ -24,27 +24,27 @@
 #include <fcntl.h>
 
 #include "io/pecan_parser.h"
-#include "io/pecan_node_priv.h"
+#include "io/pn_node_private.h"
 #include "io/pn_stream.h"
 
 START_TEST (test_basic)
 {
-    PecanNode *node;
+    PnNode *node;
 
-    node = pecan_node_new ("foo", 0);
-    pecan_node_free (node);
+    node = pn_node_new ("foo", 0);
+    pn_node_free (node);
 }
 END_TEST
 
 START_TEST (test_simple)
 {
-    PecanNode *node;
+    PnNode *node;
     PecanParser *parser;
     gchar *str;
     gsize terminator_pos;
     gint fd;
 
-    node = pecan_node_new ("foo", 0);
+    node = pn_node_new ("foo", 0);
     parser = pecan_parser_new (node);
 
     fd = g_open ("stream_test/000", O_RDONLY);
@@ -57,19 +57,19 @@ START_TEST (test_simple)
     }
 
     pecan_parser_free (parser);
-    pecan_node_free (node);
+    pn_node_free (node);
 }
 END_TEST
 
 START_TEST (test_through)
 {
-    PecanNode *node;
+    PnNode *node;
     PecanParser *parser;
     gchar *str;
     gsize terminator_pos;
     gint fd;
 
-    node = pecan_node_new ("foo", 0);
+    node = pn_node_new ("foo", 0);
     parser = pecan_parser_new (node);
 
     fd = g_open ("stream_test/000", O_RDONLY);
@@ -89,19 +89,19 @@ START_TEST (test_through)
     }
 
     pecan_parser_free (parser);
-    pecan_node_free (node);
+    pn_node_free (node);
 }
 END_TEST
 
 START_TEST (test_cut)
 {
-    PecanNode *node;
+    PnNode *node;
     PecanParser *parser;
     gchar *str;
     gsize terminator_pos;
     gint fd;
 
-    node = pecan_node_new ("foo", 0);
+    node = pn_node_new ("foo", 0);
     parser = pecan_parser_new (node);
 
     fd = g_open ("stream_test/001", O_RDONLY);
@@ -121,19 +121,19 @@ START_TEST (test_cut)
     }
 
     pecan_parser_free (parser);
-    pecan_node_free (node);
+    pn_node_free (node);
 }
 END_TEST
 
 START_TEST (test_span)
 {
-    PecanNode *node;
+    PnNode *node;
     PecanParser *parser;
     gchar *str;
     gsize terminator_pos;
     gint fd;
 
-    node = pecan_node_new ("foo", 0);
+    node = pn_node_new ("foo", 0);
     parser = pecan_parser_new (node);
 
     fd = g_open ("stream_test/001", O_RDONLY);
@@ -168,7 +168,7 @@ START_TEST (test_span)
     }
 
     pecan_parser_free (parser);
-    pecan_node_free (node);
+    pn_node_free (node);
 }
 END_TEST
 

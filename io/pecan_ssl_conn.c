@@ -17,7 +17,7 @@
  */
 
 #include "pecan_ssl_conn.h"
-#include "pecan_node_priv.h"
+#include "pn_node_private.h"
 #include "pn_log.h"
 
 #include "session.h" /* for libpurple account */
@@ -36,7 +36,7 @@
 
 struct PecanSslConn
 {
-    PecanNode parent;
+    PnNode parent;
 
     struct _PurpleSslConnection *ssl_data;
     PecanSslConnReadCb read_cb;
@@ -45,7 +45,7 @@ struct PecanSslConn
 
 struct PecanSslConnClass
 {
-    PecanNodeClass parent_class;
+    PnNodeClass parent_class;
 };
 
 static GObjectClass *parent_class = NULL;
@@ -55,12 +55,12 @@ read_cb (gpointer data,
          PurpleSslConnection *gsc,
          PurpleInputCondition cond)
 {
-    PecanNode *conn;
+    PnNode *conn;
     PecanSslConn *ssl_conn;
 
     pn_log ("begin");
 
-    conn = PECAN_NODE (data);
+    conn = PN_NODE (data);
     ssl_conn = PECAN_SSL_CONN (data);
 
     pn_debug ("conn=%p,name=%s", conn, conn->name);
@@ -82,7 +82,7 @@ read_cb (gpointer data,
         {
             GIOStatus status = G_IO_STATUS_NORMAL;
 
-            status = pecan_node_read (conn, buf, MSN_BUF_LEN, &bytes_read, NULL);
+            status = pn_node_read (conn, buf, MSN_BUF_LEN, &bytes_read, NULL);
 
             if (status == G_IO_STATUS_AGAIN)
             {
@@ -92,19 +92,19 @@ read_cb (gpointer data,
 
             if (status == G_IO_STATUS_EOF)
             {
-                conn->error = g_error_new (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN, "End of stream");
+                conn->error = g_error_new (PN_NODE_ERROR, PN_NODE_ERROR_OPEN, "End of stream");
             }
 
             if (conn->error)
             {
-                pecan_node_error (conn);
+                pn_node_error (conn);
                 g_object_unref (conn);
                 purple_ssl_close (gsc);
                 return;
             }
         }
 
-        pecan_node_parse (conn, buf, bytes_read);
+        pn_node_parse (conn, buf, bytes_read);
 
         g_object_unref (conn);
     }
@@ -116,15 +116,15 @@ leave:
 
 PecanSslConn *
 pecan_ssl_conn_new (gchar *name,
-                    PecanNodeType type)
+                    PnNodeType type)
 {
     PecanSslConn *ssl_conn;
-    PecanNode *conn;
+    PnNode *conn;
 
     pn_log ("begin");
 
     ssl_conn = PECAN_SSL_CONN (g_type_create_instance (PECAN_SSL_CONN_TYPE));
-    conn = PECAN_NODE (ssl_conn);
+    conn = PN_NODE (ssl_conn);
 
     conn->name = g_strdup (name);
     conn->type = type;
@@ -153,19 +153,19 @@ pecan_ssl_conn_set_read_cb (PecanSslConn *ssl_conn,
     ssl_conn->read_cb_data = data;
 }
 
-/* PecanNode stuff. */
+/* PnNode stuff. */
 
 static void
 connect_cb (gpointer data,
             PurpleSslConnection *gsc,
             PurpleInputCondition cond)
 {
-    PecanNode *conn;
+    PnNode *conn;
     PecanSslConn *ssl_conn;
 
     pn_log ("begin");
 
-    conn = PECAN_NODE (data);
+    conn = PN_NODE (data);
     ssl_conn = PECAN_SSL_CONN (data);
 
     g_object_ref (conn);
@@ -178,14 +178,14 @@ connect_cb (gpointer data,
     else
     {
         /* pn_error ("connection error: conn=%p,msg=[%s]", conn, error_message); */
-        conn->error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
+        conn->error = g_error_new_literal (PN_NODE_ERROR, PN_NODE_ERROR_OPEN,
                                            "Unable to connect");
-        pecan_node_error (conn);
+        pn_node_error (conn);
     }
 
     {
-        PecanNodeClass *class;
-        class = g_type_class_peek (PECAN_NODE_TYPE);
+        PnNodeClass *class;
+        class = g_type_class_peek (PN_NODE_TYPE);
         g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
     }
 
@@ -195,7 +195,7 @@ connect_cb (gpointer data,
 }
 
 static void
-connect_impl (PecanNode *conn,
+connect_impl (PnNode *conn,
               const gchar *hostname,
               gint port)
 {
@@ -213,7 +213,7 @@ connect_impl (PecanNode *conn,
     conn->hostname = g_strdup (hostname);
     conn->port = port;
 
-    pecan_node_close (conn);
+    pn_node_close (conn);
 
 #ifdef HAVE_LIBPURPLE
     ssl_conn->ssl_data = purple_ssl_connect (msn_session_get_user_data (conn->session),
@@ -224,7 +224,7 @@ connect_impl (PecanNode *conn,
 }
 
 static void
-close_impl (PecanNode *conn)
+close_impl (PnNode *conn)
 {
     PecanSslConn *ssl_conn;
 
@@ -282,7 +282,7 @@ status_to_str (GIOStatus status)
 }
 
 static GIOStatus
-write_impl (PecanNode *conn,
+write_impl (PnNode *conn,
             const gchar *buf,
             gsize count,
             gsize *ret_bytes_written,
@@ -342,7 +342,7 @@ write_impl (PecanNode *conn,
 }
 
 static GIOStatus
-read_impl (PecanNode *conn,
+read_impl (PnNode *conn,
            gchar *buf,
            gsize count,
            gsize *ret_bytes_read,
@@ -394,7 +394,7 @@ read_impl (PecanNode *conn,
 static void
 dispose (GObject *obj)
 {
-    PecanNode *conn = PECAN_NODE (obj);
+    PnNode *conn = PN_NODE (obj);
 
     pn_log ("begin");
 
@@ -402,7 +402,7 @@ dispose (GObject *obj)
     {
         conn->dispose_has_run = TRUE;
 
-        pecan_node_close (conn);
+        pn_node_close (conn);
 
         g_free (conn->name);
     }
@@ -422,7 +422,7 @@ static void
 class_init (gpointer g_class,
             gpointer class_data)
 {
-    PecanNodeClass *conn_class = PECAN_NODE_CLASS (g_class);
+    PnNodeClass *conn_class = PN_NODE_CLASS (g_class);
     GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
 
     conn_class->connect = &connect_impl;
@@ -450,7 +450,7 @@ pecan_ssl_conn_get_type (void)
         type_info->class_init = class_init;
         type_info->instance_size = sizeof (PecanSslConn);
 
-        type = g_type_register_static (PECAN_NODE_TYPE, "PecanSslConnType", type_info, 0);
+        type = g_type_register_static (PN_NODE_TYPE, "PecanSslConnType", type_info, 0);
 
         g_free (type_info);
     }

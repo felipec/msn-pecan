@@ -28,7 +28,7 @@ typedef struct MsnDirectConn MsnDirectConn;
 #include "cmd/msg.h"
 #include "io/pn_stream.h"
 
-struct PecanNode;
+struct PnNode;
 struct _PurpleProxyConnectData;
 
 struct MsnDirectConn

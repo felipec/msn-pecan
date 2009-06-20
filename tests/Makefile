@@ -10,7 +10,7 @@ CFLAGS := -Wall -ggdb -I..
 
 cmd_parser_test_objects := cmd_parser.o \
 			   ../io/pecan_cmd_server.o \
-			   ../io/pecan_node.o \
+			   ../io/pn_node.o \
 			   ../cmd/cmdproc.o \
 			   ../cmd/command.o \
 			   ../cmd/history.o \
@@ -47,7 +47,7 @@ check_buffer: LIBS := $(GOBJECT_LIBS) $(CHECK_LIBS)
 
 checks += check_buffer
 
-check_parser: parser.o ../io/pecan_parser.o ../io/pecan_node.o ../io/pn_stream.o ../pn_log.o ../pn_printf.o
+check_parser: parser.o ../io/pecan_parser.o ../io/pn_node.o ../io/pn_stream.o ../pn_log.o ../pn_printf.o
 check_parser: CFLAGS := $(CFLAGS) $(GOBJECT_CFLAGS) $(CHECK_CFLAGS)
 check_parser: LIBS := $(GOBJECT_LIBS) $(CHECK_LIBS)
 

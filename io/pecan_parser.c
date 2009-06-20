@@ -19,7 +19,7 @@
 #include <glib.h>
 
 #include "io/pecan_parser.h"
-#include "io/pecan_node.h"
+#include "io/pn_node.h"
 
 #include "pn_log.h"
 
@@ -27,14 +27,14 @@
 
 struct PecanParser
 {
-    PecanNode *node;
+    PnNode *node;
     gchar *rx_buf;
     gsize rx_len;
     gboolean need_more;
 };
 
 PecanParser *
-pecan_parser_new (PecanNode *node)
+pecan_parser_new (PnNode *node)
 {
     PecanParser *parser;
     parser = g_new0 (PecanParser, 1);
@@ -71,7 +71,7 @@ pecan_parser_read_line (PecanParser *parser,
         gchar buf[0x2000 + 1];
         gsize bytes_read;
 
-        status = pecan_node_read (parser->node, buf, 0x2000, &bytes_read, NULL);
+        status = pn_node_read (parser->node, buf, 0x2000, &bytes_read, NULL);
 
         if (status != G_IO_STATUS_NORMAL)
             goto leave;

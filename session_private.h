@@ -21,12 +21,11 @@
 #define SESSION_PRIVATE_H
 
 #include "session.h"
-#include "io/pecan_node.h"
 
 #include "ab/pecan_contact.h"
 #include "ab/pecan_contactlist.h"
 
-#include "io/pecan_node.h"
+#include "io/pn_node.h"
 
 #include "pn_oim.h"
 #include "pn_dp_manager.h"
@@ -52,7 +51,7 @@ struct MsnSession
     gboolean connected;
     gboolean logged_in; /** @todo move to libpurple user_data and cancel
                           operations that require us to be logged in. */
-    PecanNode *http_conn;
+    PnNode *http_conn;
 
     struct MsnNotification *notification;
     struct MsnNexus *nexus;

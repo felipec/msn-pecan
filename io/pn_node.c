@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "pecan_node_priv.h"
+#include "pn_node_private.h"
 #include "pn_stream.h"
 #include "pn_log.h"
 #include "pn_global.h"
@@ -36,12 +36,12 @@
 #undef close
 #endif /* HAVE_LIBPURPLE */
 
-void pecan_node_error (PecanNode *conn);
+void pn_node_error (PnNode *conn);
 
 static GObjectClass *parent_class = NULL;
 
 GQuark
-pecan_node_error_quark (void)
+pn_node_error_quark (void)
 {
     return g_quark_from_static_string ("conn-object-error-quark");
 }
@@ -68,13 +68,13 @@ read_cb (GIOChannel *source,
          GIOCondition condition,
          gpointer data)
 {
-    PecanNode *conn;
+    PnNode *conn;
     gchar buf[PN_BUF_LEN + 1];
     gsize bytes_read;
 
     pn_log ("begin");
 
-    conn = PECAN_NODE (data);
+    conn = PN_NODE (data);
 
     pn_debug ("conn=%p,name=%s", conn, conn->name);
 
@@ -83,7 +83,7 @@ read_cb (GIOChannel *source,
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
-        status = pecan_node_read (conn, buf, PN_BUF_LEN, &bytes_read, NULL);
+        status = pn_node_read (conn, buf, PN_BUF_LEN, &bytes_read, NULL);
 
         if (status == G_IO_STATUS_AGAIN)
         {
@@ -93,18 +93,18 @@ read_cb (GIOChannel *source,
 
         if (status == G_IO_STATUS_EOF)
         {
-            conn->error = g_error_new (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN, "End of stream");
+            conn->error = g_error_new (PN_NODE_ERROR, PN_NODE_ERROR_OPEN, "End of stream");
         }
 
         if (conn->error)
         {
-            pecan_node_error (conn);
+            pn_node_error (conn);
             g_object_unref (conn);
             return FALSE;
         }
     }
 
-    pecan_node_parse (conn, buf, bytes_read);
+    pn_node_parse (conn, buf, bytes_read);
 
     g_object_unref (conn);
 
@@ -114,18 +114,18 @@ read_cb (GIOChannel *source,
 }
 
 static void
-open_cb (PecanNode *next,
+open_cb (PnNode *next,
          gpointer data)
 {
-    PecanNode *conn;
+    PnNode *conn;
 
-    conn = PECAN_NODE (data);
+    conn = PN_NODE (data);
 
     pn_log ("begin");
 
     {
-        PecanNodeClass *class;
-        class = g_type_class_peek (PECAN_NODE_TYPE);
+        PnNodeClass *class;
+        class = g_type_class_peek (PN_NODE_TYPE);
         g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
     }
 
@@ -136,20 +136,20 @@ open_cb (PecanNode *next,
 }
 
 static void
-close_cb (PecanNode *next,
+close_cb (PnNode *next,
           gpointer data)
 {
-    PecanNode *conn;
+    PnNode *conn;
 
-    conn = PECAN_NODE (data);
+    conn = PN_NODE (data);
 
     pn_log ("begin");
 
-    pecan_node_close (conn);
+    pn_node_close (conn);
 
     {
-        PecanNodeClass *class;
-        class = g_type_class_peek (PECAN_NODE_TYPE);
+        PnNodeClass *class;
+        class = g_type_class_peek (PN_NODE_TYPE);
         g_signal_emit (G_OBJECT (conn), class->close_sig, 0, conn);
     }
 
@@ -157,12 +157,12 @@ close_cb (PecanNode *next,
 }
 
 static void
-error_cb (PecanNode *next,
+error_cb (PnNode *next,
           gpointer data)
 {
-    PecanNode *conn;
+    PnNode *conn;
 
-    conn = PECAN_NODE (data);
+    conn = PN_NODE (data);
 
     pn_log ("begin");
 
@@ -173,23 +173,23 @@ error_cb (PecanNode *next,
     }
 
     {
-        PecanNodeClass *class;
-        class = g_type_class_peek (PECAN_NODE_TYPE);
+        PnNodeClass *class;
+        class = g_type_class_peek (PN_NODE_TYPE);
         g_signal_emit (G_OBJECT (conn), class->error_sig, 0, conn);
     }
 
     pn_log ("end");
 }
 
-PecanNode *
-pecan_node_new (gchar *name,
-                PecanNodeType type)
+PnNode *
+pn_node_new (gchar *name,
+             PnNodeType type)
 {
-    PecanNode *conn;
+    PnNode *conn;
 
     pn_log ("begin");
 
-    conn = PECAN_NODE (g_type_create_instance (PECAN_NODE_TYPE));
+    conn = PN_NODE (g_type_create_instance (PN_NODE_TYPE));
 
     conn->name = g_strdup (name);
     conn->type = type;
@@ -200,7 +200,7 @@ pecan_node_new (gchar *name,
 }
 
 void
-pecan_node_free (PecanNode *conn)
+pn_node_free (PnNode *conn)
 {
     g_return_if_fail (conn != NULL);
     pn_log ("begin");
@@ -209,7 +209,7 @@ pecan_node_free (PecanNode *conn)
 }
 
 void
-pecan_node_error (PecanNode *conn)
+pn_node_error (PnNode *conn)
 {
     g_return_if_fail (conn != NULL);
 
@@ -218,8 +218,8 @@ pecan_node_error (PecanNode *conn)
     g_object_ref (conn);
 
     {
-        PecanNodeClass *class;
-        class = g_type_class_peek (PECAN_NODE_TYPE);
+        PnNodeClass *class;
+        class = g_type_class_peek (PN_NODE_TYPE);
         g_signal_emit (G_OBJECT (conn), class->error_sig, 0, conn);
     }
 
@@ -233,29 +233,29 @@ pecan_node_error (PecanNode *conn)
 }
 
 GIOStatus
-pecan_node_write (PecanNode *conn,
-                  const gchar *buf,
-                  gsize count,
-                  gsize *ret_bytes_written,
-                  GError **error)
+pn_node_write (PnNode *conn,
+               const gchar *buf,
+               gsize count,
+               gsize *ret_bytes_written,
+               GError **error)
 {
-    return PECAN_NODE_GET_CLASS (conn)->write (conn, buf, count, ret_bytes_written, error);
+    return PN_NODE_GET_CLASS (conn)->write (conn, buf, count, ret_bytes_written, error);
 }
 
 GIOStatus
-pecan_node_read (PecanNode *conn,
-                 gchar *buf,
-                 gsize count,
-                 gsize *ret_bytes_read,
-                 GError **error)
+pn_node_read (PnNode *conn,
+              gchar *buf,
+              gsize count,
+              gsize *ret_bytes_read,
+              GError **error)
 {
-    return PECAN_NODE_GET_CLASS (conn)->read (conn, buf, count, ret_bytes_read, error);
+    return PN_NODE_GET_CLASS (conn)->read (conn, buf, count, ret_bytes_read, error);
 }
 
 /* If two nodes are linked the 'next' node is used for the real communication. */
 void
-pecan_node_link (PecanNode *conn,
-                 PecanNode *next)
+pn_node_link (PnNode *conn,
+              PnNode *next)
 {
     conn->next = g_object_ref (next);
     conn->open_sig_handler = g_signal_connect (next, "open", G_CALLBACK (open_cb), conn);
@@ -264,28 +264,28 @@ pecan_node_link (PecanNode *conn,
 }
 
 void
-pecan_node_connect (PecanNode *conn,
-                    const gchar *hostname,
-                    gint port)
+pn_node_connect (PnNode *conn,
+                 const gchar *hostname,
+                 gint port)
 {
-    PECAN_NODE_GET_CLASS (conn)->connect (conn, hostname, port);
+    PN_NODE_GET_CLASS (conn)->connect (conn, hostname, port);
 }
 
 void
-pecan_node_close (PecanNode *conn)
+pn_node_close (PnNode *conn)
 {
-    PECAN_NODE_GET_CLASS (conn)->close (conn);
+    PN_NODE_GET_CLASS (conn)->close (conn);
 }
 
 void
-pecan_node_parse (PecanNode *conn,
-                  gchar *buf,
-                  gsize bytes_read)
+pn_node_parse (PnNode *conn,
+               gchar *buf,
+               gsize bytes_read)
 {
-    PECAN_NODE_GET_CLASS (conn)->parse (conn, buf, bytes_read);
+    PN_NODE_GET_CLASS (conn)->parse (conn, buf, bytes_read);
 }
 
-/* PecanNode stuff. */
+/* PnNode stuff. */
 
 #ifdef PECAN_SOCKET
 static void
@@ -293,11 +293,11 @@ connect_cb (PnSocket *sock,
             gboolean success,
             gpointer user_data)
 {
-    PecanNode *conn;
+    PnNode *conn;
 
     pn_log ("begin");
 
-    conn = PECAN_NODE (user_data);
+    conn = PN_NODE (user_data);
     conn->connect_data = NULL;
 
     g_object_ref (conn);
@@ -320,15 +320,15 @@ connect_cb (PnSocket *sock,
     }
     else
     {
-        conn->error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
+        conn->error = g_error_new_literal (PN_NODE_ERROR, PN_NODE_ERROR_OPEN,
                                            "Unable to connect");
 
-        pecan_node_error (conn);
+        pn_node_error (conn);
     }
 
     {
-        PecanNodeClass *class;
-        class = g_type_class_peek (PECAN_NODE_TYPE);
+        PnNodeClass *class;
+        class = g_type_class_peek (PN_NODE_TYPE);
         g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
     }
 
@@ -342,11 +342,11 @@ connect_cb (gpointer data,
             gint source,
             const gchar *error_message)
 {
-    PecanNode *conn;
+    PnNode *conn;
 
     pn_log ("begin");
 
-    conn = PECAN_NODE (data);
+    conn = PN_NODE (data);
     conn->connect_data = NULL;
 
     g_object_ref (conn);
@@ -370,15 +370,15 @@ connect_cb (gpointer data,
     else
     {
         /* pn_error ("connection error: conn=%p,msg=[%s]", conn, error_message); */
-        conn->error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
+        conn->error = g_error_new_literal (PN_NODE_ERROR, PN_NODE_ERROR_OPEN,
                                            error_message ? error_message : "Unable to connect");
 
-        pecan_node_error (conn);
+        pn_node_error (conn);
     }
 
     {
-        PecanNodeClass *class;
-        class = g_type_class_peek (PECAN_NODE_TYPE);
+        PnNodeClass *class;
+        class = g_type_class_peek (PN_NODE_TYPE);
         g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
     }
 
@@ -389,7 +389,7 @@ connect_cb (gpointer data,
 #endif /* PECAN_SOCKET */
 
 static void
-connect_impl (PecanNode *conn,
+connect_impl (PnNode *conn,
               const gchar *hostname,
               gint port)
 {
@@ -408,12 +408,12 @@ connect_impl (PecanNode *conn,
     if (conn->next)
     {
         conn->next->prev = conn;
-        pecan_node_connect (conn->next, hostname, port);
+        pn_node_connect (conn->next, hostname, port);
         conn->next->prev = NULL;
     }
     else
     {
-        pecan_node_close (conn);
+        pn_node_close (conn);
 
 #ifdef PECAN_SOCKET
         pn_socket_connect (hostname, port, connect_cb, conn);
@@ -429,7 +429,7 @@ connect_impl (PecanNode *conn,
 }
 
 static void
-close_impl (PecanNode *conn)
+close_impl (PnNode *conn)
 {
     g_return_if_fail (conn);
 
@@ -439,7 +439,7 @@ close_impl (PecanNode *conn)
 
     if (conn->next)
     {
-        pecan_node_close (conn->next);
+        pn_node_close (conn->next);
     }
 
     g_free (conn->hostname);
@@ -477,13 +477,13 @@ close_impl (PecanNode *conn)
 }
 
 static void
-error_impl (PecanNode *conn)
+error_impl (PnNode *conn)
 {
     pn_info ("foo");
 }
 
 static GIOStatus
-write_impl (PecanNode *conn,
+write_impl (PnNode *conn,
             const gchar *buf,
             gsize count,
             gsize *ret_bytes_written,
@@ -495,7 +495,7 @@ write_impl (PecanNode *conn,
 
     if (conn->next)
     {
-        PecanNode *next;
+        PnNode *next;
 
         next = conn->next;
 
@@ -503,7 +503,7 @@ write_impl (PecanNode *conn,
          * ref anyway */
         g_object_ref (next);
         next->prev = conn;
-        status = pecan_node_write (next, buf, count, ret_bytes_written, error);
+        status = pn_node_write (next, buf, count, ret_bytes_written, error);
         next->prev = NULL;
         g_object_unref (next);
     }
@@ -547,7 +547,7 @@ write_impl (PecanNode *conn,
 }
 
 static GIOStatus
-read_impl (PecanNode *conn,
+read_impl (PnNode *conn,
            gchar *buf,
            gsize count,
            gsize *ret_bytes_read,
@@ -561,7 +561,7 @@ read_impl (PecanNode *conn,
     {
         pn_error ("whaaat");
         conn->next->prev = conn;
-        status = pecan_node_read (conn->next, buf, count, ret_bytes_read, error);
+        status = pn_node_read (conn->next, buf, count, ret_bytes_read, error);
         conn->next->prev = NULL;
     }
     else
@@ -595,7 +595,7 @@ read_impl (PecanNode *conn,
 }
 
 static void
-parse_impl (PecanNode *conn,
+parse_impl (PnNode *conn,
             gchar *buf,
             gsize bytes_read)
 {
@@ -607,7 +607,7 @@ parse_impl (PecanNode *conn,
 static void
 dispose (GObject *obj)
 {
-    PecanNode *conn = PECAN_NODE (obj);
+    PnNode *conn = PN_NODE (obj);
 
     pn_log ("begin");
 
@@ -616,7 +616,7 @@ dispose (GObject *obj)
         g_signal_handler_disconnect (conn->next, conn->open_sig_handler);
         g_signal_handler_disconnect (conn->next, conn->close_sig_handler);
         g_signal_handler_disconnect (conn->next, conn->error_sig_handler);
-        pecan_node_free (conn->next);
+        pn_node_free (conn->next);
         conn->next = NULL;
     }
 
@@ -624,7 +624,7 @@ dispose (GObject *obj)
     {
         conn->dispose_has_run = TRUE;
 
-        pecan_node_close (conn);
+        pn_node_close (conn);
 
         g_free (conn->name);
     }
@@ -644,7 +644,7 @@ static void
 class_init (gpointer g_class,
             gpointer class_data)
 {
-    PecanNodeClass *conn_class = PECAN_NODE_CLASS (g_class);
+    PnNodeClass *conn_class = PN_NODE_CLASS (g_class);
     GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
 
     conn_class->connect = &connect_impl;
@@ -682,7 +682,7 @@ instance_init (GTypeInstance *instance,
 }
 
 GType
-pecan_node_get_type (void)
+pn_node_get_type (void)
 {
     static GType type = 0;
 
@@ -691,12 +691,12 @@ pecan_node_get_type (void)
         GTypeInfo *type_info;
 
         type_info = g_new0 (GTypeInfo, 1);
-        type_info->class_size = sizeof (PecanNodeClass);
+        type_info->class_size = sizeof (PnNodeClass);
         type_info->class_init = class_init;
-        type_info->instance_size = sizeof (PecanNode);
+        type_info->instance_size = sizeof (PnNode);
         type_info->instance_init = instance_init;
 
-        type = g_type_register_static (G_TYPE_OBJECT, "PecanNodeType", type_info, 0);
+        type = g_type_register_static (G_TYPE_OBJECT, "PnNodeType", type_info, 0);
 
         g_free (type_info);
     }

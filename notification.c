@@ -39,7 +39,7 @@
 
 #include "io/pecan_cmd_server.h"
 #include "io/pecan_http_server.h"
-#include "io/pecan_node_priv.h"
+#include "io/pn_node_private.h"
 #include "io/pecan_cmd_server.h"
 
 #if defined(PECAN_CVR)
@@ -67,7 +67,7 @@ typedef struct
 } MsnAddBuddy;
 
 static void
-open_cb (PecanNode *conn,
+open_cb (PnNode *conn,
          MsnNotification *notification)
 {
     MsnSession *session;
@@ -84,7 +84,7 @@ open_cb (PecanNode *conn,
 }
 
 static void
-close_cb (PecanNode *conn,
+close_cb (PnNode *conn,
           MsnNotification *notification)
 {
     char *tmp;
@@ -108,7 +108,7 @@ close_cb (PecanNode *conn,
         }
     }
 
-    pecan_node_close (PECAN_NODE (notification->conn));
+    pn_node_close (PN_NODE (notification->conn));
     notification->closed = TRUE;
     msn_session_set_error (notification->session, MSN_ERROR_SERVCONN, tmp);
 
@@ -163,9 +163,9 @@ msn_notification_new(MsnSession *session)
     notification->session = session;
 
     {
-        PecanNode *conn;
-        notification->conn = pecan_cmd_server_new ("notification server", PECAN_NODE_NS);
-        conn = PECAN_NODE (notification->conn);
+        PnNode *conn;
+        notification->conn = pecan_cmd_server_new ("notification server", PN_NODE_NS);
+        conn = PN_NODE (notification->conn);
 
         {
             MsnCmdProc *cmdproc;
@@ -186,16 +186,16 @@ msn_notification_new(MsnSession *session)
             if (session->http_conn)
             {
                 /* A single http connection shared by all nodes */
-                pecan_node_link (conn, session->http_conn);
+                pn_node_link (conn, session->http_conn);
             }
             else
             {
                 /* Each node has it's own http connection. */
-                PecanNode *foo;
+                PnNode *foo;
 
-                foo = PECAN_NODE (pecan_http_server_new ("foo server"));
+                foo = PN_NODE (pecan_http_server_new ("foo server"));
                 foo->session = session;
-                pecan_node_link (conn, foo);
+                pn_node_link (conn, foo);
                 g_object_unref (foo);
             }
         }
@@ -232,7 +232,7 @@ msn_notification_connect(MsnNotification *notification, const char *host, int po
 {
     g_return_val_if_fail(notification != NULL, FALSE);
 
-    pecan_node_connect (PECAN_NODE (notification->conn), host, port);
+    pn_node_connect (PN_NODE (notification->conn), host, port);
 
     return TRUE;
 }
@@ -421,7 +421,7 @@ msn_notification_close(MsnNotification *notification)
     if (!notification->closed)
     {
         msn_cmdproc_send_quick (notification->cmdproc, "OUT", NULL, NULL);
-        pecan_node_close (PECAN_NODE (notification->conn));
+        pn_node_close (PN_NODE (notification->conn));
     }
 }
 

@@ -42,7 +42,7 @@
 #include "cmd/command_private.h"
 #include "cmd/table.h"
 
-#include "io/pecan_node_priv.h"
+#include "io/pn_node_private.h"
 #include "io/pecan_cmd_server.h"
 #include "io/pecan_http_server.h"
 
@@ -65,7 +65,7 @@ static void
 msn_switchboard_report_user(MsnSwitchBoard *swboard, PurpleMessageFlags flags, const char *msg);
 
 static void
-open_cb (PecanNode *conn,
+open_cb (PnNode *conn,
          MsnSwitchBoard *swboard)
 {
     MsnSession *session;
@@ -101,7 +101,7 @@ open_cb (PecanNode *conn,
 }
 
 static void
-close_cb (PecanNode *conn,
+close_cb (PnNode *conn,
           MsnSwitchBoard *swboard)
 {
     g_return_if_fail (swboard);
@@ -145,9 +145,9 @@ msn_switchboard_new(MsnSession *session)
     swboard->empty = TRUE;
 
     {
-        PecanNode *conn;
-        swboard->conn = pecan_cmd_server_new ("switchboard server", PECAN_NODE_SB);
-        conn = PECAN_NODE (swboard->conn);
+        PnNode *conn;
+        swboard->conn = pecan_cmd_server_new ("switchboard server", PN_NODE_SB);
+        conn = PN_NODE (swboard->conn);
 
         {
             MsnCmdProc *cmdproc;
@@ -167,16 +167,16 @@ msn_switchboard_new(MsnSession *session)
             if (session->http_conn)
             {
                 /* A single http connection shared by all nodes */
-                pecan_node_link (conn, session->http_conn);
+                pn_node_link (conn, session->http_conn);
             }
             else
             {
                 /* Each node has it's own http connection. */
-                PecanNode *foo;
+                PnNode *foo;
 
-                foo = PECAN_NODE (pecan_http_server_new ("foo server"));
+                foo = PN_NODE (pecan_http_server_new ("foo server"));
                 foo->session = session;
-                pecan_node_link (conn, foo);
+                pn_node_link (conn, foo);
                 g_object_unref (foo);
             }
         }
@@ -253,9 +253,9 @@ msn_switchboard_free (MsnSwitchBoard *swboard)
     /* make sure all the transactions are destroyed so no timeouts occur after
      * the switchboard is destroyed; the node can still be refed by someone
      * else. */
-    pecan_node_close (PECAN_NODE (swboard->conn));
+    pn_node_close (PN_NODE (swboard->conn));
 
-    pecan_node_free (PECAN_NODE (swboard->conn));
+    pn_node_free (PN_NODE (swboard->conn));
 
     g_free(swboard);
 
@@ -1440,7 +1440,7 @@ msn_switchboard_connect(MsnSwitchBoard *swboard, const char *host, int port)
 {
     g_return_val_if_fail (swboard, FALSE);
 
-    pecan_node_connect (PECAN_NODE (swboard->conn), host, port);
+    pn_node_connect (PN_NODE (swboard->conn), host, port);
 
     return TRUE;
 }

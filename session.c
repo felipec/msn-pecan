@@ -87,8 +87,8 @@ msn_session_new (const gchar *username,
 #if 0
     if (session->http_method)
     {
-        PecanNode *foo;
-        foo = PECAN_NODE (pecan_http_server_new ("foo server"));
+        PnNode *foo;
+        foo = PN_NODE (pecan_http_server_new ("foo server"));
         foo->session = session;
         session->http_conn = foo;
     }
@@ -244,7 +244,7 @@ msn_session_disconnect (MsnSession *session)
         msn_notification_close (session->notification);
 
     if (session->http_conn)
-        pecan_node_close (session->http_conn);
+        pn_node_close (session->http_conn);
 }
 
 /* TODO: This must go away when conversation is redesigned */

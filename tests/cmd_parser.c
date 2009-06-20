@@ -34,7 +34,7 @@ run_simple_test (const gchar *str,
         strcpy (buf, str);
 
     cmdserv = pecan_cmd_server_new ("foo", 0);
-    pecan_node_parse (PECAN_NODE (cmdserv), buf, buf_size - 1);
+    pn_node_parse (PN_NODE (cmdserv), buf, buf_size - 1);
     pecan_cmd_server_free (cmdserv);
 
     g_free (buf);

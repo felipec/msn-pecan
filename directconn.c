@@ -25,7 +25,7 @@
 #include "cvr/slp.h"
 #include "cvr/slpmsg.h"
 
-#include "io/pecan_node.h"
+#include "io/pn_node.h"
 
 #ifndef _WIN32
 #include <netinet/in.h>
@@ -218,7 +218,7 @@ msn_directconn_write(MsnDirectConn *directconn,
     }
     else
     {
-        /* pecan_node_error(directconn->conn); */
+        /* pn_node_error(directconn->conn); */
         msn_directconn_destroy(directconn);
     }
 
@@ -368,7 +368,7 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
     {
         GIOChannel *channel;
 
-        /* directconn->conn = pecan_node_new (channel); */
+        /* directconn->conn = pn_node_new (channel); */
         directconn->connected = TRUE;
 
         directconn->stream = pn_stream_new (fd);

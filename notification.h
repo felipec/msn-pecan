@@ -25,7 +25,7 @@
 typedef struct MsnNotification MsnNotification;
 
 #include "io/pecan_cmd_server.h"
-#include "io/pecan_node.h"
+#include "io/pn_node.h"
 
 struct MsnSession;
 struct MsnCmdProc;

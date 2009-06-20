@@ -51,7 +51,7 @@ typedef enum
 } MsnSBFlag;
 
 #include "io/pecan_cmd_server.h"
-#include "io/pecan_node.h"
+#include "io/pn_node.h"
 
 struct MsnSession;
 struct MsnMessage;

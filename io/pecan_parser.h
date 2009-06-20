@@ -21,9 +21,9 @@
 
 typedef struct PecanParser PecanParser;
 
-#include "io/pecan_node.h"
+#include "io/pn_node.h"
 
-PecanParser *pecan_parser_new (PecanNode *node);
+PecanParser *pecan_parser_new (PnNode *node);
 void pecan_parser_free (PecanParser *parser);
 GIOStatus pecan_parser_read_line (PecanParser *parser,
                                   gchar **str_return,

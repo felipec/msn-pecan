@@ -16,26 +16,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef PECAN_NODE_PRIVATE_H
-#define PECAN_NODE_PRIVATE_H
+#ifndef PN_NODE_PRIVATE_H
+#define PN_NODE_PRIVATE_H
 
 #include <glib-object.h>
 
-#include "pecan_node.h"
+#include "pn_node.h"
 #include "pn_stream.h"
 
-typedef struct PecanNodeClass PecanNodeClass;
+typedef struct PnNodeClass PnNodeClass;
 
-#define PECAN_NODE_ERROR pecan_node_error_quark ()
+#define PN_NODE_ERROR pn_node_error_quark ()
 
 /* Forward declarations */
 
 struct _PurpleProxyConnectData;
 struct MsnSesion;
 
-GQuark pecan_node_error_quark (void);
+GQuark pn_node_error_quark (void);
 
-struct PecanNode
+struct PnNode
 {
     GObject parent;
     gboolean dispose_has_run;
@@ -43,14 +43,14 @@ struct PecanNode
     GError *error; /**< The current IO error .*/
     guint read_watch; /** < The source id of the read watch. */
 
-    PecanNodeType type;
+    PnNodeType type;
 
     gchar *name;
 
     gpointer data; /**< Client data. */
     gpointer foo_data;
-    PecanNode *prev;
-    PecanNode *next;
+    PnNode *prev;
+    PnNode *next;
 
     PnStream *stream; /**< The current IO stream .*/
 
@@ -66,7 +66,7 @@ struct PecanNode
     gboolean dump_file;
 };
 
-struct PecanNodeClass
+struct PnNodeClass
 {
     GObjectClass parent_class;
 
@@ -74,12 +74,12 @@ struct PecanNodeClass
     guint close_sig;
     guint error_sig;
 
-    GIOStatus (*read) (PecanNode *conn, gchar *buf, gsize count, gsize *bytes_read, GError **error);
-    GIOStatus (*write) (PecanNode *conn, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
-    void (*error) (PecanNode *conn);
-    void (*connect) (PecanNode *conn, const gchar *hostname, gint port);
-    void (*close) (PecanNode *conn);
-    void (*parse) (PecanNode *conn, gchar *buf, gsize bytes_read);
+    GIOStatus (*read) (PnNode *conn, gchar *buf, gsize count, gsize *bytes_read, GError **error);
+    GIOStatus (*write) (PnNode *conn, const gchar *buf, gsize count, gsize *bytes_written, GError **error);
+    void (*error) (PnNode *conn);
+    void (*connect) (PnNode *conn, const gchar *hostname, gint port);
+    void (*close) (PnNode *conn);
+    void (*parse) (PnNode *conn, gchar *buf, gsize bytes_read);
 };
 
-#endif /* PECAN_NODE_PRIVATE_H */
+#endif /* PN_NODE_PRIVATE_H */

@@ -24,7 +24,7 @@
 typedef struct PecanHttpServer PecanHttpServer;
 typedef struct PecanHttpServerClass PecanHttpServerClass;
 
-#include "pecan_node.h"
+#include "pn_node.h"
 
 #define PECAN_HTTP_SERVER_TYPE (pecan_http_server_get_type ())
 #define PECAN_HTTP_SERVER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), PECAN_HTTP_SERVER_TYPE, PecanHttpServer))

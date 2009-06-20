@@ -17,7 +17,7 @@
  */
 
 #include "pecan_cmd_server.h"
-#include "pecan_node_priv.h"
+#include "pn_node_private.h"
 #include "cmd/cmdproc_private.h"
 #include "cmd/command_private.h"
 
@@ -31,7 +31,7 @@
 
 struct PecanCmdServer
 {
-    PecanNode parent;
+    PnNode parent;
 
     gsize payload_len;
     gchar *rx_buf;
@@ -42,14 +42,14 @@ struct PecanCmdServer
 
 struct PecanCmdServerClass
 {
-    PecanNodeClass parent_class;
+    PnNodeClass parent_class;
 };
 
-static PecanNodeClass *parent_class = NULL;
+static PnNodeClass *parent_class = NULL;
 
 PecanCmdServer *
 pecan_cmd_server_new (const gchar *name,
-                      PecanNodeType type)
+                      PnNodeType type)
 {
     PecanCmdServer *conn;
 
@@ -58,7 +58,7 @@ pecan_cmd_server_new (const gchar *name,
     conn = CMD_PECAN_NODE (g_type_create_instance (CMD_PECAN_NODE_TYPE));
 
     {
-        PecanNode *tmp = PECAN_NODE (conn);
+        PnNode *tmp = PN_NODE (conn);
         tmp->name = g_strdup (name);
         tmp->type = type;
     }
@@ -92,7 +92,7 @@ pecan_cmd_server_send (PecanCmdServer *conn,
 /** @todo reimplement this in a safer way (GIOChannel) */
 /** @todo add extensive tests for this */
 static void
-parse_impl (PecanNode *base_conn,
+parse_impl (PnNode *base_conn,
             gchar *buf,
             gsize bytes_read)
 {
@@ -168,7 +168,7 @@ parse_impl (PecanNode *base_conn,
 }
 
 static void
-close_impl (PecanNode *conn)
+close_impl (PnNode *conn)
 {
     PecanCmdServer *cmd_conn;
 
@@ -184,14 +184,14 @@ close_impl (PecanNode *conn)
     if (cmd_conn->cmdproc)
         msn_cmdproc_flush (cmd_conn->cmdproc);
 
-    PECAN_NODE_CLASS (parent_class)->close (conn);
+    PN_NODE_CLASS (parent_class)->close (conn);
 
     pn_log ("end");
 }
 
 #if 0
 static void
-read_impl (PecanNode *conn)
+read_impl (PnNode *conn)
 {
     MsnBuffer *read_buffer;
     int r;
@@ -216,14 +216,14 @@ read_impl (PecanNode *conn)
     if (r == 0)
     {
         /* connection closed */
-        pecan_node_close (conn);
+        pn_node_close (conn);
         return;
     }
 
     if (r < 0)
     {
         /* connection error */
-        pecan_node_close (conn);
+        pn_node_close (conn);
         return;
     }
 
@@ -258,7 +258,7 @@ read_impl (PecanNode *conn)
         }
         else
         {
-            /* PECAN_NODE_GET_CLASS (conn)->parse (conn); */
+            /* PN_NODE_GET_CLASS (conn)->parse (conn); */
         }
 
         /** @todo only if parsed? yes indeed! */
@@ -308,7 +308,7 @@ static void
 class_init (gpointer g_class,
             gpointer class_data)
 {
-    PecanNodeClass *conn_class = PECAN_NODE_CLASS (g_class);
+    PnNodeClass *conn_class = PN_NODE_CLASS (g_class);
     GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
 
     conn_class->parse = &parse_impl;
@@ -345,7 +345,7 @@ pecan_cmd_server_get_type (void)
         type_info->instance_size = sizeof (PecanCmdServer);
         type_info->instance_init = instance_init;
 
-        type = g_type_register_static (PECAN_NODE_TYPE, "PecanCmdServerType", type_info, 0);
+        type = g_type_register_static (PN_NODE_TYPE, "PecanCmdServerType", type_info, 0);
     }
 
     return type;
