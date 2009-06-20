@@ -21,11 +21,8 @@
 
 #include <stdbool.h>
 
-#define __USE_GNU
 #include <netdb.h>
 #include <string.h> /* for memcpy */
-
-#define SOCKET_ERROR -1
 
 void
 pecan_socket_connect (const gchar *hostname,
@@ -41,7 +38,7 @@ pecan_socket_connect (const gchar *hostname,
 
     fd = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-    if (fd == SOCKET_ERROR)
+    if (fd < 0)
     {
         pecan_error ("could not create socket");
         goto leave;
@@ -63,7 +60,7 @@ pecan_socket_connect (const gchar *hostname,
 
     pecan_info ("connecting to %s on port %d", hostname, port);
 
-    if (connect (fd, (struct sockaddr*) & address, sizeof (address)) == SOCKET_ERROR)
+    if (connect (fd, (struct sockaddr*) & address, sizeof (address)) < 0)
     {
         pecan_error ("could not connect to host");
         goto leave;

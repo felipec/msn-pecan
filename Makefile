@@ -110,7 +110,7 @@ endif
 
 ifdef SOCKET
   objects += io/pecan_socket.o
-  override CFLAGS += -DPECAN_SOCKET
+  override CFLAGS += -DPECAN_SOCKET -D__USE_GNU
 endif
 
 ifdef DIRECTCONN
