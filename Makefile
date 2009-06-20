@@ -91,7 +91,7 @@ objects := msn.o \
 	   cmd/msg.o \
 	   cmd/table.o \
 	   cmd/transaction.o \
-	   io/pecan_buffer.o \
+	   io/pn_buffer.o \
 	   io/pecan_parser.o \
 	   ab/pecan_group.o \
 	   ab/pecan_contact.o \

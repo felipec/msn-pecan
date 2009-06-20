@@ -106,7 +106,7 @@ msn_slpmsg_set_body(MsnSlpMessage *slpmsg,
 
 void
 msn_slpmsg_set_image(MsnSlpMessage *slpmsg,
-                      PecanBuffer *image)
+                     PnBuffer *image)
 {
     slpmsg->size = image->len;
     slpmsg->buffer = g_memdup(image->data, slpmsg->size);

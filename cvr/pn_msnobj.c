@@ -20,7 +20,7 @@
 #include "cvr/pn_msnobj.h"
 #include "pn_log.h"
 
-#include "io/pecan_buffer.h"
+#include "io/pn_buffer.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -47,7 +47,7 @@ struct PnMsnObj
     gchar *sha1d;
     gchar *sha1c;
 
-    PecanBuffer *image;
+    PnBuffer *image;
 };
 
 #define GET_STRING_TAG(field, id) \
@@ -125,7 +125,7 @@ pn_msnobj_new_from_string(const gchar *str)
 }
 
 PnMsnObj *
-pn_msnobj_new_from_image(PecanBuffer *image,
+pn_msnobj_new_from_image(PnBuffer *image,
                          const char *location,
                          const char *creator,
                          PnMsnObjType type)
@@ -196,7 +196,7 @@ pn_msnobj_free(PnMsnObj *obj)
     g_free(obj->sha1d);
     g_free(obj->sha1c);
 
-    pecan_buffer_free(obj->image);
+    pn_buffer_free(obj->image);
 
     if (obj->local)
         local_objs = g_list_remove(local_objs, obj);
@@ -254,9 +254,9 @@ pn_msnobj_get_sha1(const PnMsnObj *obj)
 
 void
 pn_msnobj_set_image(PnMsnObj *obj,
-                    PecanBuffer *buffer)
+                    PnBuffer *buffer)
 {
-    pecan_buffer_free(obj->image);
+    pn_buffer_free(obj->image);
     obj->image = buffer;
 }
 
@@ -275,7 +275,7 @@ find_local(const gchar *sha1)
     return NULL;
 }
 
-PecanBuffer *
+PnBuffer *
 pn_msnobj_get_image(const PnMsnObj *obj)
 {
     PnMsnObj *local_obj;

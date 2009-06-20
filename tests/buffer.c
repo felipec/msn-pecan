@@ -19,7 +19,7 @@
 #include <check.h>
 
 #include <glib.h>
-#include "io/pecan_buffer.h"
+#include "io/pn_buffer.h"
 
 #include <string.h>
 
@@ -31,25 +31,25 @@ static guint times = 0x10;
 
 START_TEST (test_basic)
 {
-    PecanBuffer *buf;
+    PnBuffer *buf;
 
-    buf = pecan_buffer_new ();
-    pecan_buffer_free (buf);
+    buf = pn_buffer_new ();
+    pn_buffer_free (buf);
 
-    buf = pecan_buffer_new_and_alloc (BUFFER_SIZE);
-    pecan_buffer_free (buf);
+    buf = pn_buffer_new_and_alloc (BUFFER_SIZE);
+    pn_buffer_free (buf);
 
-    buf = pecan_buffer_new ();
-    pecan_buffer_resize (buf, BUFFER_SIZE);
-    pecan_buffer_free (buf);
+    buf = pn_buffer_new ();
+    pn_buffer_resize (buf, BUFFER_SIZE);
+    pn_buffer_free (buf);
 
-    buf = pecan_buffer_new_and_alloc (BUFFER_SIZE);
-    pecan_buffer_resize (buf, 2 * BUFFER_SIZE);
-    pecan_buffer_free (buf);
+    buf = pn_buffer_new_and_alloc (BUFFER_SIZE);
+    pn_buffer_resize (buf, 2 * BUFFER_SIZE);
+    pn_buffer_free (buf);
 
-    buf = pecan_buffer_new_and_alloc (BUFFER_SIZE);
-    pecan_buffer_prepare (buf, 2 * BUFFER_SIZE);
-    pecan_buffer_free (buf);
+    buf = pn_buffer_new_and_alloc (BUFFER_SIZE);
+    pn_buffer_prepare (buf, 2 * BUFFER_SIZE);
+    pn_buffer_free (buf);
 }
 END_TEST
 
@@ -57,45 +57,45 @@ static void
 prepare_helper (guint times,
                 gboolean write)
 {
-    PecanBuffer *buf;
+    PnBuffer *buf;
     guint i;
 
-    buf = pecan_buffer_new ();
-    pecan_buffer_free (buf);
+    buf = pn_buffer_new ();
+    pn_buffer_free (buf);
 
-    buf = pecan_buffer_new_and_alloc (BUFFER_SIZE);
+    buf = pn_buffer_new_and_alloc (BUFFER_SIZE);
     for (i = 0; i < times; i++)
     {
-        pecan_buffer_prepare (buf, i * BUFFER_SIZE);
+        pn_buffer_prepare (buf, i * BUFFER_SIZE);
         if (write) memset (buf->data, 0, buf->size);
     }
-    pecan_buffer_free (buf);
+    pn_buffer_free (buf);
 
-    buf = pecan_buffer_new ();
-    pecan_buffer_resize (buf, BUFFER_SIZE);
+    buf = pn_buffer_new ();
+    pn_buffer_resize (buf, BUFFER_SIZE);
     for (i = 0; i < times; i++)
     {
-        pecan_buffer_prepare (buf, i * BUFFER_SIZE);
+        pn_buffer_prepare (buf, i * BUFFER_SIZE);
         if (write) memset (buf->data, 0, buf->size);
     }
-    pecan_buffer_free (buf);
+    pn_buffer_free (buf);
 
-    buf = pecan_buffer_new_and_alloc (BUFFER_SIZE);
+    buf = pn_buffer_new_and_alloc (BUFFER_SIZE);
     for (i = 0; i < times; i++)
     {
-        pecan_buffer_prepare (buf, i * g_random_double ());
+        pn_buffer_prepare (buf, i * g_random_double ());
         if (write) memset (buf->data, 0, buf->size);
     }
-    pecan_buffer_free (buf);
+    pn_buffer_free (buf);
 
-    buf = pecan_buffer_new ();
-    pecan_buffer_resize (buf, BUFFER_SIZE);
+    buf = pn_buffer_new ();
+    pn_buffer_resize (buf, BUFFER_SIZE);
     for (i = 0; i < times; i++)
     {
-        pecan_buffer_prepare (buf, i * g_random_double ());
+        pn_buffer_prepare (buf, i * g_random_double ());
         if (write) memset (buf->data, 0, buf->size);
     }
-    pecan_buffer_free (buf);
+    pn_buffer_free (buf);
 }
 
 START_TEST (test_prepare)

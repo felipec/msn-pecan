@@ -22,7 +22,7 @@
 #include "slpcall.h"
 #include "slpmsg.h"
 #include "pn_log.h"
-#include "io/pecan_buffer.h"
+#include "io/pn_buffer.h"
 
 #include "xfer.h"
 
@@ -173,7 +173,7 @@ got_sessionreq(MsnSlpCall *slpcall,
         MsnSlpMessage *slpmsg;
         PnMsnObj *obj;
         char *msnobj_data;
-        PecanBuffer *image;
+        PnBuffer *image;
         int type;
 
         /* Send Ok */
@@ -210,8 +210,8 @@ got_sessionreq(MsnSlpCall *slpcall,
             char *path;
             path = g_build_filename(purple_smileys_get_storing_dir(), pn_msnobj_get_location(obj), NULL);
             img = purple_imgstore_new_from_file(path);
-            image = pecan_buffer_new_memdup((const gpointer) purple_imgstore_get_data (img),
-                                            purple_imgstore_get_size (img));
+            image = pn_buffer_new_memdup((const gpointer) purple_imgstore_get_data(img),
+                                         purple_imgstore_get_size(img));
             purple_imgstore_unref(img);
             g_free(path);
         }

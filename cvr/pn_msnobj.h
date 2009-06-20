@@ -24,7 +24,7 @@
 
 typedef struct PnMsnObj PnMsnObj;
 
-#include "io/pecan_buffer.h"
+#include "io/pn_buffer.h"
 
 typedef enum
 {
@@ -62,7 +62,7 @@ PnMsnObj *pn_msnobj_new_from_string(const gchar *str);
  *
  * @return A new PnMsnObj structure
  */
-PnMsnObj *pn_msnobj_new_from_image(PecanBuffer *image,
+PnMsnObj *pn_msnobj_new_from_image(PnBuffer *image,
                                    const char *location,
                                    const char *creator,
                                    PnMsnObjType type);
@@ -125,7 +125,7 @@ const gchar *pn_msnobj_get_sha1(const PnMsnObj *obj);
  * @param obj The object.
  * @param buffer The image to associate.
  */
-void pn_msnobj_set_image(PnMsnObj *obj, PecanBuffer *buffer);
+void pn_msnobj_set_image(PnMsnObj *obj, PnBuffer *buffer);
 
 /**
  * Returns the image associated with the PnMsnObj.
@@ -134,6 +134,6 @@ void pn_msnobj_set_image(PnMsnObj *obj, PecanBuffer *buffer);
  *
  * @return The associated image.
  */
-PecanBuffer *pn_msnobj_get_image(const PnMsnObj *obj);
+PnBuffer *pn_msnobj_get_image(const PnMsnObj *obj);
 
 #endif /* PN_MSNOBJ_H */

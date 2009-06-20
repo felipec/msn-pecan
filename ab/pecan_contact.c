@@ -428,7 +428,7 @@ pecan_contact_set_guid (PecanContact *contact,
 
 void
 pecan_contact_set_buddy_icon (PecanContact *contact,
-                              PecanBuffer *image)
+                              PnBuffer *image)
 {
 #if defined(PECAN_CVR)
 #ifdef HAVE_LIBPURPLE

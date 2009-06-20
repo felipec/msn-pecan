@@ -16,14 +16,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef PECAN_BUFFER_H
-#define PECAN_BUFFER_H
+#ifndef PN_BUFFER_H
+#define PN_BUFFER_H
 
 #include <glib.h>
 
-typedef struct PecanBuffer PecanBuffer;
+typedef struct PnBuffer PnBuffer;
 
-struct PecanBuffer
+struct PnBuffer
 {
     gchar *data;
     gchar *alloc_data;
@@ -31,12 +31,12 @@ struct PecanBuffer
     gsize len;
 };
 
-PecanBuffer *pecan_buffer_new (void);
-PecanBuffer *pecan_buffer_new_and_alloc (gsize size);
-PecanBuffer *pecan_buffer_new_memdup (const gpointer data, gsize size);
-void pecan_buffer_free (PecanBuffer *buffer);
-void pecan_buffer_resize (PecanBuffer *buffer, gsize new_size);
-gchar *pecan_buffer_to_string (PecanBuffer *buffer);
-void pecan_buffer_prepare (PecanBuffer *buffer, gsize extra_size);
+PnBuffer *pn_buffer_new (void);
+PnBuffer *pn_buffer_new_and_alloc (gsize size);
+PnBuffer *pn_buffer_new_memdup (const gpointer data, gsize size);
+void pn_buffer_free (PnBuffer *buffer);
+void pn_buffer_resize (PnBuffer *buffer, gsize new_size);
+gchar *pn_buffer_to_string (PnBuffer *buffer);
+void pn_buffer_prepare (PnBuffer *buffer, gsize extra_size);
 
-#endif /* PECAN_BUFFER_H */
+#endif /* PN_BUFFER_H */

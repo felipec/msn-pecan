@@ -157,7 +157,7 @@ request (PecanContact *user)
 
         if (my_obj)
         {
-            PecanBuffer *image;
+            PnBuffer *image;
             image = pn_msnobj_get_image (my_obj);
             data = image->data;
             len = image->len;

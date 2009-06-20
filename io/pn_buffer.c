@@ -16,15 +16,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "pecan_buffer.h"
+#include "pn_buffer.h"
 
 #define BUFFER_SIZE 0x1000
 
-PecanBuffer *
-pecan_buffer_new (void)
+PnBuffer *
+pn_buffer_new (void)
 {
-    PecanBuffer *buffer;
-    buffer = g_new (PecanBuffer, 1);
+    PnBuffer *buffer;
+    buffer = g_new (PnBuffer, 1);
     buffer->data = NULL;
     buffer->alloc_data = NULL;
     buffer->size = 0;
@@ -32,28 +32,28 @@ pecan_buffer_new (void)
     return buffer;
 }
 
-PecanBuffer *
-pecan_buffer_new_and_alloc (gsize size)
+PnBuffer *
+pn_buffer_new_and_alloc (gsize size)
 {
-    PecanBuffer *buffer;
+    PnBuffer *buffer;
 
     if (size <= 0)
         size = BUFFER_SIZE;
 
-    buffer = g_new (PecanBuffer, 1);
+    buffer = g_new (PnBuffer, 1);
     buffer->data = buffer->alloc_data = g_malloc (size);
     buffer->size = size;
     buffer->len = 0;
     return buffer;
 }
 
-PecanBuffer *
-pecan_buffer_new_memdup (gpointer data,
-                         gsize size)
+PnBuffer *
+pn_buffer_new_memdup (gpointer data,
+                      gsize size)
 {
-    PecanBuffer *buffer;
+    PnBuffer *buffer;
 
-    buffer = g_new (PecanBuffer, 1);
+    buffer = g_new (PnBuffer, 1);
     buffer->size = buffer->len = size;
     buffer->data = buffer->alloc_data = g_memdup (data, size);
 
@@ -61,7 +61,7 @@ pecan_buffer_new_memdup (gpointer data,
 }
 
 void
-pecan_buffer_free (PecanBuffer *buffer)
+pn_buffer_free (PnBuffer *buffer)
 {
     if (!buffer)
         return;
@@ -71,8 +71,8 @@ pecan_buffer_free (PecanBuffer *buffer)
 }
 
 void
-pecan_buffer_resize (PecanBuffer *buffer,
-                     gsize new_size)
+pn_buffer_resize (PnBuffer *buffer,
+                  gsize new_size)
 {
     new_size = ((new_size / BUFFER_SIZE) + 1) * BUFFER_SIZE;
     buffer->data = buffer->alloc_data = g_realloc (buffer->data, new_size);
@@ -80,11 +80,11 @@ pecan_buffer_resize (PecanBuffer *buffer,
 }
 
 void
-pecan_buffer_prepare (PecanBuffer *buffer,
-                      gsize extra_size)
+pn_buffer_prepare (PnBuffer *buffer,
+                   gsize extra_size)
 {
-    if (buffer->size - buffer->len < extra_size)
-    {
-        pecan_buffer_resize (buffer, buffer->len + extra_size);
-    }
+    if (extra_size <= buffer->size - buffer->len)
+        return;
+
+    pn_buffer_resize (buffer, buffer->len + extra_size);
 }

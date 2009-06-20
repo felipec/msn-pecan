@@ -67,7 +67,7 @@ in Windows.
  * Don't rely on GLib's mainloop. (for Adium X)
  * Use gio
  * Use libsoup
- * Properly use and test pecan_buffer.
+ * Properly use and test pn_buffer.
  * Port offline message support from libgmsn.
  * Allow cancel in authorization dialog.
  * Allow alias from the add buddy dialog.

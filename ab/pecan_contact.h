@@ -27,7 +27,7 @@ typedef struct PecanContact PecanContact;
 #include "cvr/pn_msnobj.h"
 #endif /* defined(PECAN_CVR) */
 
-#include "io/pecan_buffer.h"
+#include "io/pn_buffer.h"
 
 #include "pecan_contactlist.h"
 
@@ -133,7 +133,7 @@ void pecan_contact_set_guid (PecanContact *contact,
  * @param img The buddy icon image
  */
 void pecan_contact_set_buddy_icon (PecanContact *contact,
-                                   PecanBuffer *buffer);
+                                   PnBuffer *buffer);
 
 /**
  * Adds the group ID for a contact.
