@@ -1134,8 +1134,7 @@ ubx_cmd_post (MsnCmdProc *cmdproc,
                 current_media = g_strndup (start, end - start);
         }
 
-        if (current_media)
-            pecan_contact_set_current_media (contact, current_media);
+        pecan_contact_set_current_media (contact, current_media);
         g_free (current_media);
 
         pecan_contact_update (contact);

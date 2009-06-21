@@ -307,6 +307,17 @@ pecan_contact_set_current_media (PecanContact *contact,
     *  7: ?
     */
 
+    contact->media.type = CURRENT_MEDIA_UNKNOWN;
+    g_free (contact->media.title);
+    contact->media.title = NULL;
+    g_free (contact->media.artist);
+    contact->media.artist = NULL;
+    g_free (contact->media.album);
+    contact->media.album = NULL;
+
+    if (!current_media)
+        return;
+
     current_media_array = g_strsplit (current_media, "\\0", 0);
 
 #if GLIB_CHECK_VERSION(2,6,0)
@@ -334,39 +345,17 @@ pecan_contact_set_current_media (PecanContact *contact,
             contact->media.type = CURRENT_MEDIA_GAMES;
         else if (strcmp (current_media_array[1], "Office") == 0)
             contact->media.type = CURRENT_MEDIA_OFFICE;
-        else
-            contact->media.type = CURRENT_MEDIA_UNKNOWN;
 
-        g_free (contact->media.title);
         if (strings == 4)
             contact->media.title = purple_unescape_html (current_media_array[3]);
         else
             contact->media.title = purple_unescape_html (current_media_array[4]);
 
-        g_free (contact->media.artist);
         if (strings > 5)
             contact->media.artist = purple_unescape_html (current_media_array[5]);
-        else
-            contact->media.artist = NULL;
 
-        g_free (contact->media.album);
         if (strings > 6)
             contact->media.album = purple_unescape_html (current_media_array[6]);
-        else
-            contact->media.album = NULL;
-    }
-    else
-    {
-        contact->media.type = CURRENT_MEDIA_UNKNOWN;
-
-        g_free (contact->media.title);
-        contact->media.title = NULL;
-
-        g_free (contact->media.artist);
-        contact->media.artist = NULL;
-
-        g_free (contact->media.album);
-        contact->media.album = NULL;
     }
 
     g_strfreev (current_media_array);
