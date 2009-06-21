@@ -581,34 +581,33 @@ list_emblems (PurpleBuddy *b)
 static gchar *
 status_text (PurpleBuddy *buddy)
 {
-    PurplePresence *presence;
-    PurpleStatus *status;
     PecanContact *contact;
 
-    presence = purple_buddy_get_presence (buddy);
-    status = purple_presence_get_active_status (presence);
     contact = buddy->proto_data;
 
-    if (contact && contact->media.title)
+    if (!contact)
+       goto fallback;
+
+    if (contact->media.title)
     {
-
-        if (contact->media.type == CURRENT_MEDIA_MUSIC) 
+        switch (contact->media.type)
         {
-            const gchar *title, *artist, *album;
+            case CURRENT_MEDIA_MUSIC:
+                {
+                    const gchar *title, *artist, *album;
 
-            title = contact->media.title;
-            artist = contact->media.artist;
-            album = contact->media.album;
+                    title = contact->media.title;
+                    artist = contact->media.artist;
+                    album = contact->media.album;
 
-            return g_strdup_printf ("♫ %s", purple_util_format_song_info (title, artist, album, NULL));
-        }
-        else if (contact->media.type == CURRENT_MEDIA_GAMES)
-        {
-            return g_strdup_printf (_("Playing %s"), contact->media.title);
-        }
-        else if (contact->media.type == CURRENT_MEDIA_OFFICE) 
-        {
-            return g_strdup_printf (_("Editing %s"), contact->media.title);
+                    return g_strdup_printf ("♫ %s", purple_util_format_song_info (title, artist, album, NULL));
+                }
+            case CURRENT_MEDIA_GAMES:
+                return g_strdup_printf (_("Playing %s"), contact->media.title);
+            case CURRENT_MEDIA_OFFICE:
+                return g_strdup_printf (_("Editing %s"), contact->media.title);
+            default:
+                break;
         }
     }
 
@@ -619,11 +618,19 @@ status_text (PurpleBuddy *buddy)
             return g_strdup (personal_message);
     }
 
+fallback:
+
 #ifndef ADIUM
-    if (!purple_presence_is_available (presence) &&
-        !purple_presence_is_idle (presence))
     {
-        return g_strdup (purple_status_get_name (status));
+        PurplePresence *presence;
+        presence = purple_buddy_get_presence (buddy);
+        if (!purple_presence_is_available (presence) &&
+            !purple_presence_is_idle (presence))
+        {
+            PurpleStatus *status;
+            status = purple_presence_get_active_status (presence);
+            return g_strdup (purple_status_get_name (status));
+        }
     }
 #endif /* ADIUM */
 
@@ -652,52 +659,52 @@ tooltip_text (PurpleBuddy *buddy,
                                           (purple_presence_is_idle (presence) ? _("Idle") : purple_status_get_name (status)));
     }
 
-    if (user)
+    if (!user)
+        return;
+
+    if (full)
     {
-        if (full)
+        if (pecan_contact_get_personal_message (user))
         {
-            if (pecan_contact_get_personal_message (user))
-            {
-                purple_notify_user_info_add_pair (user_info, _("Personal Message"),
-                                                  pecan_contact_get_personal_message (user));
-            }
-
-            if (user->media.title)
-            {
-
-                if (user->media.type == CURRENT_MEDIA_MUSIC) 
-                {
-                    const gchar *title, *artist, *album;
-
-                    title = user->media.title;
-                    artist = user->media.artist;
-                    album = user->media.album;
-
-                    purple_notify_user_info_add_pair (user_info, _("Now Listening"),
-                                                      purple_util_format_song_info (title, artist, album, NULL));
-                }
-                else if (user->media.type == CURRENT_MEDIA_GAMES)
-                {
-                    purple_notify_user_info_add_pair (user_info, _("Playing a game"), g_strdup (user->media.title));
-                }
-                else if (user->media.type == CURRENT_MEDIA_OFFICE) 
-                {
-                    purple_notify_user_info_add_pair (user_info, _("Working"), g_strdup (user->media.title));
-                }
-            }
-
-            purple_notify_user_info_add_pair (user_info, _("Has you"),
-                                              ((user->list_op & (1 << MSN_LIST_RL)) ? _("Yes") : _("No")));
+            purple_notify_user_info_add_pair (user_info, _("Personal Message"),
+                                              pecan_contact_get_personal_message (user));
         }
 
-        /** @todo what's the issue here? */
-        /* XXX: This is being shown in non-full tooltips because the
-         * XXX: blocked icon overlay isn't always accurate for MSN.
-         * XXX: This can die as soon as purple_privacy_check() knows that
-         * XXX: this prpl always honors both the allow and deny lists. */
-        purple_notify_user_info_add_pair (user_info, _("Blocked"),
-                                          ((user->list_op & (1 << MSN_LIST_BL)) ? _("Yes") : _("No")));
+        if (user->media.title)
+        {
+
+            if (user->media.type == CURRENT_MEDIA_MUSIC)
+            {
+                const gchar *title, *artist, *album;
+
+                title = user->media.title;
+                artist = user->media.artist;
+                album = user->media.album;
+
+                purple_notify_user_info_add_pair (user_info, _("Now Listening"),
+                                                  purple_util_format_song_info (title, artist, album, NULL));
+            }
+            else if (user->media.type == CURRENT_MEDIA_GAMES)
+            {
+                purple_notify_user_info_add_pair (user_info, _("Playing a game"), g_strdup (user->media.title));
+            }
+            else if (user->media.type == CURRENT_MEDIA_OFFICE)
+            {
+                purple_notify_user_info_add_pair (user_info, _("Working"), g_strdup (user->media.title));
+            }
+        }
+
+        purple_notify_user_info_add_pair (user_info, _("Has you"),
+                                          ((user->list_op & (1 << MSN_LIST_RL)) ? _("Yes") : _("No")));
     }
+
+    /** @todo what's the issue here? */
+    /* XXX: This is being shown in non-full tooltips because the
+     * XXX: blocked icon overlay isn't always accurate for MSN.
+     * XXX: This can die as soon as purple_privacy_check() knows that
+     * XXX: this prpl always honors both the allow and deny lists. */
+    purple_notify_user_info_add_pair (user_info, _("Blocked"),
+                                      ((user->list_op & (1 << MSN_LIST_BL)) ? _("Yes") : _("No")));
 }
 
 static inline PurpleStatusType *
