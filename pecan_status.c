@@ -165,10 +165,10 @@ pecan_update_status (MsnSession *session)
 
     caps = MSN_CLIENT_CAP_BASE;
 #if defined(PECAN_CVR)
+    caps |= MSN_CLIENT_CAP_INK_GIF;
+#if defined(PECAN_LIBSIREN)
     caps |= MSN_CLIENT_CAP_VOICE_CLIP;
 #endif
-#if defined(PECAN_LIBSIREN)
-    caps |= MSN_CLIENT_CAP_INK_GIF;
 #endif
 
     client_id = caps | (MSN_CLIENT_VER_7_5 << 24);
