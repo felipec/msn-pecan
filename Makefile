@@ -230,6 +230,12 @@ install: $(plugin)
 	install $(plugin) $(plugin_dir)
 	# chcon -t textrel_shlib_t $(plugin_dir)/$(plugin) # for selinux
 
+uninstall:
+	rm -f $(plugin_dir)/$(plugin)
+	for x in $(CATALOGS); do \
+	rm -f $(data_dir)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
+	done
+
 %.mo:: %.po
 	$(MSGFMT) -c -o $@ $<
 
