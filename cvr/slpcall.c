@@ -69,6 +69,9 @@ msn_slp_call_destroy(MsnSlpCall *slpcall)
     GList *e;
     MsnSession *session;
 
+    if (!slpcall)
+	    return;
+
 #ifdef PECAN_DEBUG_SLPCALL
     pecan_info("slpcall_destroy: slpcall(%p)\n", slpcall);
 #endif

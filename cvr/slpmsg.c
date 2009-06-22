@@ -56,6 +56,9 @@ msn_slpmsg_destroy(MsnSlpMessage *slpmsg)
     MsnSlpLink *slplink;
     GList *cur;
 
+    if (!slpmsg)
+	    return;
+
 #ifdef PECAN_DEBUG_SLPMSG
     pecan_info("slpmsg destroy (%p)\n", slpmsg);
 #endif

@@ -157,7 +157,7 @@ msn_slplink_remove_slpcall(MsnSlpLink *slplink,
     /* The slplink has no slpcalls in it. If no one is using it, we might
      * destroy the switchboard, but we should be careful not to use the slplink
      * again. */
-    if (!slplink->slp_calls)
+    if (slplink->slp_calls)
         return;
 
     if (slplink->swboard) {
@@ -514,7 +514,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink,
                                           msg->msnslp_header.session_id,
                                           msg->msnslp_header.id);
 
-    if (slpmsg) {
+    if (!slpmsg) {
         /* Probably the transfer was canceled */
         pecan_error("couldn't find slpmsg");
         return;
