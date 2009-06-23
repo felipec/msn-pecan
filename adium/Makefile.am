@@ -74,7 +74,9 @@ AM_CPPFLAGS = \
 	      -I$(top_builddir)/libpurple \
 	      $(GLIB_CFLAGS) \
 	      $(DEBUG_CFLAGS) \
+	      -DSTATIC_PECAN \
 	      -DHAVE_LIBPURPLE \
+	      -D_XOPEN_SOURCE \
 	      -DADIUM \
 	      -DPURPLE_DEBUG \
 	      -DPECAN_DEBUG_SLP \

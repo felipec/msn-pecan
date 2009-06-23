@@ -66,7 +66,11 @@
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
 #endif /* defined(PECAN_CVR) */
 
+#ifndef ADIUM
 #define PLUGIN_ID "prpl-msn-pecan"
+#else
+#define PLUGIN_ID "prpl-msn_pecan"
+#endif
 
 typedef struct
 {
