@@ -190,8 +190,15 @@ got_sessionreq(MsnSlpCall *slpcall,
 
         msnobj_data = (char *) purple_base64_decode(context, &len);
         obj = msn_object_new_from_string(msnobj_data);
-        type = msn_object_get_type(obj);
         g_free(msnobj_data);
+
+        if (!obj) {
+            /** @todo reject invitation? */
+            pecan_warning("invalid object");
+            return;
+        }
+
+        type = msn_object_get_type(obj);
 
         if (type == MSN_OBJECT_USERTILE) {
             /* image is owned by a local object, not obj */
