@@ -307,7 +307,6 @@ pecan_dp_manager_contact_set_object (PecanContact *contact,
 
     g_return_if_fail (contact);
 
-    /** @todo only request this when the object is a Display Picture. */
     if (!(contact->list_op & MSN_LIST_FL_OP))
         return;
 
@@ -319,6 +318,9 @@ pecan_dp_manager_contact_set_object (PecanContact *contact,
 #endif /* HAVE_LIBPURPLE */
         return;
     }
+
+    if (msn_object_get_type (obj) != MSN_OBJECT_USERTILE)
+        return;
 
 #ifdef HAVE_LIBPURPLE
     if (!ud_cached (msn_session_get_user_data (session), obj))
