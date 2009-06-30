@@ -1368,7 +1368,16 @@ datacast_msg (MsnCmdProc *cmdproc,
 
     if (strcmp (id, "1") == 0)
     {
-        serv_got_attention (connection, passport, 0);
+        MsnSwitchBoard *swboard;
+
+        swboard = cmdproc->data;
+
+        if (swboard->current_users > 1 ||
+            (swboard->conv &&
+             purple_conversation_get_type (swboard->conv) == PURPLE_CONV_TYPE_CHAT))
+            purple_prpl_got_attention_in_chat (connection, swboard->chat_id, passport, 0);
+        else
+            purple_prpl_got_attention (connection, passport, 0);
     }
     else if (strcmp (id, "2") == 0)
     {
