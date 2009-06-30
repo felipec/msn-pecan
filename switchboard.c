@@ -1393,7 +1393,6 @@ datacast_msg (MsnCmdProc *cmdproc,
     else
     {
         pecan_warning ("Got unknown datacast with ID %s.\n", id);
-        serv_got_attention (connection, passport, 0);
     }
 }
 
