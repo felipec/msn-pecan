@@ -189,8 +189,6 @@ request (PecanContact *user)
 
     obj = pecan_contact_get_object (user);
 
-    info = msn_object_get_sha1 (obj);
-
     /* Changed while in the queue. */
     if (!obj)
     {
@@ -198,6 +196,8 @@ request (PecanContact *user)
         skip_request (session->dp_manager);
         return;
     }
+
+    info = msn_object_get_sha1 (obj);
 
     if (g_ascii_strcasecmp (user->passport,
                             msn_session_get_username (session)))
