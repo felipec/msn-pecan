@@ -770,6 +770,11 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     pecan_contact_set_friendly_name(user, friendly);
 
+    clientid = strtoul (cmd->params[3], NULL, 10);
+    user->mobile = (clientid & MSN_CLIENT_CAP_MSNMOBILE);
+
+    pecan_contact_set_state(user, state);
+
 #if defined(PECAN_CVR)
     if (msn_session_get_bool (session, "use_userdisplay"))
     {
@@ -789,10 +794,6 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     }
 #endif /* defined(PECAN_CVR) */
 
-    clientid = strtoul (cmd->params[3], NULL, 10);
-    user->mobile = (clientid & MSN_CLIENT_CAP_MSNMOBILE);
-
-    pecan_contact_set_state(user, state);
     pecan_contact_update(user);
 
     /* store the friendly name on the server. */
