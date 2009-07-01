@@ -753,6 +753,27 @@ foo_write (PnNode *conn,
         gchar *auth = NULL;
         gchar *session_id;
 
+        /* get proxy auth info and set up proxy auth header */
+        {
+            PurpleProxyInfo *gpi;
+            gpi = purple_proxy_get_setup(msn_session_get_user_data(conn->session));
+            if (gpi)
+            {
+                const char *username, *password;
+                username = purple_proxy_info_get_username(gpi);
+                password = purple_proxy_info_get_password(gpi);
+                if (username || password)
+                {
+                    char *tmp;
+                    auth = g_strdup_printf("%s:%s", username ? username : "", password ? password : "");
+                    tmp = purple_base64_encode((const guchar *)auth, strlen(auth));
+                    g_free(auth);
+                    auth = g_strdup_printf("Proxy-Authorization: Basic %s\r\n", tmp);
+                    g_free(tmp);
+                }
+            }
+        }
+
         session_id = prev->foo_data;
 
         if (session_id)
@@ -786,6 +807,7 @@ foo_write (PnNode *conn,
                                   count);
 
         g_free (params);
+        g_free (auth);
 
 #ifdef PECAN_DEBUG_HTTP
         pn_debug ("header=[%s]", header);
