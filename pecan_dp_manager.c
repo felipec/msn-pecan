@@ -36,6 +36,7 @@ struct PecanDpManager
     MsnSession *session;
     GQueue *requests;
     gint window;
+    guint timer;
 };
 
 static void release (PecanDpManager *dpm);
@@ -47,7 +48,7 @@ pecan_dp_manager_new (MsnSession *session)
     dpm = g_new0 (PecanDpManager, 1);
     dpm->session = session;
     dpm->requests = g_queue_new ();
-    dpm->window = 5;
+    dpm->window = 8;
     return dpm;
 }
 
@@ -56,18 +57,10 @@ pecan_dp_manager_free (PecanDpManager *dpm)
 {
     g_queue_free (dpm->requests);
 
+    if (dpm->timer)
+        g_source_remove (dpm->timer);
+
     g_free (dpm);
-}
-
-static inline void
-skip_request (PecanDpManager *dpm)
-{
-    /* Free one window slot */
-    dpm->window++;
-    pecan_log ("window=%d", dpm->window);
-
-    /* Request the next one */
-    release (dpm);
 }
 
 static void
@@ -97,15 +90,7 @@ static void
 userdisplay_fail (MsnSlpCall *slpcall,
                   MsnSession *session)
 {
-    PecanDpManager *dpm;
-
-    g_return_if_fail (session);
-
     pecan_error ("unknown error");
-
-    dpm = session->dp_manager;
-
-    skip_request (dpm);
 }
 
 static void
@@ -128,7 +113,6 @@ request (PecanContact *user)
     if (!obj)
     {
         purple_buddy_icons_set_for_user (account, user->passport, NULL, 0, NULL);
-        skip_request (session->dp_manager);
         return;
     }
 
@@ -160,9 +144,23 @@ request (PecanContact *user)
 
         purple_buddy_icons_set_for_user (account, user->passport,
                                          g_memdup (data, len), len, info);
-
-        skip_request (session->dp_manager);
     }
+}
+
+static gboolean
+timeout (gpointer data)
+{
+    PecanDpManager *dpm = data;
+
+    dpm->window = 8;
+    pecan_log ("window=%d", dpm->window);
+
+    /* Clear the tag for our former request timer */
+    dpm->timer = 0;
+
+    release (dpm);
+
+    return FALSE;
 }
 
 static void
@@ -194,6 +192,8 @@ release (PecanDpManager *dpm)
 
         request (user);
     }
+
+    dpm->timer = g_timeout_add_seconds (60, timeout, dpm);
 }
 
 #ifdef HAVE_LIBPURPLE
