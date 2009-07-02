@@ -31,19 +31,11 @@
 #include <account.h>
 #endif /* HAVE_LIBPURPLE */
 
-/* ms to delay between sending userdisplay requests to the server. */
-#define DP_DELAY 20000
-
-/* #define PECAN_DP_MANAGER_TIMED */
-
 struct PecanDpManager
 {
     MsnSession *session;
     GQueue *requests;
     gint window;
-#ifdef PECAN_DP_MANAGER_TIMED
-    guint timer;
-#endif /* PECAN_DP_MANAGER_TIMED */
 };
 
 static void release (PecanDpManager *dpm);
@@ -63,13 +55,6 @@ void
 pecan_dp_manager_free (PecanDpManager *dpm)
 {
     g_queue_free (dpm->requests);
-
-#ifdef PECAN_DP_MANAGER_TIMED
-#ifdef HAVE_LIBPURPLE
-    if (dpm->timer)
-        purple_timeout_remove (dpm->timer);
-#endif /* HAVE_LIBPURPLE */
-#endif /* PECAN_DP_MANAGER_TIMED */
 
     g_free (dpm);
 }
@@ -108,30 +93,6 @@ userdisplay_ok (MsnSlpCall *slpcall,
 #endif /* HAVE_LIBPURPLE */
 }
 
-#ifdef PECAN_DP_MANAGER_TIMED
-/*
- * Called on a timeout from userdisplay_fail().
- * Frees a buddy icon window slow and dequeues the next buddy icon request if
- * there is one.
- */
-static gboolean
-timeout (gpointer data)
-{
-    PecanDpManager *dpm = data;
-
-    /* Free one window slot */
-    dpm->window++;
-    pecan_log ("window=%d", dpm->window);
-
-    /* Clear the tag for our former request timer */
-    dpm->timer = 0;
-
-    release (dpm);
-
-    return FALSE;
-}
-#endif /* PECAN_DP_MANAGER_TIMED */
-
 static void
 userdisplay_fail (MsnSlpCall *slpcall,
                   MsnSession *session)
@@ -144,33 +105,7 @@ userdisplay_fail (MsnSlpCall *slpcall,
 
     dpm = session->dp_manager;
 
-#ifdef PECAN_DP_MANAGER_TIMED
-    /* Delay before freeing a buddy icon window slot and requesting the next icon, if appropriate.
-     * If we don't delay, we'll rapidly hit the MSN equivalent of AIM's rate limiting; the server will
-     * send us an error 800 like so:
-     *
-     * C: NS 000: XFR 21 SB
-     * S: NS 000: 800 21
-     */
-    if (dpm->timer)
-    {
-        /* Free the window slot used by this previous request */
-        dpm->window++;
-        pecan_log ("window=%d", dpm->window);
-
-#ifdef HAVE_LIBPURPLE
-        /* Clear our pending timeout */
-        purple_timeout_remove (dpm->timer);
-#endif /* HAVE_LIBPURPLE */
-    }
-
-#ifdef HAVE_LIBPURPLE
-    /* Wait before freeing our window slot and requesting the next icon. */
-    dpm->timer = purple_timeout_add (DP_DELAY, timeout, dpm);
-#endif /* HAVE_LIBPURPLE */
-#else
     skip_request (dpm);
-#endif /* PECAN_DP_MANAGER_TIMED */
 }
 
 static void
