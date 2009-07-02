@@ -86,11 +86,39 @@ userdisplay_ok (MsnSlpCall *slpcall,
 #endif /* HAVE_LIBPURPLE */
 }
 
+static inline void
+queue (PecanDpManager *dpm,
+       PecanContact *contact)
+{
+    pecan_debug ("passport=[%s],window=%u",
+                 contact->passport, dpm->window);
+
+    g_queue_push_tail (dpm->requests, contact);
+
+    if (dpm->window > 0)
+        release (dpm);
+}
+
 static void
 userdisplay_fail (MsnSlpCall *slpcall,
                   MsnSession *session)
 {
+    const gchar *passport;
+    PecanContact *contact;
+
+    g_return_if_fail (session);
+
     pecan_error ("unknown error");
+
+    if (!slpcall && !slpcall->slplink)
+        return;
+
+    passport = slpcall->slplink->remote_user;
+
+    contact = pecan_contactlist_find_contact (session->contactlist, passport);
+
+    if (contact)
+        queue (session->dp_manager, contact);
 }
 
 static void
@@ -220,19 +248,6 @@ ud_cached (PurpleAccount *account,
     return FALSE;
 }
 #endif /* HAVE_LIBPURPLE */
-
-static inline void
-queue (PecanDpManager *dpm,
-       PecanContact *contact)
-{
-    pecan_debug ("passport=[%s],window=%u",
-                 contact->passport, dpm->window);
-
-    g_queue_push_tail (dpm->requests, contact);
-
-    if (dpm->window > 0)
-        release (dpm);
-}
 
 void
 pecan_dp_manager_contact_set_object (PecanContact *contact,
