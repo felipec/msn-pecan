@@ -860,3 +860,77 @@ pecan_get_xml_field (const gchar *tag,
 
     return field;
 }
+
+struct ref {
+    const char *name;
+    const char *value;
+};
+
+char *
+pecan_html_unescape (const char *url)
+{
+    GString *dest;
+    const char *src;
+
+    dest = g_string_new ("");
+    src = url;
+
+    while (*src != '\0') {
+        if (*src == '&') {
+            const char *end;
+            end = strchr (src, ';');
+            src++;
+
+            if (!end)
+                goto malformed;
+
+            if (src[0] == '#') {
+                int id, n;
+
+                src++;
+
+                if (src[0] == 'x')
+                    n = sscanf (src + 1, "%x", &id);
+                else
+                    n = sscanf (src, "%u", &id);
+                if (n != 1)
+                    goto malformed;
+
+                dest = g_string_append_unichar (dest, id);
+            }
+            else {
+                struct ref refs[] = {
+                    { "amp", "&" },
+                    { "lt", "<" },
+                    { "gt", ">" },
+                    { "nbsp", " " },
+                    { "copy", "©" },
+                    { "quot", "\"" },
+                    { "reg", "®" },
+                    { "apos", "'" },
+                };
+                int i;
+                for (i = 0; i < ARRAY_SIZE(refs); i++) {
+                    struct ref ref = refs[i];
+                    int len = strlen(ref.name);
+                    if (strncmp (src, ref.name, len) == 0) {
+                        dest = g_string_append (dest, ref.value);
+                        src += len;
+                        break;
+                    }
+                }
+            }
+
+            src = end + 1;
+        }
+        else {
+            dest = g_string_append_c (dest, *src);
+            src++;
+        }
+    }
+
+    return g_string_free (dest, FALSE);
+
+malformed:
+    return g_string_free (dest, TRUE);
+}

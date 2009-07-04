@@ -67,5 +67,6 @@ gboolean g_ascii_strcase_equal (gconstpointer v1, gconstpointer v2);
 guint g_ascii_strcase_hash (gconstpointer v);
 
 gchar *pecan_get_xml_field (const gchar *tag, const gchar *start, const gchar *end);
+char *pecan_html_unescape(const char *str);
 
 #endif /* PECAN_UTIL_H */
