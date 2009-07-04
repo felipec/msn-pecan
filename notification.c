@@ -18,7 +18,7 @@
  */
 
 #include "notification.h"
-#include "pecan_log.h"
+#include "pn_log.h"
 #include "pecan_locale.h"
 #include "sync.h"
 #include "nexus.h"
@@ -73,13 +73,13 @@ open_cb (PecanNode *conn,
 
     g_return_if_fail (conn != NULL);
 
-    pecan_log ("begin");
+    pn_log ("begin");
 
     session = conn->session;
 
     pecan_cmd_server_send (CMD_PECAN_NODE (conn), "VER", "MSNP12 CVR0");
 
-    pecan_log ("end");
+    pn_log ("end");
 }
 
 static void
@@ -95,14 +95,14 @@ close_cb (PecanNode *conn,
         {
             reason = conn->error->message;
 
-            pecan_error ("connection error: (NS):reason=[%s]", reason);
+            pn_error ("connection error: (NS):reason=[%s]", reason);
             tmp = g_strdup_printf (_("Error on notification server:\n%s"), reason);
 
             g_clear_error (&conn->error);
         }
         else
         {
-            pecan_error ("connection error: (NS)");
+            pn_error ("connection error: (NS)");
             tmp = g_strdup_printf (_("Error on notification server:\nUnknown"));
         }
     }
@@ -130,7 +130,7 @@ error_handler (MsnCmdProc *cmdproc,
     g_return_if_fail (notification);
 
     reason = pecan_error_to_string (error);
-    pecan_error ("connection error: (NS):reason=[%s]", reason);
+    pn_error ("connection error: (NS):reason=[%s]", reason);
 
     switch (error)
     {
@@ -731,7 +731,7 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 static void
 ipg_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload, size_t len)
 {
-    pecan_info ("incoming page: [%s]", payload);
+    pn_info ("incoming page: [%s]", payload);
 }
 
 static void
@@ -764,7 +764,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     if (!user)
     {
-        pecan_error ("unknown user: passport=[%s]", passport);
+        pn_error ("unknown user: passport=[%s]", passport);
         return;
     }
 
@@ -841,7 +841,7 @@ chg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 static void
 not_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload, size_t len)
 {
-    pecan_info ("incoming notification: [%s]", payload);
+    pn_info ("incoming notification: [%s]", payload);
 }
 
 static void
@@ -881,7 +881,7 @@ rea_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         }
         else
         {
-            pecan_error ("unknown user: who=[%s]", who);
+            pn_error ("unknown user: who=[%s]", who);
             return;
         }
     }
@@ -1293,7 +1293,7 @@ xfr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     if (strcmp(cmd->params[1], "SB") && strcmp(cmd->params[1], "NS"))
     {
         /* Maybe we can have a generic bad command error. */
-        pecan_error ("bad XFR command: params=[%s]", cmd->params[1]);
+        pn_error ("bad XFR command: params=[%s]", cmd->params[1]);
         return;
     }
 
@@ -1301,7 +1301,7 @@ xfr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     if (!strcmp(cmd->params[1], "SB"))
     {
-        pecan_error ("this shouldn't be handled here");
+        pn_error ("this shouldn't be handled here");
     }
     else if (!strcmp(cmd->params[1], "NS"))
     {
@@ -1329,7 +1329,7 @@ profile_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
     if (strcmp(msg->remote_user, "Hotmail"))
     {
-        pecan_warning ("unofficial message");
+        pn_warning ("unofficial message");
         return;
     }
 
@@ -1378,7 +1378,7 @@ initial_mdata_msg (MsnCmdProc *cmdproc,
 
     if (strcmp (msg->remote_user, "Hotmail"))
     {
-        pecan_warning ("unofficial message");
+        pn_warning ("unofficial message");
         return;
     }
 
@@ -1497,13 +1497,13 @@ email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
     if (strcmp(msg->remote_user, "Hotmail"))
     {
-        pecan_warning ("unofficial message");
+        pn_warning ("unofficial message");
         return;
     }
 
     if (!session->passport_info.mail_url)
     {
-        pecan_error ("no url");
+        pn_error ("no url");
         return;
     }
 
@@ -1544,7 +1544,7 @@ system_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
     if (strcmp(msg->remote_user, "Hotmail"))
     {
-        pecan_warning ("unofficial message");
+        pn_warning ("unofficial message");
         return;
     }
 

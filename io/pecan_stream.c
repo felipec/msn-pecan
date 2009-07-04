@@ -17,7 +17,7 @@
  */
 
 #include "pecan_stream.h"
-#include "pecan_log.h"
+#include "pn_log.h"
 
 #include <string.h>
 
@@ -72,7 +72,7 @@ pecan_stream_read (PecanStream *stream,
 
 #ifdef PECAN_DUMP_FILE
     if (stream->dump)
-        msn_dump_file (buf, tmp_bytes_read);
+        pn_dump_file (buf, tmp_bytes_read);
 #endif /* PECAN_DUMP_FILE */
 
 #if defined(PECAN_STREAM_RANDOM_ERRORS)
@@ -81,7 +81,7 @@ skip:
 
     if (tmp_error)
     {
-        pecan_error ("error reading: %s", tmp_error->message);
+        pn_error ("error reading: %s", tmp_error->message);
         g_propagate_error (error, tmp_error);
     }
 
@@ -118,7 +118,7 @@ pecan_stream_write (PecanStream *stream,
 
 #ifdef PECAN_DUMP_FILE
     if (stream->dump)
-        msn_dump_file (buf, tmp_bytes_written);
+        pn_dump_file (buf, tmp_bytes_written);
 #endif /* PECAN_DUMP_FILE */
 
 #if defined(PECAN_STREAM_RANDOM_ERRORS)
@@ -127,7 +127,7 @@ skip:
 
     if (tmp_error)
     {
-        pecan_error ("error writing: %s", tmp_error->message);
+        pn_error ("error writing: %s", tmp_error->message);
         g_propagate_error (error, tmp_error);
     }
 
@@ -161,12 +161,12 @@ pecan_stream_read_full (PecanStream *stream,
 
 #ifdef PECAN_DUMP_FILE
         if (stream->dump)
-            msn_dump_file (buf, tmp_bytes_read);
+            pn_dump_file (buf, tmp_bytes_read);
 #endif /* PECAN_DUMP_FILE */
 
         if (tmp_error)
         {
-            pecan_error ("error reading: %s", tmp_error->message);
+            pn_error ("error reading: %s", tmp_error->message);
             g_propagate_error (error, tmp_error);
         }
 
@@ -203,12 +203,12 @@ pecan_stream_write_full (PecanStream *stream,
 
 #ifdef PECAN_DUMP_FILE
         if (stream->dump)
-            msn_dump_file (buf, tmp_bytes_written);
+            pn_dump_file (buf, tmp_bytes_written);
 #endif /* PECAN_DUMP_FILE */
 
         if (tmp_error)
         {
-            pecan_error ("error writing: %s", tmp_error->message);
+            pn_error ("error writing: %s", tmp_error->message);
             g_propagate_error (error, tmp_error);
         }
 
@@ -234,7 +234,7 @@ pecan_stream_flush (PecanStream *stream,
 
     if (tmp_error)
     {
-        pecan_error ("error flushing: %s", tmp_error->message);
+        pn_error ("error flushing: %s", tmp_error->message);
         g_propagate_error (error, tmp_error);
     }
 
@@ -257,12 +257,12 @@ pecan_stream_read_line (PecanStream *stream,
 
 #ifdef PECAN_DUMP_FILE
     if (stream->dump)
-        msn_dump_file (*str_return, strlen (*str_return));
+        pn_dump_file (*str_return, strlen (*str_return));
 #endif /* PECAN_DUMP_FILE */
 
     if (tmp_error)
     {
-        pecan_error ("error flushing: %s", tmp_error->message);
+        pn_error ("error flushing: %s", tmp_error->message);
         g_propagate_error (error, tmp_error);
     }
 

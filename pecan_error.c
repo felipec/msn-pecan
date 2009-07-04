@@ -18,7 +18,7 @@
  */
 
 #include "pecan_error.h"
-#include "pecan_log.h"
+#include "pn_log.h"
 #include "pecan_locale.h"
 
 #include <glib.h>

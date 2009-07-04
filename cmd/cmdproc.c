@@ -24,7 +24,7 @@
 
 #include "io/pecan_node.h"
 
-#include "pecan_log.h"
+#include "pn_log.h"
 
 #include "history.h"
 
@@ -48,28 +48,28 @@ msn_cmdproc_new (void)
 void
 msn_cmdproc_destroy (MsnCmdProc *cmdproc)
 {
-    pecan_log ("begin");
+    pn_log ("begin");
 
-    pecan_debug ("cmdproc=%p", cmdproc);
+    pn_debug ("cmdproc=%p", cmdproc);
 
     msn_history_destroy (cmdproc->history);
     msn_command_free (cmdproc->last_cmd);
 
     g_free (cmdproc);
 
-    pecan_log ("end");
+    pn_log ("end");
 }
 
 void
 msn_cmdproc_flush (MsnCmdProc *cmdproc)
 {
-    pecan_log ("begin");
+    pn_log ("begin");
 
-    pecan_debug ("cmdproc=%p", cmdproc);
+    pn_debug ("cmdproc=%p", cmdproc);
 
     msn_history_flush (cmdproc->history);
 
-    pecan_log ("end");
+    pn_log ("end");
 }
 
 static void
@@ -89,7 +89,7 @@ show_debug_cmd (MsnCmdProc *cmdproc,
     if ((show[len - 1] == '\n') && (show[len - 2] == '\r'))
         show[len - 2] = '\0';
 
-    pecan_info ("%c: %03d: %s", tmp, cmdproc->cmd_count, show);
+    pn_info ("%c: %03d: %s", tmp, cmdproc->cmd_count, show);
 
     g_free (show);
 }
@@ -243,7 +243,7 @@ msn_cmdproc_process_msg (MsnCmdProc *cmdproc,
 
     if (!msn_message_get_content_type (msg))
     {
-        pecan_warning ("failed to find message content");
+        pn_warning ("failed to find message content");
         return;
     }
 
@@ -252,8 +252,8 @@ msn_cmdproc_process_msg (MsnCmdProc *cmdproc,
 
     if (!cb)
     {
-        pecan_warning ("unhandled content-type: [%s]",
-                       msn_message_get_content_type (msg));
+        pn_warning ("unhandled content-type: [%s]",
+                    msn_message_get_content_type (msg));
 
         return;
     }
@@ -270,7 +270,7 @@ msn_cmdproc_process_cmd (MsnCmdProc *cmdproc,
 
     g_return_if_fail (cmdproc->cbs_table);
 
-    pecan_log ("begin");
+    pn_log ("begin");
 
     if (cmd->tr_id)
         cmd->trans = trans = msn_history_find (cmdproc->history, cmd->tr_id);
@@ -300,7 +300,7 @@ msn_cmdproc_process_cmd (MsnCmdProc *cmdproc,
             if (error_cb)
                 error_cb (cmdproc, trans, error);
             else
-                pecan_error ("unhandled error: [%s]", cmd->base);
+                pn_error ("unhandled error: [%s]", cmd->base);
 
             return;
         }
@@ -319,9 +319,9 @@ msn_cmdproc_process_cmd (MsnCmdProc *cmdproc,
     if (cb)
         cb (cmdproc, cmd);
     else
-        pecan_warning ("unhandled command: [%s]", cmd->base);
+        pn_warning ("unhandled command: [%s]", cmd->base);
 
-    pecan_log ("end");
+    pn_log ("end");
 }
 
 void

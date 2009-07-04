@@ -18,7 +18,7 @@
  */
 
 #include "pecan_status.h"
-#include "pecan_log.h"
+#include "pn_log.h"
 #include "pecan_global.h"
 
 #include "session.h"
@@ -105,7 +105,7 @@ util_status_from_session (MsnSession *session)
     }
     else
     {
-        pecan_error ("wrong: status_id=[%s]", status_id);
+        pn_error ("wrong: status_id=[%s]", status_id);
         msnstatus = PECAN_STATUS_WRONG;
     }
 

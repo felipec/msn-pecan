@@ -18,7 +18,7 @@
 
 #include "pecan_ssl_conn.h"
 #include "pecan_node_priv.h"
-#include "pecan_log.h"
+#include "pn_log.h"
 
 #include "session.h" /* for libpurple account */
 
@@ -58,12 +58,12 @@ read_cb (gpointer data,
     PecanNode *conn;
     PecanSslConn *ssl_conn;
 
-    pecan_log ("begin");
+    pn_log ("begin");
 
     conn = PECAN_NODE (data);
     ssl_conn = PECAN_SSL_CONN (data);
 
-    pecan_debug ("conn=%p,name=%s", conn, conn->name);
+    pn_debug ("conn=%p,name=%s", conn, conn->name);
 
     if (ssl_conn->read_cb)
     {
@@ -111,7 +111,7 @@ read_cb (gpointer data,
 #endif
 
 leave:
-    pecan_log ("end");
+    pn_log ("end");
 }
 
 PecanSslConn *
@@ -121,7 +121,7 @@ pecan_ssl_conn_new (gchar *name,
     PecanSslConn *ssl_conn;
     PecanNode *conn;
 
-    pecan_log ("begin");
+    pn_log ("begin");
 
     ssl_conn = PECAN_SSL_CONN (g_type_create_instance (PECAN_SSL_CONN_TYPE));
     conn = PECAN_NODE (ssl_conn);
@@ -129,7 +129,7 @@ pecan_ssl_conn_new (gchar *name,
     conn->name = g_strdup (name);
     conn->type = type;
 
-    pecan_log ("end");
+    pn_log ("end");
 
     return ssl_conn;
 }
@@ -139,9 +139,9 @@ pecan_ssl_conn_free (PecanSslConn *conn)
 {
     g_return_if_fail (conn);
 
-    pecan_log ("begin");
+    pn_log ("begin");
     g_object_unref (G_OBJECT (conn));
-    pecan_log ("end");
+    pn_log ("end");
 }
 
 void
@@ -163,7 +163,7 @@ connect_cb (gpointer data,
     PecanNode *conn;
     PecanSslConn *ssl_conn;
 
-    pecan_log ("begin");
+    pn_log ("begin");
 
     conn = PECAN_NODE (data);
     ssl_conn = PECAN_SSL_CONN (data);
@@ -172,12 +172,12 @@ connect_cb (gpointer data,
 
     if (gsc->fd >= 0)
     {
-        pecan_info ("connected: conn=%p,ssl_conn=%p", conn, ssl_conn);
+        pn_info ("connected: conn=%p,ssl_conn=%p", conn, ssl_conn);
         purple_ssl_input_add (gsc, read_cb, conn);
     }
     else
     {
-        /* pecan_error ("connection error: conn=%p,msg=[%s]", conn, error_message); */
+        /* pn_error ("connection error: conn=%p,msg=[%s]", conn, error_message); */
         conn->error = g_error_new_literal (PECAN_NODE_ERROR, PECAN_NODE_ERROR_OPEN,
                                            "Unable to connect");
         pecan_node_error (conn);
@@ -191,7 +191,7 @@ connect_cb (gpointer data,
 
     g_object_unref (conn);
 
-    pecan_log ("end");
+    pn_log ("end");
 }
 
 static void
@@ -202,12 +202,12 @@ connect_impl (PecanNode *conn,
     PecanSslConn *ssl_conn;
     g_return_if_fail (conn);
 
-    pecan_log ("begin");
+    pn_log ("begin");
 
     ssl_conn = PECAN_SSL_CONN (conn);
 
-    pecan_debug ("conn=%p,name=%s", conn, conn->name);
-    pecan_debug ("hostname=%s,port=%d", hostname, port);
+    pn_debug ("conn=%p,name=%s", conn, conn->name);
+    pn_debug ("hostname=%s,port=%d", hostname, port);
 
     g_free (conn->hostname);
     conn->hostname = g_strdup (hostname);
@@ -220,7 +220,7 @@ connect_impl (PecanNode *conn,
                                              hostname, port, connect_cb, NULL, ssl_conn);
 #endif /* HAVE_LIBPURPLE */
 
-    pecan_log ("end");
+    pn_log ("end");
 }
 
 static void
@@ -230,18 +230,18 @@ close_impl (PecanNode *conn)
 
     g_return_if_fail (conn);
 
-    pecan_log ("begin");
+    pn_log ("begin");
 
     ssl_conn = PECAN_SSL_CONN (conn);
 
-    pecan_log ("conn=%p,name=%s", conn, conn->name);
+    pn_log ("conn=%p,name=%s", conn, conn->name);
 
     g_free (conn->hostname);
     conn->hostname = NULL;
 
     if (!ssl_conn->ssl_data)
     {
-        pecan_warning ("not connected: conn=%p", conn);
+        pn_warning ("not connected: conn=%p", conn);
     }
 
 #ifdef HAVE_LIBPURPLE
@@ -255,13 +255,13 @@ close_impl (PecanNode *conn)
 
     if (ssl_conn->ssl_data)
     {
-        pecan_info ("ssl shutdown: %p", ssl_conn->ssl_data);
+        pn_info ("ssl shutdown: %p", ssl_conn->ssl_data);
         purple_ssl_close (ssl_conn->ssl_data);
         ssl_conn->ssl_data = NULL;
     }
 #endif /* HAVE_LIBPURPLE */
 
-    pecan_log ("end");
+    pn_log ("end");
 }
 
 static inline const gchar *
@@ -291,14 +291,14 @@ write_impl (PecanNode *conn,
     GIOStatus status = G_IO_STATUS_NORMAL;
     PecanSslConn *ssl_conn;
 
-    pecan_debug ("name=%s", conn->name);
+    pn_debug ("name=%s", conn->name);
 
     ssl_conn = PECAN_SSL_CONN (conn);
 
     {
         gint bytes_written = 0;
 
-        pecan_debug ("stream=%p", conn->stream);
+        pn_debug ("stream=%p", conn->stream);
 
         /* write_full */
         do
@@ -316,20 +316,20 @@ write_impl (PecanNode *conn,
             }
         } while (status == G_IO_STATUS_AGAIN);
 
-        pecan_log ("bytes_written=%d", bytes_written);
+        pn_log ("bytes_written=%d", bytes_written);
 
         if (status == G_IO_STATUS_NORMAL)
         {
             if (bytes_written < count)
             {
                 /* This shouldn't happen, right? */
-                pecan_error ("write check: %d < %d", bytes_written, count);
+                pn_error ("write check: %d < %d", bytes_written, count);
             }
         }
         else
         {
-            pecan_warning ("not normal: status=%d (%s)",
-                           status, status_to_str (status));
+            pn_warning ("not normal: status=%d (%s)",
+                        status, status_to_str (status));
         }
 
         if (ret_bytes_written)
@@ -353,12 +353,12 @@ read_impl (PecanNode *conn,
 
     ssl_conn = PECAN_SSL_CONN (conn);
 
-    pecan_debug ("name=%s", conn->name);
+    pn_debug ("name=%s", conn->name);
 
     {
         gint bytes_read = 0;
 
-        pecan_debug ("ssl_data=%p", ssl_conn->ssl_data);
+        pn_debug ("ssl_data=%p", ssl_conn->ssl_data);
 
         bytes_read = purple_ssl_read (ssl_conn->ssl_data, buf, count);
 
@@ -374,11 +374,11 @@ read_impl (PecanNode *conn,
 
         if (status != G_IO_STATUS_NORMAL)
         {
-            pecan_info ("not normal: status=%d (%s)",
-                        status, status_to_str (status));
+            pn_info ("not normal: status=%d (%s)",
+                     status, status_to_str (status));
         }
 
-        pecan_log ("bytes_read=%d", bytes_read);
+        pn_log ("bytes_read=%d", bytes_read);
 
         if (ret_bytes_read)
             *ret_bytes_read = bytes_read;
@@ -396,7 +396,7 @@ dispose (GObject *obj)
 {
     PecanNode *conn = PECAN_NODE (obj);
 
-    pecan_log ("begin");
+    pn_log ("begin");
 
     if (!conn->dispose_has_run)
     {
@@ -409,7 +409,7 @@ dispose (GObject *obj)
 
     G_OBJECT_CLASS (parent_class)->dispose (obj);
 
-    pecan_log ("end");
+    pn_log ("end");
 }
 
 static void

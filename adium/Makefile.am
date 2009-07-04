@@ -10,7 +10,7 @@ MSNSOURCES = msn.c \
 	     session.c \
 	     switchboard.c \
 	     sync.c \
-	     pecan_log.c \
+	     pn_log.c \
 	     pecan_printf.c \
 	     pecan_util.c \
 	     pecan_error.c \

@@ -22,7 +22,7 @@
 #include "io/pecan_node.h"
 
 #include "pecan_config.h"
-#include "pecan_log.h"
+#include "pn_log.h"
 
 #include <string.h> /* for memcpy */
 
@@ -65,7 +65,7 @@ pecan_parser_read_line (PecanParser *parser,
     gchar *next;
     gint cur_len;
 
-    pecan_log ("begin");
+    pn_log ("begin");
 
     if (parser->need_more)
     {
@@ -141,7 +141,7 @@ leave:
             *terminator_pos = 0;
     }
 
-    pecan_log ("end");
+    pn_log ("end");
 
     return status;
 }

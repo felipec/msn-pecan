@@ -22,8 +22,8 @@
 #include "page.h"
 #include "session.h"
 #include "pecan_util.h"
+#include "pn_log.h"
 #include "pecan_status.h"
-#include "pecan_log.h"
 #include "pecan_locale.h"
 #include "pecan_global.h"
 
@@ -433,7 +433,7 @@ show_hotmail_inbox (PurplePluginAction *action)
 
         msn_cmdproc_send_trans (cmdproc, trans);
 
-        pecan_debug ("mail_url update");
+        pn_debug ("mail_url update");
 
         return;
     }
@@ -1103,7 +1103,7 @@ send_im (PurpleConnection *gc,
                 GSList *smileys;
                 GString *emoticons = NULL;
 
-                pecan_debug ("send via switchboard");
+                pn_debug ("send via switchboard");
                 smileys = msn_msg_grab_emoticons (message, username);
 
                 while (smileys)
@@ -1225,7 +1225,7 @@ add_buddy (PurpleConnection *gc,
 
     if (!session->logged_in)
     {
-        pecan_error ("not connected");
+        pn_error ("not connected");
         return;
     }
 
@@ -1247,7 +1247,7 @@ rem_buddy (PurpleConnection *gc,
 
     if (!session->logged_in)
     {
-        pecan_error ("not connected");
+        pn_error ("not connected");
         return;
     }
 
@@ -1362,7 +1362,7 @@ add_permit (PurpleConnection *gc,
 
     if (!session->logged_in)
     {
-        pecan_error ("not connected");
+        pn_error ("not connected");
         g_return_if_reached ();
     }
 
@@ -1386,7 +1386,7 @@ add_deny (PurpleConnection *gc,
 
     if (!session->logged_in)
     {
-        pecan_error ("not connected");
+        pn_error ("not connected");
         g_return_if_reached ();
     }
 
@@ -1409,7 +1409,7 @@ rem_permit (PurpleConnection *gc,
 
     if (!session->logged_in)
     {
-        pecan_error ("not connected");
+        pn_error ("not connected");
         g_return_if_reached ();
     }
 
@@ -1434,7 +1434,7 @@ rem_deny (PurpleConnection *gc,
 
     if (!session->logged_in)
     {
-        pecan_error ("not connected");
+        pn_error ("not connected");
         g_return_if_reached ();
     }
 

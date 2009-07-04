@@ -27,7 +27,7 @@
 #include <string.h> /* for strlen */
 #include <stdlib.h> /* for atoi */
 
-#include "pecan_log.h"
+#include "pn_log.h"
 
 #ifdef HAVE_LIBPURPLE
 /* libpurple stuff. */
@@ -124,7 +124,7 @@ oim_send_request (PecanNode *conn,
     gchar *header;
     gsize body_len;
 
-    pecan_log ("begin");
+    pn_log ("begin");
 
     body = g_strdup_printf ("<?xml version=\"1.0\" encoding=\"utf-8\"?>"
                             "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
@@ -166,18 +166,18 @@ oim_send_request (PecanNode *conn,
 
     g_free (body);
 
-    pecan_debug ("header=[%s]", header);
-    /* pecan_debug ("body=[%s]", body); */
+    pn_debug ("header=[%s]", header);
+    /* pn_debug ("body=[%s]", body); */
 
     {
         gsize len;
         pecan_node_write (conn, header, strlen (header), &len, NULL);
-        pecan_debug ("write_len=%d", len);
+        pn_debug ("write_len=%d", len);
     }
 
     g_free (header);
 
-    pecan_log ("end");
+    pn_log ("end");
 }
 
 static void
@@ -186,14 +186,14 @@ open_cb (PecanNode *conn,
 {
     g_return_if_fail (conn);
 
-    pecan_log ("begin");
+    pn_log ("begin");
 
     oim_send_request (conn, oim_request);
 
     g_signal_handler_disconnect (conn, oim_request->open_sig_handler);
     oim_request->open_sig_handler = 0;
 
-    pecan_log ("end");
+    pn_log ("end");
 }
 
 static inline void oim_process_requests (PecanOimSession *oim_session);
@@ -277,7 +277,7 @@ read_cb (PecanNode *conn,
             str[terminator_pos] = '\0';
 
             tmp = (gchar *) purple_base64_decode (str, NULL);
-            pecan_debug ("oim: passport=[%s],msg=[%s]", oim_request->passport, tmp);
+            pn_debug ("oim: passport=[%s],msg=[%s]", oim_request->passport, tmp);
             conv = purple_conversation_new (PURPLE_CONV_TYPE_IM,
                                             msn_session_get_user_data (oim_request->oim_session->session), 
                                             oim_request->passport);

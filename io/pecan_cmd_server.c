@@ -21,7 +21,7 @@
 #include "cmd/cmdproc_private.h"
 #include "cmd/command_private.h"
 
-#include "pecan_log.h"
+#include "pn_log.h"
 
 #include <string.h>
 
@@ -53,7 +53,7 @@ pecan_cmd_server_new (const gchar *name,
 {
     PecanCmdServer *conn;
 
-    pecan_log ("begin");
+    pn_log ("begin");
 
     conn = CMD_PECAN_NODE (g_type_create_instance (CMD_PECAN_NODE_TYPE));
 
@@ -63,7 +63,7 @@ pecan_cmd_server_new (const gchar *name,
         tmp->type = type;
     }
 
-    pecan_log ("end");
+    pn_log ("end");
 
     return conn;
 }
@@ -71,9 +71,9 @@ pecan_cmd_server_new (const gchar *name,
 void
 pecan_cmd_server_free (PecanCmdServer *conn)
 {
-    pecan_log ("begin");
+    pn_log ("begin");
     g_object_unref (G_OBJECT (conn));
-    pecan_log ("end");
+    pn_log ("end");
 }
 
 void
@@ -100,9 +100,9 @@ parse_impl (PecanNode *base_conn,
     gchar *cur, *next, *old_rx_buf;
     gint cur_len;
 
-    pecan_log ("begin");
+    pn_log ("begin");
 
-    pecan_debug ("conn=%p,name=%s", base_conn, base_conn->name);
+    pn_debug ("conn=%p,name=%s", base_conn, base_conn->name);
 
     cmd_conn = CMD_PECAN_NODE (base_conn);
 
@@ -164,7 +164,7 @@ parse_impl (PecanNode *base_conn,
 
     g_free (old_rx_buf);
 
-    pecan_log ("end");
+    pn_log ("end");
 }
 
 static void
@@ -172,7 +172,7 @@ close_impl (PecanNode *conn)
 {
     PecanCmdServer *cmd_conn;
 
-    pecan_log ("begin");
+    pn_log ("begin");
 
     cmd_conn = CMD_PECAN_NODE (conn);
 
@@ -186,7 +186,7 @@ close_impl (PecanNode *conn)
 
     PECAN_NODE_CLASS (parent_class)->close (conn);
 
-    pecan_log ("end");
+    pn_log ("end");
 }
 
 #if 0
@@ -285,7 +285,7 @@ dispose (GObject *obj)
 {
     PecanCmdServer *cmd_conn = CMD_PECAN_NODE (obj);
 
-    pecan_log ("begin");
+    pn_log ("begin");
 
     if (cmd_conn->cmdproc)
     {
@@ -295,7 +295,7 @@ dispose (GObject *obj)
 
     G_OBJECT_CLASS (parent_class)->dispose (obj);
 
-    pecan_log ("end");
+    pn_log ("end");
 }
 
 static void

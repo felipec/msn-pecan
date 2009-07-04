@@ -17,7 +17,7 @@
  */
 
 #include "pecan_dp_manager.h"
-#include "pecan_log.h"
+#include "pn_log.h"
 
 #include "cvr/slpcall.h"
 #include "cvr/slplink.h"
@@ -71,7 +71,7 @@ userdisplay_ok (MsnSlpCall *slpcall,
     const char *info;
 
     info = slpcall->data_info;
-    pecan_info ("passport=[%s]", slpcall->slplink->remote_user);
+    pn_info ("passport=[%s]", slpcall->slplink->remote_user);
 
 #ifdef HAVE_LIBPURPLE
     {
@@ -88,8 +88,8 @@ static inline void
 queue (PecanDpManager *dpm,
        PecanContact *contact)
 {
-    pecan_debug ("passport=[%s],window=%u",
-                 contact->passport, dpm->window);
+    pn_debug ("passport=[%s],window=%u",
+              contact->passport, dpm->window);
 
     g_queue_push_tail (dpm->requests, contact);
 
@@ -104,7 +104,7 @@ userdisplay_fail (MsnSlpCall *slpcall,
     const gchar *passport;
     PecanContact *contact;
 
-    pecan_error ("unknown error");
+    pn_error ("unknown error");
 
     passport = slpcall->slplink->remote_user;
 
@@ -151,7 +151,7 @@ request (PecanContact *user)
         gconstpointer data = NULL;
         size_t len = 0;
 
-        pecan_debug ("requesting our own user display");
+        pn_debug ("requesting our own user display");
 
         my_obj = pecan_contact_get_object (msn_session_get_contact (session));
 
@@ -174,7 +174,7 @@ timeout (gpointer data)
     PecanDpManager *dpm = data;
 
     dpm->window = 8;
-    pecan_log ("window=%d", dpm->window);
+    pn_log ("window=%d", dpm->window);
 
     /* Clear the tag for our former request timer */
     dpm->timer = 0;
@@ -189,7 +189,7 @@ release (PecanDpManager *dpm)
 {
     PecanContact *user;
 
-    pecan_info ("releasing ud");
+    pn_info ("releasing ud");
 
     while (dpm->window > 0)
     {
@@ -199,7 +199,7 @@ release (PecanDpManager *dpm)
 
         if (g_queue_is_empty (queue))
         {
-            pecan_warning ("nothing here");
+            pn_warning ("nothing here");
             return;
         }
 
@@ -209,7 +209,7 @@ release (PecanDpManager *dpm)
             continue;
 
         dpm->window--;
-        pecan_log ("window=%d", dpm->window);
+        pn_log ("window=%d", dpm->window);
 
         request (user);
     }

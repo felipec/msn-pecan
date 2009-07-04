@@ -21,7 +21,7 @@
 #include "slplink.h"
 #include "slpcall.h"
 #include "slpmsg.h"
-#include "pecan_log.h"
+#include "pn_log.h"
 #include "io/pecan_buffer.h"
 
 #include "xfer.h"
@@ -96,7 +96,7 @@ got_transresp(MsnSlpCall *slpcall,
     ip_addrs = g_strsplit(ips_str, " ", -1);
 
     for (c = ip_addrs; *c; c++) {
-        pecan_info("ip_addr = %s", *c);
+        pn_info("ip_addr = %s", *c);
         if (msn_directconn_connect(directconn, *c, port))
             break;
     }
@@ -163,7 +163,7 @@ got_sessionreq(MsnSlpCall *slpcall,
                const char *euf_guid,
                const char *context)
 {
-    pecan_debug ("euf_guid=[%s]", euf_guid);
+    pn_debug("euf_guid=[%s]", euf_guid);
 
     if (strcmp(euf_guid, "A4268EEC-FEC5-49E5-95C3-F126696BDBF6") == 0) {
         /* Emoticon or UserDisplay */
@@ -194,7 +194,7 @@ got_sessionreq(MsnSlpCall *slpcall,
 
         if (!obj) {
             /** @todo reject invitation? */
-            pecan_warning("invalid object");
+            pn_warning("invalid object");
             return;
         }
 
@@ -217,13 +217,13 @@ got_sessionreq(MsnSlpCall *slpcall,
         }
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
         else {
-            pecan_error("Wrong object?");
+            pn_error("Wrong object?");
             msn_object_free(obj);
             g_return_if_reached();
         }
 
         if (!image) {
-            pecan_error("Wrong object");
+            pn_error("Wrong object");
             msn_object_free(obj);
             g_return_if_reached();
         }
@@ -231,7 +231,7 @@ got_sessionreq(MsnSlpCall *slpcall,
         {
             gchar *tmp;
             tmp = msn_object_to_string(obj);
-            pecan_info("object requested: %s", tmp);
+            pn_info("object requested: %s", tmp);
             g_free(tmp);
         }
 
@@ -298,7 +298,7 @@ got_invite(MsnSlpCall *slpcall,
 
     slplink = slpcall->slplink;
 
-    pecan_log("type=%s", type);
+    pn_log("type=%s", type);
 
     if (strcmp(type, "application/x-msnmsgr-sessionreqbody") == 0) {
         char *euf_guid, *context;
@@ -412,7 +412,7 @@ got_ok(MsnSlpCall *slpcall,
        const char *type,
        const char *content)
 {
-    pecan_log("type=%s", type);
+    pn_log("type=%s", type);
 
     if (strcmp(type, "application/x-msnmsgr-sessionreqbody") == 0) {
 #ifdef MSN_DIRECTCONN
@@ -463,7 +463,7 @@ got_ok(MsnSlpCall *slpcall,
     }
     else if (strcmp(type, "application/x-msnmsgr-transreqbody") == 0) {
         /** @todo do we ever get this? */
-        pecan_info("OK with transreqbody");
+        pn_info("OK with transreqbody");
     }
 #ifdef MSN_DIRECTCONN
     else if (strcmp(type, "application/x-msnmsgr-transrespbody") == 0) {
@@ -510,7 +510,7 @@ msn_slp_sip_recv(MsnSlpLink *slplink,
     MsnSlpCall *slpcall;
 
     if (!body) {
-        pecan_warning("received bogus message");
+        pn_warning("received bogus message");
         return NULL;
     }
 
@@ -579,7 +579,7 @@ msn_slp_sip_recv(MsnSlpLink *slplink,
                 temp[offset] = '\0';
             }
 
-            pecan_error("received non-OK result: %s", temp);
+            pn_error("received non-OK result: %s", temp);
 
             slpcall->wasted = TRUE;
 
@@ -635,7 +635,7 @@ msn_p2p_msg(MsnCmdProc *cmdproc,
         if (slplink->swboard)
             slplink->swboard->slplinks = g_list_prepend(slplink->swboard->slplinks, slplink);
         else
-            pecan_error("msn_p2p_msg, swboard is NULL, ouch!");
+            pn_error("msn_p2p_msg, swboard is NULL, ouch!");
     }
 
     msn_slplink_process_msg(slplink, msg);
@@ -662,7 +662,7 @@ got_emoticon(MsnSlpCall *slpcall,
         purple_conv_custom_smiley_close(conv, slpcall->data_info);
     }
 
-    pecan_debug("got smiley: %s", slpcall->data_info);
+    pn_debug("got smiley: %s", slpcall->data_info);
 }
 
 void

@@ -18,7 +18,7 @@
  */
 
 #include "session_private.h"
-#include "pecan_log.h"
+#include "pn_log.h"
 #include "pecan_locale.h"
 #include "notification.h"
 #include "pecan_status.h"
@@ -217,7 +217,7 @@ msn_session_connect (MsnSession *session,
 
     if (!session->notification)
     {
-        pecan_error ("this shouldn't happen");
+        pn_error ("this shouldn't happen");
         g_return_val_if_reached (FALSE);
     }
 

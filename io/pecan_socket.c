@@ -17,7 +17,7 @@
  */
 
 #include "pecan_socket.h"
-#include "pecan_log.h"
+#include "pn_log.h"
 
 #include <stdbool.h>
 
@@ -40,7 +40,7 @@ pecan_socket_connect (const gchar *hostname,
 
     if (fd < 0)
     {
-        pecan_error ("could not create socket");
+        pn_error ("could not create socket");
         goto leave;
     }
 
@@ -48,7 +48,7 @@ pecan_socket_connect (const gchar *hostname,
 
     if (!host)
     {
-        pecan_error ("bad hostname: %s", hostname);
+        pn_error ("bad hostname: %s", hostname);
         goto leave;
     }
 
@@ -58,15 +58,15 @@ pecan_socket_connect (const gchar *hostname,
     address.sin_port = htons (port);
     address.sin_family = AF_INET;
 
-    pecan_info ("connecting to %s on port %d", hostname, port);
+    pn_info ("connecting to %s on port %d", hostname, port);
 
     if (connect (fd, (struct sockaddr*) & address, sizeof (address)) < 0)
     {
-        pecan_error ("could not connect to host");
+        pn_error ("could not connect to host");
         goto leave;
     }
 
-    pecan_info ("connected");
+    pn_info ("connected");
 
     success = true;
 

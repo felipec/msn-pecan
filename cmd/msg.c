@@ -20,7 +20,7 @@
 #include "msg_private.h"
 #include "command_private.h"
 #include "transaction_private.h"
-#include "pecan_log.h"
+#include "pn_log.h"
 #include "pecan_config.h"
 
 #include <string.h> /* for strlen. */
@@ -40,7 +40,7 @@ msn_message_new(MsnMsgType type)
     msg->type = type;
 
 #ifdef PECAN_DEBUG_MSG
-    pecan_log ("msg=%p,type=%d", msg, type);
+    pn_log ("msg=%p,type=%d", msg, type);
 #endif
 
     msg->attr_table = g_hash_table_new_full(g_str_hash, g_str_equal,
@@ -64,7 +64,7 @@ msn_message_destroy(MsnMessage *msg)
     }
 
 #ifdef PECAN_DEBUG_MSG
-    pecan_log ("msg=%p", msg);
+    pn_log ("msg=%p", msg);
 #endif
 
     /** @todo this is ugly, but we really need to kill the pending
@@ -116,7 +116,7 @@ msn_message_ref(MsnMessage *msg)
     msg->ref_count++;
 
 #ifdef PECAN_DEBUG_MSG
-    pecan_log ("msg=%p,ref_count=%d", msg, msg->ref_count);
+    pn_log ("msg=%p,ref_count=%d", msg, msg->ref_count);
 #endif
 
     return msg;
@@ -131,7 +131,7 @@ msn_message_unref(MsnMessage *msg)
     msg->ref_count--;
 
 #ifdef PECAN_DEBUG_MSG
-    pecan_log ("msg=%p,ref_count=%d", msg, msg->ref_count);
+    pn_log ("msg=%p,ref_count=%d", msg, msg->ref_count);
 #endif
 
     if (msg->ref_count == 0)
@@ -813,7 +813,7 @@ msn_message_show_readable(MsnMessage *msg, const char *info,
         }
     }
 
-    pecan_debug ("info=[%s],str=[%s]", info, str->str);
+    pn_debug ("info=[%s],str=[%s]", info, str->str);
 
     g_string_free(str, TRUE);
 }

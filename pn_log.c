@@ -16,13 +16,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "pecan_log.h"
+#include "pn_log.h"
 #include "pecan_printf.h"
 
-#ifdef PECAN_DEBUG
+#ifdef PN_DEBUG
 
 /* #define PURPLE_DEBUG */
-/* #define PECAN_DEBUG_FILE */
+/* #define PN_DEBUG_FILE */
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -34,8 +34,8 @@
 #include <debug.h>
 #endif /* PURPLE_DEBUG */
 
-#ifndef PECAN_LOG_LEVEL
-#define PECAN_LOG_LEVEL PECAN_LOG_LEVEL_INFO
+#ifndef PN_LOG_LEVEL
+#define PN_LOG_LEVEL PN_LOG_LEVEL_INFO
 #endif
 
 static inline const gchar *
@@ -43,27 +43,27 @@ log_level_to_string (PecanLogLevel level)
 {
     switch (level)
     {
-        case PECAN_LOG_LEVEL_NONE: return "NONE"; break;
-        case PECAN_LOG_LEVEL_ERROR: return "ERROR"; break;
-        case PECAN_LOG_LEVEL_WARNING: return "WARNING"; break;
-        case PECAN_LOG_LEVEL_INFO: return "INFO"; break;
-        case PECAN_LOG_LEVEL_DEBUG: return "DEBUG"; break;
-        case PECAN_LOG_LEVEL_LOG: return "LOG"; break;
+        case PN_LOG_LEVEL_NONE: return "NONE"; break;
+        case PN_LOG_LEVEL_ERROR: return "ERROR"; break;
+        case PN_LOG_LEVEL_WARNING: return "WARNING"; break;
+        case PN_LOG_LEVEL_INFO: return "INFO"; break;
+        case PN_LOG_LEVEL_DEBUG: return "DEBUG"; break;
+        case PN_LOG_LEVEL_LOG: return "LOG"; break;
         default: return "Unknown"; break;
     }
 }
 
-#ifdef PECAN_DUMP_FILE
+#ifdef PN_DUMP_FILE
 void
-msn_dump_file (const gchar *buffer,
-               gsize len)
+pn_dump_file (const gchar *buffer,
+              gsize len)
 {
     gint fd;
     static guint c;
     gchar *basename;
     gchar *fullname;
 
-    basename = pecan_strdup_printf ("pecan-%.6u.bin", c++);
+    basename = pn_strdup_printf ("pecan-%.6u.bin", c++);
 
     fullname = g_build_filename (g_get_tmp_dir (), basename, NULL);
 
@@ -77,27 +77,27 @@ msn_dump_file (const gchar *buffer,
         close (fd);
     }
 }
-#endif /* PECAN_DUMP_FILE */
+#endif /* PN_DUMP_FILE */
 
 void
-msn_base_log_helper (guint level,
-                     const gchar *file,
-                     const gchar *function,
-                     gint line,
-                     const gchar *fmt,
-                     ...)
+pn_base_log_helper (guint level,
+                    const gchar *file,
+                    const gchar *function,
+                    gint line,
+                    const gchar *fmt,
+                    ...)
 {
     gchar *tmp;
     va_list args;
 
-    if (level > PECAN_LOG_LEVEL)
+    if (level > PN_LOG_LEVEL)
         return;
 
     va_start (args, fmt);
 
     tmp = pecan_strdup_vprintf (fmt, args);
 
-#if defined(PECAN_DEBUG_FILE)
+#if defined(PN_DEBUG_FILE)
     {
         static FILE *logfile;
         if (!logfile)
@@ -121,15 +121,15 @@ msn_base_log_helper (guint level,
 
         switch (level)
         {
-            case PECAN_LOG_LEVEL_ERROR:
+            case PN_LOG_LEVEL_ERROR:
                 purple_level = PURPLE_DEBUG_ERROR; break;
-            case PECAN_LOG_LEVEL_WARNING:
+            case PN_LOG_LEVEL_WARNING:
                 purple_level = PURPLE_DEBUG_WARNING; break;
-            case PECAN_LOG_LEVEL_INFO:
+            case PN_LOG_LEVEL_INFO:
                 purple_level = PURPLE_DEBUG_INFO; break;
-            case PECAN_LOG_LEVEL_DEBUG:
+            case PN_LOG_LEVEL_DEBUG:
                 purple_level = PURPLE_DEBUG_MISC; break;
-            case PECAN_LOG_LEVEL_LOG:
+            case PN_LOG_LEVEL_LOG:
                 purple_level = PURPLE_DEBUG_MISC; break;
             default:
                 purple_level = PURPLE_DEBUG_MISC; break;
@@ -138,14 +138,14 @@ msn_base_log_helper (guint level,
         purple_debug (purple_level, "msn-pecan", "%s:%d:%s() %s\n", file, line, function, tmp);
     }
 #else
-    pecan_print ("%s %s:%d:%s() %s\n",
-                 log_level_to_string (level),
-                 file, line, function,
-                 tmp);
+    pn_print ("%s %s:%d:%s() %s\n",
+              log_level_to_string (level),
+              file, line, function,
+              tmp);
 #endif
     g_free (tmp);
 
     va_end (args);
 }
 
-#endif /* PECAN_DEBUG */
+#endif /* PN_DEBUG */

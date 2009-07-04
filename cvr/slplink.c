@@ -24,7 +24,7 @@
 #include "slpcall.h"
 #include "slpmsg.h"
 #include "slp.h"
-#include "pecan_log.h"
+#include "pn_log.h"
 
 #include "xfer.h"
 
@@ -56,7 +56,7 @@ msn_slplink_new(MsnSession *session,
     slplink = g_new0(MsnSlpLink, 1);
 
 #ifdef PECAN_DEBUG_SLPLINK
-    pecan_info("slplink_new: slplink(%p)", slplink);
+    pn_info("slplink_new: slplink(%p)", slplink);
 #endif
 
     slplink->session = session;
@@ -82,7 +82,7 @@ msn_slplink_destroy(MsnSlpLink *slplink)
         return;
 
 #ifdef PECAN_DEBUG_SLPLINK
-    pecan_info("slplink_destroy: slplink(%p)", slplink);
+    pn_info("slplink_destroy: slplink(%p)", slplink);
 #endif
 
     if (slplink->swboard)
@@ -458,7 +458,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink,
 #endif
 
     if (msg->msnslp_header.total_size < msg->msnslp_header.length) {
-        pecan_error("This can't be good");
+        pn_error("This can't be good");
         g_return_if_reached();
     }
 
@@ -504,7 +504,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink,
         if (!slpmsg->fp && slpmsg->size) {
             slpmsg->buffer = g_try_malloc(slpmsg->size);
             if (!slpmsg->buffer) {
-                pecan_error("failed to allocate buffer for slpmsg");
+                pn_error("failed to allocate buffer for slpmsg");
                 return;
             }
         }
@@ -516,7 +516,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink,
 
     if (!slpmsg) {
         /* Probably the transfer was canceled */
-        pecan_error("couldn't find slpmsg");
+        pn_error("couldn't find slpmsg");
         return;
     }
 
@@ -524,7 +524,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink,
         len = fwrite(data, 1, len, slpmsg->fp);
     else if (slpmsg->size) {
         if (len > slpmsg->size || offset > (slpmsg->size - len)) {
-            pecan_error("oversized slpmsg");
+            pn_error("oversized slpmsg");
             g_return_if_reached();
         }
         else
@@ -573,7 +573,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink,
                     directconn->ack_recv = TRUE;
 
                     if (!directconn->ack_sent) {
-                        pecan_warning("bad ACK");
+                        pn_warning("bad ACK");
                         msn_directconn_send_handshake(directconn);
                     }
                     break;

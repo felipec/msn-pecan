@@ -20,7 +20,7 @@
 #include "pecan_contact.h"
 #include "pecan_contact_priv.h"
 #include "pecan_contactlist_priv.h"
-#include "pecan_log.h"
+#include "pn_log.h"
 #include "pecan_util.h"
 
 #include "cvr/slp.h"
@@ -194,7 +194,7 @@ void
 pecan_contact_set_friendly_name (PecanContact *contact,
                                  const gchar *name)
 {
-    pecan_debug ("passport=[%s],name=[%s]", contact->passport, name);
+    pn_debug ("passport=[%s],name=[%s]", contact->passport, name);
 
     if (g_strcmp0 (contact->friendly_name, name) == 0)
         return;
@@ -236,7 +236,7 @@ pecan_contact_set_friendly_name (PecanContact *contact,
     /** @todo this is a libpurple specific thing */
     if (pecan_contact_is_account (contact))
     {
-        pecan_debug ("contact is account");
+        pn_debug ("contact is account");
         pecan_contact_set_store_name (contact, name);
     }
 #endif
@@ -250,7 +250,7 @@ void
 pecan_contact_set_personal_message (PecanContact *contact,
                                     const gchar *value)
 {
-    pecan_debug ("passport=[%s],value=[%s]", contact->passport, value);
+    pn_debug ("passport=[%s],value=[%s]", contact->passport, value);
 
     if (contact->personal_message && value &&
         strcmp (contact->personal_message, value) == 0)
@@ -322,7 +322,7 @@ pecan_contact_set_current_media (PecanContact *contact,
     dec = pecan_html_unescape (value);
 
     if (!dec) {
-        pecan_error ("couldn't parse [%s]", value);
+        pn_error ("couldn't parse [%s]", value);
         return;
     }
 
@@ -363,7 +363,7 @@ void
 pecan_contact_set_store_name (PecanContact *contact,
                               const gchar *name)
 {
-    pecan_debug ("passport=[%s],name=[%s]", contact->passport, name);
+    pn_debug ("passport=[%s],name=[%s]", contact->passport, name);
 
     if (contact->contactlist)
     {
@@ -407,7 +407,7 @@ pecan_contact_set_store_name (PecanContact *contact,
     /** @todo this is a libpurple specific thing */
     if (pecan_contact_is_account (contact))
     {
-        pecan_debug ("contact is account");
+        pn_debug ("contact is account");
         pecan_contact_set_friendly_name (contact, name);
     }
 #endif
@@ -449,7 +449,7 @@ pecan_contact_add_group_id (PecanContact *contact,
 
     passport = pecan_contact_get_passport (contact);
 
-    pecan_debug ("passport=[%s],group_guid=[%s]", passport, group_guid);
+    pn_debug ("passport=[%s],group_guid=[%s]", passport, group_guid);
 
     if (group_guid)
     {
@@ -516,7 +516,7 @@ void
 pecan_contact_remove_group_id (PecanContact *contact,
                                const gchar *group_guid)
 {
-    pecan_debug ("passport=[%s],group_guid=[%s]", contact->passport, group_guid);
+    pn_debug ("passport=[%s],group_guid=[%s]", contact->passport, group_guid);
 
     g_hash_table_remove (contact->groups, group_guid);
 }

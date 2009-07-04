@@ -24,7 +24,7 @@
 #include "slpmsg.h"
 #include "session.h"
 
-#include "pecan_log.h"
+#include "pn_log.h"
 
 #include <string.h> /* for memcpy, memset */
 
@@ -37,7 +37,7 @@ xfer_init(PurpleXfer *xfer)
     /* MsnSlpLink *slplink; */
     char *content;
 
-    pecan_info("xfer_init");
+    pn_info("xfer_init");
 
     slpcall = xfer->data;
 

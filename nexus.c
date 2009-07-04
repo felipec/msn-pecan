@@ -18,7 +18,7 @@
  */
 
 #include "nexus.h"
-#include "pecan_log.h"
+#include "pn_log.h"
 #include "pecan_locale.h"
 #include "pecan_util.h"
 
@@ -197,7 +197,7 @@ nexus_login_written_cb(gpointer data, gint source, PurpleInputCondition cond)
     purple_ssl_close(nexus->gsc);
     nexus->gsc = NULL;
 
-    pecan_log ("ssl buffer: [%s]", nexus->read_buf);
+    pn_log ("ssl buffer: [%s]", nexus->read_buf);
 
     if (strstr(nexus->read_buf, "HTTP/1.1 302") != NULL)
     {
@@ -376,7 +376,7 @@ login_connect_cb(gpointer data, PurpleSslConnection *gsc,
     buffer = g_strdup_printf("%s,pwd=XXXXXXXX,%s\r\n", head, tail);
     request_str = g_strdup_printf("%s,pwd=%s,%s\r\n", head, password, tail);
 
-    pecan_log ("sending: [%s]", buffer);
+    pn_log ("sending: [%s]", buffer);
 
     g_free(buffer);
     g_free(head);

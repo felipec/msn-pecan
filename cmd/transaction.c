@@ -18,7 +18,7 @@
  */
 
 #include "transaction_private.h"
-#include "pecan_log.h"
+#include "pn_log.h"
 
 #include <string.h> /* For strlen. */
 
@@ -169,8 +169,8 @@ transaction_timeout (gpointer data)
     trans = data;
     g_return_val_if_fail (trans, FALSE);
 
-    pecan_log ("cmd=[%s],trid=[%d],params=[%s]",
-               trans->command, trans->trId, trans->params);
+    pn_log ("cmd=[%s],trid=[%d],params=[%s]",
+            trans->command, trans->trId, trans->params);
 
     if (trans->timeout_cb)
         trans->timeout_cb (trans->cmdproc, trans);
@@ -184,7 +184,7 @@ msn_transaction_set_timeout_cb (MsnTransaction *trans,
 {
     if (trans->timer)
     {
-        pecan_error ("this shouldn't be happening");
+        pn_error ("this shouldn't be happening");
         g_source_remove (trans->timer);
     }
     trans->timeout_cb = cb;

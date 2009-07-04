@@ -19,7 +19,7 @@
 
 #include "history.h"
 #include "transaction_private.h"
-#include "pecan_log.h"
+#include "pn_log.h"
 
 MsnHistory *
 msn_history_new (void)
@@ -101,7 +101,7 @@ msn_history_add (MsnHistory *history,
 
     if (queue->length > MSN_HIST_ELEMS)
     {
-        pecan_warning ("dropping transaction");
+        pn_warning ("dropping transaction");
         trans = g_queue_pop_head (queue);
         msn_transaction_unref (trans);
     }

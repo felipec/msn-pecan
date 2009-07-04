@@ -18,7 +18,7 @@
  */
 
 #include "cvr/pecan_slp_object.h"
-#include "pecan_log.h"
+#include "pn_log.h"
 
 #include "io/pecan_buffer.h"
 
@@ -116,7 +116,7 @@ msn_object_new_from_string(const gchar *str)
     if (!obj->creator || !obj->size || !obj->type ||
         !obj->location || !obj->friendly || !obj->sha1d)
     {
-        pecan_error("discarding: str=[%s]", str);
+        pn_error("discarding: str=[%s]", str);
         msn_object_free(obj);
         obj = NULL;
     }

@@ -78,7 +78,7 @@ objects := msn.o \
 	   session.o \
 	   switchboard.o \
 	   sync.o \
-	   pecan_log.o \
+	   pn_log.o \
 	   pecan_printf.o \
 	   pecan_util.o \
 	   pecan_error.o \
