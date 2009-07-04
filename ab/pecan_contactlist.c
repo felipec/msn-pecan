@@ -23,13 +23,13 @@
 #include "pecan_contact_priv.h"
 #include "pn_log.h"
 #include "pecan_locale.h"
+#include "pn_util.h"
 
 /** @todo this is disabled for testing only */
 #ifdef HAVE_LIBPURPLE
 #include "session_private.h"
 #endif /* HAVE_LIBPURPLE */
 #include "notification.h"
-#include "pecan_util.h"
 
 #include <string.h>
 

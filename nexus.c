@@ -20,7 +20,7 @@
 #include "nexus.h"
 #include "pn_log.h"
 #include "pecan_locale.h"
-#include "pecan_util.h"
+#include "pn_util.h"
 
 #include "session.h"
 #include "notification.h"
@@ -255,7 +255,7 @@ nexus_login_written_cb(gpointer data, gint source, PurpleInputCondition cond)
                     c = tmp + strlen(tmp);
 
                 tmp2 = g_strndup(tmp, c - tmp);
-                error = pecan_url_decode(tmp2);
+                error = pn_url_decode(tmp2);
                 g_free(tmp2);
                 if ((tmp2 = strstr(error, " Do one of the following or try again:")) != NULL)
                     *tmp2 = '\0';

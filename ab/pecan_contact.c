@@ -21,7 +21,7 @@
 #include "pecan_contact_priv.h"
 #include "pecan_contactlist_priv.h"
 #include "pn_log.h"
-#include "pecan_util.h"
+#include "pn_util.h"
 
 #include "cvr/slp.h"
 #include "pecan_dp_manager.h" /* for pecan_dp_manager_contact_set_object */
@@ -168,7 +168,7 @@ pecan_contact_set_passport (PecanContact *contact,
                             const gchar *passport)
 {
     g_free (contact->passport);
-    contact->passport = pecan_normalize (passport);
+    contact->passport = pn_normalize (passport);
 
     if (contact->contactlist)
     {
@@ -319,7 +319,7 @@ pecan_contact_set_current_media (PecanContact *contact,
     if (!value)
         return;
 
-    dec = pecan_html_unescape (value);
+    dec = pn_html_unescape (value);
 
     if (!dec) {
         pn_error ("couldn't parse [%s]", value);

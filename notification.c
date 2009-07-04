@@ -46,7 +46,7 @@
 #endif /* defined(PECAN_CVR) */
 
 #include "pn_error.h"
-#include "pecan_util.h" /* for parse_socket */
+#include "pn_util.h"
 
 #include <glib/gstdio.h>
 
@@ -475,7 +475,7 @@ chl_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     MsnTransaction *trans;
     gchar buf[32];
 
-    pecan_handle_challenge (cmd->params[1], "PROD0101{0RM?UBW", buf);
+    pn_handle_challenge (cmd->params[1], "PROD0101{0RM?UBW", buf);
 
     /* trans = msn_transaction_new(cmdproc, "QRY", "%s 32", "PROD0038W!61ZTF9"); */
     trans = msn_transaction_new (cmdproc, "QRY", "%s 32", "PROD0101{0RM?UBW");
@@ -515,7 +515,7 @@ adc_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
             passport = chopped_str;
         /* Check for Friendlyname. */
         else if (strncmp (cmd->params[i], "F=", 2) == 0)
-            friendly = pecan_url_decode (chopped_str);
+            friendly = pn_url_decode (chopped_str);
         /* Check for Contact GUID. */
         else if (strncmp (cmd->params[i], "C=", 2) == 0)
             user_guid = chopped_str;
@@ -626,7 +626,7 @@ adg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     group_guid = cmd->params[2];
 
-    group_name = pecan_url_decode(cmd->params[1]);
+    group_name = pn_url_decode(cmd->params[1]);
 
     pecan_group_new(session->contactlist, group_name, group_guid);
 
@@ -694,7 +694,7 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     state    = cmd->params[1];
     passport = cmd->params[2];
-    friendly = pecan_url_decode(cmd->params[3]);
+    friendly = pn_url_decode(cmd->params[3]);
 
     user = pecan_contactlist_find_contact(session->contactlist, passport);
 
@@ -715,7 +715,7 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         {
             MsnObject *obj;
             gchar *tmp;
-            tmp = pecan_url_decode (cmd->params[5]);
+            tmp = pn_url_decode (cmd->params[5]);
             obj = msn_object_new_from_string (tmp);
             pecan_contact_set_object(user, obj);
             g_free (tmp);
@@ -758,7 +758,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     state    = cmd->params[0];
     passport = cmd->params[1];
-    friendly = pecan_url_decode(cmd->params[2]);
+    friendly = pn_url_decode(cmd->params[2]);
 
     user = pecan_contactlist_find_contact(session->contactlist, passport);
 
@@ -782,7 +782,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         {
             MsnObject *obj;
             gchar *tmp;
-            tmp = pecan_url_decode(cmd->params[4]);
+            tmp = pn_url_decode(cmd->params[4]);
             obj = msn_object_new_from_string(tmp);
             pecan_contact_set_object(user, obj);
             g_free (tmp);
@@ -910,7 +910,7 @@ sbp_cmd (MsnCmdProc *cmdproc,
         if (strcmp (type, "MFN") == 0)
         {
             gchar *tmp;
-            tmp = pecan_url_decode (value);
+            tmp = pn_url_decode (value);
             if (msn_session_get_bool (session, "use_server_alias"))
                 pecan_contact_set_store_name (contact, tmp);
             g_free (tmp);
@@ -939,7 +939,7 @@ prp_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     {
         gchar *tmp;
         value = cmd->params[2];
-        tmp = pecan_url_decode (value);
+        tmp = pn_url_decode (value);
         if (!strcmp(type, "PHH"))
             pecan_contact_set_home_phone(user, tmp);
         else if (!strcmp(type, "PHW"))
@@ -970,7 +970,7 @@ reg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     session = cmdproc->session;
     group_guid = cmd->params[1];
-    group_name = pecan_url_decode(cmd->params[2]);
+    group_name = pn_url_decode(cmd->params[2]);
 
     pecan_contactlist_rename_group_id(session->contactlist, group_guid, group_name);
 
@@ -1431,7 +1431,7 @@ initial_mdata_msg (MsnCmdProc *cmdproc,
                         {
                             gchar *field;
                             gchar *tmp;
-                            tmp = pecan_get_xml_field ("N", start, end);
+                            tmp = pn_get_xml_field ("N", start, end);
                             field = purple_mime_decode_field (tmp);
                             g_print ("field={%s}\n", field);
                             g_free (field);
@@ -1439,16 +1439,16 @@ initial_mdata_msg (MsnCmdProc *cmdproc,
                         }
 #endif
 
-                        read_set = pecan_get_xml_field ("RS", start, end);
+                        read_set = pn_get_xml_field ("RS", start, end);
 
                         if (strcmp (read_set, "0") == 0)
                         {
                             gchar *passport;
                             gchar *message_id;
 
-                            passport = pecan_get_xml_field ("E", start, end);
+                            passport = pn_get_xml_field ("E", start, end);
 
-                            message_id = pecan_get_xml_field ("I", start, end);
+                            message_id = pn_get_xml_field ("I", start, end);
 
                             pecan_oim_session_request (session->oim_session,
                                                        passport,

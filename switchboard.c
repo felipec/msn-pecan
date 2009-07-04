@@ -22,6 +22,7 @@
 #include "notification.h"
 #include "fix_purple.h"
 
+#include "pn_util.h"
 #include "pn_log.h"
 
 #if defined(PECAN_CVR)
@@ -44,7 +45,6 @@
 #include "io/pecan_cmd_server.h"
 #include "io/pecan_http_server.h"
 
-#include "pecan_util.h"
 #include "pecan_locale.h"
 
 #include <string.h>

@@ -34,7 +34,7 @@
 #include <glib.h>
 #include <string.h>
 
-#include "pecan_util.h"
+#include "pn_util.h"
 #include "session.h"
 
 #ifdef HAVE_LIBPURPLE

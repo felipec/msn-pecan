@@ -23,7 +23,7 @@
 #include "slplink.h"
 #include "slpmsg.h"
 #include "session.h"
-#include "pecan_util.h"
+#include "pn_util.h"
 #include "pn_log.h"
 
 #include <string.h>

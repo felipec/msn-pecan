@@ -19,10 +19,10 @@
 
 #include "session_private.h"
 #include "pn_log.h"
+#include "pn_util.h"
 #include "pecan_locale.h"
 #include "notification.h"
 #include "pecan_status.h"
-#include "pecan_util.h"
 #include "pecan_dp_manager.h"
 #include "ab/pecan_contact_priv.h"
 
@@ -76,7 +76,7 @@ msn_session_new (const gchar *username,
 
     session = g_new0 (MsnSession, 1);
 
-    session->username = pecan_normalize (username);
+    session->username = pn_normalize (username);
     session->password = g_strdup (password);
 
     session->config = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);

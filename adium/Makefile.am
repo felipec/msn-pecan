@@ -12,7 +12,7 @@ MSNSOURCES = msn.c \
 	     sync.c \
 	     pn_log.c \
 	     pn_printf.c \
-	     pecan_util.c \
+	     pn_util.c \
 	     pn_error.c \
 	     pecan_status.c \
 	     pecan_oim.c \

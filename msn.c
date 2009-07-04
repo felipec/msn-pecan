@@ -21,7 +21,7 @@
 
 #include "page.h"
 #include "session.h"
-#include "pecan_util.h"
+#include "pn_util.h"
 #include "pn_log.h"
 #include "pecan_status.h"
 #include "pecan_locale.h"
@@ -98,7 +98,7 @@ contact_is_account_quick (MsnSession *session,
 {
     gchar *normalized_passport;
 
-    normalized_passport = pecan_normalize (passport);
+    normalized_passport = pn_normalize (passport);
 
     if (strcmp (msn_session_get_username (session), normalized_passport) == 0)
     {
@@ -117,7 +117,7 @@ normalize (const PurpleAccount *account,
 {
     static gchar buf[0x800];
     gchar *tmp;
-    tmp = pecan_normalize (str);
+    tmp = pn_normalize (str);
     strncpy (buf, tmp, sizeof (buf));
     g_free (tmp);
     return buf;
@@ -548,7 +548,7 @@ msn_can_receive_file(PurpleConnection *gc, const char *who)
 
     g_return_val_if_fail (session, FALSE);
 
-    normal_who = pecan_normalize (who);
+    normal_who = pn_normalize (who);
 
     ret = strcmp(normal_who, msn_session_get_username (session));
 

@@ -80,7 +80,7 @@ objects := msn.o \
 	   sync.o \
 	   pn_log.o \
 	   pn_printf.o \
-	   pecan_util.o \
+	   pn_util.o \
 	   pn_error.o \
 	   pecan_status.o \
 	   pecan_oim.o \

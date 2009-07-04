@@ -29,7 +29,7 @@
 
 #include <string.h>
 
-#include "pecan_util.h"
+#include "pn_util.h"
 
 /* libpurple stuff. */
 #include "fix_purple_win32.h"
@@ -84,7 +84,7 @@ prp_cmd (MsnCmdProc *cmdproc,
     if (cmd->param_count == 2)
     {
         gchar *tmp;
-        tmp = pecan_url_decode (value);
+        tmp = pn_url_decode (value);
         if (strcmp (type, "PHH") == 0)
             pecan_contact_set_home_phone (user, tmp);
         else if (strcmp (type, "PHW") == 0)
@@ -120,7 +120,7 @@ lsg_cmd (MsnCmdProc *cmdproc,
     char *name;
     const gchar *group_guid;
 
-    name = pecan_url_decode (cmd->params[0]);
+    name = pn_url_decode (cmd->params[0]);
     group_guid = cmd->params[1];
 
     pecan_group_new (session->contactlist, name, group_guid);
@@ -173,7 +173,7 @@ lst_cmd (MsnCmdProc *cmdproc,
             passport = chopped_str;
         /* Check for Friendlyname. */
         else if (strncmp (cmd->params[i], "F=", 2) == 0)
-            friendly = pecan_url_decode (chopped_str);
+            friendly = pn_url_decode (chopped_str);
         /* Check for Contact GUID. */
         else if (strncmp (cmd->params[i], "C=", 2) == 0)
             user_guid = chopped_str;
@@ -269,7 +269,7 @@ bpr_cmd (MsnCmdProc *cmdproc,
         else
         {
             gchar *tmp;
-            tmp = pecan_url_decode (value);
+            tmp = pn_url_decode (value);
             if (strcmp(type, "PHH") == 0)
                 pecan_contact_set_home_phone (user, tmp);
             else if (strcmp(type, "PHW") == 0)

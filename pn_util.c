@@ -19,11 +19,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "pecan_util.h"
+#include "pn_util.h"
 #include "pecan_config.h"
 
 #include <string.h>
-#include <stdio.h>
 #include <stdlib.h> /* for calloc, free*/
 
 #include <glib.h>
@@ -190,7 +189,7 @@ remove_plus_tags_from_str (const gchar* str)
 }
 
 gchar *
-pecan_url_decode (const gchar *url)
+pn_url_decode (const gchar *url)
 {
     gchar *new;
     const gchar *src;
@@ -636,9 +635,9 @@ msn_import_html(const char *html, char **attributes, char **message)
 }
 
 void
-pecan_handle_challenge (const gchar *input,
-                        const gchar *product_id,
-                        gchar *output)
+pn_handle_challenge (const gchar *input,
+                     const gchar *product_id,
+                     gchar *output)
 {
     const gchar *productKey = "CFHUR$52U_{VIX5T";
     const gchar *hexChars = "0123456789abcdef";
@@ -669,7 +668,7 @@ pecan_handle_challenge (const gchar *input,
     /* Split it into four integers */
     md5Parts = (unsigned int *) md5Hash;
     for (i = 0; i < 4; i++)
-    {  
+    {
         /* check for endianess */
         md5Parts[i] = GINT_TO_LE (md5Parts[i]);
 
@@ -761,7 +760,7 @@ msn_rand_guid()
 
 /** @todo remove this crap */
 gchar *
-pecan_normalize (const gchar *str)
+pn_normalize (const gchar *str)
 {
     gchar *new;
     gchar *tmp;
@@ -830,9 +829,9 @@ g_ascii_strcase_hash (gconstpointer v)
 
 /** @todo make this more efficient. */
 gchar *
-pecan_get_xml_field (const gchar *tag,
-                     const gchar *start,
-                     const gchar *end)
+pn_get_xml_field (const gchar *tag,
+                  const gchar *start,
+                  const gchar *end)
 {
     const gchar *field_start;
     const gchar *field_end;
@@ -867,7 +866,7 @@ struct ref {
 };
 
 char *
-pecan_html_unescape (const char *url)
+pn_html_unescape (const char *url)
 {
     GString *dest;
     const char *src;

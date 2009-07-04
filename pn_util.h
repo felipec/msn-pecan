@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef PECAN_UTIL_H
-#define PECAN_UTIL_H
+#ifndef PN_UTIL_H
+#define PN_UTIL_H
 
 #include <glib.h>
 
@@ -26,7 +26,7 @@
 
 gchar *remove_plus_tags_from_str (const gchar *str);
 
-gchar *pecan_url_decode (const gchar *url);
+gchar *pn_url_decode (const gchar *url);
 
 /**
  * Parses the MSN message formatting into a format compatible with Purple.
@@ -51,13 +51,13 @@ void msn_parse_format(const char *mime, char **pre_ret, char **post_ret);
 void msn_import_html(const char *html, char **attributes, char **message);
 
 void
-pecan_handle_challenge (const gchar *input,
-                        const gchar *product_id,
-                        gchar *output);
+pn_handle_challenge (const gchar *input,
+                     const gchar *product_id,
+                     gchar *output);
 
 void msn_parse_socket(const char *str, char **ret_host, int *ret_port);
 char *msn_rand_guid(void);
-gchar *pecan_normalize (const gchar *str);
+gchar *pn_normalize (const gchar *str);
 
 #if !GLIB_CHECK_VERSION(2,12,0)
 void g_hash_table_remove_all (GHashTable *hash_table);
@@ -66,7 +66,7 @@ gpointer g_hash_table_peek_first (GHashTable *hash_table);
 gboolean g_ascii_strcase_equal (gconstpointer v1, gconstpointer v2);
 guint g_ascii_strcase_hash (gconstpointer v);
 
-gchar *pecan_get_xml_field (const gchar *tag, const gchar *start, const gchar *end);
-char *pecan_html_unescape(const char *str);
+gchar *pn_get_xml_field (const gchar *tag, const gchar *start, const gchar *end);
+char *pn_html_unescape(const char *str);
 
-#endif /* PECAN_UTIL_H */
+#endif /* PN_UTIL_H */
