@@ -326,7 +326,7 @@ pecan_contact_set_current_media (PecanContact *contact,
         return;
     }
 
-    array = g_strsplit (value, "\\0", 0);
+    array = g_strsplit (dec, "\\0", 0);
 
 #if GLIB_CHECK_VERSION(2,6,0)
     count  = g_strv_length (array);
@@ -344,15 +344,15 @@ pecan_contact_set_current_media (PecanContact *contact,
             contact->media.type = CURRENT_MEDIA_OFFICE;
 
         if (count == 4)
-            contact->media.title = array[3];
+            contact->media.title = g_strdup (array[3]);
         else
-            contact->media.title = array[4];
+            contact->media.title = g_strdup (array[4]);
 
         if (count > 5)
-            contact->media.artist = array[5];
+            contact->media.artist = g_strdup (array[5]);
 
         if (count > 6)
-            contact->media.album = array[6];
+            contact->media.album = g_strdup (array[6]);
     }
 
     g_strfreev (array);
