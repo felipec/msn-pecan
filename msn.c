@@ -21,11 +21,11 @@
 
 #include "page.h"
 #include "session.h"
+#include "pn_global.h"
 #include "pn_util.h"
 #include "pn_log.h"
 #include "pn_locale.h"
 #include "pecan_status.h"
-#include "pecan_global.h"
 
 #include "switchboard.h"
 #include "notification.h"
@@ -1066,7 +1066,7 @@ send_im (PurpleConnection *gc,
     msn_import_html (message, &msgformat, &msgtext);
 
     /** @todo don't call strlen all the time */
-    if (strlen (msgtext) + strlen (msgformat) + strlen (VERSION) > PECAN_MAX_MESSAGE_LENGTH)
+    if (strlen (msgtext) + strlen (msgformat) + strlen (VERSION) > PN_MAX_MESSAGE_LENGTH)
     {
         g_free (msgformat);
         g_free (msgtext);
@@ -1560,7 +1560,7 @@ chat_send (PurpleConnection *gc,
     msn_import_html (message, &msgformat, &msgtext);
 
     /** @todo don't call strlen all the time */
-    if (strlen (msgtext) + strlen (msgformat) + strlen (VERSION) > PECAN_MAX_MESSAGE_LENGTH)
+    if (strlen (msgtext) + strlen (msgformat) + strlen (VERSION) > PN_MAX_MESSAGE_LENGTH)
     {
         g_free (msgformat);
         g_free (msgtext);
@@ -1684,7 +1684,7 @@ get_info (PurpleConnection *gc,
             purple_notify_user_info_add_pair (user_info, _("Work Phone"), work_phone);
 
         purple_notify_user_info_add_pair (user_info, _("Has Space"),
-                                          ((user->client_id & MSN_CLIENT_CAP_SPACE) ? _("Yes") : _("No")));
+                                          ((user->client_id & PN_CLIENT_CAP_SPACE) ? _("Yes") : _("No")));
     }
 
     {

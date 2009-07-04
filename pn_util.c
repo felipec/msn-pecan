@@ -20,7 +20,7 @@
  */
 
 #include "pn_util.h"
-#include "pecan_config.h"
+#include "pn_global.h"
 
 #include <string.h>
 #include <stdlib.h> /* for calloc, free*/
@@ -363,7 +363,7 @@ msn_parse_format(const char *mime, char **pre_ret, char **post_ret)
 static const char *
 encode_spaces(const char *str)
 {
-    static char buf[MSN_BUF_LEN];
+    static char buf[PN_BUF_LEN];
     const char *c;
     char *d;
 

@@ -19,7 +19,7 @@
 
 #include "pecan_status.h"
 #include "pn_log.h"
-#include "pecan_global.h"
+#include "pn_global.h"
 
 #include "session.h"
 #include "notification.h"
@@ -164,15 +164,15 @@ pecan_update_status (MsnSession *session)
     cmdproc = session->notification->cmdproc;
     state_text = util_type_to_str (util_status_from_session (session));
 
-    caps = MSN_CLIENT_CAP_BASE;
+    caps = PN_CLIENT_CAP_BASE;
 #if defined(PECAN_CVR)
-    caps |= MSN_CLIENT_CAP_INK_GIF;
+    caps |= PN_CLIENT_CAP_INK_GIF;
 #if defined(PECAN_LIBSIREN)
-    caps |= MSN_CLIENT_CAP_VOICE_CLIP;
+    caps |= PN_CLIENT_CAP_VOICE_CLIP;
 #endif
 #endif
 
-    client_id = caps | (MSN_CLIENT_VER_7_5 << 24);
+    client_id = caps | (PN_CLIENT_VER_7_5 << 24);
 
 #if defined(PECAN_CVR)
     {

@@ -21,7 +21,6 @@
 #include "io/pecan_parser.h"
 #include "io/pecan_node.h"
 
-#include "pecan_config.h"
 #include "pn_log.h"
 
 #include <string.h> /* for memcpy */

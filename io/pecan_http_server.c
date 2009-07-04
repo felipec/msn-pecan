@@ -29,7 +29,7 @@
 #include "pecan_node_priv.h"
 #include "pecan_stream.h"
 #include "pn_log.h"
-#include "pecan_config.h"
+#include "pn_global.h"
 
 #include <glib.h>
 #include <string.h>
@@ -118,7 +118,7 @@ read_cb (GIOChannel *source,
          gpointer data)
 {
     PecanNode *conn;
-    gchar buf[MSN_BUF_LEN + 1];
+    gchar buf[PN_BUF_LEN + 1];
     gsize bytes_read;
 
     pn_log ("begin");
@@ -132,7 +132,7 @@ read_cb (GIOChannel *source,
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
-        status = pecan_node_read (conn, buf, MSN_BUF_LEN, &bytes_read, &conn->error);
+        status = pecan_node_read (conn, buf, PN_BUF_LEN, &bytes_read, &conn->error);
 
         if (status == G_IO_STATUS_AGAIN)
         {

@@ -21,7 +21,7 @@
 #include "command_private.h"
 #include "transaction_private.h"
 #include "pn_log.h"
-#include "pecan_config.h"
+#include "pn_global.h"
 
 #include <string.h> /* for strlen. */
 
@@ -395,7 +395,7 @@ msn_message_gen_slp_body(MsnMessage *msg, size_t *ret_size)
 
     g_return_val_if_fail(msg != NULL, NULL);
 
-    len = MSN_BUF_LEN;
+    len = PN_BUF_LEN;
 
     base = tmp = g_malloc(len + 1);
 
@@ -437,7 +437,7 @@ msn_message_gen_payload(MsnMessage *msg, size_t *ret_size)
 
     g_return_val_if_fail(msg != NULL, NULL);
 
-    len = MSN_BUF_LEN;
+    len = PN_BUF_LEN;
 
     base = n = end = g_malloc(len + 1);
     end += len;

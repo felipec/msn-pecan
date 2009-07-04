@@ -18,11 +18,12 @@
  */
 
 #include "notification.h"
+#include "pn_global.h"
 #include "pn_log.h"
 #include "pn_locale.h"
 #include "sync.h"
 #include "nexus.h"
-#include "pecan_global.h"
+#include "pn_global.h"
 
 #include "session.h"
 #include "session_private.h"
@@ -771,7 +772,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     pecan_contact_set_friendly_name(user, friendly);
 
     clientid = strtoul (cmd->params[3], NULL, 10);
-    user->mobile = (clientid & MSN_CLIENT_CAP_MSNMOBILE);
+    user->mobile = (clientid & PN_CLIENT_CAP_MSNMOBILE);
 
     pecan_contact_set_state(user, state);
 

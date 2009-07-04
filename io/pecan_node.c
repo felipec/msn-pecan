@@ -19,10 +19,10 @@
 #include "pecan_node_priv.h"
 #include "pecan_stream.h"
 #include "pn_log.h"
+#include "pn_global.h"
 #ifdef PECAN_SOCKET
 #include "pecan_socket.h"
 #endif /* PECAN_SOCKET */
-#include "pecan_config.h"
 
 #include "session.h" /* for libpurple account */
 
@@ -69,7 +69,7 @@ read_cb (GIOChannel *source,
          gpointer data)
 {
     PecanNode *conn;
-    gchar buf[MSN_BUF_LEN + 1];
+    gchar buf[PN_BUF_LEN + 1];
     gsize bytes_read;
 
     pn_log ("begin");
@@ -83,7 +83,7 @@ read_cb (GIOChannel *source,
     {
         GIOStatus status = G_IO_STATUS_NORMAL;
 
-        status = pecan_node_read (conn, buf, MSN_BUF_LEN, &bytes_read, NULL);
+        status = pecan_node_read (conn, buf, PN_BUF_LEN, &bytes_read, NULL);
 
         if (status == G_IO_STATUS_AGAIN)
         {
