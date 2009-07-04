@@ -98,10 +98,10 @@ msn_slp_call_destroy(MsnSlpCall *slpcall)
 
     session = slpcall->slplink->session;
 
-    msn_slplink_remove_slpcall(slpcall->slplink, slpcall);
-
     if (slpcall->end_cb)
         slpcall->end_cb(slpcall, session);
+
+    msn_slplink_remove_slpcall(slpcall->slplink, slpcall);
 
     if (slpcall->xfer)
         purple_xfer_unref(slpcall->xfer);
