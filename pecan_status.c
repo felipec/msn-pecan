@@ -64,6 +64,7 @@ pecan_set_personal_message (MsnSession *session,
         msn_transaction_set_payload (trans, payload, strlen (payload));
         msn_cmdproc_send_trans (cmdproc, trans);
     }
+    g_free (payload);
 }
 
 #ifdef HAVE_LIBPURPLE
