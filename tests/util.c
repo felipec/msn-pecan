@@ -42,6 +42,32 @@ START_TEST (test_url_decode)
 }
 END_TEST
 
+START_TEST (test_html_unescape)
+{
+    str_cmp_t a[] = {
+        { "foobar", "foobar" },
+        { "foo&amp;bar", "foo&bar" },
+        { "&amp;&lt;&gt;&nbsp;&copy;&reg;&quot;&apos;", "&<> ©®\"'" },
+        { "WMP&#x5C;0Music&#x5C;01&#x5C;0&#x7B;0&#x7D; - &#x7B;1&#x7D;"
+            "&#x5C;0#1 Zero&#x5C;0Audioslave&#x5C;0Out of Exile"
+                "&#x5C;0&#x7B;1F475271-C147-4D64-975B-CFCAE886FDE5&#x7D;&#x5C;0",
+            "WMP\\0Music\\01\\0{0} - {1}\\0#1 Zero\\0Audioslave\\0Out of Exile\\0{1F475271-C147-4D64-975B-CFCAE886FDE5}\\0" },
+#if 0
+        { "&#x04ZZ;", "&#x04ZZ;" },
+        { "&foobar;", "&foobar;" },
+#endif
+    };
+    int i;
+    for (i = 0; i < ARRAY_SIZE(a); i++) {
+        char *r;
+        r = pecan_html_unescape (a[i].in);
+        fail_if(!r, "malformed");
+        ck_assert_str_eq (r, a[i].out);
+        g_free (r);
+    }
+}
+END_TEST
+
 Suite *
 util_suite (void)
 {
@@ -50,6 +76,7 @@ util_suite (void)
     /* Core test case */
     TCase *tc_core = tcase_create ("Core");
     tcase_add_test (tc_core, test_url_decode);
+    tcase_add_test (tc_core, test_html_unescape);
     suite_add_tcase (s, tc_core);
 
     return s;
