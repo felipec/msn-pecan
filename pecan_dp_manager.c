@@ -206,7 +206,7 @@ release (PecanDpManager *dpm)
         user = g_queue_pop_head (queue);
 
         if (!pecan_contact_can_receive (user))
-            return;
+            continue;
 
         dpm->window--;
         pecan_log ("window=%d", dpm->window);
