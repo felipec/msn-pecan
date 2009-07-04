@@ -48,7 +48,7 @@ pecan_dp_manager_new (MsnSession *session)
     dpm = g_new0 (PecanDpManager, 1);
     dpm->session = session;
     dpm->requests = g_queue_new ();
-    dpm->window = 8;
+    dpm->window = 8; /** @todo this window should be for sbs in general */
     return dpm;
 }
 
