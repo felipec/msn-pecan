@@ -24,10 +24,9 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h> /* for calloc, free*/
 
 #include <glib.h>
-
-#include <string.h>
 
 #ifdef HAVE_LIBPURPLE
 /* libpurple stuff. */
@@ -197,11 +196,12 @@ pecan_url_decode (const gchar *url)
     const gchar *src;
     gchar *dest;
 
-    /*
-       Thus, only alphanumerics, the special characters "$-_.+!*'(),", and
-       reserved characters used for their reserved purposes may be used
-       unencoded within a URL.
-       */
+    /* RFC 1738:
+     *
+     * Thus, only alphanumerics, the special characters "$-_.+!*'(),", and
+     * reserved characters used for their reserved purposes may be used
+     * unencoded within a URL.
+     */
 
     dest = new = g_malloc (strlen (url) + 1);
     src = url;
