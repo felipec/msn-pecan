@@ -24,6 +24,10 @@ ifdef DEBUG
   CFLAGS += -ggdb
 endif
 
+ifdef DEVEL
+	CFLAGS += -DPECAN_LOG_LEVEL=PECAN_LOG_LEVEL_LOG
+endif
+
 EXTRA_WARNINGS := -Wall -Wextra -Wformat-nonliteral -Wcast-align -Wpointer-arith \
 	-Wbad-function-cast -Wmissing-prototypes -Wstrict-prototypes \
 	-Wmissing-declarations -Winline -Wundef -Wnested-externs -Wcast-qual \
