@@ -191,6 +191,7 @@ msn_cmdproc_send_valist (MsnCmdProc *cmdproc,
     g_return_if_fail (command);
 
     trans = g_new0 (MsnTransaction, 1);
+    trans->ref_count = 1;
 
     trans->command = g_strdup (command);
 
