@@ -19,7 +19,7 @@
 
 #include "notification.h"
 #include "pn_log.h"
-#include "pecan_locale.h"
+#include "pn_locale.h"
 #include "sync.h"
 #include "nexus.h"
 #include "pecan_global.h"

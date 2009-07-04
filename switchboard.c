@@ -24,6 +24,7 @@
 
 #include "pn_util.h"
 #include "pn_log.h"
+#include "pn_locale.h"
 
 #if defined(PECAN_CVR)
 #include "cvr/slplink.h"
@@ -44,8 +45,6 @@
 #include "io/pecan_node_priv.h"
 #include "io/pecan_cmd_server.h"
 #include "io/pecan_http_server.h"
-
-#include "pecan_locale.h"
 
 #include <string.h>
 

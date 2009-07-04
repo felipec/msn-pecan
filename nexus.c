@@ -19,7 +19,7 @@
 
 #include "nexus.h"
 #include "pn_log.h"
-#include "pecan_locale.h"
+#include "pn_locale.h"
 #include "pn_util.h"
 
 #include "session.h"

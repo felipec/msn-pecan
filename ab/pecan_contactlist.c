@@ -22,7 +22,7 @@
 #include "pecan_contactlist_priv.h"
 #include "pecan_contact_priv.h"
 #include "pn_log.h"
-#include "pecan_locale.h"
+#include "pn_locale.h"
 #include "pn_util.h"
 
 /** @todo this is disabled for testing only */

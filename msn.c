@@ -23,8 +23,8 @@
 #include "session.h"
 #include "pn_util.h"
 #include "pn_log.h"
+#include "pn_locale.h"
 #include "pecan_status.h"
-#include "pecan_locale.h"
 #include "pecan_global.h"
 
 #include "switchboard.h"

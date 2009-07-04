@@ -20,7 +20,7 @@
 #include "session_private.h"
 #include "pn_log.h"
 #include "pn_util.h"
-#include "pecan_locale.h"
+#include "pn_locale.h"
 #include "notification.h"
 #include "pecan_status.h"
 #include "pecan_dp_manager.h"

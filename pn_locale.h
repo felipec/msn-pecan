@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef MSN_INTL_H
-#define MSN_INTL_H
+#ifndef PN_LOCALE_H
+#define PN_LOCALE_H
 
 #ifdef ENABLE_NLS
 #  include <locale.h>
@@ -39,4 +39,4 @@
 #  define dngettext(Domain, Singular, Plural, Number) ((Number == 1) ? ((const char *)Singular) : ((const char *)Plural))
 #endif
 
-#endif /* MSN_INTL_H */
+#endif /* PN_LOCALE_H */
