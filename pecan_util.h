@@ -22,6 +22,8 @@
 
 #include <glib.h>
 
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+
 gchar *remove_plus_tags_from_str (const gchar *str);
 
 gchar *pecan_url_decode (const gchar *url);
