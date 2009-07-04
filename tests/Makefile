@@ -1,34 +1,34 @@
-CC=gcc
+CC := gcc
 
-GOBJECT_CFLAGS=`pkg-config --cflags gobject-2.0`
-GOBJECT_LIBS=`pkg-config --libs gobject-2.0`
+GOBJECT_CFLAGS := $(shell pkg-config --cflags gobject-2.0)
+GOBJECT_LIBS := $(shell pkg-config --libs gobject-2.0)
 
-CHECK_CFLAGS=`pkg-config --cflags check`
-CHECK_LIBS=`pkg-config --libs check`
+CHECK_CFLAGS := $(shell pkg-config --cflags check)
+CHECK_LIBS := $(shell pkg-config --libs check)
 
-CFLAGS=-Wall -ggdb -I..
+CFLAGS := -Wall -ggdb -I..
 
-cmd_parser_test_objects=cmd_parser.o \
-			../io/pecan_cmd_server.o \
-			../io/pecan_node.o \
-			../cmd/cmdproc.o \
-			../cmd/command.o \
-			../cmd/history.o \
-			../cmd/transaction.o \
-			../cmd/msg.o \
-			../pecan_log.o
+cmd_parser_test_objects := cmd_parser.o \
+			   ../io/pecan_cmd_server.o \
+			   ../io/pecan_node.o \
+			   ../cmd/cmdproc.o \
+			   ../cmd/command.o \
+			   ../cmd/history.o \
+			   ../cmd/transaction.o \
+			   ../cmd/msg.o \
+			   ../pecan_log.o
 
-buffer_test_objects=buffer.o \
-		   ../io/pecan_buffer.o
+buffer_test_objects := buffer.o \
+		       ../io/pecan_buffer.o
 
-ab_test_objects=ab.o \
-		../ab/pecan_contact.o \
-		../ab/pecan_group.o \
-		../ab/pecan_contactlist.o \
-		../pecan_util.o
+ab_test_objects := ab.o \
+		   ../ab/pecan_contact.o \
+		   ../ab/pecan_group.o \
+		   ../ab/pecan_contactlist.o \
+		   ../pecan_util.o
 
-printf_test_objects=printf.o \
-		    ../pecan_printf.o
+printf_test_objects := printf.o \
+		       ../pecan_printf.o
 
 # from Lauri Leukkunen's build system
 ifdef V
