@@ -79,7 +79,7 @@ objects := msn.o \
 	   switchboard.o \
 	   sync.o \
 	   pn_log.o \
-	   pecan_printf.o \
+	   pn_printf.o \
 	   pecan_util.o \
 	   pecan_error.o \
 	   pecan_status.o \

@@ -11,7 +11,7 @@ MSNSOURCES = msn.c \
 	     switchboard.c \
 	     sync.c \
 	     pn_log.c \
-	     pecan_printf.c \
+	     pn_printf.c \
 	     pecan_util.c \
 	     pecan_error.c \
 	     pecan_status.c \

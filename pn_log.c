@@ -17,7 +17,7 @@
  */
 
 #include "pn_log.h"
-#include "pecan_printf.h"
+#include "pn_printf.h"
 
 #ifdef PN_DEBUG
 
@@ -95,7 +95,7 @@ pn_base_log_helper (guint level,
 
     va_start (args, fmt);
 
-    tmp = pecan_strdup_vprintf (fmt, args);
+    tmp = pn_strdup_vprintf (fmt, args);
 
 #if defined(PN_DEBUG_FILE)
     {

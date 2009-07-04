@@ -16,19 +16,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef PECAN_PRINTF_H
-#define PECAN_PRINTF_H
+#ifndef PN_PRINTF_H
+#define PN_PRINTF_H
 
 #include <glib.h>
 
-#define PECAN_CUSTOM_PRINTF
+#define PN_CUSTOM_PRINTF
 
-#ifdef PECAN_CUSTOM_PRINTF
-gchar *pecan_strdup_vprintf (const gchar *format, va_list args);
-gchar *pecan_strdup_printf (const gchar *format, ...);
+#ifdef PN_CUSTOM_PRINTF
+gchar *pn_strdup_vprintf (const gchar *format, va_list args);
+gchar *pn_strdup_printf (const gchar *format, ...);
 #else
-#define pecan_strdup_vprintf g_strdup_vprintf
-#define pecan_strdup_printf g_strdup_printf
-#endif /* PECAN_CUSTOM_PRINTF */
+#define pn_strdup_vprintf g_strdup_vprintf
+#define pn_strdup_printf g_strdup_printf
+#endif /* PN_CUSTOM_PRINTF */
 
-#endif /* PECAN_PRINTF_H */
+#endif /* PN_PRINTF_H */

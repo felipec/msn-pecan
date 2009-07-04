@@ -16,13 +16,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "pecan_printf.h"
+#include "pn_printf.h"
 
-#ifdef PECAN_CUSTOM_PRINTF
+#ifdef PN_CUSTOM_PRINTF
 /** @todo this needs to be heavily optimized */
 gchar *
-pecan_strdup_vprintf (const gchar *format,
-                      va_list args)
+pn_strdup_vprintf (const gchar *format,
+                   va_list args)
 {
     const gchar *cur;
     GString *buf;
@@ -99,17 +99,17 @@ pecan_strdup_vprintf (const gchar *format,
 }
 
 gchar *
-pecan_strdup_printf (const gchar *format,
+pn_strdup_printf (const gchar *format,
                      ...)
 {
     gchar *buffer;
     va_list args;
 
     va_start (args, format);
-    buffer = pecan_strdup_vprintf (format, args);
+    buffer = pn_strdup_vprintf (format, args);
     va_end (args);
 
     return buffer;
 }
 
-#endif /* PECAN_CUSTOM_PRINTF */
+#endif /* PN_CUSTOM_PRINTF */
