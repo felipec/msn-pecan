@@ -70,8 +70,6 @@ userdisplay_ok (MsnSlpCall *slpcall,
 {
     const char *info;
 
-    g_return_if_fail (slpcall);
-
     info = slpcall->data_info;
     pecan_info ("passport=[%s]", slpcall->slplink->remote_user);
 
@@ -106,12 +104,7 @@ userdisplay_fail (MsnSlpCall *slpcall,
     const gchar *passport;
     PecanContact *contact;
 
-    g_return_if_fail (session);
-
     pecan_error ("unknown error");
-
-    if (!slpcall && !slpcall->slplink)
-        return;
 
     passport = slpcall->slplink->remote_user;
 
@@ -233,8 +226,6 @@ ud_cached (PurpleAccount *account,
     const char *old;
     const char *new;
 
-    g_return_val_if_fail (obj, FALSE);
-
     buddy = purple_find_buddy (account, msn_object_get_creator (obj));
     if (!buddy)
         return FALSE;
@@ -254,8 +245,6 @@ pecan_dp_manager_contact_set_object (PecanContact *contact,
                                      MsnObject *obj)
 {
     MsnSession *session;
-
-    g_return_if_fail (contact);
 
     if (!(contact->list_op & MSN_LIST_FL_OP))
         return;
