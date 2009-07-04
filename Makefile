@@ -81,7 +81,7 @@ objects := msn.o \
 	   pn_log.o \
 	   pn_printf.o \
 	   pecan_util.o \
-	   pecan_error.o \
+	   pn_error.o \
 	   pecan_status.o \
 	   pecan_oim.o \
 	   pecan_dp_manager.o \

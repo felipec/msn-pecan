@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef PECAN_ERROR_H
-#define PECAN_ERROR_H
+#ifndef PN_ERROR_H
+#define PN_ERROR_H
 
 #include <glib.h>
 
@@ -29,6 +29,6 @@
  *
  * @return The string representation of the error id.
  */
-gchar *pecan_error_to_string (guint id);
+gchar *pn_error_to_string (guint id);
 
-#endif /* PECAN_ERROR_H */
+#endif /* PN_ERROR_H */

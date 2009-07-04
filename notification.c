@@ -45,7 +45,7 @@
 #include "cvr/slplink.h" /* for slplink_destroy */
 #endif /* defined(PECAN_CVR) */
 
-#include "pecan_error.h"
+#include "pn_error.h"
 #include "pecan_util.h" /* for parse_socket */
 
 #include <glib/gstdio.h>
@@ -129,7 +129,7 @@ error_handler (MsnCmdProc *cmdproc,
     notification = cmdproc->data;
     g_return_if_fail (notification);
 
-    reason = pecan_error_to_string (error);
+    reason = pn_error_to_string (error);
     pn_error ("connection error: (NS):reason=[%s]", reason);
 
     switch (error)
@@ -594,7 +594,7 @@ adc_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
                               purple_account_get_username(account),
                               purple_account_get_protocol_name(account));
 
-    reason = pecan_error_to_string (error);
+    reason = pn_error_to_string (error);
 
     if (msg != NULL)
     {
