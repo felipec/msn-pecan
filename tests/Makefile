@@ -53,6 +53,12 @@ check_parser: LIBS := $(GOBJECT_LIBS) $(CHECK_LIBS)
 
 checks += check_parser
 
+check_util: util.o ../pecan_util.o
+check_util: CFLAGS := $(CFLAGS) $(GOBJECT_CFLAGS) $(CHECK_CFLAGS)
+check_util: LIBS := $(GOBJECT_LIBS) $(CHECK_LIBS)
+
+checks += check_util
+
 all: $(checks)
 
 check_%::
