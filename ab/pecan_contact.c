@@ -290,10 +290,11 @@ pecan_contact_set_personal_message (PecanContact *contact,
 
 void
 pecan_contact_set_current_media (PecanContact *contact,
-                                 const gchar *current_media)
+                                 const gchar *value)
 {
-    gchar **current_media_array;
-    int strings = 0;
+    gchar **array;
+    char *dec;
+    int count = 0;
 
     /*
     * 0: Application
@@ -315,50 +316,47 @@ pecan_contact_set_current_media (PecanContact *contact,
     g_free (contact->media.album);
     contact->media.album = NULL;
 
-    if (!current_media)
+    if (!value)
         return;
 
-    current_media_array = g_strsplit (current_media, "\\0", 0);
+    dec = pecan_html_unescape (value);
 
-#if GLIB_CHECK_VERSION(2,6,0)
-    strings  = g_strv_length (current_media_array);
-#else
-    while (current_media_array[++strings] != NULL);
-#endif
-
-    if (strings < 4)
-    {
-        current_media_array = g_strsplit (current_media, "&#x5C;0", 0);
-
-#if GLIB_CHECK_VERSION(2,6,0)
-        strings  = g_strv_length (current_media_array);
-#else
-        while (current_media_array[++strings] != NULL);
-#endif
+    if (!dec) {
+        pecan_error ("couldn't parse [%s]", value);
+        return;
     }
 
-    if (strings >= 4 && strcmp (current_media_array[2], "1") == 0)
+    array = g_strsplit (value, "\\0", 0);
+
+#if GLIB_CHECK_VERSION(2,6,0)
+    count  = g_strv_length (array);
+#else
+    while (array[++count]);
+#endif
+
+    if (count >= 4 && strcmp (array[2], "1") == 0)
     {
-        if (strcmp (current_media_array[1], "Music") == 0)
+        if (strcmp (array[1], "Music") == 0)
             contact->media.type = CURRENT_MEDIA_MUSIC;
-        else if (strcmp (current_media_array[1], "Games") == 0)
+        else if (strcmp (array[1], "Games") == 0)
             contact->media.type = CURRENT_MEDIA_GAMES;
-        else if (strcmp (current_media_array[1], "Office") == 0)
+        else if (strcmp (array[1], "Office") == 0)
             contact->media.type = CURRENT_MEDIA_OFFICE;
 
-        if (strings == 4)
-            contact->media.title = purple_unescape_html (current_media_array[3]);
+        if (count == 4)
+            contact->media.title = array[3];
         else
-            contact->media.title = purple_unescape_html (current_media_array[4]);
+            contact->media.title = array[4];
 
-        if (strings > 5)
-            contact->media.artist = purple_unescape_html (current_media_array[5]);
+        if (count > 5)
+            contact->media.artist = array[5];
 
-        if (strings > 6)
-            contact->media.album = purple_unescape_html (current_media_array[6]);
+        if (count > 6)
+            contact->media.album = array[6];
     }
 
-    g_strfreev (current_media_array);
+    g_strfreev (array);
+    g_free (dec);
 }
 
 void
