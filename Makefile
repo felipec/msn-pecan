@@ -87,7 +87,6 @@ objects := msn.o \
 	   pn_dp_manager.o \
 	   cmd/cmdproc.o \
 	   cmd/command.o \
-	   cmd/history.o \
 	   cmd/msg.o \
 	   cmd/table.o \
 	   cmd/transaction.o \

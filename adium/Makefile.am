@@ -20,7 +20,6 @@ MSNSOURCES = msn.c \
 	     pn_siren7.c \
 	     cmd/cmdproc.c \
 	     cmd/command.c \
-	     cmd/history.c \
 	     cmd/msg.c \
 	     cmd/table.c \
 	     cmd/transaction.c \

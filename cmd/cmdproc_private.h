@@ -25,7 +25,6 @@
 #include "transaction.h"
 
 struct MsnSession;
-struct MsnHistory;
 struct PnNode;
 
 struct MsnCmdProc
@@ -39,9 +38,9 @@ struct MsnCmdProc
 
     gpointer data; /**< Extra data, like the switchboard. */
     gpointer extra_data; /**< Extra data. */
-    guint cmd_count;
+    guint count;
 
-    struct MsnHistory *history;
+    GHashTable *transactions;
     struct PnNode *conn;
 };
 

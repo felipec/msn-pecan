@@ -13,7 +13,6 @@ cmd_parser_test_objects := cmd_parser.o \
 			   ../io/pn_node.o \
 			   ../cmd/cmdproc.o \
 			   ../cmd/command.o \
-			   ../cmd/history.o \
 			   ../cmd/transaction.o \
 			   ../cmd/msg.o \
 			   ../pn_log.o

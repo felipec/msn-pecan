@@ -26,8 +26,6 @@
 
 #include "pn_log.h"
 
-#include "history.h"
-
 #include <string.h>
 #include <stdlib.h>
 
@@ -39,8 +37,8 @@ msn_cmdproc_new (void)
     MsnCmdProc *cmdproc;
 
     cmdproc = g_new0 (MsnCmdProc, 1);
-
-    cmdproc->history = msn_history_new ();
+    cmdproc->transactions = g_hash_table_new_full (g_direct_hash, g_direct_equal,
+                                                   NULL, (GDestroyNotify) msn_transaction_unref);
 
     return cmdproc;
 }
@@ -52,8 +50,8 @@ msn_cmdproc_destroy (MsnCmdProc *cmdproc)
 
     pn_debug ("cmdproc=%p", cmdproc);
 
-    msn_history_destroy (cmdproc->history);
     msn_command_free (cmdproc->last_cmd);
+    g_hash_table_destroy (cmdproc->transactions);
 
     g_free (cmdproc);
 
@@ -67,7 +65,7 @@ msn_cmdproc_flush (MsnCmdProc *cmdproc)
 
     pn_debug ("cmdproc=%p", cmdproc);
 
-    msn_history_flush (cmdproc->history);
+    g_hash_table_remove_all (cmdproc->transactions);
 
     pn_log ("end");
 }
@@ -89,7 +87,7 @@ show_debug_cmd (MsnCmdProc *cmdproc,
     if ((show[len - 1] == '\n') && (show[len - 2] == '\r'))
         show[len - 2] = '\0';
 
-    pn_info ("%c: %03d: %s", tmp, cmdproc->cmd_count, show);
+    pn_info ("%c: %03d: %s", tmp, cmdproc->count, show);
 
     g_free (show);
 }
@@ -104,7 +102,8 @@ msn_cmdproc_send_trans (MsnCmdProc *cmdproc,
     g_return_if_fail (cmdproc);
     g_return_if_fail (trans);
 
-    msn_history_add (cmdproc->history, trans);
+    trans->trId = ++cmdproc->count;
+    g_hash_table_insert (cmdproc->transactions, GINT_TO_POINTER (trans->trId), trans);
 
     data = msn_transaction_to_string (trans);
 
@@ -273,7 +272,7 @@ msn_cmdproc_process_cmd (MsnCmdProc *cmdproc,
     pn_log ("begin");
 
     if (cmd->tr_id)
-        cmd->trans = trans = msn_history_find (cmdproc->history, cmd->tr_id);
+        cmd->trans = trans = g_hash_table_lookup (cmdproc->transactions, GINT_TO_POINTER (cmd->tr_id));
 
     /* transaction finished. clear timeouts. */
     if (trans)
