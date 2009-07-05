@@ -220,13 +220,14 @@ release (PnDpManager *dpm)
 #ifdef HAVE_LIBPURPLE
 static inline gboolean
 ud_cached (PurpleAccount *account,
+           PnContact *contact,
            PnMsnObj *obj)
 {
     PurpleBuddy *buddy;
     const char *old;
     const char *new;
 
-    buddy = purple_find_buddy (account, pn_msnobj_get_creator (obj));
+    buddy = purple_find_buddy (account, pn_contact_get_passport (contact));
     if (!buddy)
         return FALSE;
 
@@ -262,7 +263,7 @@ pn_dp_manager_contact_set_object (PnContact *contact,
         return;
 
 #ifdef HAVE_LIBPURPLE
-    if (!ud_cached (msn_session_get_user_data (session), obj))
+    if (!ud_cached (msn_session_get_user_data (session), contact, obj))
     {
         queue (session->dp_manager, contact);
     }

@@ -104,17 +104,14 @@ pn_msnobj_new_from_string(const gchar *str)
 
     obj = pn_msnobj_new();
 
-    GET_STRING_TAG(creator,  "Creator");
     GET_INT_TAG(size,        "Size");
     GET_INT_TAG(type,        "Type");
     GET_STRING_TAG(location, "Location");
-    GET_STRING_TAG(friendly, "Friendly");
     GET_STRING_TAG(sha1d,    "SHA1D");
     GET_STRING_TAG(sha1c,    "SHA1C");
 
     /* check required fields */
-    if (!obj->creator || !obj->size || !obj->type ||
-        !obj->location || !obj->friendly || !obj->sha1d)
+    if (!obj->type || !obj->location || !obj->sha1d)
     {
         pn_error("discarding: str=[%s]", str);
         pn_msnobj_free(obj);
@@ -226,12 +223,6 @@ pn_msnobj_to_string(const PnMsnObj *obj)
                           sha1c ? "\"" : "");
 
     return str;
-}
-
-const gchar *
-pn_msnobj_get_creator(const PnMsnObj *obj)
-{
-    return obj->creator;
 }
 
 PnMsnObjType

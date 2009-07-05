@@ -84,15 +84,6 @@ void pn_msnobj_free(PnMsnObj *obj);
 gchar *pn_msnobj_to_string(const PnMsnObj *obj);
 
 /**
- * Returns a PnMsnObj's creator value.
- *
- * @param obj The object.
- *
- * @return The creator value.
- */
-const gchar *pn_msnobj_get_creator(const PnMsnObj *obj);
-
-/**
  * Returns a PnMsnObj's type.
  *
  * @param obj The object.

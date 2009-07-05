@@ -710,7 +710,7 @@ msn_emoticon_msg(MsnCmdProc *cmdproc,
         if (!obj)
             break;
 
-        who = pn_msnobj_get_creator(obj);
+        who = msg->remote_user;
         sha1 = pn_msnobj_get_sha1(obj);
 
         slplink = msn_session_get_slplink(session, who);
