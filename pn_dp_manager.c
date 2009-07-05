@@ -119,14 +119,11 @@ request (PnContact *user)
 {
     PurpleAccount *account;
     MsnSession *session;
-    MsnSlpLink *slplink;
     PnMsnObj *obj;
     const char *info;
 
     session = user->contactlist->session;
     account = msn_session_get_user_data (session);
-
-    slplink = msn_session_get_slplink (session, user->passport);
 
     obj = pn_contact_get_object (user);
 
@@ -142,6 +139,8 @@ request (PnContact *user)
     if (g_ascii_strcasecmp (user->passport,
                             msn_session_get_username (session)))
     {
+        MsnSlpLink *slplink;
+        slplink = msn_session_get_slplink (session, user->passport);
         msn_slplink_request_object (slplink, info,
                                     dp_ok, dp_fail, obj);
     }

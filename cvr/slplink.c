@@ -211,16 +211,17 @@ msn_slplink_send_msg(MsnSlpLink *slplink,
                      MsnMessage *msg)
 {
     if (!slplink->swboard) {
-        slplink->swboard = msn_session_get_swboard(slplink->session,
-                                                   slplink->remote_user, MSN_SB_FLAG_FT);
+        MsnSwitchBoard *swboard;
+        swboard = msn_session_get_swboard(slplink->session,
+                                          slplink->remote_user, MSN_SB_FLAG_FT);
 
-        msn_switchboard_ref(slplink->swboard);
-
-        if (!slplink->swboard)
+        if (!swboard)
             return;
 
         /* If swboard is destroyed we will be too */
-        slplink->swboard->slplinks = g_list_prepend(slplink->swboard->slplinks, slplink);
+        swboard->slplinks = g_list_prepend(swboard->slplinks, slplink);
+
+        slplink->swboard = swboard;
     }
 
     msn_switchboard_send_msg(slplink->swboard, msg, TRUE);

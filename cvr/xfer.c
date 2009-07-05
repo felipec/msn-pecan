@@ -216,6 +216,7 @@ gen_context(const char *file_name,
 void
 msn_xfer_invite(PurpleXfer *xfer)
 {
+    MsnSlpLink *slplink;
     MsnSlpCall *slpcall;
     char *context;
     const char *fn;
@@ -224,7 +225,8 @@ msn_xfer_invite(PurpleXfer *xfer)
     fn = purple_xfer_get_filename(xfer);
     fp = purple_xfer_get_local_filename(xfer);
 
-    slpcall = msn_slp_call_new(xfer->data);
+    slplink = xfer->data;
+    slpcall = msn_slp_call_new(slplink);
     msn_slp_call_init(slpcall, MSN_SLPCALL_DC);
 
     slpcall->init_cb = send_file_cb;

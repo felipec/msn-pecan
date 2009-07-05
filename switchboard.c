@@ -186,7 +186,7 @@ msn_switchboard_new(MsnSession *session)
         swboard->error_handler = g_signal_connect (conn, "error", G_CALLBACK (close_cb), swboard);
     }
 
-    msn_switchboard_ref (swboard);
+    swboard->ref_count++;
 
     return swboard;
 }
@@ -209,7 +209,7 @@ msn_switchboard_free (MsnSwitchBoard *swboard)
 
 #if defined(PECAN_CVR)
     /* If it linked us is because its looking for trouble */
-    while (swboard->slplinks != NULL)
+    while (swboard->slplinks)
         msn_slplink_destroy(swboard->slplinks->data);
 #endif /* defined(PECAN_CVR) */
 
@@ -814,8 +814,6 @@ bye_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     swboard = cmdproc->data;
     user = cmd->params[0];
 
-    g_return_if_fail (swboard);
-
     /* cmdproc->data is set to NULL when the switchboard is destroyed;
      * we may get a bye shortly thereafter. */
     g_return_if_fail(swboard);
@@ -1394,8 +1392,8 @@ datacast_msg (MsnCmdProc *cmdproc,
 
         data = g_hash_table_lookup(body, "Data");
         obj = pn_msnobj_new_from_string(data);
-        slplink = msn_session_get_slplink(cmdproc->session, passport);
 
+        slplink = msn_session_get_slplink(cmdproc->session, passport);
         msn_slplink_request_object(slplink, data, got_voice_clip, NULL, obj);
             
         pn_msnobj_free(obj);

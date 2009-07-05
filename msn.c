@@ -520,7 +520,7 @@ msn_new_xfer(PurpleConnection *gc, const char *who)
     if (!xfer)
         return NULL;
 
-    xfer->data = msn_session_get_slplink(session, who);
+    xfer->data = msn_session_get_slplink(session, who); /* temporary */
     purple_xfer_set_init_fnc(xfer, msn_xfer_invite);
 
     return xfer;
@@ -1519,17 +1519,7 @@ chat_leave (PurpleConnection *gc,
     conv = swboard->conv;
 
     msn_switchboard_release (swboard, MSN_SB_FLAG_IM);
-
-    /* If other switchboards managed to associate themselves with this
-     * conv, make sure they know it's gone! */
-    /** @todo this should not happen */
-    if (conv)
-    {
-        while ((swboard = msn_session_find_swboard_with_conv (session, conv)))
-        {
-            swboard->conv = NULL;
-        }
-    }
+    swboard->conv = NULL;
 }
 
 static gint

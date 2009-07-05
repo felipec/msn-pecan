@@ -672,7 +672,7 @@ fln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
         slplink = msn_session_find_slplink(cmdproc->session, cmd->params[0]);
 
-        if (slplink != NULL)
+        if (slplink)
             msn_slplink_destroy(slplink);
     }
 #endif /* defined(PECAN_CVR) */
