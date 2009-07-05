@@ -1,0 +1,24 @@
+p2p aka cvr aka slp is perhaps the most complicated part of the WLM protocol.
+
+It can in fact be considered separate of the WLM protocol because WLM servers
+don't handle it; it's handled by the clients. For example; a custom message
+"application/x-msnmsgrp2p" is sent through the switchboard, and other client
+interprets it, but the server doesn't do anything with it, just pass it along.
+
+Commonly it's used for file transfers, display pictures and emoticons, but
+there are other usages.
+
+The main object to consider is the Call. A Call is established between two
+peers and serves one purpose (e.g. send a display picture). There can be
+multiple active Calls between two peers, and the transactions usually happen on
+switchboards, but they can be transfered to a direct connection channel. Also,
+there can be multiple active calls on a single switchboard.
+
+In order to handle this complication msn-pecan has a concept of Link. A Link is
+simply a connection between two peers. The transport of a Link can be a
+switchboard, or a direct connection. Therefore, before processing a Call, a
+Link must be created. A Link can have multiple active calls.
+
+TODO: a direct connection can only have one active call, therefore a Link is
+not appropriate to handle them. This means there's not much need for a Link
+object; switchboards should be accessed directly.
