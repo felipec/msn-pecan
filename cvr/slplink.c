@@ -85,23 +85,22 @@ msn_slplink_destroy(MsnSlpLink *slplink)
     pn_info("slplink_destroy: slplink(%p)", slplink);
 #endif
 
+    session = slplink->session;
+    session->slplinks = g_list_remove(session->slplinks, slplink);
+
     if (slplink->swboard)
         slplink->swboard->slplinks = g_list_remove(slplink->swboard->slplinks, slplink);
 
-    session = slplink->session;
-
-    g_free(slplink->local_user);
-    g_free(slplink->remote_user);
+    while (slplink->slp_calls)
+        msn_slp_call_destroy(slplink->slp_calls->data);
 
 #ifdef MSN_DIRECTCONN
     if (slplink->directconn)
         msn_directconn_destroy(slplink->directconn);
 #endif /* MSN_DIRECTCONN */
 
-    while (slplink->slp_calls)
-        msn_slp_call_destroy(slplink->slp_calls->data);
-
-    session->slplinks = g_list_remove(session->slplinks, slplink);
+    g_free(slplink->local_user);
+    g_free(slplink->remote_user);
 
     g_free(slplink);
 }
