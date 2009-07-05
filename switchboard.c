@@ -1104,6 +1104,7 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     char *body_enc;
     char *body_final;
     char *alias_backup = NULL;
+    gboolean alias_faked = FALSE;
     size_t body_len;
     char *passport;
     const char *value;
@@ -1138,7 +1139,8 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
     if ((value = msn_message_get_attr(msg, "P4-Context")) != NULL)
     {
         alias_backup = g_strdup(buddy->alias);
-        purple_buddy_set_private_alias(gc, passport, value);
+        purple_buddy_set_public_alias(gc, passport, value);
+        alias_faked = TRUE;
     }
 
     if ((value = msn_message_get_attr(msg, "X-MMS-IM-Format")) != NULL)
@@ -1214,9 +1216,9 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
         }
     }
 
-    if (alias_backup)
+    if (alias_faked)
     {
-        purple_buddy_set_private_alias(gc, passport, alias_backup);
+        purple_buddy_set_public_alias(gc, passport, alias_backup);
         g_free(alias_backup);
     }
 
