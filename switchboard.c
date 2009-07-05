@@ -731,6 +731,7 @@ release_msg(MsnSwitchBoard *swboard, MsnMessage *msg)
     trans->payload = payload;
     trans->payload_len = payload_len;
 
+    msn_transaction_ref(trans);
     msg->trans = trans;
 
     msn_cmdproc_send_trans(cmdproc, trans);
