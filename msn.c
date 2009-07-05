@@ -1552,8 +1552,10 @@ chat_send (PurpleConnection *gc,
     if (!swboard)
         return -22; /* EINVAL */
 
-    if (!swboard->ready)
+    if (!swboard->ready) {
+        pn_error ("not ready?");
         return 0;
+    }
 
     swboard->flag |= MSN_SB_FLAG_IM;
 
