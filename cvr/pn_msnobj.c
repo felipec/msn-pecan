@@ -104,9 +104,11 @@ pn_msnobj_new_from_string(const gchar *str)
 
     obj = pn_msnobj_new();
 
+    GET_STRING_TAG(creator,  "Creator");
     GET_INT_TAG(size,        "Size");
     GET_INT_TAG(type,        "Type");
     GET_STRING_TAG(location, "Location");
+    GET_STRING_TAG(friendly, "Friendly");
     GET_STRING_TAG(sha1d,    "SHA1D");
     GET_STRING_TAG(sha1c,    "SHA1C");
 
