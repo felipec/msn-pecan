@@ -579,7 +579,7 @@ msn_slp_sip_recv(MsnSlpLink *slplink,
                 temp[offset] = '\0';
             }
 
-            pn_error("received non-OK result: %s", temp);
+            pn_warning("received non-OK result: %s", temp);
 
             slpcall->wasted = TRUE;
 

@@ -104,7 +104,7 @@ dp_fail (MsnSlpCall *slpcall,
     const gchar *passport;
     PnContact *contact;
 
-    pn_error ("unknown error");
+    pn_warning ("unknown error");
 
     passport = slpcall->slplink->remote_user;
 
