@@ -63,10 +63,23 @@ pn_dp_manager_free (PnDpManager *dpm)
     g_free (dpm);
 }
 
+static inline void
+queue (PnDpManager *dpm,
+       PnContact *contact)
+{
+    pn_debug ("passport=[%s],window=%u",
+              contact->passport, dpm->window);
+
+    g_queue_push_tail (dpm->requests, contact);
+
+    if (dpm->window > 0)
+        release (dpm);
+}
+
 static void
-userdisplay_ok (MsnSlpCall *slpcall,
-                const guchar *data,
-                gsize size)
+dp_ok (MsnSlpCall *slpcall,
+       const guchar *data,
+       gsize size)
 {
     const char *info;
 
@@ -84,22 +97,9 @@ userdisplay_ok (MsnSlpCall *slpcall,
 #endif /* HAVE_LIBPURPLE */
 }
 
-static inline void
-queue (PnDpManager *dpm,
-       PnContact *contact)
-{
-    pn_debug ("passport=[%s],window=%u",
-              contact->passport, dpm->window);
-
-    g_queue_push_tail (dpm->requests, contact);
-
-    if (dpm->window > 0)
-        release (dpm);
-}
-
 static void
-userdisplay_fail (MsnSlpCall *slpcall,
-                  MsnSession *session)
+dp_fail (MsnSlpCall *slpcall,
+         MsnSession *session)
 {
     const gchar *passport;
     PnContact *contact;
@@ -143,7 +143,7 @@ request (PnContact *user)
                             msn_session_get_username (session)))
     {
         msn_slplink_request_object (slplink, info,
-                                    userdisplay_ok, userdisplay_fail, obj);
+                                    dp_ok, dp_fail, obj);
     }
     else
     {
