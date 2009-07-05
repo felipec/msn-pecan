@@ -34,8 +34,8 @@
 #include <debug.h>
 #endif /* PURPLE_DEBUG */
 
-#ifndef PN_LOG_LEVEL
-#define PN_LOG_LEVEL PN_LOG_LEVEL_INFO
+#ifndef PECAN_LOG_LEVEL
+#define PECAN_LOG_LEVEL PN_LOG_LEVEL_INFO
 #endif
 
 static inline const gchar *
@@ -90,7 +90,7 @@ pn_base_log_helper (guint level,
     gchar *tmp;
     va_list args;
 
-    if (level > PN_LOG_LEVEL)
+    if (level > PECAN_LOG_LEVEL)
         return;
 
     va_start (args, fmt);

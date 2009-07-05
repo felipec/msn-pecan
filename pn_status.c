@@ -165,16 +165,16 @@ pn_update_status (MsnSession *session)
     state_text = util_type_to_str (util_status_from_session (session));
 
     caps = PN_CLIENT_CAP_BASE;
-#if defined(PN_CVR)
+#if defined(PECAN_CVR)
     caps |= PN_CLIENT_CAP_INK_GIF;
-#if defined(PN_LIBSIREN)
+#if defined(PECAN_LIBSIREN)
     caps |= PN_CLIENT_CAP_VOICE_CLIP;
 #endif
 #endif
 
     client_id = caps | (PN_CLIENT_VER_7_5 << 24);
 
-#if defined(PN_CVR)
+#if defined(PECAN_CVR)
     {
         PnMsnObj *obj;
 
@@ -200,7 +200,7 @@ pn_update_status (MsnSession *session)
 #else
     msn_cmdproc_send (cmdproc, "CHG", "%s %d", state_text,
                       client_id);
-#endif /* defined(PN_CVR) */
+#endif /* defined(PECAN_CVR) */
 }
 
 void
@@ -220,7 +220,7 @@ pn_update_personal_message (MsnSession *session)
 
     current_media = create_current_media_string (presence);
 
-#ifndef PN_USE_PSM
+#ifndef PECAN_USE_PSM
     const gchar *msg;
 
     msg = purple_account_get_string (account, "personal_message", "");
@@ -248,7 +248,7 @@ pn_update_personal_message (MsnSession *session)
     {
         pn_set_personal_message (session, NULL, current_media);
     }
-#endif /* PN_USE_PSM */
+#endif /* PECAN_USE_PSM */
 
     if (current_media)
         g_free (current_media);
