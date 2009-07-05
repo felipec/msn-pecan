@@ -54,10 +54,10 @@ pn_parser_free (PnParser *parser)
 
 GIOStatus
 pn_parser_read_line (PnParser *parser,
-                        gchar **str_return,
-                        gsize *length,
-                        gsize *terminator_pos,
-                        GError **error)
+                     gchar **str_return,
+                     gsize *length,
+                     gsize *terminator_pos,
+                     GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
     gchar *cur;
