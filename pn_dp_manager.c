@@ -202,6 +202,9 @@ release (PnDpManager *dpm)
             return;
         }
 
+        if (!dpm->session->connected)
+            return;
+
         user = g_queue_pop_head (queue);
 
         if (!pn_contact_can_receive (user))
