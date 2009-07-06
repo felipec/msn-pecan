@@ -447,11 +447,10 @@ static MsnSlpCall *
 process_slpmsg(PnPeerLink *link,
                MsnSlpMessage *slpmsg)
 {
-    MsnSlpCall *slpcall;
+    MsnSlpCall *call = NULL;
     gpointer body;
     gsize body_len;
 
-    slpcall = NULL;
     body = slpmsg->buffer;
     body_len = slpmsg->size;
 
@@ -625,7 +624,7 @@ pn_peer_link_process_msg(PnPeerLink *link,
     }
 
     if ((slpmsg->flags == 0x20 || slpmsg->flags == 0x1000020 || slpmsg->flags == 0x1000030) &&
-        (slpmsg->slpcall != NULL))
+        slpmsg->slpcall)
     {
         slpmsg->slpcall->progress = TRUE;
 

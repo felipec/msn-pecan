@@ -559,7 +559,7 @@ msn_slp_sip_recv(PnPeerLink *link,
         slpcall = pn_peer_link_find_slp_call(link, call_id);
         g_free(call_id);
 
-        g_return_val_if_fail(slpcall != NULL, NULL);
+        g_return_val_if_fail(slpcall, NULL);
 
         if (strncmp(status, "200 OK", 6) != 0) {
             /* It's not valid. Kill this off. */

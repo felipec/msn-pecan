@@ -91,11 +91,12 @@ void msn_slpmsg_set_image(MsnSlpMessage *slpmsg,
                           PnBuffer *image);
 void msn_slpmsg_open_file(MsnSlpMessage *slpmsg,
                           const char *file_name);
-MsnSlpMessage * msn_slpmsg_sip_new(struct MsnSlpCall *slpcall, int cseq,
-                                   const char *header,
-                                   const char *branch,
-                                   const char *content_type,
-                                   const char *content);
+MsnSlpMessage *msn_slpmsg_sip_new(struct MsnSlpCall *slpcall,
+                                  int cseq,
+                                  const char *header,
+                                  const char *branch,
+                                  const char *content_type,
+                                  const char *content);
 
 #ifdef PECAN_DEBUG_SLP
 void msn_slpmsg_show(struct MsnMessage *msg);

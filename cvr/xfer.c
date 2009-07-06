@@ -130,8 +130,8 @@ send_file_cb(MsnSlpCall *slpcall)
 #ifdef PECAN_DEBUG_SLP
     slpmsg->info = "SLP FILE";
 #endif
-    xfer = (PurpleXfer *)slpcall->xfer;
-    purple_xfer_start(slpcall->xfer, 0, NULL, 0);
+    xfer = (PurpleXfer *) slpcal->xfer;
+    purple_xfer_start(slpcal->xfer, 0, NULL, 0);
     slpmsg->fp = xfer->dest_fp;
     if (g_stat(purple_xfer_get_local_filename(xfer), &st) == 0)
         slpmsg->size = st.st_size;

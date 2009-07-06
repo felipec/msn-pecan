@@ -50,7 +50,7 @@ msn_slp_call_new(PnPeerLink *link)
     slpcall = g_new0(MsnSlpCall, 1);
 
 #ifdef PECAN_DEBUG_SLPCALL
-    pn_info("slpcall_new: slpcall(%p)\n", slpcall);
+    pn_info("slpcall=%p", slpcall);
 #endif
 
     slpcall->link = link;
@@ -74,7 +74,7 @@ msn_slp_call_destroy(MsnSlpCall *slpcall)
 	    return;
 
 #ifdef PECAN_DEBUG_SLPCALL
-    pn_info("slpcall_destroy: slpcall(%p)\n", slpcall);
+    pn_info("slpcall=%p", slpcall);
 #endif
 
     if (slpcall->timer)
@@ -89,8 +89,7 @@ msn_slp_call_destroy(MsnSlpCall *slpcall)
         e = e->next;
 
 #ifdef PECAN_DEBUG_SLPCALL_VERBOSE
-        pn_info("slpcall_destroy: trying slpmsg(%p)\n",
-                slpmsg);
+        pn_info("slpmsg=%p\n", slpmsg);
 #endif
 
         if (slpmsg->slpcall == slpcall)
@@ -185,7 +184,7 @@ msn_slp_call_timeout(gpointer data)
     slpcall = data;
 
 #ifdef PECAN_DEBUG_SLPCALL
-    pn_info("slpcall_timeout: slpcall(%p)\n", slpcall);
+    pn_info("slpcall=%p", slpcall);
 #endif
 
     if (!slpcall->pending && !slpcall->progress) {

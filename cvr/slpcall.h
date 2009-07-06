@@ -23,12 +23,9 @@
 typedef struct MsnSlpCall MsnSlpCall;
 
 struct MsnSession;
-struct MsnSlpSession;
 struct PnPeerLink;
 
 #include <glib.h>
-
-typedef void (*MsnSlpCb_foo) (MsnSlpCall *slpcall, const guchar *data, gsize size);
 
 typedef enum {
     MSN_SLPCALL_ANY,
@@ -39,7 +36,6 @@ struct MsnSlpCall
 {
     MsnSlpCallType type;
 
-    /* Call-ID */
     char *id;
     char *branch;
 
@@ -57,14 +53,14 @@ struct MsnSlpCall
 
     void (*progress_cb)(MsnSlpCall *slpcall,
                         gsize total_length, gsize len, gsize offset);
-    void (*init_cb)(struct MsnSlpCall *slpcall);
+    void (*init_cb)(MsnSlpCall *slpcall);
 
     /* Can be checksum, or smile */
     char *data_info;
 
     void *xfer;
 
-    MsnSlpCb_foo cb;
+    void (*cb)(MsnSlpCall *slpcall, const guchar *data, gsize size);
     void (*end_cb)(MsnSlpCall *slpcall, struct MsnSession *session);
 
     int timer;
