@@ -23,7 +23,7 @@
 #include "switchboard.h"
 #include "pn_peer_call.h"
 #include "slpmsg.h"
-#include "slp.h"
+#include "pn_sip.h"
 #include "pn_log.h"
 
 #include "ab/pn_contact.h"
@@ -475,7 +475,7 @@ process_slpmsg(PnPeerLink *link,
                 }
                 else {
                     body_str = g_strndup(body, body_len);
-                    msn_slp_sip_recv(link, body_str);
+                    pn_sip_recv(link, body_str);
                 }
                 g_free(body_str);
                 break;

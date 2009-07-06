@@ -17,28 +17,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef MSN_SLP_H
-#define MSN_SLP_H
+#ifndef PN_SIP_H
+#define PN_SIP_H
 
 #include <glib.h>
 
 struct PnPeerCall;
 struct PnPeerLink;
 
-void msn_slp_sip_recv(struct PnPeerLink *link,
-                      const char *body);
+void pn_sip_recv(struct PnPeerLink *link,
+                 const char *body);
 
-void msn_slp_sip_send_ok(struct PnPeerCall *call,
+void pn_sip_send_ok(struct PnPeerCall *call,
+                    const char *branch,
+                    const char *type,
+                    const char *content);
+
+void pn_sip_send_decline(struct PnPeerCall *call,
                          const char *branch,
                          const char *type,
                          const char *content);
 
-void msn_slp_sip_send_decline(struct PnPeerCall *call,
-                              const char *branch,
-                              const char *type,
-                              const char *content);
+void pn_sip_send_bye(struct PnPeerCall *call,
+                     const char *type);
 
-void msn_slp_sip_send_bye(struct PnPeerCall *call,
-                          const char *type);
-
-#endif /* MSN_SLP_H */
+#endif /* PN_SIP_H */

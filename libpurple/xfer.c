@@ -18,7 +18,7 @@
  */
 
 #include "xfer.h"
-#include "cvr/slp.h"
+#include "cvr/pn_sip.h"
 #include "cvr/pn_peer_call.h"
 #include "cvr/pn_peer_link.h"
 #include "cvr/slpmsg.h"
@@ -44,9 +44,9 @@ xfer_init(PurpleXfer *xfer)
     content = g_strdup_printf("SessionID: %lu\r\n\r\n",
                               call->session_id);
 
-    msn_slp_sip_send_ok(call, call->branch,
-                        "application/x-msnmsgr-sessionreqbody",
-                        content);
+    pn_sip_send_ok(call, call->branch,
+                   "application/x-msnmsgr-sessionreqbody",
+                   content);
 
     g_free(content);
     pn_peer_link_unleash(call->link);
@@ -67,9 +67,9 @@ xfer_cancel(PurpleXfer *xfer)
             content = g_strdup_printf("SessionID: %lu\r\n\r\n",
                                       call->session_id);
 
-            msn_slp_sip_send_decline(call, call->branch,
-                                     "application/x-msnmsgr-sessionreqbody",
-                                     content);
+            pn_sip_send_decline(call, call->branch,
+                                "application/x-msnmsgr-sessionreqbody",
+                                content);
 
             g_free(content);
             pn_peer_link_unleash(call->link);

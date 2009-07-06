@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "slp.h"
+#include "pn_sip.h"
 #include "pn_peer_link.h"
 #include "pn_peer_call.h"
 #include "slpmsg.h"
@@ -106,10 +106,10 @@ got_transresp(PnPeerCall *call,
 #endif /* MSN_DIRECTCONN */
 
 void
-msn_slp_sip_send_ok(PnPeerCall *call,
-                    const char *branch,
-                    const char *type,
-                    const char *content)
+pn_sip_send_ok(PnPeerCall *call,
+               const char *branch,
+               const char *type,
+               const char *content)
 {
     PnPeerLink *link;
     MsnSlpMessage *slpmsg;
@@ -132,10 +132,10 @@ msn_slp_sip_send_ok(PnPeerCall *call,
 }
 
 void
-msn_slp_sip_send_decline(PnPeerCall *call,
-                         const char *branch,
-                         const char *type,
-                         const char *content)
+pn_sip_send_decline(PnPeerCall *call,
+                    const char *branch,
+                    const char *type,
+                    const char *content)
 {
     PnPeerLink *link;
     MsnSlpMessage *slpmsg;
@@ -180,9 +180,9 @@ got_sessionreq(PnPeerCall *call,
         content = g_strdup_printf("SessionID: %lu\r\n\r\n",
                                   call->session_id);
 
-        msn_slp_sip_send_ok(call, branch,
-                            "application/x-msnmsgr-sessionreqbody",
-                            content);
+        pn_sip_send_ok(call, branch,
+                       "application/x-msnmsgr-sessionreqbody",
+                       content);
 
         g_free(content);
 
@@ -262,8 +262,8 @@ got_sessionreq(PnPeerCall *call,
 }
 
 void
-msn_slp_sip_send_bye(PnPeerCall *call,
-                     const char *type)
+pn_sip_send_bye(PnPeerCall *call,
+                const char *type)
 {
     PnPeerLink *link;
     MsnSlpMessage *slpmsg;
@@ -374,9 +374,9 @@ got_invite(PnPeerCall *call,
                                           nonce);
         }
 
-        msn_slp_sip_send_ok(call, branch,
-                            "application/x-msnmsgr-transrespbody",
-                            new_content);
+        pn_sip_send_ok(call, branch,
+                       "application/x-msnmsgr-transrespbody",
+                       new_content);
 
         g_free(new_content);
         g_free(nonce);
@@ -504,8 +504,8 @@ got_ok(PnPeerCall *call,
 }
 
 void
-msn_slp_sip_recv(PnPeerLink *link,
-                 const char *body)
+pn_sip_recv(PnPeerLink *link,
+            const char *body)
 {
     PnPeerCall *call;
 

@@ -19,7 +19,7 @@
 
 #include "pn_peer_call.h"
 
-#include "slp.h"
+#include "pn_sip.h"
 #include "pn_peer_link.h"
 #include "slpmsg.h"
 #include "session.h"
@@ -214,7 +214,7 @@ pn_peer_call_invite(PnPeerCall *call,
 void
 pn_peer_call_close(PnPeerCall *call)
 {
-    msn_slp_sip_send_bye(call, "application/x-msnmsgr-sessionclosebody");
+    pn_sip_send_bye(call, "application/x-msnmsgr-sessionclosebody");
     pn_peer_link_unleash(call->link);
     pn_peer_call_unref(call);
 }
