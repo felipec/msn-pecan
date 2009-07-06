@@ -22,23 +22,23 @@
 
 #include <glib.h>
 
-struct MsnSlpCall;
+struct PnPeerCall;
 struct PnPeerLink;
 
-struct MsnSlpCall *msn_slp_sip_recv(struct PnPeerLink *link,
-                                    const char *body);
+struct PnPeerCall *msn_slp_sip_recv(struct PnPeerLink *link,
+                                   const char *body);
 
-void msn_slp_sip_send_ok(struct MsnSlpCall *slpcall,
+void msn_slp_sip_send_ok(struct PnPeerCall *call,
                          const char *branch,
                          const char *type,
                          const char *content);
 
-void msn_slp_sip_send_decline(struct MsnSlpCall *slpcall,
+void msn_slp_sip_send_decline(struct PnPeerCall *call,
                               const char *branch,
                               const char *type,
                               const char *content);
 
-void msn_slp_sip_send_bye(struct MsnSlpCall *slpcall,
+void msn_slp_sip_send_bye(struct PnPeerCall *call,
                           const char *type);
 
 #endif /* MSN_SLP_H */

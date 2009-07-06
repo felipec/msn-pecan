@@ -19,7 +19,7 @@
 #include "pn_dp_manager.h"
 #include "pn_log.h"
 
-#include "cvr/slpcall.h"
+#include "cvr/pn_peer_call.h"
 #include "cvr/pn_peer_link.h"
 
 #include "session_private.h"
@@ -77,28 +77,28 @@ queue (PnDpManager *dpm,
 }
 
 static void
-dp_ok (MsnSlpCall *slpcall,
+dp_ok (PnPeerCall *call,
        const guchar *data,
        gsize size)
 {
     const char *info;
 
-    info = slpcall->data_info;
-    pn_info ("passport=[%s]", slpcall->link->remote_user);
+    info = call->data_info;
+    pn_info ("passport=[%s]", call->link->remote_user);
 
 #ifdef HAVE_LIBPURPLE
     {
         PurpleAccount *account;
-        account = msn_session_get_user_data (slpcall->link->session);
+        account = msn_session_get_user_data (call->link->session);
 
-        purple_buddy_icons_set_for_user (account, slpcall->link->remote_user,
+        purple_buddy_icons_set_for_user (account, call->link->remote_user,
                                          g_memdup (data, size), size, info);
     }
 #endif /* HAVE_LIBPURPLE */
 }
 
 static void
-dp_fail (MsnSlpCall *slpcall,
+dp_fail (PnPeerCall *call,
          MsnSession *session)
 {
     const gchar *passport;
@@ -106,7 +106,7 @@ dp_fail (MsnSlpCall *slpcall,
 
     pn_warning ("unknown error");
 
-    passport = slpcall->link->remote_user;
+    passport = call->link->remote_user;
 
     contact = pn_contactlist_find_contact (session->contactlist, passport);
 

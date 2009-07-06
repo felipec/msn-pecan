@@ -19,7 +19,7 @@
 
 #include "xfer.h"
 #include "slp.h"
-#include "slpcall.h"
+#include "pn_peer_call.h"
 #include "pn_peer_link.h"
 #include "slpmsg.h"
 #include "session.h"
@@ -33,61 +33,61 @@
 static void
 xfer_init(PurpleXfer *xfer)
 {
-    MsnSlpCall *slpcall;
+    PnPeerCall *call;
     char *content;
 
     pn_info("xfer_init");
 
-    slpcall = xfer->data;
+    call = xfer->data;
 
     /* Send Ok */
     content = g_strdup_printf("SessionID: %lu\r\n\r\n",
-                              slpcall->session_id);
+                              call->session_id);
 
-    msn_slp_sip_send_ok(slpcall, slpcall->branch,
+    msn_slp_sip_send_ok(call, call->branch,
                         "application/x-msnmsgr-sessionreqbody",
                         content);
 
     g_free(content);
-    pn_peer_link_unleash(slpcall->link);
+    pn_peer_link_unleash(call->link);
 }
 
 static void
 xfer_cancel(PurpleXfer *xfer)
 {
-    MsnSlpCall *slpcall;
+    PnPeerCall *call;
     char *content;
 
-    slpcall = xfer->data;
+    call = xfer->data;
 
     if (purple_xfer_get_status(xfer) == PURPLE_XFER_STATUS_CANCEL_LOCAL) {
-        if (slpcall->started)
-            msn_slp_call_close(slpcall);
+        if (call->started)
+            pn_peer_call_close(call);
         else {
             content = g_strdup_printf("SessionID: %lu\r\n\r\n",
-                                      slpcall->session_id);
+                                      call->session_id);
 
-            msn_slp_sip_send_decline(slpcall, slpcall->branch,
+            msn_slp_sip_send_decline(call, call->branch,
                                      "application/x-msnmsgr-sessionreqbody",
                                      content);
 
             g_free(content);
-            pn_peer_link_unleash(slpcall->link);
+            pn_peer_link_unleash(call->link);
 
-            msn_slp_call_destroy(slpcall);
+            pn_peer_call_destroy(call);
         }
     }
 }
 
 static void
-xfer_progress_cb(MsnSlpCall *slpcall,
+xfer_progress_cb(PnPeerCall *call,
                  gsize total_length,
                  gsize len,
                  gsize offset)
 {
     PurpleXfer *xfer;
 
-    xfer = slpcall->xfer;
+    xfer = call->xfer;
 
     xfer->bytes_sent = (offset + len);
     xfer->bytes_remaining = total_length - (offset + len);
@@ -96,48 +96,48 @@ xfer_progress_cb(MsnSlpCall *slpcall,
 }
 
 static void
-xfer_end_cb(MsnSlpCall *slpcall,
+xfer_end_cb(PnPeerCall *call,
             MsnSession *session)
 {
-    if ((purple_xfer_get_status(slpcall->xfer) != PURPLE_XFER_STATUS_DONE) &&
-        (purple_xfer_get_status(slpcall->xfer) != PURPLE_XFER_STATUS_CANCEL_REMOTE) &&
-        (purple_xfer_get_status(slpcall->xfer) != PURPLE_XFER_STATUS_CANCEL_LOCAL))
+    if ((purple_xfer_get_status(call->xfer) != PURPLE_XFER_STATUS_DONE) &&
+        (purple_xfer_get_status(call->xfer) != PURPLE_XFER_STATUS_CANCEL_REMOTE) &&
+        (purple_xfer_get_status(call->xfer) != PURPLE_XFER_STATUS_CANCEL_LOCAL))
     {
-        purple_xfer_cancel_remote(slpcall->xfer);
+        purple_xfer_cancel_remote(call->xfer);
     }
 }
 
 static void
-xfer_completed_cb(MsnSlpCall *slpcall,
+xfer_completed_cb(PnPeerCall *call,
                   const guchar *body,
                   gsize size)
 {
-    PurpleXfer *xfer = slpcall->xfer;
+    PurpleXfer *xfer = call->xfer;
     purple_xfer_set_completed(xfer, TRUE);
     purple_xfer_end(xfer);
 }
 
 static void
-send_file_cb(MsnSlpCall *slpcall)
+send_file_cb(PnPeerCall *call)
 {
     MsnSlpMessage *slpmsg;
     struct stat st;
     PurpleXfer *xfer;
 
-    slpmsg = msn_slpmsg_new(slpcall->link);
-    slpmsg->slpcall = slpcall;
+    slpmsg = msn_slpmsg_new(call->link);
+    slpmsg->call = call;
     slpmsg->flags = 0x1000030;
 #ifdef PECAN_DEBUG_SLP
     slpmsg->info = "SLP FILE";
 #endif
-    xfer = (PurpleXfer *) slpcal->xfer;
-    purple_xfer_start(slpcal->xfer, 0, NULL, 0);
+    xfer = (PurpleXfer *) call->xfer;
+    purple_xfer_start(call->xfer, 0, NULL, 0);
     slpmsg->fp = xfer->dest_fp;
     if (g_stat(purple_xfer_get_local_filename(xfer), &st) == 0)
         slpmsg->size = st.st_size;
     xfer->dest_fp = NULL; /* Disable double fclose() */
 
-    pn_peer_link_send_slpmsg(slpcall->link, slpmsg);
+    pn_peer_link_send_slpmsg(call->link, slpmsg);
 }
 
 typedef struct
@@ -216,7 +216,7 @@ void
 msn_xfer_invite(PurpleXfer *xfer)
 {
     PnPeerLink *link;
-    MsnSlpCall *slpcall;
+    PnPeerCall *call;
     char *context;
     const char *fn;
     const char *fp;
@@ -225,32 +225,32 @@ msn_xfer_invite(PurpleXfer *xfer)
     fp = purple_xfer_get_local_filename(xfer);
 
     link = xfer->data;
-    slpcall = msn_slp_call_new(link);
-    msn_slp_call_init(slpcall, MSN_SLPCALL_DC);
+    call = pn_peer_call_new(link);
+    pn_peer_call_init(call, PN_PEER_CALL_DC);
 
-    slpcall->init_cb = send_file_cb;
-    slpcall->end_cb = xfer_end_cb;
-    slpcall->progress_cb = xfer_progress_cb;
-    slpcall->cb = xfer_completed_cb;
-    slpcall->xfer = xfer;
-    purple_xfer_ref(slpcall->xfer);
+    call->init_cb = send_file_cb;
+    call->end_cb = xfer_end_cb;
+    call->progress_cb = xfer_progress_cb;
+    call->cb = xfer_completed_cb;
+    call->xfer = xfer;
+    purple_xfer_ref(call->xfer);
 
-    slpcall->pending = TRUE;
+    call->pending = TRUE;
 
     purple_xfer_set_cancel_send_fnc(xfer, xfer_cancel);
 
-    xfer->data = slpcall;
+    xfer->data = call;
 
     context = gen_context(fn, fp);
 
-    msn_slp_call_invite(slpcall, "5D3E02AB-6190-11D3-BBBB-00C04F795683", 2,
+    pn_peer_call_invite(call, "5D3E02AB-6190-11D3-BBBB-00C04F795683", 2,
                         context);
 
     g_free(context);
 }
 
 void
-msn_xfer_got_invite(MsnSlpCall *slpcall,
+msn_xfer_got_invite(PnPeerCall *call,
                     const char *branch,
                     const char *context)
 {
@@ -262,17 +262,17 @@ msn_xfer_got_invite(MsnSlpCall *slpcall,
     char *file_name;
     gunichar2 *uni_name;
 
-    account = msn_session_get_user_data (slpcall->link->session);
+    account = msn_session_get_user_data (call->link->session);
 
-    slpcall->cb = xfer_completed_cb;
-    slpcall->end_cb = xfer_end_cb;
-    slpcall->progress_cb = xfer_progress_cb;
-    slpcall->branch = g_strdup(branch);
+    call->cb = xfer_completed_cb;
+    call->end_cb = xfer_end_cb;
+    call->progress_cb = xfer_progress_cb;
+    call->branch = g_strdup(branch);
 
-    slpcall->pending = TRUE;
+    call->pending = TRUE;
 
     xfer = purple_xfer_new(account, PURPLE_XFER_RECEIVE,
-                           slpcall->link->remote_user);
+                           call->link->remote_user);
     if (xfer)
     {
         bin = (char *)purple_base64_decode(context, &bin_len);
@@ -295,10 +295,10 @@ msn_xfer_got_invite(MsnSlpCall *slpcall,
         purple_xfer_set_request_denied_fnc(xfer, xfer_cancel);
         purple_xfer_set_cancel_recv_fnc(xfer, xfer_cancel);
 
-        slpcall->xfer = xfer;
-        purple_xfer_ref(slpcall->xfer);
+        call->xfer = xfer;
+        purple_xfer_ref(call->xfer);
 
-        xfer->data = slpcall;
+        xfer->data = call;
 
         purple_xfer_request(xfer);
     }

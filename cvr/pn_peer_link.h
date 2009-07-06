@@ -33,11 +33,11 @@ struct _PurpleXfer;
 
 #include <glib.h>
 
-#include "slpcall.h"
+#include "pn_peer_call.h"
 #include "cvr/pn_msnobj.h"
 
-typedef void (*MsnSlpCb) (MsnSlpCall *slpcall, const guchar *data, gsize size);
-typedef void (*MsnSlpEndCb) (MsnSlpCall *slpcall, struct MsnSession *session);
+typedef void (*MsnSlpCb) (PnPeerCall *call, const guchar *data, gsize size);
+typedef void (*MsnSlpEndCb) (PnPeerCall *call, struct MsnSession *session);
 
 struct PnPeerLink
 {
@@ -64,11 +64,11 @@ void pn_peer_link_free(PnPeerLink *link);
 PnPeerLink *pn_peer_link_ref(PnPeerLink *link);
 PnPeerLink *pn_peer_link_unref(PnPeerLink *link);
 
-void pn_peer_link_add_slpcall(PnPeerLink *link,
-                              MsnSlpCall *slpcall);
-void pn_peer_link_remove_slpcall(PnPeerLink *link,
-                                 MsnSlpCall *slpcall);
-MsnSlpCall *pn_peer_link_find_slp_call(PnPeerLink *link,
+void pn_peer_link_add_call(PnPeerLink *link,
+                           PnPeerCall *call);
+void pn_peer_link_remove_call(PnPeerLink *link,
+                              PnPeerCall *call);
+PnPeerCall *pn_peer_link_find_slp_call(PnPeerLink *link,
                                        const char *id);
 void pn_peer_link_queue_slpmsg(PnPeerLink *link,
                                struct MsnSlpMessage *slpmsg);

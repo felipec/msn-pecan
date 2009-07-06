@@ -20,11 +20,11 @@
 #ifndef MSN_XFER_H
 #define MSN_XFER_H
 
-struct MsnSlpCall;
+struct PnPeerCall;
 struct _PurpleXfer;
 
 void msn_xfer_invite(struct _PurpleXfer *xfer);
-void msn_xfer_got_invite(struct MsnSlpCall *slpcall,
+void msn_xfer_got_invite(struct PnPeerCall *call,
                          const char *branch,
                          const char *context);
 

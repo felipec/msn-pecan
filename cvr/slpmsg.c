@@ -20,7 +20,7 @@
 #include "slpmsg.h"
 #include "pn_peer_link.h"
 
-#include "slpcall.h"
+#include "pn_peer_call.h"
 #include "session.h"
 
 #include "cmd/msg_private.h"
@@ -153,7 +153,7 @@ msn_slpmsg_show(MsnMessage *msg)
 #endif
 
 MsnSlpMessage *
-msn_slpmsg_sip_new(MsnSlpCall *slpcall,
+msn_slpmsg_sip_new(PnPeerCall *call,
                    int cseq,
                    const char *header,
                    const char *branch,
@@ -166,7 +166,7 @@ msn_slpmsg_sip_new(MsnSlpCall *slpcall,
     gsize body_len;
     gsize content_len;
 
-    link = slpcall->link;
+    link = call->link;
 
     /* Let's remember that "content" should end with a 0x00 */
 
@@ -187,7 +187,7 @@ msn_slpmsg_sip_new(MsnSlpCall *slpcall,
                            link->local_user,
                            branch,
                            cseq,
-                           slpcall->id,
+                           call->id,
                            content_type,
                            content_len);
 
@@ -203,7 +203,7 @@ msn_slpmsg_sip_new(MsnSlpCall *slpcall,
     msn_slpmsg_set_body(slpmsg, (gpointer) body, body_len);
 
     slpmsg->sip = TRUE;
-    slpmsg->slpcall = slpcall;
+    slpmsg->call = call;
 
     g_free(body);
 

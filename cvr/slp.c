@@ -19,7 +19,7 @@
 
 #include "slp.h"
 #include "pn_peer_link.h"
-#include "slpcall.h"
+#include "pn_peer_call.h"
 #include "slpmsg.h"
 #include "pn_log.h"
 #include "io/pn_buffer.h"
@@ -78,7 +78,7 @@ get_token(const char *str,
 
 #ifdef MSN_DIRECTCONN
 static void
-got_transresp(MsnSlpCall *slpcall,
+got_transresp(PnPeerCall *call,
               const char *nonce,
               const char *ips_str,
               int port)
@@ -86,9 +86,9 @@ got_transresp(MsnSlpCall *slpcall,
     MsnDirectConn *directconn;
     char **ip_addrs, **c;
 
-    directconn = msn_directconn_new(slpcall->link);
+    directconn = msn_directconn_new(call->link);
 
-    directconn->initial_call = slpcall;
+    directconn->initial_call = call;
 
     /* msn_directconn_parse_nonce(directconn, nonce); */
     directconn->nonce = g_strdup(nonce);
@@ -106,7 +106,7 @@ got_transresp(MsnSlpCall *slpcall,
 #endif /* MSN_DIRECTCONN */
 
 void
-msn_slp_sip_send_ok(MsnSlpCall *slpcall,
+msn_slp_sip_send_ok(PnPeerCall *call,
                     const char *branch,
                     const char *type,
                     const char *content)
@@ -114,10 +114,10 @@ msn_slp_sip_send_ok(MsnSlpCall *slpcall,
     PnPeerLink *link;
     MsnSlpMessage *slpmsg;
 
-    link = slpcall->link;
+    link = call->link;
 
     /* 200 OK */
-    slpmsg = msn_slpmsg_sip_new(slpcall, 1,
+    slpmsg = msn_slpmsg_sip_new(call, 1,
                                 "MSNSLP/1.0 200 OK",
                                 branch, type, content);
 
@@ -128,11 +128,11 @@ msn_slp_sip_send_ok(MsnSlpCall *slpcall,
 
     pn_peer_link_queue_slpmsg(link, slpmsg);
 
-    msn_slp_call_session_init(slpcall);
+    pn_peer_call_session_init(call);
 }
 
 void
-msn_slp_sip_send_decline(MsnSlpCall *slpcall,
+msn_slp_sip_send_decline(PnPeerCall *call,
                          const char *branch,
                          const char *type,
                          const char *content)
@@ -140,10 +140,10 @@ msn_slp_sip_send_decline(MsnSlpCall *slpcall,
     PnPeerLink *link;
     MsnSlpMessage *slpmsg;
 
-    link = slpcall->link;
+    link = call->link;
 
     /* 603 Decline */
-    slpmsg = msn_slpmsg_sip_new(slpcall, 1,
+    slpmsg = msn_slpmsg_sip_new(call, 1,
                                 "MSNSLP/1.0 603 Decline",
                                 branch, type, content);
 
@@ -158,7 +158,7 @@ msn_slp_sip_send_decline(MsnSlpCall *slpcall,
 #define MAX_FILE_NAME_LEN 0x226
 
 static void
-got_sessionreq(MsnSlpCall *slpcall,
+got_sessionreq(PnPeerCall *call,
                const char *branch,
                const char *euf_guid,
                const char *context)
@@ -178,15 +178,15 @@ got_sessionreq(MsnSlpCall *slpcall,
 
         /* Send Ok */
         content = g_strdup_printf("SessionID: %lu\r\n\r\n",
-                                  slpcall->session_id);
+                                  call->session_id);
 
-        msn_slp_sip_send_ok(slpcall, branch,
+        msn_slp_sip_send_ok(call, branch,
                             "application/x-msnmsgr-sessionreqbody",
                             content);
 
         g_free(content);
 
-        link = slpcall->link;
+        link = call->link;
 
         msnobj_data = (char *) purple_base64_decode(context, &len);
         obj = pn_msnobj_new_from_string(msnobj_data);
@@ -239,8 +239,8 @@ got_sessionreq(MsnSlpCall *slpcall,
 
         /* DATA PREP */
         slpmsg = msn_slpmsg_new(link);
-        slpmsg->slpcall = slpcall;
-        slpmsg->session_id = slpcall->session_id;
+        slpmsg->call = call;
+        slpmsg->session_id = call->session_id;
         msn_slpmsg_set_body(slpmsg, NULL, 4);
 #ifdef PECAN_DEBUG_SLP
         slpmsg->info = "SLP DATA PREP";
@@ -249,7 +249,7 @@ got_sessionreq(MsnSlpCall *slpcall,
 
         /* DATA */
         slpmsg = msn_slpmsg_new(link);
-        slpmsg->slpcall = slpcall;
+        slpmsg->call = call;
         slpmsg->flags = 0x20;
 #ifdef PECAN_DEBUG_SLP
         slpmsg->info = "SLP DATA";
@@ -258,23 +258,23 @@ got_sessionreq(MsnSlpCall *slpcall,
         pn_peer_link_queue_slpmsg(link, slpmsg);
     }
     else if (strcmp(euf_guid, "5D3E02AB-6190-11D3-BBBB-00C04F795683") == 0)
-        msn_xfer_got_invite(slpcall, branch, context);
+        msn_xfer_got_invite(call, branch, context);
 }
 
 void
-msn_slp_sip_send_bye(MsnSlpCall *slpcall,
+msn_slp_sip_send_bye(PnPeerCall *call,
                      const char *type)
 {
     PnPeerLink *link;
     MsnSlpMessage *slpmsg;
     char *header;
 
-    link = slpcall->link;
+    link = call->link;
 
     header = g_strdup_printf("BYE MSNMSGR:%s MSNSLP/1.0",
                              link->local_user);
 
-    slpmsg = msn_slpmsg_sip_new(slpcall, 0, header,
+    slpmsg = msn_slpmsg_sip_new(call, 0, header,
                                 "A0D624A6-6C0C-4283-A9E0-BC97B4B46D32",
                                 type,
                                 "\r\n");
@@ -289,14 +289,14 @@ msn_slp_sip_send_bye(MsnSlpCall *slpcall,
 }
 
 static void
-got_invite(MsnSlpCall *slpcall,
+got_invite(PnPeerCall *call,
            const char *branch,
            const char *type,
            const char *content)
 {
     PnPeerLink *link;
 
-    link = slpcall->link;
+    link = call->link;
 
     pn_log("type=%s", type);
 
@@ -308,18 +308,18 @@ got_invite(MsnSlpCall *slpcall,
 
         temp = get_token(content, "SessionID: ", "\r\n");
         if (temp)
-            slpcall->session_id = atoi(temp);
+            call->session_id = atoi(temp);
         g_free(temp);
 
         temp = get_token(content, "AppID: ", "\r\n");
         if (temp)
-            slpcall->app_id = atoi(temp);
+            call->app_id = atoi(temp);
         g_free(temp);
 
         context = get_token(content, "Context: ", "\r\n");
 
         if (context)
-            got_sessionreq(slpcall, branch, euf_guid, context);
+            got_sessionreq(call, branch, euf_guid, context);
 
         g_free(context);
         g_free(euf_guid);
@@ -374,7 +374,7 @@ got_invite(MsnSlpCall *slpcall,
                                           nonce);
         }
 
-        msn_slp_sip_send_ok(slpcall, branch,
+        msn_slp_sip_send_ok(call, branch,
                             "application/x-msnmsgr-transrespbody",
                             new_content);
 
@@ -399,7 +399,7 @@ got_invite(MsnSlpCall *slpcall,
             return;
 
         if (port > 0)
-            got_transresp(slpcall, nonce, ip_addrs, port);
+            got_transresp(call, nonce, ip_addrs, port);
 
         g_free(nonce);
         g_free(ip_addrs);
@@ -408,7 +408,7 @@ got_invite(MsnSlpCall *slpcall,
 }
 
 static void
-got_ok(MsnSlpCall *slpcall,
+got_ok(PnPeerCall *call,
        const char *type,
        const char *content)
 {
@@ -416,8 +416,8 @@ got_ok(MsnSlpCall *slpcall,
 
     if (strcmp(type, "application/x-msnmsgr-sessionreqbody") == 0) {
 #ifdef MSN_DIRECTCONN
-        if (slpcall->link->session->use_directconn &&
-            slpcall->type == MSN_SLPCALL_DC)
+        if (call->link->session->use_directconn &&
+            call->type == PN_PEER_CALL_DC)
         {
             /* First let's try a DirectConnection. */
 
@@ -427,7 +427,7 @@ got_ok(MsnSlpCall *slpcall,
             gchar *new_content;
             char *branch;
 
-            link = slpcall->link;
+            link = call->link;
 
             branch = msn_rand_guid();
 
@@ -440,7 +440,7 @@ got_ok(MsnSlpCall *slpcall,
             header = g_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
                                      link->remote_user);
 
-            slpmsg = msn_slpmsg_sip_new(slpcall, 0, header, branch,
+            slpmsg = msn_slpmsg_sip_new(call, 0, header, branch,
                                         "application/x-msnmsgr-transreqbody",
                                         new_content);
 
@@ -456,9 +456,9 @@ got_ok(MsnSlpCall *slpcall,
             g_free(branch);
         }
         else
-            msn_slp_call_session_init(slpcall);
+            pn_peer_call_session_init(call);
 #else
-        msn_slp_call_session_init(slpcall);
+        pn_peer_call_session_init(call);
 #endif /* MSN_DIRECTCONN */
     }
     else if (strcmp(type, "application/x-msnmsgr-transreqbody") == 0) {
@@ -477,7 +477,7 @@ got_ok(MsnSlpCall *slpcall,
             listening = get_token(content, "Listening: ", "\r\n");
             if (strcmp(listening, "false") == 0) {
                 /** @todo I'm not sure if this is OK. */
-                msn_slp_call_session_init(slpcall);
+                pn_peer_call_session_init(call);
                 g_free(listening);
                 return;
             }
@@ -495,7 +495,7 @@ got_ok(MsnSlpCall *slpcall,
             return;
 
         if (port > 0)
-            got_transresp(slpcall, nonce, ip_addrs, port);
+            got_transresp(call, nonce, ip_addrs, port);
 
         g_free(nonce);
         g_free(ip_addrs);
@@ -503,11 +503,11 @@ got_ok(MsnSlpCall *slpcall,
 #endif /* MSN_DIRECTCONN */
 }
 
-MsnSlpCall *
+PnPeerCall *
 msn_slp_sip_recv(PnPeerLink *link,
                  const char *body)
 {
-    MsnSlpCall *slpcall;
+    PnPeerCall *call;
 
     if (!body) {
         pn_warning("received bogus message");
@@ -519,16 +519,16 @@ msn_slp_sip_recv(PnPeerLink *link,
         char *content;
         char *content_type;
 
-        slpcall = msn_slp_call_new(link);
+        call = pn_peer_call_new(link);
 
         /* From: <msnmsgr:buddy@hotmail.com> */
 #if 0
-        slpcall->remote_user = get_token(body, "From: <msnmsgr:", ">\r\n");
+        call->remote_user = get_token(body, "From: <msnmsgr:", ">\r\n");
 #endif
 
         branch = get_token(body, ";branch={", "}");
 
-        slpcall->id = get_token(body, "Call-ID: {", "}");
+        call->id = get_token(body, "Call-ID: {", "}");
 
 #if 0
         long content_len = -1;
@@ -542,7 +542,7 @@ msn_slp_sip_recv(PnPeerLink *link,
 
         content = get_token(body, "\r\n\r\n", NULL);
 
-        got_invite(slpcall, branch, content_type, content);
+        got_invite(call, branch, content_type, content);
 
         g_free(branch);
         g_free(content_type);
@@ -556,10 +556,10 @@ msn_slp_sip_recv(PnPeerLink *link,
         char *call_id;
 
         call_id = get_token(body, "Call-ID: {", "}");
-        slpcall = pn_peer_link_find_slp_call(link, call_id);
+        call = pn_peer_link_find_slp_call(link, call_id);
         g_free(call_id);
 
-        g_return_val_if_fail(slpcall, NULL);
+        g_return_val_if_fail(call != NULL, NULL);
 
         if (strncmp(status, "200 OK", 6) != 0) {
             /* It's not valid. Kill this off. */
@@ -581,17 +581,17 @@ msn_slp_sip_recv(PnPeerLink *link,
 
             pn_warning("received non-OK result: %s", temp);
 
-            slpcall->wasted = TRUE;
+            call->wasted = TRUE;
 
-            /* msn_slp_call_destroy(slpcall); */
-            return slpcall;
+            /* pn_peer_call_destroy(call); */
+            return call;
         }
 
         content_type = get_token(body, "Content-Type: ", "\r\n");
 
         content = get_token(body, "\r\n\r\n", NULL);
 
-        got_ok(slpcall, content_type, content);
+        got_ok(call, content_type, content);
 
         g_free(content_type);
         g_free(content);
@@ -600,18 +600,18 @@ msn_slp_sip_recv(PnPeerLink *link,
         char *call_id;
 
         call_id = get_token(body, "Call-ID: {", "}");
-        slpcall = pn_peer_link_find_slp_call(link, call_id);
+        call = pn_peer_link_find_slp_call(link, call_id);
         g_free(call_id);
 
-        if (slpcall)
-            slpcall->wasted = TRUE;
+        if (call)
+            call->wasted = TRUE;
 
-        /* msn_slp_call_destroy(slpcall); */
+        /* pn_peer_call_destroy(call); */
     }
     else
-        slpcall = NULL;
+        call = NULL;
 
-    return slpcall;
+    return call;
 }
 
 void
@@ -628,7 +628,7 @@ msn_p2p_msg(MsnCmdProc *cmdproc,
 }
 
 static void
-got_emoticon(MsnSlpCall *slpcall,
+got_emoticon(PnPeerCall *call,
              const guchar *data,
              gsize size)
 {
@@ -636,7 +636,7 @@ got_emoticon(MsnSlpCall *slpcall,
     PurpleConversation *conv;
     MsnSwitchBoard *swboard;
 
-    swboard = slpcall->link->swboard;
+    swboard = call->link->swboard;
     conv = swboard->conv;
 
     if (conv) {
@@ -644,11 +644,11 @@ got_emoticon(MsnSlpCall *slpcall,
            instead of all at once, calling write multiple times and
            close once at the very end
            */
-        purple_conv_custom_smiley_write(conv, slpcall->data_info, data, size);
-        purple_conv_custom_smiley_close(conv, slpcall->data_info);
+        purple_conv_custom_smiley_write(conv, call->data_info, data, size);
+        purple_conv_custom_smiley_close(conv, call->data_info);
     }
 
-    pn_debug("got smiley: %s", slpcall->data_info);
+    pn_debug("got smiley: %s", call->data_info);
 }
 
 void

@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef MSN_SLPCALL_H
-#define MSN_SLPCALL_H
+#ifndef PN_PEER_CALL_H
+#define PN_PEER_CALL_H
 
-typedef struct MsnSlpCall MsnSlpCall;
+typedef struct PnPeerCall PnPeerCall;
 
 struct MsnSession;
 struct PnPeerLink;
@@ -28,13 +28,13 @@ struct PnPeerLink;
 #include <glib.h>
 
 typedef enum {
-    MSN_SLPCALL_ANY,
-    MSN_SLPCALL_DC,
-} MsnSlpCallType;
+    PN_PEER_CALL_ANY,
+    PN_PEER_CALL_DC,
+} PnPeerCallType;
 
-struct MsnSlpCall
+struct PnPeerCall
 {
-    MsnSlpCallType type;
+    PnPeerCallType type;
 
     char *id;
     char *branch;
@@ -43,41 +43,41 @@ struct MsnSlpCall
     long app_id;
 
     gboolean pending; /**< A flag that states if we should wait for this
-                        slpcall to start and do not time out. */
+                        call to start and do not time out. */
     gboolean progress; /**< A flag that states if there has been progress since
                          the last time out. */
-    gboolean wasted; /**< A flag that states if this slpcall is going to be
+    gboolean wasted; /**< A flag that states if this call is going to be
                        destroyed. */
-    gboolean started; /**< A flag that states if this slpcall's session has
+    gboolean started; /**< A flag that states if this call's session has
                         been initiated. */
 
-    void (*progress_cb)(MsnSlpCall *slpcall,
+    void (*progress_cb)(PnPeerCall *call,
                         gsize total_length, gsize len, gsize offset);
-    void (*init_cb)(MsnSlpCall *slpcall);
+    void (*init_cb)(PnPeerCall *call);
 
     /* Can be checksum, or smile */
     char *data_info;
 
     void *xfer;
 
-    void (*cb)(MsnSlpCall *slpcall, const guchar *data, gsize size);
-    void (*end_cb)(MsnSlpCall *slpcall, struct MsnSession *session);
+    void (*cb)(PnPeerCall *call, const guchar *data, gsize size);
+    void (*end_cb)(PnPeerCall *call, struct MsnSession *session);
 
     int timer;
 
     struct PnPeerLink *link;
 };
 
-MsnSlpCall *msn_slp_call_new(struct PnPeerLink *link);
-void msn_slp_call_init(MsnSlpCall *slpcall,
-                       MsnSlpCallType type);
-void msn_slp_call_session_init(MsnSlpCall *slpcall);
-void msn_slp_call_destroy(MsnSlpCall *slpcall);
-void msn_slp_call_invite(MsnSlpCall *slpcall,
+PnPeerCall *pn_peer_call_new(struct PnPeerLink *link);
+void pn_peer_call_init(PnPeerCall *call,
+                       PnPeerCallType type);
+void pn_peer_call_session_init(PnPeerCall *call);
+void pn_peer_call_destroy(PnPeerCall *call);
+void pn_peer_call_invite(PnPeerCall *call,
                          const char *euf_guid,
                          int app_id,
                          const char *context);
-void msn_slp_call_close(MsnSlpCall *slpcall);
-gboolean msn_slp_call_timeout(gpointer data);
+void pn_peer_call_close(PnPeerCall *call);
+gboolean pn_peer_call_timeout(gpointer data);
 
-#endif /* MSN_SLPCALL_H */
+#endif /* PN_PEER_CALL_H */

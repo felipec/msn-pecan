@@ -34,7 +34,7 @@ struct _PurpleProxyConnectData;
 struct MsnDirectConn
 {
     PnPeerLink *link;
-    MsnSlpCall *initial_call;
+    PnPeerCall *initial_call;
 
     gboolean ack_sent;
     gboolean ack_recv;

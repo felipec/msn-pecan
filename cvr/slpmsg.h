@@ -23,7 +23,7 @@
 typedef struct MsnSlpMessage MsnSlpMessage;
 
 struct MsnSlpSesison;
-struct MsnSlpCall;
+struct PnPeerCall;
 struct PnPeerLink;
 struct MsnSession;
 struct MsnMessage;
@@ -39,7 +39,7 @@ struct MsnMessage;
  */
 struct MsnSlpMessage
 {
-    struct MsnSlpCall *slpcall; /**< The slpcall to which this slp message belongs (if applicable). */
+    struct PnPeerCall *call; /**< The call to which this slp message belongs (if applicable). */
     struct PnPeerLink *link; /**< The peer link through which this slp message is being sent. */
     struct MsnSession *session;
 
@@ -91,7 +91,7 @@ void msn_slpmsg_set_image(MsnSlpMessage *slpmsg,
                           PnBuffer *image);
 void msn_slpmsg_open_file(MsnSlpMessage *slpmsg,
                           const char *file_name);
-MsnSlpMessage *msn_slpmsg_sip_new(struct MsnSlpCall *slpcall,
+MsnSlpMessage *msn_slpmsg_sip_new(struct PnPeerCall *call,
                                   int cseq,
                                   const char *header,
                                   const char *branch,

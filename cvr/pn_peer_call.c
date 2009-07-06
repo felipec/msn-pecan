@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "slpcall.h"
+#include "pn_peer_call.h"
 
 #include "slp.h"
 #include "pn_peer_link.h"
@@ -38,97 +38,97 @@
 #include <ft.h>
 
 /* The official client seems to timeout slp calls after 5 minutes */
-#define MSN_SLPCALL_TIMEOUT 300000
+#define PN_PEER_CALL_TIMEOUT 300000
 
-/* #define PECAN_DEBUG_SLPCALL */
+/* #define PECAN_DEBUG_PEER_CALL */
 
-MsnSlpCall *
-msn_slp_call_new(PnPeerLink *link)
+PnPeerCall *
+pn_peer_call_new(PnPeerLink *link)
 {
-    MsnSlpCall *slpcall;
+    PnPeerCall *call;
 
-    slpcall = g_new0(MsnSlpCall, 1);
+    call = g_new0(PnPeerCall, 1);
 
-#ifdef PECAN_DEBUG_SLPCALL
-    pn_info("slpcall=%p", slpcall);
+#ifdef PECAN_DEBUG_PEER_CALL
+    pn_info("call=%p", call);
 #endif
 
-    slpcall->link = link;
+    call->link = link;
 
     pn_peer_link_ref(link);
-    pn_peer_link_add_slpcall(link, slpcall);
+    pn_peer_link_add_call(link, call);
 
-    slpcall->timer = purple_timeout_add(MSN_SLPCALL_TIMEOUT, msn_slp_call_timeout, slpcall);
-    slpcall->session_id = link->slp_session_id++;
+    call->timer = purple_timeout_add(PN_PEER_CALL_TIMEOUT, pn_peer_call_timeout, call);
+    call->session_id = link->slp_session_id++;
 
-    return slpcall;
+    return call;
 }
 
 void
-msn_slp_call_destroy(MsnSlpCall *slpcall)
+pn_peer_call_destroy(PnPeerCall *call)
 {
     GList *e;
     MsnSession *session;
 
-    if (!slpcall)
+    if (!call)
 	    return;
 
-#ifdef PECAN_DEBUG_SLPCALL
-    pn_info("slpcall=%p", slpcall);
+#ifdef PECAN_DEBUG_PEER_CALL
+    pn_info("call=%p", call);
 #endif
 
-    if (slpcall->timer)
-        purple_timeout_remove(slpcall->timer);
+    if (call->timer)
+        purple_timeout_remove(call->timer);
 
-    g_free(slpcall->id);
-    g_free(slpcall->branch);
-    g_free(slpcall->data_info);
+    g_free(call->id);
+    g_free(call->branch);
+    g_free(call->data_info);
 
-    for (e = slpcall->link->slp_msgs; e; ){
+    for (e = call->link->slp_msgs; e; ){
         MsnSlpMessage *slpmsg = e->data;
         e = e->next;
 
-#ifdef PECAN_DEBUG_SLPCALL_VERBOSE
-        pn_info("slpmsg=%p\n", slpmsg);
+#ifdef PECAN_DEBUG_PEER_CALL_VERBOSE
+        pn_info("slpmsg=%p", slpmsg);
 #endif
 
-        if (slpmsg->slpcall == slpcall)
+        if (slpmsg->call == call)
             msn_slpmsg_destroy(slpmsg);
     }
 
-    session = slpcall->link->session;
+    session = call->link->session;
 
-    if (slpcall->end_cb)
-        slpcall->end_cb(slpcall, session);
+    if (call->end_cb)
+        call->end_cb(call, session);
 
-    pn_peer_link_remove_slpcall(slpcall->link, slpcall);
-    pn_peer_link_unref(slpcall->link);
+    pn_peer_link_remove_call(call->link, call);
+    pn_peer_link_unref(call->link);
 
-    if (slpcall->xfer)
-        purple_xfer_unref(slpcall->xfer);
+    if (call->xfer)
+        purple_xfer_unref(call->xfer);
 
-    g_free(slpcall);
+    g_free(call);
 }
 
 void
-msn_slp_call_init(MsnSlpCall *slpcall,
-                  MsnSlpCallType type)
+pn_peer_call_init(PnPeerCall *call,
+                  PnPeerCallType type)
 {
-    slpcall->id = msn_rand_guid();
-    slpcall->type = type;
+    call->id = msn_rand_guid();
+    call->type = type;
 }
 
 void
-msn_slp_call_session_init(MsnSlpCall *slpcall)
+pn_peer_call_session_init(PnPeerCall *call)
 {
-    if (slpcall->init_cb)
-        slpcall->init_cb(slpcall);
+    if (call->init_cb)
+        call->init_cb(call);
 
-    slpcall->started = TRUE;
+    call->started = TRUE;
 }
 
 void
-msn_slp_call_invite(MsnSlpCall *slpcall,
+pn_peer_call_invite(PnPeerCall *call,
                     const char *euf_guid,
                     int app_id,
                     const char *context)
@@ -138,23 +138,23 @@ msn_slp_call_invite(MsnSlpCall *slpcall,
     char *header;
     char *content;
 
-    link = slpcall->link;
+    link = call->link;
 
-    slpcall->branch = msn_rand_guid();
+    call->branch = msn_rand_guid();
 
     content = g_strdup_printf("EUF-GUID: {%s}\r\n"
                               "SessionID: %lu\r\n"
                               "AppID: %d\r\n"
                               "Context: %s\r\n\r\n",
                               euf_guid,
-                              slpcall->session_id,
+                              call->session_id,
                               app_id,
                               context);
 
     header = g_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
                              link->remote_user);
 
-    slpmsg = msn_slpmsg_sip_new(slpcall, 0, header, slpcall->branch,
+    slpmsg = msn_slpmsg_sip_new(call, 0, header, call->branch,
                                 "application/x-msnmsgr-sessionreqbody", content);
 
 #ifdef PECAN_DEBUG_SLP
@@ -169,30 +169,30 @@ msn_slp_call_invite(MsnSlpCall *slpcall,
 }
 
 void
-msn_slp_call_close(MsnSlpCall *slpcall)
+pn_peer_call_close(PnPeerCall *call)
 {
-    msn_slp_sip_send_bye(slpcall, "application/x-msnmsgr-sessionclosebody");
-    pn_peer_link_unleash(slpcall->link);
-    msn_slp_call_destroy(slpcall);
+    msn_slp_sip_send_bye(call, "application/x-msnmsgr-sessionclosebody");
+    pn_peer_link_unleash(call->link);
+    pn_peer_call_destroy(call);
 }
 
 gboolean
-msn_slp_call_timeout(gpointer data)
+pn_peer_call_timeout(gpointer data)
 {
-    MsnSlpCall *slpcall;
+    PnPeerCall *call;
 
-    slpcall = data;
+    call = data;
 
-#ifdef PECAN_DEBUG_SLPCALL
-    pn_info("slpcall=%p", slpcall);
+#ifdef PECAN_DEBUG_PEER_CALL
+    pn_info("call=%p", call);
 #endif
 
-    if (!slpcall->pending && !slpcall->progress) {
-        msn_slp_call_destroy(slpcall);
+    if (!call->pending && !call->progress) {
+        pn_peer_call_destroy(call);
         return FALSE;
     }
 
-    slpcall->progress = FALSE;
+    call->progress = FALSE;
 
     return TRUE;
 }
