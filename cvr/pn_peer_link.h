@@ -60,7 +60,7 @@ struct PnPeerLink
 
 PnPeerLink *pn_peer_link_new(struct MsnSession *session,
                              const char *username);
-void pn_peer_link_destroy(PnPeerLink *link);
+void pn_peer_link_free(PnPeerLink *link);
 PnPeerLink *pn_peer_link_ref(PnPeerLink *link);
 PnPeerLink *pn_peer_link_unref(PnPeerLink *link);
 

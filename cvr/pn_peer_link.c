@@ -76,7 +76,7 @@ pn_peer_link_new(MsnSession *session,
 }
 
 void
-pn_peer_link_destroy(PnPeerLink *link)
+pn_peer_link_free(PnPeerLink *link)
 {
     MsnSession *session;
 
@@ -121,7 +121,7 @@ pn_peer_link_unref(PnPeerLink *link)
     link->ref_count--;
 
     if (link->ref_count == 0) {
-        pn_peer_link_destroy (link);
+        pn_peer_link_free(link);
         return NULL;
     }
 
