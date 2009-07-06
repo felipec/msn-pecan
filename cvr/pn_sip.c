@@ -37,7 +37,7 @@
 #include "session_private.h"
 
 #ifdef MSN_DIRECTCONN
-#include "directconn.h"
+#include "pn_direct_conn.h"
 #endif /* MSN_DIRECTCONN */
 
 #include "pn_util.h"
@@ -83,21 +83,21 @@ got_transresp(PnPeerCall *call,
               const char *ips_str,
               int port)
 {
-    MsnDirectConn *directconn;
+    PnDirectConn *direct_conn;
     char **ip_addrs, **c;
 
-    directconn = msn_directconn_new(call->link);
+    direct_conn = pn_direct_conn_new(call->link);
 
-    directconn->initial_call = call;
+    direct_conn->initial_call = call;
 
-    /* msn_directconn_parse_nonce(directconn, nonce); */
-    directconn->nonce = g_strdup(nonce);
+    /* pn_direct_conn_parse_nonce(direct_conn, nonce); */
+    direct_conn->nonce = g_strdup(nonce);
 
     ip_addrs = g_strsplit(ips_str, " ", -1);
 
     for (c = ip_addrs; *c; c++) {
         pn_info("ip_addr = %s", *c);
-        if (msn_directconn_connect(directconn, *c, port))
+        if (pn_direct_conn_connect(direct_conn, *c, port))
             break;
     }
 
@@ -332,7 +332,7 @@ got_invite(PnPeerCall *call,
 
         if (FALSE) {
 #if 0
-            MsnDirectConn *directconn;
+            PnDirectConn *direct_conn;
             /* const char *ip_addr; */
             char *ip_port;
             int port;
@@ -342,14 +342,14 @@ got_invite(PnPeerCall *call,
             listening = "true";
             nonce = msn_rand_guid();
 
-            directconn = msn_directconn_new(link);
+            direct_conn = pn_direct_conn_new(link);
 
-            /* msn_directconn_parse_nonce(directconn, nonce); */
-            directconn->nonce = g_strdup(nonce);
+            /* pn_direct_conn_parse_nonce(direct_conn, nonce); */
+            direct_conn->nonce = g_strdup(nonce);
 
-            msn_directconn_listen(directconn);
+            pn_direct_conn_listen(direct_conn);
 
-            port = directconn->port;
+            port = direct_conn->port;
 
             new_content = g_strdup_printf("Bridge: TCPv1\r\n"
                                           "Listening: %s\r\n"
@@ -416,7 +416,7 @@ got_ok(PnPeerCall *call,
 
     if (strcmp(type, "application/x-msnmsgr-sessionreqbody") == 0) {
 #ifdef MSN_DIRECTCONN
-        if (call->link->session->use_directconn &&
+        if (call->link->session->use_direct_conn &&
             call->type == PN_PEER_CALL_DC)
         {
             /* First let's try a DirectConnection. */

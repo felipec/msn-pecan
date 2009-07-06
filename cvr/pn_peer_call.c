@@ -29,7 +29,7 @@
 #include <string.h>
 
 #ifdef MSN_DIRECTCONN
-#include "directconn.h"
+#include "pn_direct_conn.h"
 #endif /* MSN_DIRECTCONN */
 
 /* libpurple stuff. */

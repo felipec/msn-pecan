@@ -25,7 +25,7 @@ typedef struct PnPeerLink PnPeerLink;
 struct MsnSession;
 struct MsnSwitchboard;
 struct PnPeerMsg;
-struct MsnDirectConn;
+struct PnDirectConn;
 struct MsnMessage;
 struct MsnSlpSession;
 
@@ -53,7 +53,7 @@ struct PnPeerLink
     GQueue *slp_msg_queue;
     struct MsnSession *session;
     struct MsnSwitchBoard *swboard;
-    struct MsnDirectConn *directconn;
+    struct PnDirectConn *direct_conn;
 
     unsigned int ref_count;
 };

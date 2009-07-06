@@ -117,7 +117,7 @@ ifdef SOCKET
 endif
 
 ifdef DIRECTCONN
-  objects += directconn.o
+  objects += cvr/pn_direct_conn.o
   override CFLAGS += -DMSN_DIRECTCONN
 endif
 

@@ -31,7 +31,7 @@
 #include "session_private.h"
 
 #ifdef MSN_DIRECTCONN
-#include "directconn.h"
+#include "pn_direct_conn.h"
 #endif /* MSN_DIRECTCONN */
 
 #include "cmd/msg_private.h"
@@ -92,8 +92,8 @@ pn_peer_link_free(PnPeerLink *link)
         pn_peer_call_unref(link->slp_calls->data);
 
 #ifdef MSN_DIRECTCONN
-    if (link->directconn)
-        msn_directconn_destroy(link->directconn);
+    if (link->direct_conn)
+        pn_direct_conn_destroy(link->direct_conn);
 #endif /* MSN_DIRECTCONN */
 
     g_free(link->local_user);
@@ -303,9 +303,9 @@ send_msg_part(PnPeerLink *link,
 
 #ifdef MSN_DIRECTCONN
     /* The hand-shake message has 0x100 flags. */
-    if (link->directconn &&
-        (peer_msg->flags == 0x100 || link->directconn->ack_recv))
-        msn_directconn_send_msg(link->directconn, msg);
+    if (link->direct_conn &&
+        (peer_msg->flags == 0x100 || link->direct_conn->ack_recv))
+        pn_direct_conn_send_msg(link->direct_conn, msg);
     else
         send_msg(link, msg);
 #else
@@ -501,7 +501,7 @@ process_peer_msg(PnPeerLink *link,
             break;
 #ifdef MSN_DIRECTCONN
         case 0x100:
-            call = link->directconn->initial_call;
+            call = link->direct_conn->initial_call;
 
             if (!call)
                 break;
@@ -653,13 +653,13 @@ pn_peer_link_process_msg(PnPeerLink *link,
 #ifdef MSN_DIRECTCONN
             case 0x100:
                 {
-                    MsnDirectConn *directconn = link->directconn;
+                    PnDirectConn *direct_conn = link->direct_conn;
 
-                    directconn->ack_recv = TRUE;
+                    direct_conn->ack_recv = TRUE;
 
-                    if (!directconn->ack_sent) {
+                    if (!direct_conn->ack_sent) {
                         pn_warning("bad ACK");
-                        msn_directconn_send_handshake(directconn);
+                        pn_direct_conn_send_handshake(direct_conn);
                     }
                     break;
                 }

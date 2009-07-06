@@ -1,5 +1,5 @@
-EXTRA_DIST = directconn.c \
-	     directconn.h
+EXTRA_DIST = cvr/pn_direct_conn.c \
+	     cvr/pn_direct_conn.h
 
 pkgdir = $(libdir)/purple-$(PURPLE_MAJOR_VERSION)
 

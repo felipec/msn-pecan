@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "directconn.h"
+#include "pn_direct_conn.h"
 #include "io/pn_stream.h"
 #include "pn_log.h"
 
 #include "session.h"
-#include "cvr/pn_peer_msg.h"
+#include "pn_peer_msg.h"
 
 #include "io/pn_node.h"
 
@@ -41,19 +41,19 @@
  **************************************************************************/
 
 void
-msn_directconn_send_handshake(MsnDirectConn *directconn)
+pn_direct_conn_send_handshake(PnDirectConn *direct_conn)
 {
     PnPeerLink *link;
     PnPeerMsg *peer_msg;
 
-    g_return_if_fail(directconn != NULL);
+    g_return_if_fail(direct_conn != NULL);
 
-    link = directconn->link;
+    link = direct_conn->link;
 
     peer_msg = pn_peer_msg_new(link);
     peer_msg->flags = 0x100;
 
-    if (directconn->nonce != NULL)
+    if (direct_conn->nonce != NULL)
     {
         guint32 t1;
         guint16 t2;
@@ -61,7 +61,7 @@ msn_directconn_send_handshake(MsnDirectConn *directconn)
         guint16 t4;
         guint64 t5;
 
-        sscanf (directconn->nonce, "%08X-%04hX-%04hX-%04hX-%012" G_GINT64_MODIFIER "X", &t1, &t2, &t3, &t4, &t5);
+        sscanf (direct_conn->nonce, "%08X-%04hX-%04hX-%04hX-%012" G_GINT64_MODIFIER "X", &t1, &t2, &t3, &t4, &t5);
 
         t1 = GUINT32_TO_LE(t1);
         t2 = GUINT16_TO_LE(t2);
@@ -74,12 +74,12 @@ msn_directconn_send_handshake(MsnDirectConn *directconn)
         peer_msg->ack_size   = t4 | t5;
     }
 
-    g_free(directconn->nonce);
-    directconn->nonce = NULL;
+    g_free(direct_conn->nonce);
+    direct_conn->nonce = NULL;
 
     pn_peer_link_send_msg(link, peer_msg);
 
-    directconn->ack_sent = TRUE;
+    direct_conn->ack_sent = TRUE;
 }
 
 /**************************************************************************
@@ -175,26 +175,26 @@ create_listener(int port)
 #endif
 
 static GIOStatus
-msn_directconn_write(MsnDirectConn *directconn,
+pn_direct_conn_write(PnDirectConn *direct_conn,
                      const char *data, size_t len)
 {
     guint32 body_len;
     GIOStatus status = G_IO_STATUS_NORMAL;
     gsize tmp;
 
-    g_return_val_if_fail(directconn != NULL, 0);
+    g_return_val_if_fail(direct_conn != NULL, 0);
 
     pn_debug ("bytes_to_write=%d", len);
 
     body_len = GUINT32_TO_LE(len);
 
     /* Let's write the length of the data. */
-    status = pn_stream_write (directconn->stream, (gchar *) &body_len, sizeof(body_len), &tmp, NULL);
+    status = pn_stream_write (direct_conn->stream, (gchar *) &body_len, sizeof(body_len), &tmp, NULL);
 
     if (status == G_IO_STATUS_NORMAL)
     {
         /* Let's write the data. */
-        status = pn_stream_write (directconn->stream, data, len, &tmp, NULL);
+        status = pn_stream_write (direct_conn->stream, data, len, &tmp, NULL);
     }
 
     if (status == G_IO_STATUS_NORMAL)
@@ -203,7 +203,7 @@ msn_directconn_write(MsnDirectConn *directconn,
 
 #ifdef PECAN_DEBUG_DC_FILES
         char *str;
-        str = g_strdup_printf("%s/msntest/%s/w%.4d.bin", g_get_home_dir(), "dc", directconn->c);
+        str = g_strdup_printf("%s/msntest/%s/w%.4d.bin", g_get_home_dir(), "dc", direct_conn->c);
 
         FILE *tf = g_fopen(str, "w");
         fwrite(&body_len, 1, sizeof(body_len), tf);
@@ -212,13 +212,13 @@ msn_directconn_write(MsnDirectConn *directconn,
 
         g_free(str);
 
-        directconn->c++;
+        direct_conn->c++;
 #endif
     }
     else
     {
-        /* pn_node_error(directconn->conn); */
-        msn_directconn_destroy(directconn);
+        /* pn_node_error(direct_conn->conn); */
+        pn_direct_conn_destroy(direct_conn);
     }
 
     return status;
@@ -226,7 +226,7 @@ msn_directconn_write(MsnDirectConn *directconn,
 
 #if 0
 void
-msn_directconn_parse_nonce(MsnDirectConn *directconn, const char *nonce)
+pn_direct_conn_parse_nonce(PnDirectConn *direct_conn, const char *nonce)
 {
     guint32 t1;
     guint16 t2;
@@ -234,7 +234,7 @@ msn_directconn_parse_nonce(MsnDirectConn *directconn, const char *nonce)
     guint16 t4;
     guint64 t5;
 
-    g_return_if_fail(directconn != NULL);
+    g_return_if_fail(direct_conn != NULL);
     g_return_if_fail(nonce      != NULL);
 
     sscanf (nonce, "%08X-%04hX-%04hX-%04hX-%012llX", &t1, &t2, &t3, &t4, &t5);
@@ -245,49 +245,49 @@ msn_directconn_parse_nonce(MsnDirectConn *directconn, const char *nonce)
     t4 = GUINT16_TO_BE(t4);
     t5 = GUINT64_TO_BE(t5);
 
-    directconn->slpheader = g_new0(MsnSlpHeader, 1);
+    direct_conn->slpheader = g_new0(MsnSlpHeader, 1);
 
-    directconn->slpheader->ack_id     = t1;
-    directconn->slpheader->ack_sub_id = t2 | (t3 << 16);
-    directconn->slpheader->ack_size   = t4 | t5;
+    direct_conn->slpheader->ack_id     = t1;
+    direct_conn->slpheader->ack_sub_id = t2 | (t3 << 16);
+    direct_conn->slpheader->ack_size   = t4 | t5;
 }
 #endif
 
 void
-msn_directconn_send_msg(MsnDirectConn *directconn, MsnMessage *msg)
+pn_direct_conn_send_msg(PnDirectConn *direct_conn, MsnMessage *msg)
 {
     char *body;
     size_t body_len;
 
     body = msn_message_gen_slp_body(msg, &body_len);
 
-    msn_directconn_write(directconn, body, body_len);
+    pn_direct_conn_write(direct_conn, body, body_len);
 }
 
 static void
-msn_directconn_process_msg(MsnDirectConn *directconn, MsnMessage *msg)
+pn_direct_conn_process_msg(PnDirectConn *direct_conn, MsnMessage *msg)
 {
     pn_debug ("process_msg");
 
-    pn_peer_link_process_msg(directconn->link, msg);
+    pn_peer_link_process_msg(direct_conn->link, msg);
 }
 
 static gboolean
 read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
 {
-    MsnDirectConn* directconn;
+    PnDirectConn* direct_conn;
     gchar *body;
     guint32 body_len;
     gsize len;
 
     pn_debug ("source=%d", source);
 
-    directconn = data;
+    direct_conn = data;
 
     /* Let's read the length of the data. */
-    if (pn_stream_read_full (directconn->stream, (gchar *) &body_len, sizeof(body_len), &len, NULL) != G_IO_STATUS_NORMAL)
+    if (pn_stream_read_full (direct_conn->stream, (gchar *) &body_len, sizeof(body_len), &len, NULL) != G_IO_STATUS_NORMAL)
     {
-        msn_directconn_destroy(directconn);
+        pn_direct_conn_destroy(direct_conn);
         return FALSE;
     }
 
@@ -305,9 +305,9 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     }
 
     /* Let's read the data. */
-    if (pn_stream_read_full (directconn->stream, body, body_len, &len, NULL) != G_IO_STATUS_NORMAL)
+    if (pn_stream_read_full (direct_conn->stream, body, body_len, &len, NULL) != G_IO_STATUS_NORMAL)
     {
-        msn_directconn_destroy(directconn);
+        pn_direct_conn_destroy(direct_conn);
         return FALSE;
     }
 
@@ -320,7 +320,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
 #ifdef PECAN_DEBUG_DC_FILES
         {
             char *str;
-            str = g_strdup_printf("%s/msntest/%s/r%04d.bin", g_get_home_dir(), "dc", directconn->c);
+            str = g_strdup_printf("%s/msntest/%s/r%04d.bin", g_get_home_dir(), "dc", direct_conn->c);
 
             FILE *tf = g_fopen(str, "w");
             fwrite(body, 1, len, tf);
@@ -330,12 +330,12 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
         }
 #endif
 
-        directconn->c++;
+        direct_conn->c++;
 
         msg = msn_message_new_msnslp();
         msn_message_parse_slp_body(msg, body, body_len);
 
-        msn_directconn_process_msg(directconn, msg);
+        pn_direct_conn_process_msg(direct_conn, msg);
     }
 
     return TRUE;
@@ -344,13 +344,13 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
 static void
 connect_cb(gpointer data, gint source, const gchar *error_message)
 {
-    MsnDirectConn* directconn;
+    PnDirectConn* direct_conn;
     int fd;
 
     pn_debug ("source=%d", source);
 
-    directconn = data;
-    directconn->connect_data = NULL;
+    direct_conn = data;
+    direct_conn->connect_data = NULL;
 
     if (TRUE)
     {
@@ -367,20 +367,20 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
     {
         GIOChannel *channel;
 
-        /* directconn->conn = pn_node_new (channel); */
-        directconn->connected = TRUE;
+        /* direct_conn->conn = pn_node_new (channel); */
+        direct_conn->connected = TRUE;
 
-        directconn->stream = pn_stream_new (fd);
-        channel = directconn->stream->channel;
+        direct_conn->stream = pn_stream_new (fd);
+        channel = direct_conn->stream->channel;
 
         pn_info ("connected: %p", channel);
-        directconn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, directconn);
+        direct_conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, direct_conn);
 
         /* Send foo. */
-        msn_directconn_write(directconn, "foo\0", 4);
+        pn_direct_conn_write(direct_conn, "foo\0", 4);
 
         /* Send Handshake */
-        msn_directconn_send_handshake(directconn);
+        pn_direct_conn_send_handshake(direct_conn);
     }
     else
     {
@@ -389,7 +389,7 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
 }
 
 static void
-directconn_connect_cb(gpointer data, gint source, const gchar *error_message)
+direct_conn_connect_cb(gpointer data, gint source, const gchar *error_message)
 {
     if (error_message)
         pn_error ("error establishing direct connection: %s", error_message);
@@ -398,36 +398,36 @@ directconn_connect_cb(gpointer data, gint source, const gchar *error_message)
 }
 
 gboolean
-msn_directconn_connect(MsnDirectConn *directconn, const char *host, int port)
+pn_direct_conn_connect(PnDirectConn *direct_conn, const char *host, int port)
 {
     MsnSession *session;
 
-    g_return_val_if_fail(directconn != NULL, FALSE);
+    g_return_val_if_fail(direct_conn != NULL, FALSE);
     g_return_val_if_fail(host       != NULL, TRUE);
     g_return_val_if_fail(port        > 0,    FALSE);
 
     pn_log ("begin");
 
-    session = directconn->link->session;
+    session = direct_conn->link->session;
 
 #if 0
     if (session->http_method)
     {
-        directconn->http_data->gateway_host = g_strdup(host);
+        direct_conn->http_data->gateway_host = g_strdup(host);
     }
 #endif
 
-    directconn->connect_data = purple_proxy_connect(NULL, msn_session_get_account (session),
-                                                    host, port, directconn_connect_cb, directconn);
+    direct_conn->connect_data = purple_proxy_connect(NULL, msn_session_get_account (session),
+                                                    host, port, direct_conn_connect_cb, direct_conn);
 
     pn_log ("end");
 
-    return (directconn->connect_data != NULL);
+    return (direct_conn->connect_data != NULL);
 }
 
 #if 0
 void
-msn_directconn_listen(MsnDirectConn *directconn)
+pn_direct_conn_listen(PnDirectConn *direct_conn)
 {
     int port;
     int fd;
@@ -437,64 +437,64 @@ msn_directconn_listen(MsnDirectConn *directconn)
     for (fd = -1; fd < 0;)
         fd = create_listener(++port);
 
-    directconn->fd = fd;
+    direct_conn->fd = fd;
 
-    directconn->inpa = purple_input_add(fd, PURPLE_INPUT_READ, connect_cb,
-                                        directconn);
+    direct_conn->inpa = purple_input_add(fd, PURPLE_INPUT_READ, connect_cb,
+                                         direct_conn);
 
-    directconn->port = port;
-    directconn->c = 0;
+    direct_conn->port = port;
+    direct_conn->c = 0;
 }
 #endif
 
-MsnDirectConn*
-msn_directconn_new(PnPeerLink *link)
+PnDirectConn*
+pn_direct_conn_new(PnPeerLink *link)
 {
-    MsnDirectConn *directconn;
+    PnDirectConn *direct_conn;
 
     pn_log ("begin");
 
-    directconn = g_new0(MsnDirectConn, 1);
+    direct_conn = g_new0(PnDirectConn, 1);
 
-    directconn->link = link;
+    direct_conn->link = link;
 
-    if (link->directconn != NULL)
+    if (link->direct_conn != NULL)
         pn_warning ("got_transresp: LEAK");
 
-    link->directconn = directconn;
+    link->direct_conn = direct_conn;
 
     pn_log ("end");
 
-    return directconn;
+    return direct_conn;
 }
 
 void
-msn_directconn_destroy(MsnDirectConn *directconn)
+pn_direct_conn_destroy(PnDirectConn *direct_conn)
 {
     pn_log ("begin");
 
-    if (directconn->stream)
+    if (direct_conn->stream)
     {
-        pn_info ("stream shutdown: %p", directconn->stream);
-        pn_stream_free (directconn->stream);
-        directconn->stream = NULL;
+        pn_info ("stream shutdown: %p", direct_conn->stream);
+        pn_stream_free (direct_conn->stream);
+        direct_conn->stream = NULL;
     }
 
-    if (directconn->connect_data != NULL)
-        purple_proxy_connect_cancel(directconn->connect_data);
+    if (direct_conn->connect_data != NULL)
+        purple_proxy_connect_cancel(direct_conn->connect_data);
 
-    if (directconn->read_watch)
+    if (direct_conn->read_watch)
     {
-        g_source_remove (directconn->read_watch);
-        directconn->read_watch = 0;
+        g_source_remove (direct_conn->read_watch);
+        direct_conn->read_watch = 0;
     }
 
-    if (directconn->nonce != NULL)
-        g_free(directconn->nonce);
+    if (direct_conn->nonce != NULL)
+        g_free(direct_conn->nonce);
 
-    directconn->link->directconn = NULL;
+    direct_conn->link->direct_conn = NULL;
 
-    g_free(directconn);
+    g_free(direct_conn);
 
     pn_log ("end");
 }

@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef MSN_DIRECTCONN_H
-#define MSN_DIRECTCONN_H
+#ifndef PN_DIRECT_CONN_H
+#define PN_DIRECT_CONN_H
 
-typedef struct MsnDirectConn MsnDirectConn;
+typedef struct PnDirectConn PnDirectConn;
 
 #include "cvr/pn_peer_link.h"
 
@@ -30,7 +30,7 @@ typedef struct MsnDirectConn MsnDirectConn;
 struct PnNode;
 struct _PurpleProxyConnectData;
 
-struct MsnDirectConn
+struct PnDirectConn
 {
     PnPeerLink *link;
     PnPeerCall *initial_call;
@@ -50,15 +50,15 @@ struct MsnDirectConn
     PecanStream *stream;
 };
 
-MsnDirectConn *msn_directconn_new(PnPeerLink *link);
-gboolean msn_directconn_connect(MsnDirectConn *directconn,
+PnDirectConn *pn_direct_conn_new(PnPeerLink *link);
+gboolean pn_direct_conn_connect(PnDirectConn *direct_conn,
                                 const char *host, int port);
 #if 0
-void msn_directconn_listen(MsnDirectConn *directconn);
+void pn_direct_conn_listen(PnDirectConn *direct_conn);
 #endif
-void msn_directconn_send_msg(MsnDirectConn *directconn, MsnMessage *msg);
-void msn_directconn_parse_nonce(MsnDirectConn *directconn, const char *nonce);
-void msn_directconn_destroy(MsnDirectConn *directconn);
-void msn_directconn_send_handshake(MsnDirectConn *directconn);
+void pn_direct_conn_send_msg(PnDirectConn *direct_conn, MsnMessage *msg);
+void pn_direct_conn_parse_nonce(PnDirectConn *direct_conn, const char *nonce);
+void pn_direct_conn_destroy(PnDirectConn *direct_conn);
+void pn_direct_conn_send_handshake(PnDirectConn *direct_conn);
 
-#endif /* MSN_DIRECTCONN_H */
+#endif /* PN_DIRECT_CONN_H */
