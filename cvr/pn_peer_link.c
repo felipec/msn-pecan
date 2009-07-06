@@ -442,8 +442,7 @@ send_ack(PnPeerLink *link,
     pn_peer_link_send_slpmsg(link, slpmsg);
 }
 
-
-static PnPeerCall *
+static void
 process_slpmsg(PnPeerLink *link,
                MsnSlpMessage *slpmsg)
 {
@@ -478,7 +477,7 @@ process_slpmsg(PnPeerLink *link,
                 }
                 else {
                     body_str = g_strndup(body, body_len);
-                    call = msn_slp_sip_recv(link, body_str);
+                    msn_slp_sip_recv(link, body_str);
                 }
                 g_free(body_str);
                 break;
@@ -500,22 +499,21 @@ process_slpmsg(PnPeerLink *link,
 
             call->cb(call, body, body_len);
 
-            call->wasted = TRUE;
+            pn_peer_call_unref(call);
             break;
 #ifdef MSN_DIRECTCONN
         case 0x100:
             call = link->directconn->initial_call;
 
-            if (call)
-                pn_peer_call_session_init(call);
-            break;
+            if (!call)
+                break;
+
+            pn_peer_call_session_init(call);
 #endif /* MSN_DIRECTCONN */
         default:
             pn_warning("slp_process_msg: unprocessed SLP message with flags 0x%08lx",
                        slpmsg->flags);
     }
-
-    return call;
 }
 
 static inline MsnSlpMessage *
@@ -641,9 +639,7 @@ pn_peer_link_process_msg(PnPeerLink *link,
         >= msg->msnslp_header.total_size)
     {
         /* All the pieces of the slpmsg have been received */
-        PnPeerCall *call = NULL;
-
-        call = process_slpmsg(link, slpmsg);
+        process_slpmsg(link, slpmsg);
 
         switch (slpmsg->flags) {
             case 0x0:
@@ -675,9 +671,6 @@ pn_peer_link_process_msg(PnPeerLink *link,
         }
 
         msn_slpmsg_destroy(slpmsg);
-
-        if (call && call->wasted)
-            pn_peer_call_unref(call);
     }
 }
 

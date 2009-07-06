@@ -503,7 +503,7 @@ got_ok(PnPeerCall *call,
 #endif /* MSN_DIRECTCONN */
 }
 
-PnPeerCall *
+void
 msn_slp_sip_recv(PnPeerLink *link,
                  const char *body)
 {
@@ -511,7 +511,7 @@ msn_slp_sip_recv(PnPeerLink *link,
 
     if (!body) {
         pn_warning("received bogus message");
-        return NULL;
+        return;
     }
 
     if (strncmp(body, "INVITE", strlen("INVITE")) == 0) {
@@ -559,7 +559,7 @@ msn_slp_sip_recv(PnPeerLink *link,
         call = pn_peer_link_find_slp_call(link, call_id);
         g_free(call_id);
 
-        g_return_val_if_fail(call != NULL, NULL);
+        g_return_if_fail(call);
 
         if (strncmp(status, "200 OK", 6) != 0) {
             /* It's not valid. Kill this off. */
@@ -581,10 +581,8 @@ msn_slp_sip_recv(PnPeerLink *link,
 
             pn_warning("received non-OK result: %s", temp);
 
-            call->wasted = TRUE;
-
-            /* pn_peer_call_unref(call); */
-            return call;
+            pn_peer_call_unref(call);
+            return;
         }
 
         content_type = get_token(body, "Content-Type: ", "\r\n");
@@ -603,15 +601,9 @@ msn_slp_sip_recv(PnPeerLink *link,
         call = pn_peer_link_find_slp_call(link, call_id);
         g_free(call_id);
 
-        if (call)
-            call->wasted = TRUE;
-
-        /* pn_peer_call_unref(call); */
+        pn_peer_call_unref(call);
+        return;
     }
-    else
-        call = NULL;
-
-    return call;
 }
 
 void

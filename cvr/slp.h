@@ -25,8 +25,8 @@
 struct PnPeerCall;
 struct PnPeerLink;
 
-struct PnPeerCall *msn_slp_sip_recv(struct PnPeerLink *link,
-                                   const char *body);
+void msn_slp_sip_recv(struct PnPeerLink *link,
+                      const char *body);
 
 void msn_slp_sip_send_ok(struct PnPeerCall *call,
                          const char *branch,

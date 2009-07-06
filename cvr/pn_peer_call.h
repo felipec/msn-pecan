@@ -46,8 +46,6 @@ struct PnPeerCall
                         call to start and do not time out. */
     gboolean progress; /**< A flag that states if there has been progress since
                          the last time out. */
-    gboolean wasted; /**< A flag that states if this call is going to be
-                       destroyed. */
     gboolean started; /**< A flag that states if this call's session has
                         been initiated. */
 
