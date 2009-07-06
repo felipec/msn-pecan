@@ -106,7 +106,7 @@ ifdef CVR
   objects += cvr/pn_sip.o \
 	     cvr/pn_peer_call.o \
 	     cvr/pn_peer_link.o \
-	     cvr/slpmsg.o \
+	     cvr/pn_peer_msg.o \
 	     cvr/pn_msnobj.o
   objects += libpurple/xfer.o
 endif

@@ -21,7 +21,7 @@
 #include "cvr/pn_sip.h"
 #include "cvr/pn_peer_call.h"
 #include "cvr/pn_peer_link.h"
-#include "cvr/slpmsg.h"
+#include "cvr/pn_peer_msg.h"
 #include "session.h"
 
 #include "pn_log.h"
@@ -120,24 +120,24 @@ xfer_completed_cb(PnPeerCall *call,
 static void
 send_file_cb(PnPeerCall *call)
 {
-    MsnSlpMessage *slpmsg;
+    PnPeerMsg *peer_msg;
     struct stat st;
     PurpleXfer *xfer;
 
-    slpmsg = msn_slpmsg_new(call->link);
-    slpmsg->call = call;
-    slpmsg->flags = 0x1000030;
+    peer_msg = pn_peer_msg_new(call->link);
+    peer_msg->call = call;
+    peer_msg->flags = 0x1000030;
 #ifdef PECAN_DEBUG_SLP
-    slpmsg->info = "SLP FILE";
+    peer_msg->info = "SLP FILE";
 #endif
     xfer = (PurpleXfer *) call->xfer;
     purple_xfer_start(call->xfer, 0, NULL, 0);
-    slpmsg->fp = xfer->dest_fp;
+    peer_msg->fp = xfer->dest_fp;
     if (g_stat(purple_xfer_get_local_filename(xfer), &st) == 0)
-        slpmsg->size = st.st_size;
+        peer_msg->size = st.st_size;
     xfer->dest_fp = NULL; /* Disable double fclose() */
 
-    pn_peer_link_send_slpmsg(call->link, slpmsg);
+    pn_peer_link_send_msg(call->link, peer_msg);
 }
 
 typedef struct

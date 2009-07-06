@@ -21,7 +21,7 @@
 
 #include "pn_sip.h"
 #include "pn_peer_link.h"
-#include "slpmsg.h"
+#include "pn_peer_msg.h"
 #include "session.h"
 #include "pn_util.h"
 #include "pn_log.h"
@@ -107,15 +107,15 @@ pn_peer_call_free(PnPeerCall *call)
     g_free(call->data_info);
 
     for (e = call->link->slp_msgs; e; ){
-        MsnSlpMessage *slpmsg = e->data;
+        PnPeerMsg *peer_msg = e->data;
         e = e->next;
 
 #ifdef PECAN_DEBUG_PEER_CALL_VERBOSE
-        pn_info("slpmsg=%p", slpmsg);
+        pn_info("peer_msg=%p", peer_msg);
 #endif
 
-        if (slpmsg->call == call)
-            msn_slpmsg_destroy(slpmsg);
+        if (peer_msg->call == call)
+            pn_peer_msg_destroy(peer_msg);
     }
 
     session = call->link->session;
@@ -177,7 +177,7 @@ pn_peer_call_invite(PnPeerCall *call,
                     const char *context)
 {
     PnPeerLink *link;
-    MsnSlpMessage *slpmsg;
+    PnPeerMsg *peer_msg;
     char *header;
     char *content;
 
@@ -197,15 +197,15 @@ pn_peer_call_invite(PnPeerCall *call,
     header = g_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
                              link->remote_user);
 
-    slpmsg = msn_slpmsg_sip_new(call, 0, header, call->branch,
-                                "application/x-msnmsgr-sessionreqbody", content);
+    peer_msg = pn_peer_msg_sip_new(call, 0, header, call->branch,
+                                   "application/x-msnmsgr-sessionreqbody", content);
 
 #ifdef PECAN_DEBUG_SLP
-    slpmsg->info = "SLP INVITE";
-    slpmsg->text_body = TRUE;
+    peer_msg->info = "SLP INVITE";
+    peer_msg->text_body = TRUE;
 #endif
 
-    pn_peer_link_send_slpmsg(link, slpmsg);
+    pn_peer_link_send_msg(link, peer_msg);
 
     g_free(header);
     g_free(content);

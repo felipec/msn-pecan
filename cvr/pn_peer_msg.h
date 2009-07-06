@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef MSN_SLPMSG_H
-#define MSN_SLPMSG_H
+#ifndef PN_PEER_MSG_H
+#define PN_PEER_MSG_H
 
-typedef struct MsnSlpMessage MsnSlpMessage;
+typedef struct PnPeerMsg PnPeerMsg;
 
 struct MsnSlpSesison;
 struct PnPeerCall;
@@ -36,7 +36,7 @@ struct MsnMessage;
  * A SLP Message  This contains everything that we will need to send a SLP
  * Message even if has to be sent in several parts.
  */
-struct MsnSlpMessage
+struct PnPeerMsg
 {
     struct PnPeerCall *call; /**< The call to which this slp message belongs (if applicable). */
     struct PnPeerLink *link; /**< The peer link through which this slp message is being sent. */
@@ -68,37 +68,26 @@ struct MsnSlpMessage
 #endif
 };
 
-/**
- * Creates a new slp message
- *
- * @param link The peer link through which this slp message will be sent.
- * @return The created slp message.
- */
-MsnSlpMessage *msn_slpmsg_new(struct PnPeerLink *link);
+PnPeerMsg *pn_peer_msg_new(struct PnPeerLink *link);
 
-/**
- * Destroys a slp message
- *
- * @param slpmsg The slp message to destory.
- */
-void msn_slpmsg_destroy(MsnSlpMessage *slpmsg);
+void pn_peer_msg_destroy(PnPeerMsg *peer_msg);
 
-void msn_slpmsg_set_body(MsnSlpMessage *slpmsg,
-                         gconstpointer *body,
-                         guint64 size);
-void msn_slpmsg_set_image(MsnSlpMessage *slpmsg,
-                          PnBuffer *image);
-void msn_slpmsg_open_file(MsnSlpMessage *slpmsg,
-                          const char *file_name);
-MsnSlpMessage *msn_slpmsg_sip_new(struct PnPeerCall *call,
-                                  int cseq,
-                                  const char *header,
-                                  const char *branch,
-                                  const char *content_type,
-                                  const char *content);
+void pn_peer_msg_set_body(PnPeerMsg *peer_msg,
+                          gconstpointer *body,
+                          guint64 size);
+void pn_peer_msg_set_image(PnPeerMsg *peer_msg,
+                           PnBuffer *image);
+void pn_peer_msg_open_file(PnPeerMsg *peer_msg,
+                           const char *file_name);
+PnPeerMsg *pn_peer_msg_sip_new(struct PnPeerCall *call,
+                               int cseq,
+                               const char *header,
+                               const char *branch,
+                               const char *content_type,
+                               const char *content);
 
 #ifdef PECAN_DEBUG_SLP
-void msn_slpmsg_show(struct MsnMessage *msg);
+void pn_peer_msg_show(struct MsnMessage *msg);
 #endif
 
-#endif /* MSN_SLPMSG_H */
+#endif /* PN_PEER_MSG_H */

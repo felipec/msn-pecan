@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "slpmsg.h"
+#include "pn_peer_msg.h"
 #include "pn_peer_link.h"
 
 #include "pn_peer_call.h"
@@ -31,53 +31,53 @@
 /* libpurple stuff. */
 #include "fix_purple.h"
 
-MsnSlpMessage *
-msn_slpmsg_new(PnPeerLink *link)
+PnPeerMsg *
+pn_peer_msg_new(PnPeerLink *link)
 {
-    MsnSlpMessage *slpmsg;
+    PnPeerMsg *peer_msg;
 
-    slpmsg = g_new0(MsnSlpMessage, 1);
+    peer_msg = g_new0(PnPeerMsg, 1);
 
 #ifdef PECAN_DEBUG_SLPMSG
-    pn_info("slpmsg new (%p)\n", slpmsg);
+    pn_info("peer_msg=%p", peer_msg);
 #endif
 
-    slpmsg->link = link;
+    peer_msg->link = link;
 
-    link->slp_msgs = g_list_append(link->slp_msgs, slpmsg);
+    link->slp_msgs = g_list_append(link->slp_msgs, peer_msg);
 
-    return slpmsg;
+    return peer_msg;
 }
 
 void
-msn_slpmsg_destroy(MsnSlpMessage *slpmsg)
+pn_peer_msg_destroy(PnPeerMsg *peer_msg)
 {
     PnPeerLink *link;
     GList *cur;
 
-    if (!slpmsg)
+    if (!peer_msg)
 	    return;
 
 #ifdef PECAN_DEBUG_SLPMSG
-    pn_info("slpmsg destroy (%p)\n", slpmsg);
+    pn_info("peer_msg=%p", peer_msg);
 #endif
 
-    link = slpmsg->link;
+    link = peer_msg->link;
 
-    if (slpmsg->fp)
-        fclose(slpmsg->fp);
+    if (peer_msg->fp)
+        fclose(peer_msg->fp);
 
-    g_free(slpmsg->buffer);
+    g_free(peer_msg->buffer);
 
-    for (cur = slpmsg->msgs; cur; cur = cur->next) {
-        /* Something is pointing to this slpmsg, so we should remove that
+    for (cur = peer_msg->msgs; cur; cur = cur->next) {
+        /* Something is pointing to this peer_msg, so we should remove that
          * pointer to prevent a crash. */
         /* Ex: a user goes offline and after that we receive an ACK */
 
         MsnMessage *msg = cur->data;
 
 #ifdef PECAN_DEBUG_SLPMSG
-        pn_info("Unlink slpmsg callbacks.\n");
+        pn_info("Unlink peer_msg callbacks.\n");
 #endif
 
         msg->ack_cb = NULL;
@@ -85,47 +85,47 @@ msn_slpmsg_destroy(MsnSlpMessage *slpmsg)
         msg->ack_data = NULL;
     }
 
-    link->slp_msgs = g_list_remove(link->slp_msgs, slpmsg);
+    link->slp_msgs = g_list_remove(link->slp_msgs, peer_msg);
 
-    g_free(slpmsg);
+    g_free(peer_msg);
 }
 
 void
-msn_slpmsg_set_body(MsnSlpMessage *slpmsg,
-                    gconstpointer *body,
-                    guint64 size)
+pn_peer_msg_set_body(PnPeerMsg *peer_msg,
+                     gconstpointer *body,
+                     guint64 size)
 {
     if (body)
-        slpmsg->buffer = g_memdup(body, size);
+        peer_msg->buffer = g_memdup(body, size);
     else
-        slpmsg->buffer = g_malloc0(size);
+        peer_msg->buffer = g_malloc0(size);
 
-    slpmsg->size = size;
+    peer_msg->size = size;
 }
 
 void
-msn_slpmsg_set_image(MsnSlpMessage *slpmsg,
-                     PnBuffer *image)
+pn_peer_msg_set_image(PnPeerMsg *peer_msg,
+                      PnBuffer *image)
 {
-    slpmsg->size = image->len;
-    slpmsg->buffer = g_memdup(image->data, slpmsg->size);
+    peer_msg->size = image->len;
+    peer_msg->buffer = g_memdup(image->data, peer_msg->size);
 }
 
 void
-msn_slpmsg_open_file(MsnSlpMessage *slpmsg,
-                     const char *file_name)
+pn_peer_msg_open_file(PnPeerMsg *peer_msg,
+                      const char *file_name)
 {
     struct stat st;
 
-    slpmsg->fp = g_fopen(file_name, "rb");
+    peer_msg->fp = g_fopen(file_name, "rb");
 
     if (g_stat(file_name, &st) == 0)
-        slpmsg->size = st.st_size;
+        peer_msg->size = st.st_size;
 }
 
 #ifdef PECAN_DEBUG_SLP
 void
-msn_slpmsg_show(MsnMessage *msg)
+pn_peer_msg_show(MsnMessage *msg)
 {
     const char *info;
     gboolean text;
@@ -152,16 +152,16 @@ msn_slpmsg_show(MsnMessage *msg)
 }
 #endif
 
-MsnSlpMessage *
-msn_slpmsg_sip_new(PnPeerCall *call,
-                   int cseq,
-                   const char *header,
-                   const char *branch,
-                   const char *content_type,
-                   const char *content)
+PnPeerMsg *
+pn_peer_msg_sip_new(PnPeerCall *call,
+                    int cseq,
+                    const char *header,
+                    const char *branch,
+                    const char *content_type,
+                    const char *content)
 {
     PnPeerLink *link;
-    MsnSlpMessage *slpmsg;
+    PnPeerMsg *peer_msg;
     gchar *body;
     gsize body_len;
     gsize content_len;
@@ -199,13 +199,13 @@ msn_slpmsg_sip_new(PnPeerCall *call,
         g_strlcat(body, content, body_len);
     }
 
-    slpmsg = msn_slpmsg_new(link);
-    msn_slpmsg_set_body(slpmsg, (gpointer) body, body_len);
+    peer_msg = pn_peer_msg_new(link);
+    pn_peer_msg_set_body(peer_msg, (gpointer) body, body_len);
 
-    slpmsg->sip = TRUE;
-    slpmsg->call = call;
+    peer_msg->sip = TRUE;
+    peer_msg->call = call;
 
     g_free(body);
 
-    return slpmsg;
+    return peer_msg;
 }

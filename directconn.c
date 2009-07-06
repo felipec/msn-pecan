@@ -22,7 +22,7 @@
 #include "pn_log.h"
 
 #include "session.h"
-#include "cvr/slpmsg.h"
+#include "cvr/pn_peer_msg.h"
 
 #include "io/pn_node.h"
 
@@ -44,14 +44,14 @@ void
 msn_directconn_send_handshake(MsnDirectConn *directconn)
 {
     PnPeerLink *link;
-    MsnSlpMessage *slpmsg;
+    PnPeerMsg *peer_msg;
 
     g_return_if_fail(directconn != NULL);
 
     link = directconn->link;
 
-    slpmsg = msn_slpmsg_new(link);
-    slpmsg->flags = 0x100;
+    peer_msg = pn_peer_msg_new(link);
+    peer_msg->flags = 0x100;
 
     if (directconn->nonce != NULL)
     {
@@ -69,15 +69,15 @@ msn_directconn_send_handshake(MsnDirectConn *directconn)
         t4 = GUINT16_TO_BE(t4);
         t5 = GUINT64_TO_BE(t5);
 
-        slpmsg->ack_id     = t1;
-        slpmsg->ack_sub_id = t2 | (t3 << 16);
-        slpmsg->ack_size   = t4 | t5;
+        peer_msg->ack_id     = t1;
+        peer_msg->ack_sub_id = t2 | (t3 << 16);
+        peer_msg->ack_size   = t4 | t5;
     }
 
     g_free(directconn->nonce);
     directconn->nonce = NULL;
 
-    pn_peer_link_send_slpmsg(link, slpmsg);
+    pn_peer_link_send_msg(link, peer_msg);
 
     directconn->ack_sent = TRUE;
 }

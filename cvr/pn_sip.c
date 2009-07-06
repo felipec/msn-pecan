@@ -20,7 +20,7 @@
 #include "pn_sip.h"
 #include "pn_peer_link.h"
 #include "pn_peer_call.h"
-#include "slpmsg.h"
+#include "pn_peer_msg.h"
 #include "pn_log.h"
 #include "io/pn_buffer.h"
 
@@ -112,21 +112,21 @@ pn_sip_send_ok(PnPeerCall *call,
                const char *content)
 {
     PnPeerLink *link;
-    MsnSlpMessage *slpmsg;
+    PnPeerMsg *peer_msg;
 
     link = call->link;
 
     /* 200 OK */
-    slpmsg = msn_slpmsg_sip_new(call, 1,
-                                "MSNSLP/1.0 200 OK",
-                                branch, type, content);
+    peer_msg = pn_peer_msg_sip_new(call, 1,
+                                 "MSNSLP/1.0 200 OK",
+                                 branch, type, content);
 
 #ifdef PECAN_DEBUG_SLP
-    slpmsg->info = "SLP 200 OK";
-    slpmsg->text_body = TRUE;
+    peer_msg->info = "SLP 200 OK";
+    peer_msg->text_body = TRUE;
 #endif
 
-    pn_peer_link_queue_slpmsg(link, slpmsg);
+    pn_peer_link_queue_msg(link, peer_msg);
 
     pn_peer_call_session_init(call);
 }
@@ -138,21 +138,21 @@ pn_sip_send_decline(PnPeerCall *call,
                     const char *content)
 {
     PnPeerLink *link;
-    MsnSlpMessage *slpmsg;
+    PnPeerMsg *peer_msg;
 
     link = call->link;
 
     /* 603 Decline */
-    slpmsg = msn_slpmsg_sip_new(call, 1,
-                                "MSNSLP/1.0 603 Decline",
-                                branch, type, content);
+    peer_msg = pn_peer_msg_sip_new(call, 1,
+                                 "MSNSLP/1.0 603 Decline",
+                                 branch, type, content);
 
 #ifdef PECAN_DEBUG_SLP
-    slpmsg->info = "SLP 603 Decline";
-    slpmsg->text_body = TRUE;
+    peer_msg->info = "SLP 603 Decline";
+    peer_msg->text_body = TRUE;
 #endif
 
-    pn_peer_link_queue_slpmsg(link, slpmsg);
+    pn_peer_link_queue_msg(link, peer_msg);
 }
 
 #define MAX_FILE_NAME_LEN 0x226
@@ -170,7 +170,7 @@ got_sessionreq(PnPeerCall *call,
         char *content;
         gsize len;
         PnPeerLink *link;
-        MsnSlpMessage *slpmsg;
+        PnPeerMsg *peer_msg;
         PnMsnObj *obj;
         char *msnobj_data;
         PnBuffer *image;
@@ -238,24 +238,24 @@ got_sessionreq(PnPeerCall *call,
         pn_msnobj_free(obj);
 
         /* DATA PREP */
-        slpmsg = msn_slpmsg_new(link);
-        slpmsg->call = call;
-        slpmsg->session_id = call->session_id;
-        msn_slpmsg_set_body(slpmsg, NULL, 4);
+        peer_msg = pn_peer_msg_new(link);
+        peer_msg->call = call;
+        peer_msg->session_id = call->session_id;
+        pn_peer_msg_set_body(peer_msg, NULL, 4);
 #ifdef PECAN_DEBUG_SLP
-        slpmsg->info = "SLP DATA PREP";
+        peer_msg->info = "SLP DATA PREP";
 #endif
-        pn_peer_link_queue_slpmsg(link, slpmsg);
+        pn_peer_link_queue_msg(link, peer_msg);
 
         /* DATA */
-        slpmsg = msn_slpmsg_new(link);
-        slpmsg->call = call;
-        slpmsg->flags = 0x20;
+        peer_msg = pn_peer_msg_new(link);
+        peer_msg->call = call;
+        peer_msg->flags = 0x20;
 #ifdef PECAN_DEBUG_SLP
-        slpmsg->info = "SLP DATA";
+        peer_msg->info = "SLP DATA";
 #endif
-        msn_slpmsg_set_image(slpmsg, image);
-        pn_peer_link_queue_slpmsg(link, slpmsg);
+        pn_peer_msg_set_image(peer_msg, image);
+        pn_peer_link_queue_msg(link, peer_msg);
     }
     else if (strcmp(euf_guid, "5D3E02AB-6190-11D3-BBBB-00C04F795683") == 0)
         call->link->session->xfer_invite_cb(call, branch, context);
@@ -266,7 +266,7 @@ pn_sip_send_bye(PnPeerCall *call,
                 const char *type)
 {
     PnPeerLink *link;
-    MsnSlpMessage *slpmsg;
+    PnPeerMsg *peer_msg;
     char *header;
 
     link = call->link;
@@ -274,18 +274,18 @@ pn_sip_send_bye(PnPeerCall *call,
     header = g_strdup_printf("BYE MSNMSGR:%s MSNSLP/1.0",
                              link->local_user);
 
-    slpmsg = msn_slpmsg_sip_new(call, 0, header,
-                                "A0D624A6-6C0C-4283-A9E0-BC97B4B46D32",
-                                type,
-                                "\r\n");
+    peer_msg = pn_peer_msg_sip_new(call, 0, header,
+                                 "A0D624A6-6C0C-4283-A9E0-BC97B4B46D32",
+                                 type,
+                                 "\r\n");
     g_free(header);
 
 #ifdef PECAN_DEBUG_SLP
-    slpmsg->info = "SLP BYE";
-    slpmsg->text_body = TRUE;
+    peer_msg->info = "SLP BYE";
+    peer_msg->text_body = TRUE;
 #endif
 
-    pn_peer_link_queue_slpmsg(link, slpmsg);
+    pn_peer_link_queue_msg(link, peer_msg);
 }
 
 static void
@@ -422,7 +422,7 @@ got_ok(PnPeerCall *call,
             /* First let's try a DirectConnection. */
 
             PnPeerLink *link;
-            MsnSlpMessage *slpmsg;
+            PnPeerMsg *peer_msg;
             char *header;
             gchar *new_content;
             char *branch;
@@ -440,15 +440,15 @@ got_ok(PnPeerCall *call,
             header = g_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
                                      link->remote_user);
 
-            slpmsg = msn_slpmsg_sip_new(call, 0, header, branch,
-                                        "application/x-msnmsgr-transreqbody",
-                                        new_content);
+            peer_msg = pn_peer_msg_sip_new(call, 0, header, branch,
+                                         "application/x-msnmsgr-transreqbody",
+                                         new_content);
 
 #ifdef PECAN_DEBUG_SLP
-            slpmsg->info = "SLP INVITE";
-            slpmsg->text_body = TRUE;
+            peer_msg->info = "SLP INVITE";
+            peer_msg->text_body = TRUE;
 #endif
-            pn_peer_link_send_slpmsg(link, slpmsg);
+            pn_peer_link_send_msg(link, peer_msg);
 
             g_free(header);
             g_free(new_content);

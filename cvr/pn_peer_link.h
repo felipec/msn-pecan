@@ -24,7 +24,7 @@ typedef struct PnPeerLink PnPeerLink;
 
 struct MsnSession;
 struct MsnSwitchboard;
-struct MsnSlpMessage;
+struct PnPeerMsg;
 struct MsnDirectConn;
 struct MsnMessage;
 struct MsnSlpSession;
@@ -70,10 +70,10 @@ void pn_peer_link_remove_call(PnPeerLink *link,
                               PnPeerCall *call);
 PnPeerCall *pn_peer_link_find_slp_call(PnPeerLink *link,
                                        const char *id);
-void pn_peer_link_queue_slpmsg(PnPeerLink *link,
-                               struct MsnSlpMessage *slpmsg);
-void pn_peer_link_send_slpmsg(PnPeerLink *link,
-                              struct MsnSlpMessage *slpmsg);
+void pn_peer_link_queue_msg(PnPeerLink *link,
+                            struct PnPeerMsg *peer_msg);
+void pn_peer_link_send_msg(PnPeerLink *link,
+                           struct PnPeerMsg *peer_msg);
 void pn_peer_link_unleash(PnPeerLink *link);
 void pn_peer_link_process_msg(PnPeerLink *link,
                               struct MsnMessage *msg);
