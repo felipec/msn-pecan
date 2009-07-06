@@ -80,6 +80,5 @@ void pn_peer_call_invite(PnPeerCall *call,
                          int app_id,
                          const char *context);
 void pn_peer_call_close(PnPeerCall *call);
-gboolean pn_peer_call_timeout(gpointer data);
 
 #endif /* PN_PEER_CALL_H */

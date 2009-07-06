@@ -34,13 +34,32 @@
 
 /* libpurple stuff. */
 #include "fix_purple_win32.h"
-#include <eventloop.h>
 #include <ft.h>
 
-/* The official client seems to timeout slp calls after 5 minutes */
-#define PN_PEER_CALL_TIMEOUT 300000
+#define PN_PEER_CALL_TIMEOUT 30 0000
 
 /* #define PECAN_DEBUG_PEER_CALL */
+
+static gboolean
+timeout(gpointer data)
+{
+    PnPeerCall *call;
+
+    call = data;
+
+#ifdef PECAN_DEBUG_PEER_CALL
+    pn_info("call=%p", call);
+#endif
+
+    if (!call->pending && !call->progress) {
+        pn_peer_call_unref(call);
+        return FALSE;
+    }
+
+    call->progress = FALSE;
+
+    return TRUE;
+}
 
 PnPeerCall *
 pn_peer_call_new(PnPeerLink *link)
@@ -58,7 +77,8 @@ pn_peer_call_new(PnPeerLink *link)
     pn_peer_link_ref(link);
     pn_peer_link_add_call(link, call);
 
-    call->timer = purple_timeout_add(PN_PEER_CALL_TIMEOUT, pn_peer_call_timeout, call);
+    /* The official client seems to timeout calls after 5 minutes */
+    call->timer = g_timeout_add_seconds (30, timeout, call);
     call->session_id = link->slp_session_id++;
 
     call->ref_count++;
@@ -80,7 +100,7 @@ pn_peer_call_destroy(PnPeerCall *call)
 #endif
 
     if (call->timer)
-        purple_timeout_remove(call->timer);
+        g_source_remove(call->timer);
 
     g_free(call->id);
     g_free(call->branch);
@@ -197,25 +217,4 @@ pn_peer_call_close(PnPeerCall *call)
     msn_slp_sip_send_bye(call, "application/x-msnmsgr-sessionclosebody");
     pn_peer_link_unleash(call->link);
     pn_peer_call_unref(call);
-}
-
-gboolean
-pn_peer_call_timeout(gpointer data)
-{
-    PnPeerCall *call;
-
-    call = data;
-
-#ifdef PECAN_DEBUG_PEER_CALL
-    pn_info("call=%p", call);
-#endif
-
-    if (!call->pending && !call->progress) {
-        pn_peer_call_unref(call);
-        return FALSE;
-    }
-
-    call->progress = FALSE;
-
-    return TRUE;
 }
