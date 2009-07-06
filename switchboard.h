@@ -219,16 +219,6 @@ void msn_switchboard_disconnect(MsnSwitchBoard *swboard);
 void msn_switchboard_close(MsnSwitchBoard *swboard);
 
 /**
- * Release a switchboard from a certain function.
- *
- * @param swboard The switchboard to release.
- * @param flag The flag that states the function.
- *
- * @return @c TRUE if the switchboard was closed, @c FALSE otherwise.
- */
-gboolean msn_switchboard_release(MsnSwitchBoard *swboard, MsnSBFlag flag);
-
-/**
  * Returns whether or not we currently can send a message through this
  * switchboard.
  *

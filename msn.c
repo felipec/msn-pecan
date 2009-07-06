@@ -1518,7 +1518,7 @@ chat_leave (PurpleConnection *gc,
 
     conv = swboard->conv;
 
-    msn_switchboard_release (swboard, MSN_SB_FLAG_IM);
+    g_hash_table_remove (session->chats, GINT_TO_POINTER (id));
     swboard->conv = NULL;
 }
 
@@ -1605,7 +1605,7 @@ convo_closed (PurpleConnection *gc,
 
     conv = swboard->conv;
 
-    msn_switchboard_release(swboard, MSN_SB_FLAG_IM);
+    g_hash_table_remove (session->conversations, who);
     swboard->conv = NULL;
 }
 

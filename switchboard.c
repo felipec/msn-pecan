@@ -1610,27 +1610,6 @@ msn_switchboard_close(MsnSwitchBoard *swboard)
     }
 }
 
-gboolean
-msn_switchboard_release(MsnSwitchBoard *swboard, MsnSBFlag flag)
-{
-    g_return_val_if_fail(swboard, FALSE);
-
-    swboard->flag &= ~flag;
-
-    if (flag == MSN_SB_FLAG_IM)
-        /* Forget any conversation that used to be associated with this
-         * swboard. */
-        swboard->conv = NULL;
-
-    if (swboard->flag == 0)
-    {
-        msn_switchboard_close(swboard);
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
 /**************************************************************************
  * Init stuff
  **************************************************************************/
