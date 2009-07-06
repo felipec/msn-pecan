@@ -91,7 +91,7 @@ pn_peer_link_free(PnPeerLink *link)
         link->swboard->links = g_list_remove(link->swboard->links, link);
 
     while (link->slp_calls)
-        pn_peer_call_destroy(link->slp_calls->data);
+        pn_peer_call_unref(link->slp_calls->data);
 
 #ifdef MSN_DIRECTCONN
     if (link->directconn)
@@ -677,7 +677,7 @@ pn_peer_link_process_msg(PnPeerLink *link,
         msn_slpmsg_destroy(slpmsg);
 
         if (call && call->wasted)
-            pn_peer_call_destroy(call);
+            pn_peer_call_unref(call);
     }
 }
 

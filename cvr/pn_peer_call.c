@@ -61,6 +61,8 @@ pn_peer_call_new(PnPeerLink *link)
     call->timer = purple_timeout_add(PN_PEER_CALL_TIMEOUT, pn_peer_call_timeout, call);
     call->session_id = link->slp_session_id++;
 
+    call->ref_count++;
+
     return call;
 }
 
@@ -108,6 +110,27 @@ pn_peer_call_destroy(PnPeerCall *call)
         purple_xfer_unref(call->xfer);
 
     g_free(call);
+}
+
+PnPeerCall *
+pn_peer_call_ref(PnPeerCall *call)
+{
+    call->ref_count++;
+
+    return call;
+}
+
+PnPeerCall *
+pn_peer_call_unref(PnPeerCall *call)
+{
+    call->ref_count--;
+
+    if (call->ref_count == 0) {
+        pn_peer_call_destroy(call);
+        return NULL;
+    }
+
+    return call;
 }
 
 void
@@ -173,7 +196,7 @@ pn_peer_call_close(PnPeerCall *call)
 {
     msn_slp_sip_send_bye(call, "application/x-msnmsgr-sessionclosebody");
     pn_peer_link_unleash(call->link);
-    pn_peer_call_destroy(call);
+    pn_peer_call_unref(call);
 }
 
 gboolean
@@ -188,7 +211,7 @@ pn_peer_call_timeout(gpointer data)
 #endif
 
     if (!call->pending && !call->progress) {
-        pn_peer_call_destroy(call);
+        pn_peer_call_unref(call);
         return FALSE;
     }
 

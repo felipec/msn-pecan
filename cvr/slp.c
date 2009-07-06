@@ -583,7 +583,7 @@ msn_slp_sip_recv(PnPeerLink *link,
 
             call->wasted = TRUE;
 
-            /* pn_peer_call_destroy(call); */
+            /* pn_peer_call_unref(call); */
             return call;
         }
 
@@ -606,7 +606,7 @@ msn_slp_sip_recv(PnPeerLink *link,
         if (call)
             call->wasted = TRUE;
 
-        /* pn_peer_call_destroy(call); */
+        /* pn_peer_call_unref(call); */
     }
     else
         call = NULL;

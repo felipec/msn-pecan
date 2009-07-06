@@ -74,7 +74,7 @@ xfer_cancel(PurpleXfer *xfer)
             g_free(content);
             pn_peer_link_unleash(call->link);
 
-            pn_peer_call_destroy(call);
+            pn_peer_call_unref(call);
         }
     }
 }

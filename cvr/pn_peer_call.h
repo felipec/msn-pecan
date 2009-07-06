@@ -66,13 +66,17 @@ struct PnPeerCall
     int timer;
 
     struct PnPeerLink *link;
+    unsigned int ref_count;
 };
 
 PnPeerCall *pn_peer_call_new(struct PnPeerLink *link);
+void pn_peer_call_destroy(PnPeerCall *call);
+PnPeerCall *pn_peer_call_ref(PnPeerCall *call);
+PnPeerCall *pn_peer_call_unref(PnPeerCall *call);
+
 void pn_peer_call_init(PnPeerCall *call,
                        PnPeerCallType type);
 void pn_peer_call_session_init(PnPeerCall *call);
-void pn_peer_call_destroy(PnPeerCall *call);
 void pn_peer_call_invite(PnPeerCall *call,
                          const char *euf_guid,
                          int app_id,
