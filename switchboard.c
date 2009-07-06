@@ -1550,9 +1550,8 @@ msn_switchboard_close(MsnSwitchBoard *swboard)
 {
     g_return_if_fail(swboard);
 
-    if (swboard->closed)
-    {
-        msn_switchboard_unref(swboard);
+    if (swboard->closed) {
+        pn_error ("already closed");
         return;
     }
 
