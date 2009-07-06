@@ -68,7 +68,7 @@ struct PnPeerCall
 };
 
 PnPeerCall *pn_peer_call_new(struct PnPeerLink *link);
-void pn_peer_call_destroy(PnPeerCall *call);
+void pn_peer_call_free(PnPeerCall *call);
 PnPeerCall *pn_peer_call_ref(PnPeerCall *call);
 PnPeerCall *pn_peer_call_unref(PnPeerCall *call);
 

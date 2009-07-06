@@ -87,7 +87,7 @@ pn_peer_call_new(PnPeerLink *link)
 }
 
 void
-pn_peer_call_destroy(PnPeerCall *call)
+pn_peer_call_free(PnPeerCall *call)
 {
     GList *e;
     MsnSession *session;
@@ -146,7 +146,7 @@ pn_peer_call_unref(PnPeerCall *call)
     call->ref_count--;
 
     if (call->ref_count == 0) {
-        pn_peer_call_destroy(call);
+        pn_peer_call_free(call);
         return NULL;
     }
 
