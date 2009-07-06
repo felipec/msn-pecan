@@ -20,7 +20,7 @@
 #include "slpcall.h"
 
 #include "slp.h"
-#include "slplink.h"
+#include "pn_peer_link.h"
 #include "slpmsg.h"
 #include "session.h"
 #include "pn_util.h"
@@ -43,7 +43,7 @@
 /* #define PECAN_DEBUG_SLPCALL */
 
 MsnSlpCall *
-msn_slp_call_new(MsnSlpLink *slplink)
+msn_slp_call_new(PnPeerLink *link)
 {
     MsnSlpCall *slpcall;
 
@@ -53,12 +53,12 @@ msn_slp_call_new(MsnSlpLink *slplink)
     pn_info("slpcall_new: slpcall(%p)\n", slpcall);
 #endif
 
-    slpcall->slplink = slplink;
+    slpcall->link = link;
 
-    msn_slplink_add_slpcall(slplink, slpcall);
+    pn_peer_link_add_slpcall(link, slpcall);
 
     slpcall->timer = purple_timeout_add(MSN_SLPCALL_TIMEOUT, msn_slp_call_timeout, slpcall);
-    slpcall->session_id = slplink->slp_session_id++;
+    slpcall->session_id = link->slp_session_id++;
 
     return slpcall;
 }
@@ -83,7 +83,7 @@ msn_slp_call_destroy(MsnSlpCall *slpcall)
     g_free(slpcall->branch);
     g_free(slpcall->data_info);
 
-    for (e = slpcall->slplink->slp_msgs; e; ){
+    for (e = slpcall->link->slp_msgs; e; ){
         MsnSlpMessage *slpmsg = e->data;
         e = e->next;
 
@@ -96,12 +96,12 @@ msn_slp_call_destroy(MsnSlpCall *slpcall)
             msn_slpmsg_destroy(slpmsg);
     }
 
-    session = slpcall->slplink->session;
+    session = slpcall->link->session;
 
     if (slpcall->end_cb)
         slpcall->end_cb(slpcall, session);
 
-    msn_slplink_remove_slpcall(slpcall->slplink, slpcall);
+    pn_peer_link_remove_slpcall(slpcall->link, slpcall);
 
     if (slpcall->xfer)
         purple_xfer_unref(slpcall->xfer);
@@ -132,12 +132,12 @@ msn_slp_call_invite(MsnSlpCall *slpcall,
                     int app_id,
                     const char *context)
 {
-    MsnSlpLink *slplink;
+    PnPeerLink *link;
     MsnSlpMessage *slpmsg;
     char *header;
     char *content;
 
-    slplink = slpcall->slplink;
+    link = slpcall->link;
 
     slpcall->branch = msn_rand_guid();
 
@@ -151,7 +151,7 @@ msn_slp_call_invite(MsnSlpCall *slpcall,
                               context);
 
     header = g_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
-                             slplink->remote_user);
+                             link->remote_user);
 
     slpmsg = msn_slpmsg_sip_new(slpcall, 0, header, slpcall->branch,
                                 "application/x-msnmsgr-sessionreqbody", content);
@@ -161,7 +161,7 @@ msn_slp_call_invite(MsnSlpCall *slpcall,
     slpmsg->text_body = TRUE;
 #endif
 
-    msn_slplink_send_slpmsg(slplink, slpmsg);
+    pn_peer_link_send_slpmsg(link, slpmsg);
 
     g_free(header);
     g_free(content);
@@ -171,7 +171,7 @@ void
 msn_slp_call_close(MsnSlpCall *slpcall)
 {
     msn_slp_sip_send_bye(slpcall, "application/x-msnmsgr-sessionclosebody");
-    msn_slplink_unleash(slpcall->slplink);
+    pn_peer_link_unleash(slpcall->link);
     msn_slp_call_destroy(slpcall);
 }
 

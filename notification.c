@@ -42,7 +42,7 @@
 #include "io/pn_node_private.h"
 
 #if defined(PECAN_CVR)
-#include "cvr/slplink.h" /* for slplink_destroy */
+#include "cvr/pn_peer_link.h" /* for pn_peer_link_destroy */
 #endif /* defined(PECAN_CVR) */
 
 #include "pn_error.h"
@@ -668,12 +668,12 @@ fln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
 #if defined(PECAN_CVR)
     {
-        MsnSlpLink *slplink;
+        PnPeerLink *link;
 
-        slplink = msn_session_find_slplink(cmdproc->session, cmd->params[0]);
+        link = msn_session_find_peer_link(cmdproc->session, cmd->params[0]);
 
-        if (slplink)
-            msn_slplink_destroy(slplink);
+        if (link)
+            pn_peer_link_destroy(link);
     }
 #endif /* defined(PECAN_CVR) */
 }

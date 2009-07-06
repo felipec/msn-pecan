@@ -20,7 +20,7 @@
 #include "pn_log.h"
 
 #include "cvr/slpcall.h"
-#include "cvr/slplink.h"
+#include "cvr/pn_peer_link.h"
 
 #include "session_private.h"
 #include "ab/pn_contact_priv.h"
@@ -84,14 +84,14 @@ dp_ok (MsnSlpCall *slpcall,
     const char *info;
 
     info = slpcall->data_info;
-    pn_info ("passport=[%s]", slpcall->slplink->remote_user);
+    pn_info ("passport=[%s]", slpcall->link->remote_user);
 
 #ifdef HAVE_LIBPURPLE
     {
         PurpleAccount *account;
-        account = msn_session_get_user_data (slpcall->slplink->session);
+        account = msn_session_get_user_data (slpcall->link->session);
 
-        purple_buddy_icons_set_for_user (account, slpcall->slplink->remote_user,
+        purple_buddy_icons_set_for_user (account, slpcall->link->remote_user,
                                          g_memdup (data, size), size, info);
     }
 #endif /* HAVE_LIBPURPLE */
@@ -106,7 +106,7 @@ dp_fail (MsnSlpCall *slpcall,
 
     pn_warning ("unknown error");
 
-    passport = slpcall->slplink->remote_user;
+    passport = slpcall->link->remote_user;
 
     contact = pn_contactlist_find_contact (session->contactlist, passport);
 
@@ -139,10 +139,10 @@ request (PnContact *user)
     if (g_ascii_strcasecmp (user->passport,
                             msn_session_get_username (session)))
     {
-        MsnSlpLink *slplink;
-        slplink = msn_session_get_slplink (session, user->passport);
-        msn_slplink_request_object (slplink, info,
-                                    dp_ok, dp_fail, obj);
+        PnPeerLink *link;
+        link = msn_session_get_peer_link (session, user->passport);
+        pn_peer_link_request_object (link, info,
+                                     dp_ok, dp_fail, obj);
     }
     else
     {

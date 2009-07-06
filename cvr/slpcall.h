@@ -24,7 +24,7 @@ typedef struct MsnSlpCall MsnSlpCall;
 
 struct MsnSession;
 struct MsnSlpSession;
-struct MsnSlpLink;
+struct PnPeerLink;
 
 #include <glib.h>
 
@@ -69,10 +69,10 @@ struct MsnSlpCall
 
     int timer;
 
-    struct MsnSlpLink *slplink;
+    struct PnPeerLink *link;
 };
 
-MsnSlpCall *msn_slp_call_new(struct MsnSlpLink *slplink);
+MsnSlpCall *msn_slp_call_new(struct PnPeerLink *link);
 void msn_slp_call_init(MsnSlpCall *slpcall,
                        MsnSlpCallType type);
 void msn_slp_call_session_init(MsnSlpCall *slpcall);

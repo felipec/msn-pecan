@@ -105,7 +105,7 @@ objects := msn.o \
 ifdef CVR
   objects += cvr/slp.o \
 	     cvr/slpcall.o \
-	     cvr/slplink.o \
+	     cvr/pn_peer_link.o \
 	     cvr/slpmsg.o \
 	     cvr/pn_msnobj.o \
 	     cvr/xfer.o

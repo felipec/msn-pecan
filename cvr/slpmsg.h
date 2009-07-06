@@ -24,7 +24,7 @@ typedef struct MsnSlpMessage MsnSlpMessage;
 
 struct MsnSlpSesison;
 struct MsnSlpCall;
-struct MsnSlpLink;
+struct PnPeerLink;
 struct MsnSession;
 struct MsnMessage;
 
@@ -40,7 +40,7 @@ struct MsnMessage;
 struct MsnSlpMessage
 {
     struct MsnSlpCall *slpcall; /**< The slpcall to which this slp message belongs (if applicable). */
-    struct MsnSlpLink *slplink; /**< The slplink through which this slp message is being sent. */
+    struct PnPeerLink *link; /**< The peer link through which this slp message is being sent. */
     struct MsnSession *session;
 
     long session_id;
@@ -72,10 +72,10 @@ struct MsnSlpMessage
 /**
  * Creates a new slp message
  *
- * @param slplink The slplink through which this slp message will be sent.
+ * @param link The peer link through which this slp message will be sent.
  * @return The created slp message.
  */
-MsnSlpMessage *msn_slpmsg_new(struct MsnSlpLink *slplink);
+MsnSlpMessage *msn_slpmsg_new(struct PnPeerLink *link);
 
 /**
  * Destroys a slp message

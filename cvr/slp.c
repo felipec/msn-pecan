@@ -18,7 +18,7 @@
  */
 
 #include "slp.h"
-#include "slplink.h"
+#include "pn_peer_link.h"
 #include "slpcall.h"
 #include "slpmsg.h"
 #include "pn_log.h"
@@ -86,7 +86,7 @@ got_transresp(MsnSlpCall *slpcall,
     MsnDirectConn *directconn;
     char **ip_addrs, **c;
 
-    directconn = msn_directconn_new(slpcall->slplink);
+    directconn = msn_directconn_new(slpcall->link);
 
     directconn->initial_call = slpcall;
 
@@ -111,10 +111,10 @@ msn_slp_sip_send_ok(MsnSlpCall *slpcall,
                     const char *type,
                     const char *content)
 {
-    MsnSlpLink *slplink;
+    PnPeerLink *link;
     MsnSlpMessage *slpmsg;
 
-    slplink = slpcall->slplink;
+    link = slpcall->link;
 
     /* 200 OK */
     slpmsg = msn_slpmsg_sip_new(slpcall, 1,
@@ -126,7 +126,7 @@ msn_slp_sip_send_ok(MsnSlpCall *slpcall,
     slpmsg->text_body = TRUE;
 #endif
 
-    msn_slplink_queue_slpmsg(slplink, slpmsg);
+    pn_peer_link_queue_slpmsg(link, slpmsg);
 
     msn_slp_call_session_init(slpcall);
 }
@@ -137,10 +137,10 @@ msn_slp_sip_send_decline(MsnSlpCall *slpcall,
                          const char *type,
                          const char *content)
 {
-    MsnSlpLink *slplink;
+    PnPeerLink *link;
     MsnSlpMessage *slpmsg;
 
-    slplink = slpcall->slplink;
+    link = slpcall->link;
 
     /* 603 Decline */
     slpmsg = msn_slpmsg_sip_new(slpcall, 1,
@@ -152,7 +152,7 @@ msn_slp_sip_send_decline(MsnSlpCall *slpcall,
     slpmsg->text_body = TRUE;
 #endif
 
-    msn_slplink_queue_slpmsg(slplink, slpmsg);
+    pn_peer_link_queue_slpmsg(link, slpmsg);
 }
 
 #define MAX_FILE_NAME_LEN 0x226
@@ -169,7 +169,7 @@ got_sessionreq(MsnSlpCall *slpcall,
         /* Emoticon or UserDisplay */
         char *content;
         gsize len;
-        MsnSlpLink *slplink;
+        PnPeerLink *link;
         MsnSlpMessage *slpmsg;
         PnMsnObj *obj;
         char *msnobj_data;
@@ -186,7 +186,7 @@ got_sessionreq(MsnSlpCall *slpcall,
 
         g_free(content);
 
-        slplink = slpcall->slplink;
+        link = slpcall->link;
 
         msnobj_data = (char *) purple_base64_decode(context, &len);
         obj = pn_msnobj_new_from_string(msnobj_data);
@@ -238,24 +238,24 @@ got_sessionreq(MsnSlpCall *slpcall,
         pn_msnobj_free(obj);
 
         /* DATA PREP */
-        slpmsg = msn_slpmsg_new(slplink);
+        slpmsg = msn_slpmsg_new(link);
         slpmsg->slpcall = slpcall;
         slpmsg->session_id = slpcall->session_id;
         msn_slpmsg_set_body(slpmsg, NULL, 4);
 #ifdef PECAN_DEBUG_SLP
         slpmsg->info = "SLP DATA PREP";
 #endif
-        msn_slplink_queue_slpmsg(slplink, slpmsg);
+        pn_peer_link_queue_slpmsg(link, slpmsg);
 
         /* DATA */
-        slpmsg = msn_slpmsg_new(slplink);
+        slpmsg = msn_slpmsg_new(link);
         slpmsg->slpcall = slpcall;
         slpmsg->flags = 0x20;
 #ifdef PECAN_DEBUG_SLP
         slpmsg->info = "SLP DATA";
 #endif
         msn_slpmsg_set_image(slpmsg, image);
-        msn_slplink_queue_slpmsg(slplink, slpmsg);
+        pn_peer_link_queue_slpmsg(link, slpmsg);
     }
     else if (strcmp(euf_guid, "5D3E02AB-6190-11D3-BBBB-00C04F795683") == 0)
         msn_xfer_got_invite(slpcall, branch, context);
@@ -265,14 +265,14 @@ void
 msn_slp_sip_send_bye(MsnSlpCall *slpcall,
                      const char *type)
 {
-    MsnSlpLink *slplink;
+    PnPeerLink *link;
     MsnSlpMessage *slpmsg;
     char *header;
 
-    slplink = slpcall->slplink;
+    link = slpcall->link;
 
     header = g_strdup_printf("BYE MSNMSGR:%s MSNSLP/1.0",
-                             slplink->local_user);
+                             link->local_user);
 
     slpmsg = msn_slpmsg_sip_new(slpcall, 0, header,
                                 "A0D624A6-6C0C-4283-A9E0-BC97B4B46D32",
@@ -285,7 +285,7 @@ msn_slp_sip_send_bye(MsnSlpCall *slpcall,
     slpmsg->text_body = TRUE;
 #endif
 
-    msn_slplink_queue_slpmsg(slplink, slpmsg);
+    pn_peer_link_queue_slpmsg(link, slpmsg);
 }
 
 static void
@@ -294,9 +294,9 @@ got_invite(MsnSlpCall *slpcall,
            const char *type,
            const char *content)
 {
-    MsnSlpLink *slplink;
+    PnPeerLink *link;
 
-    slplink = slpcall->slplink;
+    link = slpcall->link;
 
     pn_log("type=%s", type);
 
@@ -342,7 +342,7 @@ got_invite(MsnSlpCall *slpcall,
             listening = "true";
             nonce = msn_rand_guid();
 
-            directconn = msn_directconn_new(slplink);
+            directconn = msn_directconn_new(link);
 
             /* msn_directconn_parse_nonce(directconn, nonce); */
             directconn->nonce = g_strdup(nonce);
@@ -416,18 +416,18 @@ got_ok(MsnSlpCall *slpcall,
 
     if (strcmp(type, "application/x-msnmsgr-sessionreqbody") == 0) {
 #ifdef MSN_DIRECTCONN
-        if (slpcall->slplink->session->use_directconn &&
+        if (slpcall->link->session->use_directconn &&
             slpcall->type == MSN_SLPCALL_DC)
         {
             /* First let's try a DirectConnection. */
 
-            MsnSlpLink *slplink;
+            PnPeerLink *link;
             MsnSlpMessage *slpmsg;
             char *header;
             gchar *new_content;
             char *branch;
 
-            slplink = slpcall->slplink;
+            link = slpcall->link;
 
             branch = msn_rand_guid();
 
@@ -438,7 +438,7 @@ got_ok(MsnSlpCall *slpcall,
                                           "ICF: false\r\n");
 
             header = g_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
-                                     slplink->remote_user);
+                                     link->remote_user);
 
             slpmsg = msn_slpmsg_sip_new(slpcall, 0, header, branch,
                                         "application/x-msnmsgr-transreqbody",
@@ -448,7 +448,7 @@ got_ok(MsnSlpCall *slpcall,
             slpmsg->info = "SLP INVITE";
             slpmsg->text_body = TRUE;
 #endif
-            msn_slplink_send_slpmsg(slplink, slpmsg);
+            pn_peer_link_send_slpmsg(link, slpmsg);
 
             g_free(header);
             g_free(new_content);
@@ -504,7 +504,7 @@ got_ok(MsnSlpCall *slpcall,
 }
 
 MsnSlpCall *
-msn_slp_sip_recv(MsnSlpLink *slplink,
+msn_slp_sip_recv(PnPeerLink *link,
                  const char *body)
 {
     MsnSlpCall *slpcall;
@@ -519,7 +519,7 @@ msn_slp_sip_recv(MsnSlpLink *slplink,
         char *content;
         char *content_type;
 
-        slpcall = msn_slp_call_new(slplink);
+        slpcall = msn_slp_call_new(link);
 
         /* From: <msnmsgr:buddy@hotmail.com> */
 #if 0
@@ -556,7 +556,7 @@ msn_slp_sip_recv(MsnSlpLink *slplink,
         char *call_id;
 
         call_id = get_token(body, "Call-ID: {", "}");
-        slpcall = msn_slplink_find_slp_call(slplink, call_id);
+        slpcall = pn_peer_link_find_slp_call(link, call_id);
         g_free(call_id);
 
         g_return_val_if_fail(slpcall != NULL, NULL);
@@ -600,7 +600,7 @@ msn_slp_sip_recv(MsnSlpLink *slplink,
         char *call_id;
 
         call_id = get_token(body, "Call-ID: {", "}");
-        slpcall = msn_slplink_find_slp_call(slplink, call_id);
+        slpcall = pn_peer_link_find_slp_call(link, call_id);
         g_free(call_id);
 
         if (slpcall)
@@ -619,26 +619,26 @@ msn_p2p_msg(MsnCmdProc *cmdproc,
             MsnMessage *msg)
 {
     MsnSession *session;
-    MsnSlpLink *slplink;
+    PnPeerLink *link;
 
     session = cmdproc->session;
-    slplink = msn_session_get_slplink(session, msg->remote_user);
+    link = msn_session_get_peer_link(session, msg->remote_user);
 
-    if (!slplink->swboard) {
+    if (!link->swboard) {
         /* We will need this in order to change its flags. */
-        slplink->swboard = cmdproc->data;
+        link->swboard = cmdproc->data;
         /* If swboard is NULL, something has probably gone wrong earlier on
          * I didn't want to do this, but MSN 7 is somehow causing us to crash
          * here, I couldn't reproduce it to debug more, and people are
          * reporting bugs. Hopefully this doesn't cause more crashes. Stu.
          */
-        if (slplink->swboard)
-            slplink->swboard->slplinks = g_list_prepend(slplink->swboard->slplinks, slplink);
+        if (link->swboard)
+            link->swboard->links = g_list_prepend(link->swboard->links, link);
         else
             pn_error("msn_p2p_msg, swboard is NULL, ouch!");
     }
 
-    msn_slplink_process_msg(slplink, msg);
+    pn_peer_link_process_msg(link, msg);
 }
 
 static void
@@ -650,7 +650,7 @@ got_emoticon(MsnSlpCall *slpcall,
     PurpleConversation *conv;
     MsnSwitchBoard *swboard;
 
-    swboard = slpcall->slplink->swboard;
+    swboard = slpcall->link->swboard;
     conv = swboard->conv;
 
     if (conv) {
@@ -670,7 +670,7 @@ msn_emoticon_msg(MsnCmdProc *cmdproc,
                  MsnMessage *msg)
 {
     MsnSession *session;
-    MsnSlpLink *slplink;
+    PnPeerLink *link;
     MsnSwitchBoard *swboard;
     PnMsnObj *obj;
     char **tokens;
@@ -713,14 +713,14 @@ msn_emoticon_msg(MsnCmdProc *cmdproc,
         who = msg->remote_user;
         sha1 = pn_msnobj_get_sha1(obj);
 
-        slplink = msn_session_get_slplink(session, who);
+        link = msn_session_get_peer_link(session, who);
 
 #ifdef HAVE_LIBPURPLE
         {
             PurpleConversation *conv;
 
             swboard = cmdproc->data;
-            slplink->swboard = swboard;
+            link->swboard = swboard;
             conv = swboard->conv;
 
             /* If the conversation doesn't exist then this is a custom smiley
@@ -733,7 +733,7 @@ msn_emoticon_msg(MsnCmdProc *cmdproc,
                 conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, who);
 
             if (purple_conv_custom_smiley_add(conv, smile, "sha1", sha1, TRUE))
-                msn_slplink_request_object(slplink, smile, got_emoticon, NULL, obj);
+                pn_peer_link_request_object(link, smile, got_emoticon, NULL, obj);
         }
 #endif /* HAVE_LIBPURPLE */
 

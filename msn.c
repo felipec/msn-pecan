@@ -40,7 +40,7 @@
 #include <string.h> /* For strcmp, strstr, strlen */
 
 #if defined(PECAN_CVR)
-#include "cvr/slplink.h"
+#include "cvr/pn_peer_link.h"
 #include "cvr/xfer.h"
 #endif /* defined(PECAN_CVR) */
 
@@ -520,7 +520,7 @@ msn_new_xfer(PurpleConnection *gc, const char *who)
     if (!xfer)
         return NULL;
 
-    xfer->data = msn_session_get_slplink(session, who); /* temporary */
+    xfer->data = msn_session_get_peer_link(session, who); /* temporary */
     purple_xfer_set_init_fnc(xfer, msn_xfer_invite);
 
     return xfer;

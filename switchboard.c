@@ -27,7 +27,7 @@
 #include "pn_locale.h"
 
 #if defined(PECAN_CVR)
-#include "cvr/slplink.h"
+#include "cvr/pn_peer_link.h"
 #endif /* defined(PECAN_CVR) */
 
 #if defined(PECAN_LIBSIREN)
@@ -209,8 +209,8 @@ msn_switchboard_free (MsnSwitchBoard *swboard)
 
 #if defined(PECAN_CVR)
     /* If it linked us is because its looking for trouble */
-    while (swboard->slplinks)
-        msn_slplink_destroy(swboard->slplinks->data);
+    while (swboard->links)
+        pn_peer_link_destroy(swboard->links->data);
 #endif /* defined(PECAN_CVR) */
 
     {
@@ -1336,14 +1336,14 @@ got_voice_clip(MsnSlpCall *slpcall, const guchar *data, gsize size)
 #else
         str = g_strdup_printf(_("sent you a voice clip. Copy the following link in Safari to play it: %s"), decoded_file);
 #endif /* ADIUM */
-        got_datacast_inform_user(slpcall->slplink->swboard->cmdproc, slpcall->slplink->remote_user, str);
+        got_datacast_inform_user(slpcall->link->swboard->cmdproc, slpcall->link->remote_user, str);
 
         g_free (decoded_file);
     } else {
         pn_error ("couldn't create temporany file to store the received voice clip!\n");
 
         str = g_strdup_printf(_("sent you a voice clip, but it cannot be played due to an error happened while storing the file."));
-        got_datacast_inform_user(slpcall->slplink->swboard->cmdproc, slpcall->slplink->remote_user, str);
+        got_datacast_inform_user(slpcall->link->swboard->cmdproc, slpcall->link->remote_user, str);
     }
 
     g_free (str);
@@ -1387,14 +1387,14 @@ datacast_msg (MsnCmdProc *cmdproc,
     {
 #if defined(PECAN_LIBSIREN)
         const char *data;
-        MsnSlpLink *slplink;
+        PnPeerLink *link;
         PnMsnObj *obj;
 
         data = g_hash_table_lookup(body, "Data");
         obj = pn_msnobj_new_from_string(data);
 
-        slplink = msn_session_get_slplink(cmdproc->session, passport);
-        msn_slplink_request_object(slplink, data, got_voice_clip, NULL, obj);
+        link = msn_session_get_peer_link(cmdproc->session, passport);
+        pn_peer_link_request_object(link, data, got_voice_clip, NULL, obj);
             
         pn_msnobj_free(obj);
 #endif /* defined(PECAN_LIBSIREN) */

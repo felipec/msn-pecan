@@ -27,7 +27,7 @@
 #include "ab/pn_contact_priv.h"
 
 #if defined(PECAN_CVR)
-#include "cvr/slplink.h"
+#include "cvr/pn_peer_link.h"
 #endif /* defined(PECAN_CVR) */
 
 #include "sync.h"
@@ -130,8 +130,8 @@ msn_session_destroy (MsnSession *session)
         msn_session_disconnect (session);
 
 #if defined(PECAN_CVR)
-    while (session->slplinks)
-        msn_slplink_destroy (session->slplinks->data);
+    while (session->links)
+        pn_peer_link_destroy (session->links->data);
 #endif /* defined(PECAN_CVR) */
 
     if (session->notification)

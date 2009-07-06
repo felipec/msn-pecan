@@ -18,10 +18,9 @@
  */
 
 #include "slpmsg.h"
-#include "slplink.h"
+#include "pn_peer_link.h"
 
 #include "slpcall.h"
-#include "slplink.h"
 #include "session.h"
 
 #include "cmd/msg_private.h"
@@ -33,7 +32,7 @@
 #include "fix_purple.h"
 
 MsnSlpMessage *
-msn_slpmsg_new(MsnSlpLink *slplink)
+msn_slpmsg_new(PnPeerLink *link)
 {
     MsnSlpMessage *slpmsg;
 
@@ -43,9 +42,9 @@ msn_slpmsg_new(MsnSlpLink *slplink)
     pn_info("slpmsg new (%p)\n", slpmsg);
 #endif
 
-    slpmsg->slplink = slplink;
+    slpmsg->link = link;
 
-    slplink->slp_msgs = g_list_append(slplink->slp_msgs, slpmsg);
+    link->slp_msgs = g_list_append(link->slp_msgs, slpmsg);
 
     return slpmsg;
 }
@@ -53,7 +52,7 @@ msn_slpmsg_new(MsnSlpLink *slplink)
 void
 msn_slpmsg_destroy(MsnSlpMessage *slpmsg)
 {
-    MsnSlpLink *slplink;
+    PnPeerLink *link;
     GList *cur;
 
     if (!slpmsg)
@@ -63,7 +62,7 @@ msn_slpmsg_destroy(MsnSlpMessage *slpmsg)
     pn_info("slpmsg destroy (%p)\n", slpmsg);
 #endif
 
-    slplink = slpmsg->slplink;
+    link = slpmsg->link;
 
     if (slpmsg->fp)
         fclose(slpmsg->fp);
@@ -86,7 +85,7 @@ msn_slpmsg_destroy(MsnSlpMessage *slpmsg)
         msg->ack_data = NULL;
     }
 
-    slplink->slp_msgs = g_list_remove(slplink->slp_msgs, slpmsg);
+    link->slp_msgs = g_list_remove(link->slp_msgs, slpmsg);
 
     g_free(slpmsg);
 }
@@ -161,13 +160,13 @@ msn_slpmsg_sip_new(MsnSlpCall *slpcall,
                    const char *content_type,
                    const char *content)
 {
-    MsnSlpLink *slplink;
+    PnPeerLink *link;
     MsnSlpMessage *slpmsg;
     gchar *body;
     gsize body_len;
     gsize content_len;
 
-    slplink = slpcall->slplink;
+    link = slpcall->link;
 
     /* Let's remember that "content" should end with a 0x00 */
 
@@ -184,8 +183,8 @@ msn_slpmsg_sip_new(MsnSlpCall *slpcall,
                            "Content-Length: %" G_GSIZE_FORMAT "\r\n"
                            "\r\n",
                            header,
-                           slplink->remote_user,
-                           slplink->local_user,
+                           link->remote_user,
+                           link->local_user,
                            branch,
                            cseq,
                            slpcall->id,
@@ -200,7 +199,7 @@ msn_slpmsg_sip_new(MsnSlpCall *slpcall,
         g_strlcat(body, content, body_len);
     }
 
-    slpmsg = msn_slpmsg_new(slplink);
+    slpmsg = msn_slpmsg_new(link);
     msn_slpmsg_set_body(slpmsg, (gpointer) body, body_len);
 
     slpmsg->sip = TRUE;

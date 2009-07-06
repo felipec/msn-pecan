@@ -23,9 +23,9 @@
 #include <glib.h>
 
 struct MsnSlpCall;
-struct MsnSlpLink;
+struct PnPeerLink;
 
-struct MsnSlpCall *msn_slp_sip_recv(struct MsnSlpLink *slplink,
+struct MsnSlpCall *msn_slp_sip_recv(struct PnPeerLink *link,
                                     const char *body);
 
 void msn_slp_sip_send_ok(struct MsnSlpCall *slpcall,

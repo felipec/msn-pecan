@@ -44,14 +44,14 @@
 void
 msn_directconn_send_handshake(MsnDirectConn *directconn)
 {
-    MsnSlpLink *slplink;
+    PnPeerLink *link;
     MsnSlpMessage *slpmsg;
 
     g_return_if_fail(directconn != NULL);
 
-    slplink = directconn->slplink;
+    link = directconn->link;
 
-    slpmsg = msn_slpmsg_new(slplink);
+    slpmsg = msn_slpmsg_new(link);
     slpmsg->flags = 0x100;
 
     if (directconn->nonce != NULL)
@@ -78,7 +78,7 @@ msn_directconn_send_handshake(MsnDirectConn *directconn)
     g_free(directconn->nonce);
     directconn->nonce = NULL;
 
-    msn_slplink_send_slpmsg(slplink, slpmsg);
+    pn_peer_link_send_slpmsg(link, slpmsg);
 
     directconn->ack_sent = TRUE;
 }
@@ -270,7 +270,7 @@ msn_directconn_process_msg(MsnDirectConn *directconn, MsnMessage *msg)
 {
     pn_debug ("process_msg");
 
-    msn_slplink_process_msg(directconn->slplink, msg);
+    pn_peer_link_process_msg(directconn->link, msg);
 }
 
 static gboolean
@@ -409,7 +409,7 @@ msn_directconn_connect(MsnDirectConn *directconn, const char *host, int port)
 
     pn_log ("begin");
 
-    session = directconn->slplink->session;
+    session = directconn->link->session;
 
 #if 0
     if (session->http_method)
@@ -449,7 +449,7 @@ msn_directconn_listen(MsnDirectConn *directconn)
 #endif
 
 MsnDirectConn*
-msn_directconn_new(MsnSlpLink *slplink)
+msn_directconn_new(PnPeerLink *link)
 {
     MsnDirectConn *directconn;
 
@@ -457,12 +457,12 @@ msn_directconn_new(MsnSlpLink *slplink)
 
     directconn = g_new0(MsnDirectConn, 1);
 
-    directconn->slplink = slplink;
+    directconn->link = link;
 
-    if (slplink->directconn != NULL)
+    if (link->directconn != NULL)
         pn_warning ("got_transresp: LEAK");
 
-    slplink->directconn = directconn;
+    link->directconn = directconn;
 
     pn_log ("end");
 
@@ -493,7 +493,7 @@ msn_directconn_destroy(MsnDirectConn *directconn)
     if (directconn->nonce != NULL)
         g_free(directconn->nonce);
 
-    directconn->slplink->directconn = NULL;
+    directconn->link->directconn = NULL;
 
     g_free(directconn);
 

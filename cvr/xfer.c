@@ -20,7 +20,7 @@
 #include "xfer.h"
 #include "slp.h"
 #include "slpcall.h"
-#include "slplink.h"
+#include "pn_peer_link.h"
 #include "slpmsg.h"
 #include "session.h"
 
@@ -34,7 +34,6 @@ static void
 xfer_init(PurpleXfer *xfer)
 {
     MsnSlpCall *slpcall;
-    /* MsnSlpLink *slplink; */
     char *content;
 
     pn_info("xfer_init");
@@ -50,7 +49,7 @@ xfer_init(PurpleXfer *xfer)
                         content);
 
     g_free(content);
-    msn_slplink_unleash(slpcall->slplink);
+    pn_peer_link_unleash(slpcall->link);
 }
 
 static void
@@ -73,7 +72,7 @@ xfer_cancel(PurpleXfer *xfer)
                                      content);
 
             g_free(content);
-            msn_slplink_unleash(slpcall->slplink);
+            pn_peer_link_unleash(slpcall->link);
 
             msn_slp_call_destroy(slpcall);
         }
@@ -125,7 +124,7 @@ send_file_cb(MsnSlpCall *slpcall)
     struct stat st;
     PurpleXfer *xfer;
 
-    slpmsg = msn_slpmsg_new(slpcall->slplink);
+    slpmsg = msn_slpmsg_new(slpcall->link);
     slpmsg->slpcall = slpcall;
     slpmsg->flags = 0x1000030;
 #ifdef PECAN_DEBUG_SLP
@@ -138,7 +137,7 @@ send_file_cb(MsnSlpCall *slpcall)
         slpmsg->size = st.st_size;
     xfer->dest_fp = NULL; /* Disable double fclose() */
 
-    msn_slplink_send_slpmsg(slpcall->slplink, slpmsg);
+    pn_peer_link_send_slpmsg(slpcall->link, slpmsg);
 }
 
 typedef struct
@@ -216,7 +215,7 @@ gen_context(const char *file_name,
 void
 msn_xfer_invite(PurpleXfer *xfer)
 {
-    MsnSlpLink *slplink;
+    PnPeerLink *link;
     MsnSlpCall *slpcall;
     char *context;
     const char *fn;
@@ -225,8 +224,8 @@ msn_xfer_invite(PurpleXfer *xfer)
     fn = purple_xfer_get_filename(xfer);
     fp = purple_xfer_get_local_filename(xfer);
 
-    slplink = xfer->data;
-    slpcall = msn_slp_call_new(slplink);
+    link = xfer->data;
+    slpcall = msn_slp_call_new(link);
     msn_slp_call_init(slpcall, MSN_SLPCALL_DC);
 
     slpcall->init_cb = send_file_cb;
@@ -263,7 +262,7 @@ msn_xfer_got_invite(MsnSlpCall *slpcall,
     char *file_name;
     gunichar2 *uni_name;
 
-    account = msn_session_get_user_data (slpcall->slplink->session);
+    account = msn_session_get_user_data (slpcall->link->session);
 
     slpcall->cb = xfer_completed_cb;
     slpcall->end_cb = xfer_end_cb;
@@ -273,7 +272,7 @@ msn_xfer_got_invite(MsnSlpCall *slpcall,
     slpcall->pending = TRUE;
 
     xfer = purple_xfer_new(account, PURPLE_XFER_RECEIVE,
-                           slpcall->slplink->remote_user);
+                           slpcall->link->remote_user);
     if (xfer)
     {
         bin = (char *)purple_base64_decode(context, &bin_len);

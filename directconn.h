@@ -22,7 +22,7 @@
 
 typedef struct MsnDirectConn MsnDirectConn;
 
-#include "cvr/slplink.h"
+#include "cvr/pn_peer_link.h"
 #include "cvr/slp.h"
 
 #include "cmd/msg.h"
@@ -33,7 +33,7 @@ struct _PurpleProxyConnectData;
 
 struct MsnDirectConn
 {
-    MsnSlpLink *slplink;
+    PnPeerLink *link;
     MsnSlpCall *initial_call;
 
     gboolean ack_sent;
@@ -51,7 +51,7 @@ struct MsnDirectConn
     PecanStream *stream;
 };
 
-MsnDirectConn *msn_directconn_new(MsnSlpLink *slplink);
+MsnDirectConn *msn_directconn_new(PnPeerLink *link);
 gboolean msn_directconn_connect(MsnDirectConn *directconn,
                                 const char *host, int port);
 #if 0

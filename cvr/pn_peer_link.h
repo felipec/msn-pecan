@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef MSN_SLPLINK_H
-#define MSN_SLPLINK_H
+#ifndef PN_PEERLINK_H
+#define PN_PEERLINK_H
 
-typedef struct MsnSlpLink MsnSlpLink;
+typedef struct PnPeerLink PnPeerLink;
 
 struct MsnSession;
 struct MsnSwitchboard;
@@ -39,7 +39,7 @@ struct _PurpleXfer;
 typedef void (*MsnSlpCb) (MsnSlpCall *slpcall, const guchar *data, gsize size);
 typedef void (*MsnSlpEndCb) (MsnSlpCall *slpcall, struct MsnSession *session);
 
-struct MsnSlpLink
+struct PnPeerLink
 {
     char *local_user;
     char *remote_user;
@@ -56,32 +56,32 @@ struct MsnSlpLink
     struct MsnDirectConn *directconn;
 };
 
-MsnSlpLink *msn_slplink_new(struct MsnSession *session,
-                            const char *username);
-void msn_slplink_destroy(MsnSlpLink *slplink);
-void msn_slplink_add_slpcall(MsnSlpLink *slplink,
-                             MsnSlpCall *slpcall);
-void msn_slplink_remove_slpcall(MsnSlpLink *slplink,
-                                MsnSlpCall *slpcall);
-MsnSlpCall *msn_slplink_find_slp_call(MsnSlpLink *slplink,
-                                      const char *id);
-void msn_slplink_queue_slpmsg(MsnSlpLink *slplink,
+PnPeerLink *pn_peer_link_new(struct MsnSession *session,
+                             const char *username);
+void pn_peer_link_destroy(PnPeerLink *link);
+void pn_peer_link_add_slpcall(PnPeerLink *link,
+                              MsnSlpCall *slpcall);
+void pn_peer_link_remove_slpcall(PnPeerLink *link,
+                                 MsnSlpCall *slpcall);
+MsnSlpCall *pn_peer_link_find_slp_call(PnPeerLink *link,
+                                       const char *id);
+void pn_peer_link_queue_slpmsg(PnPeerLink *link,
+                               struct MsnSlpMessage *slpmsg);
+void pn_peer_link_send_slpmsg(PnPeerLink *link,
                               struct MsnSlpMessage *slpmsg);
-void msn_slplink_send_slpmsg(MsnSlpLink *slplink,
-                             struct MsnSlpMessage *slpmsg);
-void msn_slplink_unleash(MsnSlpLink *slplink);
-void msn_slplink_process_msg(MsnSlpLink *slplink,
-                             struct MsnMessage *msg);
+void pn_peer_link_unleash(PnPeerLink *link);
+void pn_peer_link_process_msg(PnPeerLink *link,
+                              struct MsnMessage *msg);
 
-void msn_slplink_request_object(MsnSlpLink *slplink,
-                                const char *info,
-                                MsnSlpCb cb,
-                                MsnSlpEndCb end_cb,
-                                const PnMsnObj *obj);
+void pn_peer_link_request_object(PnPeerLink *link,
+                                 const char *info,
+                                 MsnSlpCb cb,
+                                 MsnSlpEndCb end_cb,
+                                 const PnMsnObj *obj);
 
-MsnSlpLink *msn_session_find_slplink(struct MsnSession *session,
-                                     const char *who);
-MsnSlpLink *msn_session_get_slplink(struct MsnSession *session,
-                                    const char *username);
+PnPeerLink *msn_session_find_peer_link(struct MsnSession *session,
+                                       const char *who);
+PnPeerLink *msn_session_get_peer_link(struct MsnSession *session,
+                                      const char *username);
 
-#endif /* MSN_SLPLINK_H */
+#endif /* PN_PEERLINK_H */
