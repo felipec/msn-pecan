@@ -41,7 +41,7 @@
 
 #if defined(PECAN_CVR)
 #include "cvr/pn_peer_link.h"
-#include "cvr/xfer.h"
+#include "libpurple/xfer.h"
 #endif /* defined(PECAN_CVR) */
 
 /* libpurple stuff. */
@@ -520,7 +520,7 @@ msn_new_xfer(PurpleConnection *gc, const char *who)
         return NULL;
 
     xfer->data = msn_session_get_peer_link(session, who); /* temporary */
-    purple_xfer_set_init_fnc(xfer, msn_xfer_invite);
+    purple_xfer_set_init_fnc(xfer, purple_pn_xfer_invite);
 
     return xfer;
 }
@@ -913,6 +913,8 @@ login (PurpleAccount *account)
                           purple_account_get_bool (account, "use_directconn", FALSE));
     msn_session_set_bool (session, "use_userdisplay",
                           purple_account_get_bool (account, "use_userdisplay", TRUE));
+
+    session->xfer_invite_cb = purple_pn_xfer_got_invite;
 
     purple_connection_update_progress (gc, _("Connecting"), 1, 2);
 

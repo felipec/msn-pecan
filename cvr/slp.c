@@ -24,8 +24,6 @@
 #include "pn_log.h"
 #include "io/pn_buffer.h"
 
-#include "xfer.h"
-
 #include "cmd/cmdproc_private.h"
 #include "cmd/msg_private.h"
 
@@ -35,6 +33,8 @@
 
 #include "cvr/pn_msnobj.h"
 #include "switchboard.h"
+
+#include "session_private.h"
 
 #ifdef MSN_DIRECTCONN
 #include "directconn.h"
@@ -258,7 +258,7 @@ got_sessionreq(PnPeerCall *call,
         pn_peer_link_queue_slpmsg(link, slpmsg);
     }
     else if (strcmp(euf_guid, "5D3E02AB-6190-11D3-BBBB-00C04F795683") == 0)
-        msn_xfer_got_invite(call, branch, context);
+        call->link->session->xfer_invite_cb(call, branch, context);
 }
 
 void

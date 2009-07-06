@@ -38,7 +38,7 @@ MSNSOURCES = msn.c \
 	     cvr/pn_peer_link.c \
 	     cvr/slpmsg.c \
 	     cvr/pn_msnobj.c \
-	     cvr/xfer.c \
+	     libpurple/xfer.c \
 	     lib/libsiren/common.c \
 	     lib/libsiren/dct4.c \
 	     lib/libsiren/decoder.c \

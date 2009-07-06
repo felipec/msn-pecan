@@ -33,6 +33,11 @@
 struct MsnNotification;
 struct MsnNexus;
 struct MsnSync;
+struct PnPeerCall;
+
+typedef void (*PnXferInviteCb) (struct PnPeerCall *call,
+                                const char *branch,
+                                const char *context);
 
 struct MsnSession
 {
@@ -90,6 +95,8 @@ struct MsnSession
         gboolean enabled;
         guint timer;
     } autoupdate_tune;
+
+    PnXferInviteCb xfer_invite_cb;
 };
 
 #endif /* SESSION_PRIVATE_H */

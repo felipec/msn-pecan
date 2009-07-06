@@ -107,8 +107,8 @@ ifdef CVR
 	     cvr/pn_peer_call.o \
 	     cvr/pn_peer_link.o \
 	     cvr/slpmsg.o \
-	     cvr/pn_msnobj.o \
-	     cvr/xfer.o
+	     cvr/pn_msnobj.o
+  objects += libpurple/xfer.o
 endif
 
 ifdef SOCKET

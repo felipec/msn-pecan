@@ -18,10 +18,10 @@
  */
 
 #include "xfer.h"
-#include "slp.h"
-#include "pn_peer_call.h"
-#include "pn_peer_link.h"
-#include "slpmsg.h"
+#include "cvr/slp.h"
+#include "cvr/pn_peer_call.h"
+#include "cvr/pn_peer_link.h"
+#include "cvr/slpmsg.h"
 #include "session.h"
 
 #include "pn_log.h"
@@ -213,7 +213,7 @@ gen_context(const char *file_name,
 }
 
 void
-msn_xfer_invite(PurpleXfer *xfer)
+purple_pn_xfer_invite(PurpleXfer *xfer)
 {
     PnPeerLink *link;
     PnPeerCall *call;
@@ -250,9 +250,9 @@ msn_xfer_invite(PurpleXfer *xfer)
 }
 
 void
-msn_xfer_got_invite(PnPeerCall *call,
-                    const char *branch,
-                    const char *context)
+purple_pn_xfer_got_invite(PnPeerCall *call,
+                          const char *branch,
+                          const char *context)
 {
     PurpleAccount *account;
     PurpleXfer *xfer;

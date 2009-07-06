@@ -17,15 +17,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef MSN_XFER_H
-#define MSN_XFER_H
+#ifndef XFER_H
+#define XFER_H
 
 struct PnPeerCall;
 struct _PurpleXfer;
 
-void msn_xfer_invite(struct _PurpleXfer *xfer);
-void msn_xfer_got_invite(struct PnPeerCall *call,
-                         const char *branch,
-                         const char *context);
+void purple_pn_xfer_invite(struct _PurpleXfer *xfer);
+void purple_pn_xfer_got_invite(struct PnPeerCall *call,
+                               const char *branch,
+                               const char *context);
 
-#endif /* MSN_XFER_H */
+#endif /* XFER_H */

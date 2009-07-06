@@ -26,8 +26,6 @@
 #include "slp.h"
 #include "pn_log.h"
 
-#include "xfer.h"
-
 #include "ab/pn_contact.h"
 
 #include "session_private.h"
