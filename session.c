@@ -129,13 +129,13 @@ msn_session_destroy (MsnSession *session)
     if (session->connected)
         msn_session_disconnect (session);
 
-    if (session->notification)
-        msn_notification_destroy (session->notification);
-
 #if defined(PECAN_CVR)
     while (session->slplinks)
         msn_slplink_destroy (session->slplinks->data);
 #endif /* defined(PECAN_CVR) */
+
+    if (session->notification)
+        msn_notification_destroy (session->notification);
 
     pn_dp_manager_free (session->dp_manager);
 
