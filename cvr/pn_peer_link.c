@@ -166,9 +166,6 @@ void
 pn_peer_link_add_slpcall(PnPeerLink *link,
                          MsnSlpCall *slpcall)
 {
-    if (link->swboard)
-        link->swboard->flag |= MSN_SB_FLAG_FT;
-
     link->slp_calls = g_list_append(link->slp_calls, slpcall);
 }
 
@@ -222,8 +219,7 @@ send_msg(PnPeerLink *link,
 {
     if (!link->swboard) {
         MsnSwitchBoard *swboard;
-        swboard = msn_session_get_swboard(link->session,
-                                          link->remote_user, MSN_SB_FLAG_FT);
+        swboard = msn_session_get_swboard(link->session, link->remote_user);
 
         if (!swboard)
             return;

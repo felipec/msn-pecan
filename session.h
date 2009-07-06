@@ -149,14 +149,12 @@ msn_session_find_swboard_with_id (const MsnSession *session,
  *
  * @param session The MSN session.
  * @param username The username to search for.
- * @param flag The flag of the switchboard
  *
  * @return The switchboard.
  */
 struct MsnSwitchBoard *
 msn_session_get_swboard (MsnSession *session,
-                         const gchar *username,
-                         MsnSBFlag flag);
+                         const gchar *username);
 
 /**
  * Displays a non fatal error.

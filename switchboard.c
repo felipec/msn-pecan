@@ -376,13 +376,6 @@ msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
               user, swboard->current_users);
 #endif
 
-    if (!(swboard->flag & MSN_SB_FLAG_IM) && (swboard->conv != NULL))
-    {
-        /* This is a helper switchboard. */
-        pn_error ("conv != NULL");
-        return;
-    }
-
     if ((swboard->conv != NULL) &&
         (purple_conversation_get_type(swboard->conv) == PURPLE_CONV_TYPE_CHAT))
     {
@@ -415,7 +408,6 @@ msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
 
             msn_switchboard_unref(swboard);
 
-            swboard->flag |= MSN_SB_FLAG_IM;
             swboard->conv = serv_got_joined_chat(purple_account_get_connection (account),
                                                  swboard->chat_id,
                                                  "MSN Chat");
@@ -818,9 +810,6 @@ bye_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
      * we may get a bye shortly thereafter. */
     g_return_if_fail(swboard);
 
-    if (!(swboard->flag & MSN_SB_FLAG_IM) && (swboard->conv != NULL))
-        pn_error ("bye_cmd: helper bug");
-
     if (swboard->conv == NULL)
     {
         /* This is a helper switchboard */
@@ -1039,7 +1028,6 @@ got_datacast_inform_user (MsnCmdProc *cmdproc,
                 swboard->conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, passport);
         }
     }
-    swboard->flag |= MSN_SB_FLAG_IM;
 
     purple_conversation_write(swboard->conv, NULL, new_str, PURPLE_MESSAGE_SYSTEM, time(NULL));
 
@@ -1160,8 +1148,6 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
         body_final = body_enc;
     }
 
-    swboard->flag |= MSN_SB_FLAG_IM;
-
 #if defined(RECEIVE_PLUS_SOUNDS)
     const char *body_plus_sound = strstr (body_final, "[Messenger Plus! Sound] - Data{");
 
@@ -1199,19 +1185,13 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
             serv_got_chat_in (connection, swboard->chat_id, passport, 0, body_final, time (NULL));
             if (!swboard->conv)
-            {
                 swboard->conv = purple_find_chat (connection, swboard->chat_id);
-                swboard->flag |= MSN_SB_FLAG_IM;
-            }
         }
         else
         {
             serv_got_im (connection, passport, body_final, 0, time (NULL));
             if (!swboard->conv)
-            {
                 swboard->conv = purple_find_conversation_with_account (PURPLE_CONV_TYPE_IM, passport, account);
-                swboard->flag |= MSN_SB_FLAG_IM;
-            }
         }
     }
 
@@ -1255,7 +1235,6 @@ msn_handwritten_msg_show(MsnSwitchBoard *swboard, const char* msgid, const char*
                 swboard->conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, passport);
         }
     }
-    swboard->flag |= MSN_SB_FLAG_IM;
 
     if (purple_conv_custom_smiley_add(swboard->conv, msgid, 0, "", 0)) {
         purple_conv_custom_smiley_write(swboard->conv, msgid, guc, body_len);

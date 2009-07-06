@@ -132,7 +132,7 @@ msn_send_attention(PurpleConnection *gc, const char *username, guint type)
 
     msg = msn_message_new_nudge();
     session = gc->proto_data;
-    swboard = msn_session_get_swboard(session, username, MSN_SB_FLAG_IM);
+    swboard = msn_session_get_swboard(session, username);
 
     if (swboard == NULL)
         return FALSE;
@@ -501,7 +501,6 @@ initiate_chat_cb(PurpleBlistNode *node, gpointer data)
     /* TODO: This might move somewhere else, after USR might be */
     swboard->chat_id = session->conv_seq++;
     swboard->conv = serv_got_joined_chat(gc, swboard->chat_id, "MSN Chat");
-    swboard->flag = MSN_SB_FLAG_IM;
 
     purple_conv_chat_add_user(PURPLE_CONV_CHAT(swboard->conv),
                               msn_session_get_username(session), NULL, PURPLE_CBFLAGS_NONE, TRUE);
@@ -1089,7 +1088,7 @@ send_im (PurpleConnection *gc,
         {
             MsnSwitchBoard *swboard;
 
-            swboard = msn_session_get_swboard (session, who, MSN_SB_FLAG_IM);
+            swboard = msn_session_get_swboard (session, who);
 
 #if defined(PECAN_CVR)
 #if PURPLE_VERSION_CHECK(2,5,0)
@@ -1156,8 +1155,6 @@ send_typing (PurpleConnection *gc,
 
     if (!swboard || !msn_switchboard_can_send (swboard))
         return 0;
-
-    swboard->flag |= MSN_SB_FLAG_IM;
 
     {
         MsnMessage *msg;
@@ -1495,8 +1492,6 @@ chat_invite (PurpleConnection *gc,
         swboard->conv = purple_find_chat (gc, id);
     }
 
-    swboard->flag |= MSN_SB_FLAG_IM;
-
     msn_switchboard_request_add_user (swboard, who);
 }
 
@@ -1546,8 +1541,6 @@ chat_send (PurpleConnection *gc,
         pn_error ("not ready?");
         return 0;
     }
-
-    swboard->flag |= MSN_SB_FLAG_IM;
 
     msn_import_html (message, &msgformat, &msgtext);
 
