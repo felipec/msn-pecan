@@ -109,6 +109,10 @@ msn_session_new (const gchar *username,
     session->conversations = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) msn_switchboard_unref);
     session->chats = g_hash_table_new_full (g_int_hash, g_int_equal, NULL, (GDestroyNotify) msn_switchboard_unref);
 
+#if defined(PECAN_CVR)
+    session->links = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) pn_peer_link_unref);
+#endif /* defined(PECAN_CVR) */
+
     purple_signal_connect (purple_conversations_get_handle(), "conversation-created",
                            session, PURPLE_CALLBACK (conversation_created_cb), session);
 
@@ -130,8 +134,7 @@ msn_session_destroy (MsnSession *session)
         msn_session_disconnect (session);
 
 #if defined(PECAN_CVR)
-    while (session->links)
-        pn_peer_link_unref (session->links->data);
+    g_hash_table_destroy (session->links);
 #endif /* defined(PECAN_CVR) */
 
     if (session->notification)

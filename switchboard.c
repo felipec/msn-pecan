@@ -208,9 +208,11 @@ msn_switchboard_free (MsnSwitchBoard *swboard)
     g_signal_handler_disconnect (swboard->conn, swboard->error_handler);
 
 #if defined(PECAN_CVR)
-    /* If it linked us is because its looking for trouble */
-    while (swboard->links)
-        pn_peer_link_unref(swboard->links->data);
+    for (l = swboard->links; l; l = l->next) {
+        PnPeerLink *link = l->data;
+        link->swboard = NULL;
+        pn_peer_link_unref(link);
+    }
 #endif /* defined(PECAN_CVR) */
 
     {
@@ -1374,7 +1376,6 @@ datacast_msg (MsnCmdProc *cmdproc,
 
         link = msn_session_get_peer_link(cmdproc->session, passport);
         pn_peer_link_request_object(link, data, got_voice_clip, NULL, obj);
-        pn_peer_link_unref(link);
 
         pn_msnobj_free(obj);
 #endif /* defined(PECAN_LIBSIREN) */

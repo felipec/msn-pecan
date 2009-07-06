@@ -60,8 +60,8 @@ struct MsnSession
     GHashTable *conversations;
     GHashTable *chats;
 
+    GHashTable *links;
     GList *directconns; /**< The list of all the directconnections. */
-    GList *links; /**< The list of all the peer links. */
 
     struct
     {

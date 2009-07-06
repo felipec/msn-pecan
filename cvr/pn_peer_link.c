@@ -68,9 +68,7 @@ pn_peer_link_new(MsnSession *session,
 
     link->slp_msg_queue = g_queue_new();
 
-    session->links = g_list_append(session->links, link);
-
-    link ->ref_count++;
+    link->ref_count++;
 
     return link;
 }
@@ -88,7 +86,6 @@ pn_peer_link_free(PnPeerLink *link)
 #endif
 
     session = link->session;
-    session->links = g_list_remove(session->links, link);
 
     if (link->swboard)
         link->swboard->links = g_list_remove(link->swboard->links, link);
@@ -132,18 +129,8 @@ PnPeerLink *
 msn_session_find_peer_link(MsnSession *session,
                            const char *who)
 {
-    GList *l;
 
-    for (l = session->links; l; l = l->next) {
-        PnPeerLink *link;
-
-        link = l->data;
-
-        if (strcmp(link->remote_user, who) == 0)
-            return link;
-    }
-
-    return NULL;
+    return g_hash_table_lookup(session->links, who);
 }
 
 PnPeerLink *
@@ -154,10 +141,10 @@ msn_session_get_peer_link(MsnSession *session,
 
     link = msn_session_find_peer_link(session, username);
 
-    if (!link)
+    if (!link) {
         link = pn_peer_link_new(session, username);
-    else
-        pn_peer_link_ref(link);
+        g_hash_table_insert(session->links, g_strdup(username), link);
+    }
 
     return link;
 }
@@ -226,7 +213,6 @@ send_msg(PnPeerLink *link,
 
         pn_peer_link_ref(link);
 
-        /* If swboard is destroyed we will be too */
         swboard->links = g_list_prepend(swboard->links, link);
 
         link->swboard = swboard;

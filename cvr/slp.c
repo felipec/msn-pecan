@@ -625,7 +625,6 @@ msn_p2p_msg(MsnCmdProc *cmdproc,
     link = msn_session_get_peer_link(session, msg->remote_user);
 
     pn_peer_link_process_msg(link, msg);
-    pn_peer_link_unref(link);
 }
 
 static void
@@ -723,8 +722,6 @@ msn_emoticon_msg(MsnCmdProc *cmdproc,
                 pn_peer_link_request_object(link, smile, got_emoticon, NULL, obj);
         }
 #endif /* HAVE_LIBPURPLE */
-
-        pn_peer_link_unref(link);
 
         pn_msnobj_free(obj);
     }

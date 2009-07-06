@@ -41,10 +41,6 @@
 #include "io/pn_http_server.h"
 #include "io/pn_node_private.h"
 
-#if defined(PECAN_CVR)
-#include "cvr/pn_peer_link.h" /* for pn_peer_link_unref */
-#endif /* defined(PECAN_CVR) */
-
 #include "pn_error.h"
 #include "pn_util.h"
 
@@ -667,14 +663,7 @@ fln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     pn_contact_update(user);
 
 #if defined(PECAN_CVR)
-    {
-        PnPeerLink *link;
-
-        link = msn_session_find_peer_link(cmdproc->session, cmd->params[0]);
-
-        if (link)
-            pn_peer_link_unref(link);
-    }
+    g_hash_table_remove(cmdproc->session->links, cmd->params[0]);
 #endif /* defined(PECAN_CVR) */
 }
 
