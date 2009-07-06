@@ -177,21 +177,6 @@ pn_peer_link_remove_slpcall(PnPeerLink *link,
                             MsnSlpCall *slpcall)
 {
     link->slp_calls = g_list_remove(link->slp_calls, slpcall);
-
-    /* The link has no slpcalls in it. If no one is using it, we might
-     * destroy the switchboard, but we should be careful not to use the link
-     * again. */
-    if (link->slp_calls)
-        return;
-
-    if (link->swboard) {
-        if (msn_switchboard_release(link->swboard, MSN_SB_FLAG_FT)) {
-            msn_switchboard_unref(link->swboard);
-            /* I'm not sure this is the best thing to do, but it's better
-             * than nothing. */
-            slpcall->link = NULL;
-        }
-    }
 }
 
 MsnSlpCall *

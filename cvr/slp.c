@@ -624,20 +624,6 @@ msn_p2p_msg(MsnCmdProc *cmdproc,
     session = cmdproc->session;
     link = msn_session_get_peer_link(session, msg->remote_user);
 
-    if (!link->swboard) {
-        /* We will need this in order to change its flags. */
-        link->swboard = cmdproc->data;
-        /* If swboard is NULL, something has probably gone wrong earlier on
-         * I didn't want to do this, but MSN 7 is somehow causing us to crash
-         * here, I couldn't reproduce it to debug more, and people are
-         * reporting bugs. Hopefully this doesn't cause more crashes. Stu.
-         */
-        if (link->swboard)
-            link->swboard->links = g_list_prepend(link->swboard->links, link);
-        else
-            pn_error("msn_p2p_msg, swboard is NULL, ouch!");
-    }
-
     pn_peer_link_process_msg(link, msg);
     pn_peer_link_unref(link);
 }
