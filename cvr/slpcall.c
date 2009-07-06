@@ -55,6 +55,7 @@ msn_slp_call_new(PnPeerLink *link)
 
     slpcall->link = link;
 
+    pn_peer_link_ref(link);
     pn_peer_link_add_slpcall(link, slpcall);
 
     slpcall->timer = purple_timeout_add(MSN_SLPCALL_TIMEOUT, msn_slp_call_timeout, slpcall);
@@ -102,6 +103,7 @@ msn_slp_call_destroy(MsnSlpCall *slpcall)
         slpcall->end_cb(slpcall, session);
 
     pn_peer_link_remove_slpcall(slpcall->link, slpcall);
+    pn_peer_link_unref(slpcall->link);
 
     if (slpcall->xfer)
         purple_xfer_unref(slpcall->xfer);

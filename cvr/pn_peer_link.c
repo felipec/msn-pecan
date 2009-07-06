@@ -156,6 +156,8 @@ msn_session_get_peer_link(MsnSession *session,
 
     if (!link)
         link = pn_peer_link_new(session, username);
+    else
+        pn_peer_link_ref(link);
 
     return link;
 }
@@ -240,6 +242,8 @@ send_msg(PnPeerLink *link,
 
         if (!swboard)
             return;
+
+        pn_peer_link_ref(link);
 
         /* If swboard is destroyed we will be too */
         swboard->links = g_list_prepend(swboard->links, link);
@@ -441,8 +445,12 @@ pn_peer_link_unleash(PnPeerLink *link)
 
     /* Send the queued msgs in the order they came. */
 
+    pn_peer_link_ref(link);
+
     while ((slpmsg = g_queue_pop_tail(link->slp_msg_queue)))
         release_slpmsg(link, slpmsg);
+
+    pn_peer_link_unref(link);
 }
 
 static inline void

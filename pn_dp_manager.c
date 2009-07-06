@@ -143,6 +143,7 @@ request (PnContact *user)
         link = msn_session_get_peer_link (session, user->passport);
         pn_peer_link_request_object (link, info,
                                      dp_ok, dp_fail, obj);
+        pn_peer_link_unref (link);
     }
     else
     {

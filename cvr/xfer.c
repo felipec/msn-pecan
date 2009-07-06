@@ -247,6 +247,8 @@ msn_xfer_invite(PurpleXfer *xfer)
                         context);
 
     g_free(context);
+
+    pn_peer_link_unref(link);
 }
 
 void

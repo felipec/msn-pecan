@@ -1395,7 +1395,8 @@ datacast_msg (MsnCmdProc *cmdproc,
 
         link = msn_session_get_peer_link(cmdproc->session, passport);
         pn_peer_link_request_object(link, data, got_voice_clip, NULL, obj);
-            
+        pn_peer_link_unref(link);
+
         pn_msnobj_free(obj);
 #endif /* defined(PECAN_LIBSIREN) */
     }
