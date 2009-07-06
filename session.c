@@ -291,7 +291,7 @@ msn_session_find_swboard_with_id (const MsnSession *session,
     g_return_val_if_fail (session, NULL);
     g_return_val_if_fail (chat_id >= 0,    NULL);
 
-    return g_hash_table_lookup (session->conversations, GINT_TO_POINTER (chat_id));
+    return g_hash_table_lookup (session->chats, GINT_TO_POINTER (chat_id));
 }
 
 MsnSwitchBoard *
