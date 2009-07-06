@@ -14,7 +14,7 @@ MSNSOURCES = msn.c \
 	     pn_printf.c \
 	     pn_util.c \
 	     pn_error.c \
-	     pecan_status.c \
+	     pn_status.c \
 	     pn_oim.c \
 	     pn_dp_manager.c \
 	     pn_siren7.c \
