@@ -725,6 +725,9 @@ release_msg(MsnSwitchBoard *swboard, MsnMessage *msg)
     trans->payload = payload;
     trans->payload_len = payload_len;
 
+    if (msg->trans)
+        msn_transaction_unref(msg->trans);
+
     msn_transaction_ref(trans);
     msg->trans = trans;
 
