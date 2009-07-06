@@ -198,7 +198,7 @@ release (PnDpManager *dpm)
 
         if (g_queue_is_empty (queue))
         {
-            pn_warning ("nothing here");
+            pn_info ("queue empty");
             return;
         }
 
