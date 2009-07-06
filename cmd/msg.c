@@ -54,14 +54,8 @@ msn_message_new(MsnMsgType type)
 void
 msn_message_destroy(MsnMessage *msg)
 {
-    g_return_if_fail(msg != NULL);
-
-    if (msg->ref_count > 0)
-    {
-        msn_message_unref(msg);
-
+    if (!msg)
         return;
-    }
 
 #ifdef PECAN_DEBUG_MSG
     pn_log ("msg=%p", msg);

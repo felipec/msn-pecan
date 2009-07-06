@@ -357,7 +357,7 @@ send_clientcaps(MsnSwitchBoard *swboard)
 
     msn_switchboard_send_msg(swboard, msg, TRUE);
 
-    msn_message_destroy(msg);
+    msn_message_unref(msg);
 }
 
 static void
@@ -893,7 +893,7 @@ msg_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload, size_t len)
     msg->remote_user = g_strdup(cmd->params[0]);
     msn_cmdproc_process_msg(cmdproc, msg);
 
-    msn_message_destroy(msg);
+    msn_message_unref(msg);
 }
 
 static void

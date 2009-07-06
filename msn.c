@@ -138,7 +138,7 @@ msn_send_attention(PurpleConnection *gc, const char *username, guint type)
         return FALSE;
 
     msn_switchboard_send_msg(swboard, msg, TRUE);
-    msn_message_destroy(msg);
+    msn_message_unref(msg);
 
     return TRUE;
 }
@@ -980,7 +980,7 @@ msn_send_emoticons(MsnSwitchBoard *swboard, GString *body)
     msn_message_set_bin_data(msg, body->str, body->len);
 
     msn_switchboard_send_msg(swboard, msg, TRUE);
-    msn_message_destroy(msg);
+    msn_message_unref(msg);
 }
 
 static void
@@ -1128,7 +1128,7 @@ send_im (PurpleConnection *gc,
             msn_switchboard_send_msg (swboard, msg, TRUE);
         }
 
-        msn_message_destroy (msg);
+        msn_message_unref (msg);
     }
 
     return 1;
@@ -1167,7 +1167,7 @@ send_typing (PurpleConnection *gc,
 
         msn_switchboard_send_msg (swboard, msg, FALSE);
 
-        msn_message_destroy (msg);
+        msn_message_unref (msg);
     }
 
 leave:
@@ -1556,7 +1556,7 @@ chat_send (PurpleConnection *gc,
     msg = msn_message_new_plain (msgtext);
     msn_message_set_attr (msg, "X-MMS-IM-Format", msgformat);
     msn_switchboard_send_msg (swboard, msg, FALSE);
-    msn_message_destroy (msg);
+    msn_message_unref (msg);
 
     g_free (msgformat);
     g_free (msgtext);

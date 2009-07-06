@@ -384,7 +384,7 @@ release_slpmsg(PnPeerLink *link,
 
     send_msg_part(link, slpmsg);
 
-    msn_message_destroy(msg);
+    msn_message_unref(msg);
 }
 
 void

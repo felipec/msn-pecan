@@ -439,7 +439,7 @@ msg_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload,
 
     msn_cmdproc_process_msg(cmdproc, msg);
 
-    msn_message_destroy(msg);
+    msn_message_unref(msg);
 }
 
 static void
