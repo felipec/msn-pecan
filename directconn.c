@@ -22,7 +22,6 @@
 #include "pn_log.h"
 
 #include "session.h"
-#include "cvr/slp.h"
 #include "cvr/slpmsg.h"
 
 #include "io/pn_node.h"

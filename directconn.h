@@ -23,7 +23,6 @@
 typedef struct MsnDirectConn MsnDirectConn;
 
 #include "cvr/pn_peer_link.h"
-#include "cvr/slp.h"
 
 #include "cmd/msg.h"
 #include "io/pn_stream.h"

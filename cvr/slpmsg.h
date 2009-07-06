@@ -28,7 +28,6 @@ struct PnPeerLink;
 struct MsnSession;
 struct MsnMessage;
 
-#include "slp.h"
 #include "io/pn_buffer.h"
 
 #include <glib/gstdio.h>

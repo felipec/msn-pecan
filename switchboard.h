@@ -245,28 +245,4 @@ void msn_switchboard_request_add_user(MsnSwitchBoard *swboard, const char *user)
  */
 void msn_handwritten_msg_show(MsnSwitchBoard *swboard, const char* msgid, const char* data, char* passport);
 
-/**
- * Processes peer to peer messages.
- *
- * @param cmdproc The command processor.
- * @param msg     The message.
- */
-void msn_p2p_msg(struct MsnCmdProc *cmdproc, struct MsnMessage *msg);
-
-/**
- * Processes emoticon messages.
- *
- * @param cmdproc The command processor.
- * @param msg     The message.
- */
-void msn_emoticon_msg(struct MsnCmdProc *cmdproc, struct MsnMessage *msg);
-
-/**
- * Processes INVITE messages.
- *
- * @param cmdproc The command processor.
- * @param msg     The message.
- */
-void msn_invite_msg(struct MsnCmdProc *cmdproc, struct MsnMessage *msg);
-
 #endif /* MSN_SWITCHBOARD_H */

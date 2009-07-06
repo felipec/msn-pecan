@@ -23,7 +23,6 @@
 #include "pn_log.h"
 #include "pn_util.h"
 
-#include "cvr/slp.h"
 #include "pn_dp_manager.h" /* for pn_dp_manager_contact_set_object */
 
 #include <string.h>
