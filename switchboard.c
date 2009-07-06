@@ -210,7 +210,7 @@ msn_switchboard_free (MsnSwitchBoard *swboard)
 #if defined(PECAN_CVR)
     /* If it linked us is because its looking for trouble */
     while (swboard->links)
-        pn_peer_link_destroy(swboard->links->data);
+        pn_peer_link_unref(swboard->links->data);
 #endif /* defined(PECAN_CVR) */
 
     {

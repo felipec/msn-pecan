@@ -54,11 +54,16 @@ struct PnPeerLink
     struct MsnSession *session;
     struct MsnSwitchBoard *swboard;
     struct MsnDirectConn *directconn;
+
+    unsigned int ref_count;
 };
 
 PnPeerLink *pn_peer_link_new(struct MsnSession *session,
                              const char *username);
 void pn_peer_link_destroy(PnPeerLink *link);
+PnPeerLink *pn_peer_link_ref(PnPeerLink *link);
+PnPeerLink *pn_peer_link_unref(PnPeerLink *link);
+
 void pn_peer_link_add_slpcall(PnPeerLink *link,
                               MsnSlpCall *slpcall);
 void pn_peer_link_remove_slpcall(PnPeerLink *link,

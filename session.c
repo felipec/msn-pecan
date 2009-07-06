@@ -131,7 +131,7 @@ msn_session_destroy (MsnSession *session)
 
 #if defined(PECAN_CVR)
     while (session->links)
-        pn_peer_link_destroy (session->links->data);
+        pn_peer_link_unref (session->links->data);
 #endif /* defined(PECAN_CVR) */
 
     if (session->notification)

@@ -70,6 +70,8 @@ pn_peer_link_new(MsnSession *session,
 
     session->links = g_list_append(session->links, link);
 
+    link ->ref_count++;
+
     return link;
 }
 
@@ -103,6 +105,27 @@ pn_peer_link_destroy(PnPeerLink *link)
     g_free(link->remote_user);
 
     g_free(link);
+}
+
+PnPeerLink *
+pn_peer_link_ref(PnPeerLink *link)
+{
+    link->ref_count++;
+
+    return link;
+}
+
+PnPeerLink *
+pn_peer_link_unref(PnPeerLink *link)
+{
+    link->ref_count--;
+
+    if (link->ref_count == 0) {
+        pn_peer_link_destroy (link);
+        return NULL;
+    }
+
+    return link;
 }
 
 PnPeerLink *
