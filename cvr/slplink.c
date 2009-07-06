@@ -189,9 +189,9 @@ msn_slplink_find_slp_call(MsnSlpLink *slplink,
     return NULL;
 }
 
-MsnSlpCall *
-msn_slplink_find_slp_call_with_session_id(MsnSlpLink *slplink,
-                                          long id)
+static inline MsnSlpCall *
+find_session_slpcall(MsnSlpLink *slplink,
+                     long id)
 {
     GList *l;
     MsnSlpCall *slpcall;
@@ -206,9 +206,9 @@ msn_slplink_find_slp_call_with_session_id(MsnSlpLink *slplink,
     return NULL;
 }
 
-void
-msn_slplink_send_msg(MsnSlpLink *slplink,
-                     MsnMessage *msg)
+static inline void
+send_msg(MsnSlpLink *slplink,
+         MsnMessage *msg)
 {
     if (!slplink->swboard) {
         MsnSwitchBoard *swboard;
@@ -315,9 +315,9 @@ send_msg_part(MsnSlpLink *slplink,
         (slpmsg->flags == 0x100 || slplink->directconn->ack_recv))
         msn_directconn_send_msg(slplink->directconn, msg);
     else
-        msn_slplink_send_msg(slplink, msg);
+        send_msg(slplink, msg);
 #else
-    msn_slplink_send_msg(slplink, msg);
+    send_msg(slplink, msg);
 #endif /* MSN_DIRECTCONN */
 
     if (slpmsg->slpcall) {
@@ -336,9 +336,9 @@ send_msg_part(MsnSlpLink *slplink,
     /* slpmsg->offset += len; */
 }
 
-void
-msn_slplink_release_slpmsg(MsnSlpLink *slplink,
-                           MsnSlpMessage *slpmsg)
+static void
+release_slpmsg(MsnSlpLink *slplink,
+               MsnSlpMessage *slpmsg)
 {
     MsnMessage *msg;
 
@@ -408,7 +408,7 @@ msn_slplink_send_slpmsg(MsnSlpLink *slplink,
 {
     slpmsg->id = slplink->slp_seq_id++;
 
-    msn_slplink_release_slpmsg(slplink, slpmsg);
+    release_slpmsg(slplink, slpmsg);
 }
 
 void
@@ -419,12 +419,12 @@ msn_slplink_unleash(MsnSlpLink *slplink)
     /* Send the queued msgs in the order they came. */
 
     while ((slpmsg = g_queue_pop_tail(slplink->slp_msg_queue)))
-        msn_slplink_release_slpmsg(slplink, slpmsg);
+        release_slpmsg(slplink, slpmsg);
 }
 
-void
-msn_slplink_send_ack(MsnSlpLink *slplink,
-                     MsnMessage *msg)
+static inline void
+send_ack(MsnSlpLink *slplink,
+         MsnMessage *msg)
 {
     MsnSlpMessage *slpmsg;
 
@@ -442,6 +442,100 @@ msn_slplink_send_ack(MsnSlpLink *slplink,
 #endif
 
     msn_slplink_send_slpmsg(slplink, slpmsg);
+}
+
+static MsnSlpCall *
+process_msg(MsnSlpLink *slplink,
+            MsnSlpMessage *slpmsg)
+{
+    MsnSlpCall *slpcall;
+    gpointer body;
+    gsize body_len;
+
+    slpcall = NULL;
+    body = slpmsg->buffer;
+    body_len = slpmsg->size;
+
+    switch (slpmsg->flags) {
+        case 0x0:
+        case 0x1000000:
+            {
+                char *body_str;
+
+                /* Handwritten messages are just dumped down the line with no MSNObject */
+                if (slpmsg->session_id == 64) {
+                    const char *start;
+                    char *msgid;
+                    int charsize;
+                    /* Just to be evil they put a 0 in the string just before the data you want,
+                       and then convert to utf-16 */
+                    body_str = g_utf16_to_utf8((gunichar2*) body, body_len / 2, NULL, NULL, NULL);
+                    start = (char*) body + (strlen(body_str) + 1) * 2;
+                    charsize = (body_len / 2) - (strlen(body_str) + 1);
+                    g_free(body_str);
+                    body_str = g_utf16_to_utf8((gunichar2*) start, charsize, NULL, NULL, NULL);
+                    msgid = g_strdup_printf("{handwritten:%ld}", slpmsg->id);
+                    msn_handwritten_msg_show(slpmsg->slplink->swboard, msgid, body_str + 7, slplink->remote_user);
+                    g_free(msgid);
+                }
+                else {
+                    body_str = g_strndup(body, body_len);
+                    slpcall = msn_slp_sip_recv(slplink, body_str);
+                }
+                g_free(body_str);
+                break;
+            }
+        case 0x20:
+        case 0x1000020:
+        case 0x1000030:
+            slpcall = find_session_slpcall(slplink,
+                                           slpmsg->session_id);
+
+            if (!slpcall)
+                break;
+
+            if (slpcall->timer)
+                purple_timeout_remove(slpcall->timer);
+
+            /* clear the error cb, otherwise it will be called when
+             * the slpcall is destroyed. */
+            slpcall->end_cb = NULL;
+
+            slpcall->cb(slpcall, body, body_len);
+
+            slpcall->wasted = TRUE;
+            break;
+#ifdef MSN_DIRECTCONN
+        case 0x100:
+            slpcall = slplink->directconn->initial_call;
+
+            if (slpcall)
+                msn_slp_call_session_init(slpcall);
+            break;
+#endif /* MSN_DIRECTCONN */
+        default:
+            pn_warning("slp_process_msg: unprocessed SLP message with flags 0x%08lx",
+                       slpmsg->flags);
+    }
+
+    return slpcall;
+}
+
+static inline MsnSlpMessage *
+find_message(MsnSlpLink *slplink,
+             long session_id,
+             long id)
+{
+    GList *e;
+
+    for (e = slplink->slp_msgs; e; e = e->next) {
+        MsnSlpMessage *slpmsg = e->data;
+
+        if ((slpmsg->session_id == session_id) && (slpmsg->id == id))
+            return slpmsg;
+    }
+
+    return NULL;
 }
 
 void
@@ -481,7 +575,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink,
 
         if (slpmsg->session_id) {
             if (!slpmsg->slpcall)
-                slpmsg->slpcall = msn_slplink_find_slp_call_with_session_id(slplink, slpmsg->session_id);
+                slpmsg->slpcall = find_session_slpcall(slplink, slpmsg->session_id);
 
             if (slpmsg->slpcall) {
                 if (slpmsg->flags == 0x20 ||
@@ -510,9 +604,9 @@ msn_slplink_process_msg(MsnSlpLink *slplink,
         }
     }
     else
-        slpmsg = msn_slplink_message_find(slplink,
-                                          msg->msnslp_header.session_id,
-                                          msg->msnslp_header.id);
+        slpmsg = find_message(slplink,
+                              msg->msnslp_header.session_id,
+                              msg->msnslp_header.id);
 
     if (!slpmsg) {
         /* Probably the transfer was canceled */
@@ -552,7 +646,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink,
         /* All the pieces of the slpmsg have been received */
         MsnSlpCall *slpcall = NULL;
 
-        slpcall = msn_slp_process_msg(slplink, slpmsg);
+        slpcall = process_msg(slplink, slpmsg);
 
         switch (slpmsg->flags) {
             case 0x0:
@@ -562,7 +656,7 @@ msn_slplink_process_msg(MsnSlpLink *slplink,
             case 0x1000030:
                 /* Release all the messages and send the ACK */
 
-                msn_slplink_send_ack(slplink, msg);
+                send_ack(slplink, msg);
                 msn_slplink_unleash(slplink);
                 break;
 #ifdef MSN_DIRECTCONN
@@ -588,23 +682,6 @@ msn_slplink_process_msg(MsnSlpLink *slplink,
         if (slpcall && slpcall->wasted)
             msn_slp_call_destroy(slpcall);
     }
-}
-
-MsnSlpMessage *
-msn_slplink_message_find(MsnSlpLink *slplink,
-                         long session_id,
-                         long id)
-{
-    GList *e;
-
-    for (e = slplink->slp_msgs; e; e = e->next) {
-        MsnSlpMessage *slpmsg = e->data;
-
-        if ((slpmsg->session_id == session_id) && (slpmsg->id == id))
-            return slpmsg;
-    }
-
-    return NULL;
 }
 
 void
