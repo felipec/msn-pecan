@@ -120,7 +120,7 @@ request (PnContact *user)
 {
     PurpleAccount *account;
     MsnSession *session;
-    PnMsnObj *obj;
+    struct pn_msnobj *obj;
     const char *info;
 
     session = user->contactlist->session;
@@ -147,7 +147,7 @@ request (PnContact *user)
     }
     else
     {
-        PnMsnObj *my_obj = NULL;
+        struct pn_msnobj *my_obj = NULL;
         gconstpointer data = NULL;
         size_t len = 0;
 
@@ -224,7 +224,7 @@ release (PnDpManager *dpm)
 static inline gboolean
 ud_cached (PurpleAccount *account,
            PnContact *contact,
-           PnMsnObj *obj)
+           struct pn_msnobj *obj)
 {
     PurpleBuddy *buddy;
     const char *old;
@@ -246,7 +246,7 @@ ud_cached (PurpleAccount *account,
 
 void
 pn_dp_manager_contact_set_object (PnContact *contact,
-                                  PnMsnObj *obj)
+                                  struct pn_msnobj *obj)
 {
     MsnSession *session;
 

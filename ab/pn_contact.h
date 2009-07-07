@@ -195,7 +195,7 @@ void pn_contact_set_mobile_phone (PnContact *contact,
  * @param obj  The MSNObject.
  */
 void pn_contact_set_object (PnContact *contact,
-                            PnMsnObj *obj);
+                            struct pn_msnobj *obj);
 #endif /* defined(PECAN_CVR) */
 
 /**
@@ -287,7 +287,7 @@ const gchar *pn_contact_get_mobile_phone (const PnContact *contact);
  *
  * @return The MSNObject.
  */
-PnMsnObj *pn_contact_get_object (const PnContact *contact);
+struct pn_msnobj *pn_contact_get_object (const PnContact *contact);
 #endif /* defined(PECAN_CVR) */
 
 /**

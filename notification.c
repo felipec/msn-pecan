@@ -702,7 +702,7 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     {
         if (cmd->param_count == 6)
         {
-            PnMsnObj *obj;
+            struct pn_msnobj *obj;
             gchar *tmp;
             tmp = pn_url_decode (cmd->params[5]);
             obj = pn_msnobj_new_from_string (tmp);
@@ -769,7 +769,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     {
         if (cmd->param_count == 5)
         {
-            PnMsnObj *obj;
+            struct pn_msnobj *obj;
             gchar *tmp;
             tmp = pn_url_decode(cmd->params[4]);
             obj = pn_msnobj_new_from_string(tmp);
@@ -801,7 +801,7 @@ contact_update (PnContact *contact,
 
 #if defined(PECAN_CVR)
     {
-        PnMsnObj *obj;
+        struct pn_msnobj *obj;
         obj = pn_contact_get_object (contact);
         if (obj)
             pn_contact_set_object (contact, obj);

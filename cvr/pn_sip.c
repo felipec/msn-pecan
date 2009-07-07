@@ -173,7 +173,7 @@ got_sessionreq(struct pn_peer_call *call,
         gsize len;
         struct pn_peer_link *link;
         struct pn_peer_msg *peer_msg;
-        PnMsnObj *obj;
+        struct pn_msnobj *obj;
         char *msnobj_data;
         PnBuffer *image;
         int type;

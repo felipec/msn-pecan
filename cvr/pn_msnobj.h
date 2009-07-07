@@ -22,8 +22,6 @@
 
 #include <glib.h>
 
-typedef struct PnMsnObj PnMsnObj;
-
 #include "io/pn_buffer.h"
 
 typedef enum
@@ -37,94 +35,94 @@ typedef enum
 } PnMsnObjType;
 
 /**
- * Creates a PnMsnObj structure.
+ * Creates a msnobj structure.
  *
- * @return A new PnMsnObj structure.
+ * @return A new msnobj structure.
  */
-PnMsnObj *pn_msnobj_new(void);
+struct pn_msnobj *pn_msnobj_new(void);
 
 /**
- * Creates a PnMsnObj structure from a string.
+ * Creates a msnobj structure from a string.
  *
  * @param str The string.
  *
- * @return The new PnMsnObj structure.
+ * @return The new msnobj structure.
  */
-PnMsnObj *pn_msnobj_new_from_string(const gchar *str);
+struct pn_msnobj *pn_msnobj_new_from_string(const gchar *str);
 
 /**
- * Creates a PnMsnObj structure from a stored image
+ * Creates a msnobj structure from a stored image
  *
  * @param image The image associated to object
- * @param location The object location as stored in PnMsnObj
+ * @param location The object location as stored in msnobj
  * @param creator The creator of the object
  * @param type The type of the object
  *
- * @return A new PnMsnObj structure
+ * @return A new msnobj structure
  */
-PnMsnObj *pn_msnobj_new_from_image(PnBuffer *image,
-                                   const char *location,
-                                   const char *creator,
-                                   PnMsnObjType type);
+struct pn_msnobj *pn_msnobj_new_from_image(PnBuffer *image,
+                                           const char *location,
+                                           const char *creator,
+                                           PnMsnObjType type);
 
 /**
- * Frees an PnMsnObj structure.
+ * Frees an msnobj structure.
  *
  * @param obj The object structure.
  */
-void pn_msnobj_free(PnMsnObj *obj);
+void pn_msnobj_free(struct pn_msnobj *obj);
 
 /**
- * Outputs a string representation of an PnMsnObj.
+ * Outputs a string representation of an msnobj.
  *
  * @param obj The object.
  *
  * @return The string representation. This must be freed.
  */
-gchar *pn_msnobj_to_string(const PnMsnObj *obj);
+gchar *pn_msnobj_to_string(const struct pn_msnobj *obj);
 
 /**
- * Returns a PnMsnObj's type.
+ * Returns a msnobj's type.
  *
  * @param obj The object.
  *
  * @return The object type.
  */
-PnMsnObjType pn_msnobj_get_type(const PnMsnObj *obj);
+PnMsnObjType pn_msnobj_get_type(const struct pn_msnobj *obj);
 
 /**
- * Returns a PnMsnObj's location value.
+ * Returns a msnobj's location value.
  *
  * @param obj The object.
  *
  * @return The location value.
  */
-const gchar *pn_msnobj_get_location(const PnMsnObj *obj);
+const gchar *pn_msnobj_get_location(const struct pn_msnobj *obj);
 
 /**
- * Returns a PnMsnObj's SHA1C value if it exists, otherwise SHA1D.
+ * Returns a msnobj's SHA1C value if it exists, otherwise SHA1D.
  *
  * @param obj The object.
  *
  * @return The SHA1C value.
  */
-const gchar *pn_msnobj_get_sha1(const PnMsnObj *obj);
+const gchar *pn_msnobj_get_sha1(const struct pn_msnobj *obj);
 
 /**
- * Associates an image with an PnMsnObj.
+ * Associates an image with an msnobj.
  *
  * @param obj The object.
  * @param buffer The image to associate.
  */
-void pn_msnobj_set_image(PnMsnObj *obj, PnBuffer *buffer);
+void pn_msnobj_set_image(struct pn_msnobj *obj, PnBuffer *buffer);
 
 /**
- * Returns the image associated with the PnMsnObj.
+ * Returns the image associated with the msnobj.
  *
  * @param obj The object.
  *
  * @return The associated image.
  */
-PnBuffer *pn_msnobj_get_image(const PnMsnObj *obj);
+PnBuffer *pn_msnobj_get_image(const struct pn_msnobj *obj);
 
 #endif /* PN_MSNOBJ_H */

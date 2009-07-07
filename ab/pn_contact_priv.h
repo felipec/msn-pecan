@@ -77,7 +77,7 @@ struct PnContact
     GHashTable *groups; /**< The groups this contact is on. */
 
 #if defined(PECAN_CVR)
-    PnMsnObj *msnobj; /**< The contact's MSN Object. */
+    struct pn_msnobj *msnobj; /**< The contact's MSN Object. */
 #endif /* defined(PECAN_CVR) */
 
     GHashTable *clientcaps; /**< The client's capabilities. */

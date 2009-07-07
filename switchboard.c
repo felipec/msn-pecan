@@ -1373,7 +1373,7 @@ datacast_msg (MsnCmdProc *cmdproc,
 #if defined(PECAN_LIBSIREN)
         const char *data;
         struct pn_peer_link *link;
-        PnMsnObj *obj;
+        struct pn_msnobj *obj;
 
         data = g_hash_table_lookup(body, "Data");
         obj = pn_msnobj_new_from_string(data);
@@ -1433,7 +1433,7 @@ emoticon_msg(MsnCmdProc *cmdproc,
     MsnSession *session;
     struct pn_peer_link *link;
     MsnSwitchBoard *swboard;
-    PnMsnObj *obj;
+    struct pn_msnobj *obj;
     char **tokens;
     char *smile, *body_str;
     const char *body, *who, *sha1;

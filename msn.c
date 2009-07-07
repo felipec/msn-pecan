@@ -83,7 +83,7 @@ typedef struct
 typedef struct
 {
     char *smile;
-    PnMsnObj *obj;
+    struct pn_msnobj *obj;
 } MsnEmoticon;
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
 
@@ -941,7 +941,7 @@ logout (PurpleConnection *gc)
 static GString*
 msn_msg_emoticon_add(GString *current, MsnEmoticon *emoticon)
 {
-    PnMsnObj *obj;
+    struct pn_msnobj *obj;
     char *strobj;
 
     if (emoticon == NULL)

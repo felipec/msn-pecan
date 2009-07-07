@@ -177,7 +177,7 @@ pn_update_status (MsnSession *session)
 
 #if defined(PECAN_CVR)
     {
-        PnMsnObj *obj;
+        struct pn_msnobj *obj;
 
         obj = pn_contact_get_object (user);
 

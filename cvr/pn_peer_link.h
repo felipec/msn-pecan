@@ -60,7 +60,7 @@ void pn_peer_link_request_object(struct pn_peer_link *link,
                                  const char *info,
                                  MsnSlpCb cb,
                                  MsnSlpEndCb end_cb,
-                                 const PnMsnObj *obj);
+                                 const struct pn_msnobj *obj);
 
 struct pn_peer_link *msn_session_find_peer_link(struct MsnSession *session,
                                                 const char *who);

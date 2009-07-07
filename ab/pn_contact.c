@@ -431,7 +431,7 @@ pn_contact_set_buddy_icon (PnContact *contact,
 {
 #if defined(PECAN_CVR)
 #ifdef HAVE_LIBPURPLE
-    PnMsnObj *obj;
+    struct pn_msnobj *obj;
 
     obj = pn_msnobj_new_from_image (image, "TFR2C2.tmp", pn_contact_get_passport (contact),
                                     PN_MSNOBJ_USERTILE);
@@ -556,7 +556,7 @@ pn_contact_set_mobile_phone (PnContact *contact,
 #if defined(PECAN_CVR)
 void
 pn_contact_set_object (PnContact *contact,
-                       PnMsnObj *obj)
+                       struct pn_msnobj *obj)
 {
     /** @todo sometimes we need to force an update, in those cases the old and
      * new object will be the same, we must not free the object, so in order to
@@ -634,7 +634,7 @@ pn_contact_get_mobile_phone (const PnContact *contact)
 }
 
 #if defined(PECAN_CVR)
-PnMsnObj *
+struct pn_msnobj *
 pn_contact_get_object (const PnContact *contact)
 {
     return contact->msnobj;

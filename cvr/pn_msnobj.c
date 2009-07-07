@@ -35,8 +35,7 @@
 #include <util.h>
 #endif /* HAVE_LIBPURPLE */
 
-struct PnMsnObj
-{
+struct pn_msnobj {
     gboolean local;
 
     gchar *creator;
@@ -83,20 +82,20 @@ struct PnMsnObj
 
 static GList *local_objs;
 
-PnMsnObj *
+struct pn_msnobj *
 pn_msnobj_new(void)
 {
-    PnMsnObj *obj;
+    struct pn_msnobj *obj;
 
-    obj = g_new0(PnMsnObj, 1);
+    obj = g_new0(struct pn_msnobj, 1);
 
     return obj;
 }
 
-PnMsnObj *
+struct pn_msnobj *
 pn_msnobj_new_from_string(const gchar *str)
 {
-    PnMsnObj *obj;
+    struct pn_msnobj *obj;
     gchar *tag, *c;
 
     if (strncmp(str, "<msnobj ", 8))
@@ -123,13 +122,13 @@ pn_msnobj_new_from_string(const gchar *str)
     return obj;
 }
 
-PnMsnObj *
+struct pn_msnobj *
 pn_msnobj_new_from_image(PnBuffer *image,
                          const char *location,
                          const char *creator,
                          PnMsnObjType type)
 {
-    PnMsnObj *obj = NULL;
+    struct pn_msnobj *obj = NULL;
     PurpleCipherContext *ctx;
     char *buf;
     char *base64;
@@ -184,7 +183,7 @@ pn_msnobj_new_from_image(PnBuffer *image,
 }
 
 void
-pn_msnobj_free(PnMsnObj *obj)
+pn_msnobj_free(struct pn_msnobj *obj)
 {
     if (!obj)
         return;
@@ -204,7 +203,7 @@ pn_msnobj_free(PnMsnObj *obj)
 }
 
 gchar *
-pn_msnobj_to_string(const PnMsnObj *obj)
+pn_msnobj_to_string(const struct pn_msnobj *obj)
 {
     gchar *str;
     const gchar *sha1c;
@@ -228,38 +227,38 @@ pn_msnobj_to_string(const PnMsnObj *obj)
 }
 
 PnMsnObjType
-pn_msnobj_get_type(const PnMsnObj *obj)
+pn_msnobj_get_type(const struct pn_msnobj *obj)
 {
     return obj->type;
 }
 
 const gchar *
-pn_msnobj_get_location(const PnMsnObj *obj)
+pn_msnobj_get_location(const struct pn_msnobj *obj)
 {
     return obj->location;
 }
 
 const gchar *
-pn_msnobj_get_sha1(const PnMsnObj *obj)
+pn_msnobj_get_sha1(const struct pn_msnobj *obj)
 {
     return (obj->sha1c) ? obj->sha1c : obj->sha1d;
 }
 
 void
-pn_msnobj_set_image(PnMsnObj *obj,
+pn_msnobj_set_image(struct pn_msnobj *obj,
                     PnBuffer *buffer)
 {
     pn_buffer_free(obj->image);
     obj->image = buffer;
 }
 
-static PnMsnObj *
+static struct pn_msnobj *
 find_local(const gchar *sha1)
 {
     GList *l;
 
     for (l = local_objs; l; l = l->next) {
-        PnMsnObj *local_obj = l->data;
+        struct pn_msnobj *local_obj = l->data;
 
         if (strcmp(pn_msnobj_get_sha1(local_obj), sha1) == 0)
             return local_obj;
@@ -269,9 +268,9 @@ find_local(const gchar *sha1)
 }
 
 PnBuffer *
-pn_msnobj_get_image(const PnMsnObj *obj)
+pn_msnobj_get_image(const struct pn_msnobj *obj)
 {
-    PnMsnObj *local_obj;
+    struct pn_msnobj *local_obj;
 
     local_obj = find_local(pn_msnobj_get_sha1(obj));
 
