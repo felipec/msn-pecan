@@ -72,12 +72,12 @@ PnContact *pn_contactlist_find_contact (PnContactList *contactlist,
                                         const gchar *passport);
 PnContact *pn_contactlist_find_contact_by_guid (PnContactList *contactlist,
                                                 const gchar *contact_guid);
-void pn_contactlist_add_group (PnContactList *contactlist, PnGroup *group);
-void pn_contactlist_remove_group (PnContactList *contactlist, PnGroup *group);
-PnGroup *pn_contactlist_find_group_with_id (PnContactList *contactlist,
-                                            const gchar *group_guid);
-PnGroup *pn_contactlist_find_group_with_name (PnContactList *contactlist,
-                                              const gchar *name);
+void pn_contactlist_add_group (PnContactList *contactlist, struct pn_group *group);
+void pn_contactlist_remove_group (PnContactList *contactlist, struct pn_group *group);
+struct pn_group *pn_contactlist_find_group_with_id (PnContactList *contactlist,
+                                                    const gchar *group_guid);
+struct pn_group *pn_contactlist_find_group_with_name (PnContactList *contactlist,
+                                                      const gchar *name);
 const gchar *pn_contactlist_find_group_id (PnContactList *contactlist,
                                            const gchar *group_name);
 const gchar *pn_contactlist_find_group_name (PnContactList *contactlist,

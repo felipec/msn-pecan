@@ -45,7 +45,7 @@ msn_notification_rem_buddy (struct MsnNotification *notification,
 void
 basic_group_tests (void)
 {
-    PnGroup *group;
+    struct pn_group *group;
 
     group = pn_group_new (NULL, "foo", "bar");
     pn_group_free (group);

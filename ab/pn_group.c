@@ -22,20 +22,19 @@
 /**
  * A group.
  */
-struct PnGroup
-{
+struct pn_group {
     gchar *guid; /**< The GUID. */
     gchar *name; /**< The name. */
 };
 
-PnGroup *
+struct pn_group *
 pn_group_new (PnContactList *contactlist,
               const gchar *name,
               const gchar *guid)
 {
-    PnGroup *group;
+    struct pn_group *group;
 
-    group = g_new0 (PnGroup, 1);
+    group = g_new0 (struct pn_group, 1);
 
     group->guid = g_strdup (guid);
     group->name = g_strdup (name);
@@ -47,7 +46,7 @@ pn_group_new (PnContactList *contactlist,
 }
 
 void
-pn_group_free (PnGroup *group)
+pn_group_free (struct pn_group *group)
 {
     if (!group)
         return;
@@ -58,7 +57,7 @@ pn_group_free (PnGroup *group)
 }
 
 void
-pn_group_set_guid (PnGroup *group,
+pn_group_set_guid (struct pn_group *group,
                    const gchar *guid)
 {
     g_free (group->guid);
@@ -66,7 +65,7 @@ pn_group_set_guid (PnGroup *group,
 }
 
 void
-pn_group_set_name (PnGroup *group,
+pn_group_set_name (struct pn_group *group,
                    const gchar *name)
 {
     g_free (group->name);
@@ -74,13 +73,13 @@ pn_group_set_name (PnGroup *group,
 }
 
 const gchar *
-pn_group_get_id (const PnGroup *group)
+pn_group_get_id (const struct pn_group *group)
 {
     return group->guid;
 }
 
 const gchar *
-pn_group_get_name (const PnGroup *group)
+pn_group_get_name (const struct pn_group *group)
 {
     return group->name;
 }

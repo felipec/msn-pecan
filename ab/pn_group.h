@@ -20,19 +20,19 @@
 #ifndef PN_GROUP_H
 #define PN_GROUP_H
 
-typedef struct PnGroup PnGroup;
+struct pn_group;
 
 #include "pn_contactlist.h"
 
-PnGroup *pn_group_new (PnContactList *contactlist,
-                       const gchar *name,
-                       const gchar *guid);
-void pn_group_free (PnGroup *group);
-void pn_group_set_guid (PnGroup *group,
+struct pn_group *pn_group_new (PnContactList *contactlist,
+                               const gchar *name,
+                               const gchar *guid);
+void pn_group_free (struct pn_group *group);
+void pn_group_set_guid (struct pn_group *group,
                         const gchar *guid);
-void pn_group_set_name (PnGroup *group,
+void pn_group_set_name (struct pn_group *group,
                         const gchar *name);
-const gchar *pn_group_get_id (const PnGroup *group);
-const gchar *pn_group_get_name (const PnGroup *group);
+const gchar *pn_group_get_id (const struct pn_group *group);
+const gchar *pn_group_get_name (const struct pn_group *group);
 
 #endif /* PN_GROUP_H */

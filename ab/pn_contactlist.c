@@ -510,7 +510,7 @@ pn_contactlist_find_contact_by_guid (PnContactList *contactlist,
 
 void
 pn_contactlist_add_group (PnContactList *contactlist,
-                          PnGroup *group)
+                          struct pn_group *group)
 {
     g_hash_table_insert (contactlist->group_names, g_strdup (pn_group_get_name (group)), group);
     {
@@ -523,7 +523,7 @@ pn_contactlist_add_group (PnContactList *contactlist,
 
 void
 pn_contactlist_remove_group (PnContactList *contactlist,
-                             PnGroup *group)
+                             struct pn_group *group)
 {
     {
         const gchar *guid;
@@ -534,7 +534,7 @@ pn_contactlist_remove_group (PnContactList *contactlist,
     g_hash_table_remove (contactlist->group_names, pn_group_get_name (group));
 }
 
-PnGroup *
+struct pn_group *
 pn_contactlist_find_group_with_id (PnContactList *contactlist,
                                    const gchar *guid)
 {
@@ -546,7 +546,7 @@ pn_contactlist_find_group_with_id (PnContactList *contactlist,
     return g_hash_table_lookup (contactlist->group_guids, guid);
 }
 
-PnGroup *
+struct pn_group *
 pn_contactlist_find_group_with_name (PnContactList *contactlist,
                                      const gchar *name)
 {
@@ -563,7 +563,7 @@ const gchar *
 pn_contactlist_find_group_id (PnContactList *contactlist,
                               const gchar *group_name)
 {
-    PnGroup *group;
+    struct pn_group *group;
 
     group = pn_contactlist_find_group_with_name (contactlist, group_name);
 
@@ -577,7 +577,7 @@ const gchar *
 pn_contactlist_find_group_name (PnContactList *contactlist,
                                 const gchar *group_guid)
 {
-    PnGroup *group;
+    struct pn_group *group;
 
     group = pn_contactlist_find_group_with_id (contactlist, group_guid);
 
@@ -592,7 +592,7 @@ pn_contactlist_rename_group_id (PnContactList *contactlist,
                                 const gchar *group_guid,
                                 const gchar *new_name)
 {
-    PnGroup *group;
+    struct pn_group *group;
 
     group = pn_contactlist_find_group_with_id (contactlist, group_guid);
 
@@ -604,7 +604,7 @@ void
 pn_contactlist_remove_group_id (PnContactList *contactlist,
                                 const gchar *group_guid)
 {
-    PnGroup *group;
+    struct pn_group *group;
 
     group = pn_contactlist_find_group_with_id (contactlist, group_guid);
 
@@ -631,7 +631,7 @@ pn_contactlist_rem_buddy (PnContactList *contactlist,
 
     if (group_name)
     {
-        PnGroup *group;
+        struct pn_group *group;
 
         group = pn_contactlist_find_group_with_name (contactlist, group_name);
 
@@ -681,7 +681,7 @@ pn_contactlist_add_buddy (PnContactList *contactlist,
 
     if (group_name)
     {
-        PnGroup *group;
+        struct pn_group *group;
 
         group = pn_contactlist_find_group_with_name (contactlist, group_name);
 
@@ -720,8 +720,8 @@ pn_contactlist_move_buddy (PnContactList *contactlist,
                            const gchar *old_group_name,
                            const gchar *new_group_name)
 {
-    PnGroup *old_group;
-    PnGroup *new_group;
+    struct pn_group *old_group;
+    struct pn_group *new_group;
     const gchar *old_group_guid;
 
     old_group = pn_contactlist_find_group_with_name (contactlist, old_group_name);
@@ -823,7 +823,7 @@ pn_contactlist_add_buddy_helper (PnContactList *contactlist,
 
         if (group_name)
         {
-            PnGroup *group;
+            struct pn_group *group;
 
             group = pn_contactlist_find_group_with_name (contactlist, group_name);
 

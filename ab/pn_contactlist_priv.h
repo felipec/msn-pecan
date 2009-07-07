@@ -40,7 +40,7 @@ struct PnContactList
     GHashTable *contact_guids;
     GHashTable *group_names;
     GHashTable *group_guids;
-    PnGroup *null_group;
+    struct pn_group *null_group;
 };
 
 #endif /* PN_CONTACTLIST_PRIV_H */
