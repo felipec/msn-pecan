@@ -636,6 +636,8 @@ pn_peer_link_process_msg(PnPeerLink *link,
     if (msg->msnslp_header.offset + msg->msnslp_header.length
         >= msg->msnslp_header.total_size)
     {
+        pn_peer_msg_ref(peer_msg);
+
         /* All the pieces of the peer_msg have been received */
         process_peer_msg(link, peer_msg);
 
