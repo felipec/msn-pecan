@@ -115,7 +115,7 @@ pn_peer_call_free(PnPeerCall *call)
 #endif
 
         if (peer_msg->call == call)
-            pn_peer_msg_destroy(peer_msg);
+            pn_peer_msg_unref(peer_msg);
     }
 
     session = call->link->session;

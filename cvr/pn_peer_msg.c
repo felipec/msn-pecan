@@ -46,17 +46,19 @@ pn_peer_msg_new(PnPeerLink *link)
 
     link->slp_msgs = g_list_append(link->slp_msgs, peer_msg);
 
+    peer_msg->ref_count++;
+
     return peer_msg;
 }
 
 void
-pn_peer_msg_destroy(PnPeerMsg *peer_msg)
+pn_peer_msg_free(PnPeerMsg *peer_msg)
 {
     PnPeerLink *link;
     GList *cur;
 
     if (!peer_msg)
-	    return;
+        return;
 
 #ifdef PECAN_DEBUG_SLPMSG
     pn_info("peer_msg=%p", peer_msg);
@@ -88,6 +90,27 @@ pn_peer_msg_destroy(PnPeerMsg *peer_msg)
     link->slp_msgs = g_list_remove(link->slp_msgs, peer_msg);
 
     g_free(peer_msg);
+}
+
+PnPeerMsg *
+pn_peer_msg_ref(PnPeerMsg *peer_msg)
+{
+    peer_msg->ref_count++;
+
+    return peer_msg;
+}
+
+PnPeerMsg *
+pn_peer_msg_unref(PnPeerMsg *peer_msg)
+{
+    peer_msg->ref_count--;
+
+    if (peer_msg->ref_count == 0) {
+        pn_peer_msg_free(peer_msg);
+        return NULL;
+    }
+
+    return peer_msg;
 }
 
 void

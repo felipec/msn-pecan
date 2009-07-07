@@ -668,7 +668,7 @@ pn_peer_link_process_msg(PnPeerLink *link,
                 break;
         }
 
-        pn_peer_msg_destroy(peer_msg);
+        pn_peer_msg_unref(peer_msg);
     }
 }
 

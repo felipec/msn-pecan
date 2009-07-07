@@ -50,7 +50,6 @@ struct PnPeerMsg
     long app_id;
 
     gboolean sip; /**< A flag that states if this is a SIP slp message. */
-    int ref_count; /**< The reference count. */
     long flags;
 
     FILE *fp;
@@ -66,11 +65,14 @@ struct PnPeerMsg
     const gchar *info;
     gboolean text_body;
 #endif
+
+    unsigned int ref_count;
 };
 
 PnPeerMsg *pn_peer_msg_new(struct PnPeerLink *link);
-
-void pn_peer_msg_destroy(PnPeerMsg *peer_msg);
+void pn_peer_msg_free(PnPeerMsg *peer_msg);
+PnPeerMsg *pn_peer_msg_ref(PnPeerMsg *peer_msg);
+PnPeerMsg *pn_peer_msg_unref(PnPeerMsg *peer_msg);
 
 void pn_peer_msg_set_body(PnPeerMsg *peer_msg,
                           gconstpointer *body,
