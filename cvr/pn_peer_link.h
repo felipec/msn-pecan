@@ -21,7 +21,7 @@
 #define PN_PEERLINK_H
 
 struct MsnSession;
-struct PnPeerMsg;
+struct pn_peer_msg;
 struct MsnMessage;
 
 struct _PurpleXfer;
@@ -47,9 +47,9 @@ void pn_peer_link_remove_call(struct pn_peer_link *link,
 struct pn_peer_call *pn_peer_link_find_slp_call(struct pn_peer_link *link,
                                                 const char *id);
 void pn_peer_link_queue_msg(struct pn_peer_link *link,
-                            struct PnPeerMsg *peer_msg);
+                            struct pn_peer_msg *peer_msg);
 void pn_peer_link_send_msg(struct pn_peer_link *link,
-                           struct PnPeerMsg *peer_msg);
+                           struct pn_peer_msg *peer_msg);
 void pn_peer_link_unleash(struct pn_peer_link *link);
 void pn_peer_link_process_msg(struct pn_peer_link *link,
                               struct MsnMessage *msg,

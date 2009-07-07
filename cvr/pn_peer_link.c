@@ -44,7 +44,7 @@
 #include "fix_purple_win32.h"
 #include <ft.h>
 
-static void send_msg_part(struct pn_peer_link *link, PnPeerMsg *peer_msg);
+static void send_msg_part(struct pn_peer_link *link, struct pn_peer_msg *peer_msg);
 
 struct pn_peer_link *
 pn_peer_link_new(MsnSession *session,
@@ -195,7 +195,7 @@ find_session_call(struct pn_peer_link *link,
 
 static inline void
 send_msg(struct pn_peer_link *link,
-         PnPeerMsg *peer_msg)
+         struct pn_peer_msg *peer_msg)
 {
     MsnSwitchBoard *swboard;
     if (peer_msg->call)
@@ -210,7 +210,7 @@ static void
 msg_ack(MsnMessage *msg,
         void *data)
 {
-    PnPeerMsg *peer_msg;
+    struct pn_peer_msg *peer_msg;
     guint64 real_size;
 
     peer_msg = data;
@@ -240,7 +240,7 @@ static void
 msg_nak(MsnMessage *msg,
         void *data)
 {
-    PnPeerMsg *peer_msg;
+    struct pn_peer_msg *peer_msg;
 
     peer_msg = data;
 
@@ -251,7 +251,7 @@ msg_nak(MsnMessage *msg,
 
 static void
 send_msg_part(struct pn_peer_link *link,
-              PnPeerMsg *peer_msg)
+              struct pn_peer_msg *peer_msg)
 {
     MsnMessage *msg;
     guint64 real_size;
@@ -317,7 +317,7 @@ send_msg_part(struct pn_peer_link *link,
 
 static void
 release_peer_msg(struct pn_peer_link *link,
-                 PnPeerMsg *peer_msg)
+                 struct pn_peer_msg *peer_msg)
 {
     MsnMessage *msg;
 
@@ -374,7 +374,7 @@ release_peer_msg(struct pn_peer_link *link,
 
 void
 pn_peer_link_queue_msg(struct pn_peer_link *link,
-                       PnPeerMsg *peer_msg)
+                       struct pn_peer_msg *peer_msg)
 {
     peer_msg->id = link->slp_seq_id++;
 
@@ -383,7 +383,7 @@ pn_peer_link_queue_msg(struct pn_peer_link *link,
 
 void
 pn_peer_link_send_msg(struct pn_peer_link *link,
-                      PnPeerMsg *peer_msg)
+                      struct pn_peer_msg *peer_msg)
 {
     peer_msg->id = link->slp_seq_id++;
 
@@ -393,7 +393,7 @@ pn_peer_link_send_msg(struct pn_peer_link *link,
 void
 pn_peer_link_unleash(struct pn_peer_link *link)
 {
-    PnPeerMsg *peer_msg;
+    struct pn_peer_msg *peer_msg;
 
     /* Send the queued msgs in the order they came. */
 
@@ -409,7 +409,7 @@ static inline void
 send_ack(struct pn_peer_link *link,
          MsnMessage *msg)
 {
-    PnPeerMsg *peer_msg;
+    struct pn_peer_msg *peer_msg;
 
     peer_msg = pn_peer_msg_new(link);
 
@@ -429,7 +429,7 @@ send_ack(struct pn_peer_link *link,
 
 static void
 process_peer_msg(struct pn_peer_link *link,
-                 PnPeerMsg *peer_msg)
+                 struct pn_peer_msg *peer_msg)
 {
     struct pn_peer_call *call = NULL;
     gpointer body;
@@ -501,7 +501,7 @@ process_peer_msg(struct pn_peer_link *link,
     }
 }
 
-static inline PnPeerMsg *
+static inline struct pn_peer_msg *
 find_message(struct pn_peer_link *link,
              long session_id,
              long id)
@@ -509,7 +509,7 @@ find_message(struct pn_peer_link *link,
     GList *e;
 
     for (e = link->slp_msgs; e; e = e->next) {
-        PnPeerMsg *peer_msg = e->data;
+        struct pn_peer_msg *peer_msg = e->data;
 
         if ((peer_msg->session_id == session_id) && (peer_msg->id == id))
             return peer_msg;
@@ -524,7 +524,7 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
                          int type,
                          void *user_data)
 {
-    PnPeerMsg *peer_msg;
+    struct pn_peer_msg *peer_msg;
     const char *data;
     guint64 offset;
     gsize len;

@@ -115,7 +115,7 @@ pn_peer_call_free(struct pn_peer_call *call)
     g_free(call->data_info);
 
     for (e = call->link->slp_msgs; e; ){
-        PnPeerMsg *peer_msg = e->data;
+        struct pn_peer_msg *peer_msg = e->data;
         e = e->next;
 
         pn_log("freeing peer_msg=%p", peer_msg);
@@ -184,7 +184,7 @@ pn_peer_call_invite(struct pn_peer_call *call,
                     const char *context)
 {
     struct pn_peer_link *link;
-    PnPeerMsg *peer_msg;
+    struct pn_peer_msg *peer_msg;
     char *header;
     char *content;
 

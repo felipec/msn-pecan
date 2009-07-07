@@ -44,7 +44,7 @@ void
 pn_direct_conn_send_handshake(PnDirectConn *direct_conn)
 {
     struct pn_peer_link *link;
-    PnPeerMsg *peer_msg;
+    struct pn_peer_msg *peer_msg;
 
     g_return_if_fail(direct_conn != NULL);
 

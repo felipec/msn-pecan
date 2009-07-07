@@ -114,7 +114,7 @@ pn_sip_send_ok(struct pn_peer_call *call,
                const char *content)
 {
     struct pn_peer_link *link;
-    PnPeerMsg *peer_msg;
+    struct pn_peer_msg *peer_msg;
 
     link = call->link;
 
@@ -140,7 +140,7 @@ pn_sip_send_decline(struct pn_peer_call *call,
                     const char *content)
 {
     struct pn_peer_link *link;
-    PnPeerMsg *peer_msg;
+    struct pn_peer_msg *peer_msg;
 
     link = call->link;
 
@@ -172,7 +172,7 @@ got_sessionreq(struct pn_peer_call *call,
         char *content;
         gsize len;
         struct pn_peer_link *link;
-        PnPeerMsg *peer_msg;
+        struct pn_peer_msg *peer_msg;
         PnMsnObj *obj;
         char *msnobj_data;
         PnBuffer *image;
@@ -268,7 +268,7 @@ pn_sip_send_bye(struct pn_peer_call *call,
                 const char *type)
 {
     struct pn_peer_link *link;
-    PnPeerMsg *peer_msg;
+    struct pn_peer_msg *peer_msg;
     char *header;
 
     link = call->link;
@@ -424,7 +424,7 @@ got_ok(struct pn_peer_call *call,
             /* First let's try a DirectConnection. */
 
             struct pn_peer_link *link;
-            PnPeerMsg *peer_msg;
+            struct pn_peer_msg *peer_msg;
             char *header;
             gchar *new_content;
             char *branch;

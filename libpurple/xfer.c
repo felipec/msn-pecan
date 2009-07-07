@@ -122,7 +122,7 @@ xfer_completed_cb(struct pn_peer_call *call,
 static void
 send_file_cb(struct pn_peer_call *call)
 {
-    PnPeerMsg *peer_msg;
+    struct pn_peer_msg *peer_msg;
     struct stat st;
     PurpleXfer *xfer;
 

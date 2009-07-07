@@ -20,8 +20,6 @@
 #ifndef PN_PEER_MSG_H
 #define PN_PEER_MSG_H
 
-typedef struct PnPeerMsg PnPeerMsg;
-
 struct pn_peer_call;
 struct pn_peer_link;
 struct MsnSession;
@@ -36,8 +34,7 @@ struct MsnSwitchBoard;
  * A SLP Message  This contains everything that we will need to send a SLP
  * Message even if has to be sent in several parts.
  */
-struct PnPeerMsg
-{
+struct pn_peer_msg {
     struct pn_peer_call *call; /**< The call to which this slp message belongs (if applicable). */
     struct pn_peer_link *link; /**< The peer link through which this slp message is being sent. */
     struct MsnSession *session;
@@ -70,24 +67,24 @@ struct PnPeerMsg
     struct MsnSwitchBoard *swboard;
 };
 
-PnPeerMsg *pn_peer_msg_new(struct pn_peer_link *link);
-void pn_peer_msg_free(PnPeerMsg *peer_msg);
-PnPeerMsg *pn_peer_msg_ref(PnPeerMsg *peer_msg);
-PnPeerMsg *pn_peer_msg_unref(PnPeerMsg *peer_msg);
+struct pn_peer_msg *pn_peer_msg_new(struct pn_peer_link *link);
+void pn_peer_msg_free(struct pn_peer_msg *peer_msg);
+struct pn_peer_msg *pn_peer_msg_ref(struct pn_peer_msg *peer_msg);
+struct pn_peer_msg *pn_peer_msg_unref(struct pn_peer_msg *peer_msg);
 
-void pn_peer_msg_set_body(PnPeerMsg *peer_msg,
+void pn_peer_msg_set_body(struct pn_peer_msg *peer_msg,
                           gconstpointer *body,
                           guint64 size);
-void pn_peer_msg_set_image(PnPeerMsg *peer_msg,
+void pn_peer_msg_set_image(struct pn_peer_msg *peer_msg,
                            PnBuffer *image);
-void pn_peer_msg_open_file(PnPeerMsg *peer_msg,
+void pn_peer_msg_open_file(struct pn_peer_msg *peer_msg,
                            const char *file_name);
-PnPeerMsg *pn_peer_msg_sip_new(struct pn_peer_call *call,
-                               int cseq,
-                               const char *header,
-                               const char *branch,
-                               const char *content_type,
-                               const char *content);
+struct pn_peer_msg *pn_peer_msg_sip_new(struct pn_peer_call *call,
+                                        int cseq,
+                                        const char *header,
+                                        const char *branch,
+                                        const char *content_type,
+                                        const char *content);
 
 #ifdef PECAN_DEBUG_SLP
 void pn_peer_msg_show(struct MsnMessage *msg);
