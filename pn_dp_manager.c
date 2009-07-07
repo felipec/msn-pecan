@@ -24,6 +24,7 @@
 #include "cvr/pn_peer_call.h"
 #include "cvr/pn_peer_link.h"
 
+#include "cvr/pn_peer_call_priv.h"
 #include "session_private.h"
 #include "ab/pn_contact_priv.h"
 #include "ab/pn_contactlist_priv.h"

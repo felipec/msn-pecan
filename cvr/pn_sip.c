@@ -24,6 +24,7 @@
 #include "pn_log.h"
 #include "pn_buffer.h"
 
+#include "pn_peer_call_priv.h"
 #include "cmd/cmdproc_private.h"
 #include "cmd/msg_private.h"
 
