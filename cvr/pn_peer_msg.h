@@ -22,12 +22,11 @@
 
 struct pn_peer_call;
 struct pn_peer_link;
+struct pn_buffer;
 
 struct MsnSession;
 struct MsnMessage;
 struct MsnSwitchBoard;
-
-#include "io/pn_buffer.h"
 
 #include <glib/gstdio.h>
 

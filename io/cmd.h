@@ -21,8 +21,6 @@
 
 #include <glib.h>
 
-#include "pn_buffer.h"
-
 typedef struct MsnCmd MsnCmd;
 
 struct MsnCmd

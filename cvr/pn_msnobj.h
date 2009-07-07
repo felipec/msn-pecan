@@ -22,7 +22,7 @@
 
 #include <glib.h>
 
-#include "io/pn_buffer.h"
+struct pn_buffer;
 
 enum {
     PN_MSNOBJ_UNKNOWN, /**< Unknown object */
