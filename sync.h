@@ -38,7 +38,7 @@ struct MsnSync
     gint total_users;
     gint num_groups;
     gint total_groups;
-    PnContact *last_user;
+    struct pn_contact *last_user;
 };
 
 void msn_sync_init (void);

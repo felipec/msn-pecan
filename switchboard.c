@@ -1008,7 +1008,7 @@ got_datacast_inform_user (MsnCmdProc *cmdproc,
 {
     PurpleAccount *account;
     MsnSwitchBoard *swboard;
-    PnContact *contact;
+    struct pn_contact *contact;
     const char *friendly_name;
     gchar *new_str;
 

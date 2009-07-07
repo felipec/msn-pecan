@@ -73,7 +73,7 @@ msn_session_get_password (MsnSession *session);
  *
  * @return The contact.
  */
-PnContact *
+struct pn_contact *
 msn_session_get_contact (MsnSession *session);
 
 void

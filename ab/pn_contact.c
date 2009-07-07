@@ -37,12 +37,12 @@
 #include <account.h>
 #endif /* HAVE_LIBPURPLE */
 
-PnContact *
+struct pn_contact *
 pn_contact_new (PnContactList *contactlist)
 {
-    PnContact *contact;
+    struct pn_contact *contact;
 
-    contact = g_new0 (PnContact, 1);
+    contact = g_new0 (struct pn_contact, 1);
 
     contact->contactlist = contactlist;
     contact->groups = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
@@ -51,7 +51,7 @@ pn_contact_new (PnContactList *contactlist)
 }
 
 void
-pn_contact_free (PnContact *contact)
+pn_contact_free (struct pn_contact *contact)
 {
     if (!contact)
         return;
@@ -79,7 +79,7 @@ pn_contact_free (PnContact *contact)
 }
 
 void
-pn_contact_update (PnContact *contact)
+pn_contact_update (struct pn_contact *contact)
 {
 #ifdef HAVE_LIBPURPLE
     PurpleAccount *account;
@@ -124,7 +124,7 @@ pn_contact_update (PnContact *contact)
 }
 
 gboolean
-pn_contact_is_account (PnContact *contact)
+pn_contact_is_account (struct pn_contact *contact)
 {
     if (strcmp (msn_session_get_username (contact->contactlist->session), contact->passport) == 0)
         return TRUE;
@@ -133,8 +133,8 @@ pn_contact_is_account (PnContact *contact)
 }
 
 void
-pn_contact_set_state (PnContact *contact,
-                         const gchar *state)
+pn_contact_set_state (struct pn_contact *contact,
+                      const gchar *state)
 {
     PecanStatus status;
 
@@ -163,7 +163,7 @@ pn_contact_set_state (PnContact *contact,
 }
 
 void
-pn_contact_set_passport (PnContact *contact,
+pn_contact_set_passport (struct pn_contact *contact,
                          const gchar *passport)
 {
     g_free (contact->passport);
@@ -177,20 +177,20 @@ pn_contact_set_passport (PnContact *contact,
 }
 
 void
-pn_contact_set_client_id (PnContact *contact,
+pn_contact_set_client_id (struct pn_contact *contact,
                           gulong client_id)
 {
     contact->client_id = client_id;
 }
 
 gulong
-pn_contact_get_client_id (PnContact *contact)
+pn_contact_get_client_id (struct pn_contact *contact)
 {
     return contact->client_id;
 }
 
 void
-pn_contact_set_friendly_name (PnContact *contact,
+pn_contact_set_friendly_name (struct pn_contact *contact,
                               const gchar *name)
 {
     pn_debug ("passport=[%s],name=[%s]", contact->passport, name);
@@ -246,7 +246,7 @@ pn_contact_set_friendly_name (PnContact *contact,
 }
 
 void
-pn_contact_set_personal_message (PnContact *contact,
+pn_contact_set_personal_message (struct pn_contact *contact,
                                  const gchar *value)
 {
     pn_debug ("passport=[%s],value=[%s]", contact->passport, value);
@@ -288,7 +288,7 @@ pn_contact_set_personal_message (PnContact *contact,
 }
 
 void
-pn_contact_set_current_media (PnContact *contact,
+pn_contact_set_current_media (struct pn_contact *contact,
                               const gchar *value)
 {
     gchar **array;
@@ -359,7 +359,7 @@ pn_contact_set_current_media (PnContact *contact,
 }
 
 void
-pn_contact_set_store_name (PnContact *contact,
+pn_contact_set_store_name (struct pn_contact *contact,
                            const gchar *name)
 {
     pn_debug ("passport=[%s],name=[%s]", contact->passport, name);
@@ -414,7 +414,7 @@ pn_contact_set_store_name (PnContact *contact,
 }
 
 void
-pn_contact_set_guid (PnContact *contact,
+pn_contact_set_guid (struct pn_contact *contact,
                      const gchar *guid)
 {
     g_free (contact->guid);
@@ -426,7 +426,7 @@ pn_contact_set_guid (PnContact *contact,
 }
 
 void
-pn_contact_set_buddy_icon (PnContact *contact,
+pn_contact_set_buddy_icon (struct pn_contact *contact,
                            PnBuffer *image)
 {
 #if defined(PECAN_CVR)
@@ -441,7 +441,7 @@ pn_contact_set_buddy_icon (PnContact *contact,
 }
 
 void
-pn_contact_add_group_id (PnContact *contact,
+pn_contact_add_group_id (struct pn_contact *contact,
                          const gchar *group_guid)
 {
     const gchar *passport;
@@ -512,7 +512,7 @@ pn_contact_add_group_id (PnContact *contact,
 }
 
 void
-pn_contact_remove_group_id (PnContact *contact,
+pn_contact_remove_group_id (struct pn_contact *contact,
                             const gchar *group_guid)
 {
     pn_debug ("passport=[%s],group_guid=[%s]", contact->passport, group_guid);
@@ -521,13 +521,13 @@ pn_contact_remove_group_id (PnContact *contact,
 }
 
 guint
-pn_contact_get_group_count (PnContact *contact)
+pn_contact_get_group_count (struct pn_contact *contact)
 {
     return g_hash_table_size (contact->groups);
 }
 
 void
-pn_contact_set_home_phone (PnContact *contact,
+pn_contact_set_home_phone (struct pn_contact *contact,
                            const gchar *number)
 {
     g_free (contact->phone.home);
@@ -536,7 +536,7 @@ pn_contact_set_home_phone (PnContact *contact,
 }
 
 void
-pn_contact_set_work_phone (PnContact *contact,
+pn_contact_set_work_phone (struct pn_contact *contact,
                            const gchar *number)
 {
     g_free (contact->phone.work);
@@ -545,7 +545,7 @@ pn_contact_set_work_phone (PnContact *contact,
 }
 
 void
-pn_contact_set_mobile_phone (PnContact *contact,
+pn_contact_set_mobile_phone (struct pn_contact *contact,
                              const gchar *number)
 {
     g_free (contact->phone.mobile);
@@ -555,7 +555,7 @@ pn_contact_set_mobile_phone (PnContact *contact,
 
 #if defined(PECAN_CVR)
 void
-pn_contact_set_object (PnContact *contact,
+pn_contact_set_object (struct pn_contact *contact,
                        struct pn_msnobj *obj)
 {
     /** @todo sometimes we need to force an update, in those cases the old and
@@ -576,7 +576,7 @@ pn_contact_set_object (PnContact *contact,
 #endif /* defined(PECAN_CVR) */
 
 void
-pn_contact_set_client_caps (PnContact *contact,
+pn_contact_set_client_caps (struct pn_contact *contact,
                             GHashTable *info)
 {
     if (contact->clientcaps)
@@ -586,81 +586,81 @@ pn_contact_set_client_caps (PnContact *contact,
 }
 
 const gchar *
-pn_contact_get_passport (const PnContact *contact)
+pn_contact_get_passport (const struct pn_contact *contact)
 {
     return contact->passport;
 }
 
 const gchar *
-pn_contact_get_friendly_name (const PnContact *contact)
+pn_contact_get_friendly_name (const struct pn_contact *contact)
 {
     return contact->friendly_name;
 }
 
 const gchar *
-pn_contact_get_personal_message (const PnContact *contact)
+pn_contact_get_personal_message (const struct pn_contact *contact)
 {
     return contact->personal_message;
 }
 
 const gchar *
-pn_contact_get_store_name (const PnContact *contact)
+pn_contact_get_store_name (const struct pn_contact *contact)
 {
     return contact->store_name;
 }
 
 const gchar *
-pn_contact_get_guid (const PnContact *contact)
+pn_contact_get_guid (const struct pn_contact *contact)
 {
     return contact->guid;
 }
 
 const gchar *
-pn_contact_get_home_phone (const PnContact *contact)
+pn_contact_get_home_phone (const struct pn_contact *contact)
 {
     return contact->phone.home;
 }
 
 const gchar *
-pn_contact_get_work_phone (const PnContact *contact)
+pn_contact_get_work_phone (const struct pn_contact *contact)
 {
     return contact->phone.work;
 }
 
 const gchar *
-pn_contact_get_mobile_phone (const PnContact *contact)
+pn_contact_get_mobile_phone (const struct pn_contact *contact)
 {
     return contact->phone.mobile;
 }
 
 #if defined(PECAN_CVR)
 struct pn_msnobj *
-pn_contact_get_object (const PnContact *contact)
+pn_contact_get_object (const struct pn_contact *contact)
 {
     return contact->msnobj;
 }
 #endif /* defined(PECAN_CVR) */
 
 GHashTable *
-pn_contact_get_client_caps (const PnContact *contact)
+pn_contact_get_client_caps (const struct pn_contact *contact)
 {
     return contact->clientcaps;
 }
 
 static inline gboolean
-is_blocked (const PnContact *contact)
+is_blocked (const struct pn_contact *contact)
 {
     return ((contact->list_op & (1 << MSN_LIST_BL)) ? true : false);
 }
 
 static inline gboolean
-is_offline (const PnContact *contact)
+is_offline (const struct pn_contact *contact)
 {
     return (contact->status == PN_STATUS_OFFLINE ? true : false);
 }
 
 gboolean
-pn_contact_can_receive (const PnContact *contact)
+pn_contact_can_receive (const struct pn_contact *contact)
 {
     if (is_blocked (contact))
         return false;

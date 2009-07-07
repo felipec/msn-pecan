@@ -64,7 +64,7 @@ basic_group_tests (void)
 void
 basic_contact_tests (void)
 {
-    PnContact *contact;
+    struct pn_contact *contact;
 
     contact = pn_contact_new (NULL, "foo@bar.com", "12345678");
     pn_contact_free (contact);

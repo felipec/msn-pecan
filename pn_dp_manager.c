@@ -66,7 +66,7 @@ pn_dp_manager_free (PnDpManager *dpm)
 
 static inline void
 queue (PnDpManager *dpm,
-       PnContact *contact)
+       struct pn_contact *contact)
 {
     pn_debug ("passport=[%s],window=%u",
               contact->passport, dpm->window);
@@ -103,7 +103,7 @@ dp_fail (struct pn_peer_call *call,
          MsnSession *session)
 {
     const gchar *passport;
-    PnContact *contact;
+    struct pn_contact *contact;
 
     pn_warning ("unknown error");
 
@@ -116,7 +116,7 @@ dp_fail (struct pn_peer_call *call,
 }
 
 static void
-request (PnContact *user)
+request (struct pn_contact *user)
 {
     PurpleAccount *account;
     MsnSession *session;
@@ -187,7 +187,7 @@ timeout (gpointer data)
 static void
 release (PnDpManager *dpm)
 {
-    PnContact *user;
+    struct pn_contact *user;
 
     pn_info ("releasing ud");
 
@@ -223,7 +223,7 @@ release (PnDpManager *dpm)
 #ifdef HAVE_LIBPURPLE
 static inline gboolean
 ud_cached (PurpleAccount *account,
-           PnContact *contact,
+           struct pn_contact *contact,
            struct pn_msnobj *obj)
 {
     PurpleBuddy *buddy;
@@ -245,7 +245,7 @@ ud_cached (PurpleAccount *account,
 #endif /* HAVE_LIBPURPLE */
 
 void
-pn_dp_manager_contact_set_object (PnContact *contact,
+pn_dp_manager_contact_set_object (struct pn_contact *contact,
                                   struct pn_msnobj *obj)
 {
     MsnSession *session;

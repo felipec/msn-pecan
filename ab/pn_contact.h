@@ -20,7 +20,7 @@
 #ifndef PN_CONTACT_H
 #define PN_CONTACT_H
 
-typedef struct PnContact PnContact;
+struct pn_contact;
 
 #include "session.h"
 #if defined(PECAN_CVR)
@@ -38,14 +38,14 @@ typedef struct PnContact PnContact;
  *
  * @return A new contact structure.
  */
-PnContact *pn_contact_new (PnContactList *contactlist);
+struct pn_contact *pn_contact_new (PnContactList *contactlist);
 
 /**
  * Destroys a contact structure.
  *
  * @param contact The contact to destroy.
  */
-void pn_contact_free (PnContact *contact);
+void pn_contact_free (struct pn_contact *contact);
 
 
 /**
@@ -55,13 +55,13 @@ void pn_contact_free (PnContact *contact);
  *
  * @param contact The contact to update.
  */
-void pn_contact_update (PnContact *contact);
+void pn_contact_update (struct pn_contact *contact);
 
-gboolean pn_contact_is_account (PnContact *contact);
+gboolean pn_contact_is_account (struct pn_contact *contact);
 
-void pn_contact_set_client_id (PnContact *contact,
+void pn_contact_set_client_id (struct pn_contact *contact,
                                gulong client_id);
-gulong pn_contact_get_client_id (PnContact *contact);
+gulong pn_contact_get_client_id (struct pn_contact *contact);
 
 /**
  * Sets the new state of contact.
@@ -69,7 +69,7 @@ gulong pn_contact_get_client_id (PnContact *contact);
  * @param contact The contact.
  * @param state The state string.
  */
-void pn_contact_set_state (PnContact *contact,
+void pn_contact_set_state (struct pn_contact *contact,
                            const gchar *state);
 
 /**
@@ -78,7 +78,7 @@ void pn_contact_set_state (PnContact *contact,
  * @param contact The contact.
  * @param passport The passport account.
  */
-void pn_contact_set_passport (PnContact *contact,
+void pn_contact_set_passport (struct pn_contact *contact,
                               const gchar *passport);
 
 /**
@@ -87,7 +87,7 @@ void pn_contact_set_passport (PnContact *contact,
  * @param contact The contact.
  * @param name The friendly name.
  */
-void pn_contact_set_friendly_name (PnContact *contact,
+void pn_contact_set_friendly_name (struct pn_contact *contact,
                                    const gchar *name);
 
 /**
@@ -96,7 +96,7 @@ void pn_contact_set_friendly_name (PnContact *contact,
  * @param contact The contact.
  * @param name The personal message.
  */
-void pn_contact_set_personal_message (PnContact *contact,
+void pn_contact_set_personal_message (struct pn_contact *contact,
                                       const gchar *value);
 
 /**
@@ -105,7 +105,7 @@ void pn_contact_set_personal_message (PnContact *contact,
  * @param contact The contact.
  * @param current_media The current media.
  */
-void pn_contact_set_current_media (PnContact *contact,
+void pn_contact_set_current_media (struct pn_contact *contact,
                                    const gchar *current_media);
 
 /**
@@ -114,7 +114,7 @@ void pn_contact_set_current_media (PnContact *contact,
  * @param contact The contact.
  * @param name The store name.
  */
-void pn_contact_set_store_name (PnContact *contact,
+void pn_contact_set_store_name (struct pn_contact *contact,
                                 const gchar *name);
 
 /**
@@ -123,7 +123,7 @@ void pn_contact_set_store_name (PnContact *contact,
  * @param contact The contact.
  * @param name The contact guid.
  */
-void pn_contact_set_guid (PnContact *contact,
+void pn_contact_set_guid (struct pn_contact *contact,
                           const gchar *guid);
 
 /**
@@ -132,7 +132,7 @@ void pn_contact_set_guid (PnContact *contact,
  * @param contact The contact.
  * @param img The buddy icon image
  */
-void pn_contact_set_buddy_icon (PnContact *contact,
+void pn_contact_set_buddy_icon (struct pn_contact *contact,
                                 PnBuffer *buffer);
 
 /**
@@ -141,7 +141,7 @@ void pn_contact_set_buddy_icon (PnContact *contact,
  * @param contact The contact.
  * @param id   The group ID.
  */
-void pn_contact_add_group_id (PnContact *contact,
+void pn_contact_add_group_id (struct pn_contact *contact,
                               const gchar *group_guid);
 
 /**
@@ -150,7 +150,7 @@ void pn_contact_add_group_id (PnContact *contact,
  * @param contact The contact.
  * @param id   The group ID.
  */
-void pn_contact_remove_group_id (PnContact *contact,
+void pn_contact_remove_group_id (struct pn_contact *contact,
                                  const gchar *group_guid);
 
 /**
@@ -158,7 +158,7 @@ void pn_contact_remove_group_id (PnContact *contact,
  *
  * @return The group count.
  */
-guint pn_contact_get_group_count (PnContact *contact);
+guint pn_contact_get_group_count (struct pn_contact *contact);
 
 /**
  * Sets the home phone number for a contact.
@@ -166,7 +166,7 @@ guint pn_contact_get_group_count (PnContact *contact);
  * @param contact The contact.
  * @param number The home phone number.
  */
-void pn_contact_set_home_phone (PnContact *contact,
+void pn_contact_set_home_phone (struct pn_contact *contact,
                                 const gchar *number);
 
 /**
@@ -175,7 +175,7 @@ void pn_contact_set_home_phone (PnContact *contact,
  * @param contact The contact.
  * @param number The work phone number.
  */
-void pn_contact_set_work_phone (PnContact *contact,
+void pn_contact_set_work_phone (struct pn_contact *contact,
                                 const gchar *number);
 
 /**
@@ -184,7 +184,7 @@ void pn_contact_set_work_phone (PnContact *contact,
  * @param contact The contact.
  * @param number The mobile phone number.
  */
-void pn_contact_set_mobile_phone (PnContact *contact,
+void pn_contact_set_mobile_phone (struct pn_contact *contact,
                                   const gchar *number);
 
 #if defined(PECAN_CVR)
@@ -194,7 +194,7 @@ void pn_contact_set_mobile_phone (PnContact *contact,
  * @param contact The contact.
  * @param obj  The MSNObject.
  */
-void pn_contact_set_object (PnContact *contact,
+void pn_contact_set_object (struct pn_contact *contact,
                             struct pn_msnobj *obj);
 #endif /* defined(PECAN_CVR) */
 
@@ -204,7 +204,7 @@ void pn_contact_set_object (PnContact *contact,
  * @param contact The contact.
  * @param info The client information.
  */
-void pn_contact_set_client_caps (PnContact *contact,
+void pn_contact_set_client_caps (struct pn_contact *contact,
                                  GHashTable *info);
 
 /**
@@ -214,7 +214,7 @@ void pn_contact_set_client_caps (PnContact *contact,
  *
  * @return The passport account.
  */
-const gchar *pn_contact_get_passport (const PnContact *contact);
+const gchar *pn_contact_get_passport (const struct pn_contact *contact);
 
 /**
  * Returns the friendly name for a contact.
@@ -223,7 +223,7 @@ const gchar *pn_contact_get_passport (const PnContact *contact);
  *
  * @return The friendly name.
  */
-const gchar *pn_contact_get_friendly_name (const PnContact *contact);
+const gchar *pn_contact_get_friendly_name (const struct pn_contact *contact);
 
 /**
  * Returns the personal message of a contact.
@@ -232,7 +232,7 @@ const gchar *pn_contact_get_friendly_name (const PnContact *contact);
  *
  * @return The personal message.
  */
-const gchar *pn_contact_get_personal_message (const PnContact *contact);
+const gchar *pn_contact_get_personal_message (const struct pn_contact *contact);
 
 /**
  * Returns the store name for a contact.
@@ -241,7 +241,7 @@ const gchar *pn_contact_get_personal_message (const PnContact *contact);
  *
  * @return The store name.
  */
-const gchar *pn_contact_get_store_name (const PnContact *contact);
+const gchar *pn_contact_get_store_name (const struct pn_contact *contact);
 
 /**
  * Returns the contact's GUID.
@@ -250,7 +250,7 @@ const gchar *pn_contact_get_store_name (const PnContact *contact);
  *
  * @return The GUID.
  */
-const gchar *pn_contact_get_guid (const PnContact *contact);
+const gchar *pn_contact_get_guid (const struct pn_contact *contact);
 
 /**
  * Returns the home phone number for a contact.
@@ -259,7 +259,7 @@ const gchar *pn_contact_get_guid (const PnContact *contact);
  *
  * @return The contact's home phone number.
  */
-const gchar *pn_contact_get_home_phone (const PnContact *contact);
+const gchar *pn_contact_get_home_phone (const struct pn_contact *contact);
 
 /**
  * Returns the work phone number for a contact.
@@ -268,7 +268,7 @@ const gchar *pn_contact_get_home_phone (const PnContact *contact);
  *
  * @return The contact's work phone number.
  */
-const gchar *pn_contact_get_work_phone (const PnContact *contact);
+const gchar *pn_contact_get_work_phone (const struct pn_contact *contact);
 
 /**
  * Returns the mobile phone number for a contact.
@@ -277,7 +277,7 @@ const gchar *pn_contact_get_work_phone (const PnContact *contact);
  *
  * @return The contact's mobile phone number.
  */
-const gchar *pn_contact_get_mobile_phone (const PnContact *contact);
+const gchar *pn_contact_get_mobile_phone (const struct pn_contact *contact);
 
 #if defined(PECAN_CVR)
 /**
@@ -287,7 +287,7 @@ const gchar *pn_contact_get_mobile_phone (const PnContact *contact);
  *
  * @return The MSNObject.
  */
-struct pn_msnobj *pn_contact_get_object (const PnContact *contact);
+struct pn_msnobj *pn_contact_get_object (const struct pn_contact *contact);
 #endif /* defined(PECAN_CVR) */
 
 /**
@@ -297,8 +297,8 @@ struct pn_msnobj *pn_contact_get_object (const PnContact *contact);
  *
  * @return The client information.
  */
-GHashTable *pn_contact_get_client_caps (const PnContact *contact);
+GHashTable *pn_contact_get_client_caps (const struct pn_contact *contact);
 
-gboolean pn_contact_can_receive (const PnContact *contact);
+gboolean pn_contact_can_receive (const struct pn_contact *contact);
 
 #endif /* PN_CONTACT_H */

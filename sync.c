@@ -75,7 +75,7 @@ prp_cmd (MsnCmdProc *cmdproc,
 {
     MsnSession *session = cmdproc->session;
     const gchar *type, *value;
-    PnContact *user;
+    struct pn_contact *user;
 
     type  = cmd->params[0];
     value = cmd->params[1];
@@ -155,7 +155,7 @@ lst_cmd (MsnCmdProc *cmdproc,
 {
     MsnSession *session = cmdproc->session;
     const gchar *passport = NULL;
-    PnContact *user;
+    struct pn_contact *user;
     gchar *friendly = NULL;
     const gchar *user_guid = NULL;
     int list_op = -1;
@@ -250,7 +250,7 @@ bpr_cmd (MsnCmdProc *cmdproc,
 {
     MsnSync *sync = cmdproc->session->sync;
     const char *type, *value;
-    PnContact *user;
+    struct pn_contact *user;
 
     user = sync->last_user;
 

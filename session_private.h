@@ -45,7 +45,7 @@ struct MsnSession
     gchar *password;
 
     void *user_data;
-    PnContact *user; /**< Store contact information. */
+    struct pn_contact *user; /**< Store contact information. */
 
     GHashTable *config; /**< Configuration options. */
 

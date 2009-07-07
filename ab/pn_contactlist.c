@@ -52,7 +52,7 @@ const char *lists[] = { "FL", "AL", "BL", "RL", "PL" };
 typedef struct
 {
     MsnSession *session;
-    PnContact *contact;
+    struct pn_contact *contact;
 } MsnPermitAdd;
 
 #ifdef HAVE_LIBPURPLE
@@ -64,7 +64,7 @@ msn_accept_add_cb (gpointer data)
 {
     MsnPermitAdd *pa = data;
     const gchar *passport;
-    PnContact *contact;
+    struct pn_contact *contact;
 
     contact = pa->contact;
     passport = pn_contact_get_passport (contact);
@@ -78,7 +78,7 @@ static void
 msn_cancel_add_cb (gpointer data)
 {
     MsnPermitAdd *pa = data;
-    PnContact *contact;
+    struct pn_contact *contact;
     const gchar *passport;
 
     contact = pa->contact;
@@ -91,7 +91,7 @@ msn_cancel_add_cb (gpointer data)
 
 static void
 got_new_entry (PurpleConnection *gc,
-               PnContact *contact,
+               struct pn_contact *contact,
                const gchar *friendly)
 {
     MsnPermitAdd *pa;
@@ -114,7 +114,7 @@ got_new_entry (PurpleConnection *gc,
  **************************************************************************/
 
 static gboolean
-contact_is_in_group (PnContact *contact,
+contact_is_in_group (struct pn_contact *contact,
                      const gchar *group_guid)
 {
     if (!contact)
@@ -136,7 +136,7 @@ contact_is_in_group (PnContact *contact,
 }
 
 static gboolean
-contact_is_there (PnContact *contact,
+contact_is_there (struct pn_contact *contact,
                   gint list_id,
                   gboolean check_group,
                   const gchar *group_guid)
@@ -160,7 +160,7 @@ contact_is_there (PnContact *contact,
 }
 
 static const gchar*
-get_store_name (PnContact *contact)
+get_store_name (struct pn_contact *contact)
 {
     const gchar *store_name;
 
@@ -233,7 +233,7 @@ msn_get_list_id (const gchar *list)
 
 void
 msn_got_add_contact (MsnSession *session,
-                     PnContact *contact,
+                     struct pn_contact *contact,
                      MsnListId list_id,
                      const gchar *group_guid)
 {
@@ -300,7 +300,7 @@ msn_got_add_contact (MsnSession *session,
 
 void
 msn_got_rem_contact (MsnSession *session,
-                     PnContact *contact,
+                     struct pn_contact *contact,
                      MsnListId list_id,
                      const gchar *group_guid)
 {
@@ -366,7 +366,7 @@ msn_got_rem_contact (MsnSession *session,
 
 void
 msn_got_lst_contact (MsnSession *session,
-                     PnContact *contact,
+                     struct pn_contact *contact,
                      const gchar *extra,
                      gint list_op,
                      GSList *group_ids)
@@ -478,7 +478,7 @@ pn_contactlist_destroy (PnContactList *contactlist)
 
 void
 pn_contactlist_remove_contact (PnContactList *contactlist,
-                               PnContact *contact)
+                               struct pn_contact *contact)
 {
     {
         const gchar *guid;
@@ -490,7 +490,7 @@ pn_contactlist_remove_contact (PnContactList *contactlist,
                          pn_contact_get_passport (contact));
 }
 
-PnContact *
+struct pn_contact *
 pn_contactlist_find_contact (PnContactList *contactlist,
                              const gchar *passport)
 {
@@ -499,7 +499,7 @@ pn_contactlist_find_contact (PnContactList *contactlist,
     return g_hash_table_lookup (contactlist->contact_names, passport);
 }
 
-PnContact *
+struct pn_contact *
 pn_contactlist_find_contact_by_guid (PnContactList *contactlist,
                                      const gchar *guid)
 {
@@ -620,7 +620,7 @@ pn_contactlist_rem_buddy (PnContactList *contactlist,
                           gint list_id,
                           const gchar *group_name)
 {
-    PnContact *contact;
+    struct pn_contact *contact;
     const gchar *group_guid;
     const gchar *list;
 
@@ -667,7 +667,7 @@ pn_contactlist_add_buddy (PnContactList *contactlist,
                           gint list_id,
                           const gchar *group_name)
 {
-    PnContact *contact;
+    struct pn_contact *contact;
     const gchar *group_guid;
     const gchar *contact_guid;
     const gchar *list;
@@ -746,7 +746,7 @@ contact_check_pending (gpointer key,
                        gpointer user_data)
 {
     const gchar *passport;
-    PnContact *contact;
+    struct pn_contact *contact;
     PnContactList *contactlist;
 
     passport = key;
@@ -814,7 +814,7 @@ pn_contactlist_add_buddy_helper (PnContactList *contactlist,
     pn_debug ("who=[%s],group_name=[%s]", who, group_name);
 
     {
-        PnContact *contact;
+        struct pn_contact *contact;
         int list_id;
         const gchar *group_guid = NULL;
 

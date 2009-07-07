@@ -470,7 +470,7 @@ show_send_to_mobile_cb(PurpleBlistNode *node, gpointer ignored)
 
 static gboolean
 msn_offline_message(const PurpleBuddy *buddy) {
-    PnContact *user;
+    struct pn_contact *user;
     if (buddy == NULL)
         return FALSE;
     user = buddy->proto_data;
@@ -571,7 +571,7 @@ list_icon (PurpleAccount *a,
 static const char *
 list_emblems (PurpleBuddy *b)
 {
-    PnContact *contact;
+    struct pn_contact *contact;
 
     contact = b->proto_data;
 
@@ -584,7 +584,7 @@ list_emblems (PurpleBuddy *b)
 static gchar *
 status_text (PurpleBuddy *buddy)
 {
-    PnContact *contact;
+    struct pn_contact *contact;
 
     contact = buddy->proto_data;
 
@@ -645,7 +645,7 @@ tooltip_text (PurpleBuddy *buddy,
               PurpleNotifyUserInfo *user_info,
               gboolean full)
 {
-    PnContact *user;
+    struct pn_contact *user;
     PurplePresence *presence;
     PurpleStatus *status;
 
@@ -840,7 +840,7 @@ blist_node_menu (PurpleBlistNode *node)
         buddy = (PurpleBuddy *) node;
 
         {
-            PnContact *user;
+            struct pn_contact *user;
 
             user = buddy->proto_data;
 
@@ -1052,7 +1052,7 @@ send_im (PurpleConnection *gc,
 
     /* Send to mobile when contact is offline. */
     {
-        PnContact *contact;
+        struct pn_contact *contact;
         contact = pn_contactlist_find_contact (session->contactlist, who);
         if (contact && contact->status == PN_STATUS_OFFLINE && contact->mobile)
         {
@@ -1253,7 +1253,7 @@ rem_buddy (PurpleConnection *gc,
     /* Are we going to remove him completely? */
     if (group_name)
     {
-        PnContact *user;
+        struct pn_contact *user;
 
         user = pn_contactlist_find_contact (contactlist, buddy->name);
 
@@ -1271,7 +1271,7 @@ alias_buddy (PurpleConnection *gc,
 {
     MsnSession *session;
     MsnCmdProc *cmdproc;
-    PnContact *contact;
+    struct pn_contact *contact;
 
     session = gc->proto_data;
     cmdproc = session->notification->cmdproc;
@@ -1353,7 +1353,7 @@ add_permit (PurpleConnection *gc,
 {
     MsnSession *session;
     PnContactList *contactlist;
-    PnContact *user;
+    struct pn_contact *user;
 
     session = gc->proto_data;
     contactlist = session->contactlist;
@@ -1377,7 +1377,7 @@ add_deny (PurpleConnection *gc,
 {
     MsnSession *session;
     PnContactList *contactlist;
-    PnContact *user;
+    struct pn_contact *user;
 
     session = gc->proto_data;
     contactlist = session->contactlist;
@@ -1401,7 +1401,7 @@ rem_permit (PurpleConnection *gc,
 {
     MsnSession *session;
     PnContactList *contactlist;
-    PnContact *user;
+    struct pn_contact *user;
 
     session = gc->proto_data;
     contactlist = session->contactlist;
@@ -1426,7 +1426,7 @@ rem_deny (PurpleConnection *gc,
 {
     MsnSession *session;
     PnContactList *contactlist;
-    PnContact *user;
+    struct pn_contact *user;
 
     session = gc->proto_data;
     contactlist = session->contactlist;
@@ -1609,7 +1609,7 @@ set_buddy_icon (PurpleConnection *gc,
                 PurpleStoredImage *img)
 {
     MsnSession *session;
-    PnContact *user;
+    struct pn_contact *user;
 
     session = gc->proto_data;
     user = msn_session_get_contact (session);
@@ -1632,7 +1632,7 @@ get_info (PurpleConnection *gc,
           const char *name)
 {
     PurpleNotifyUserInfo *user_info;
-    PnContact *user;
+    struct pn_contact *user;
     PurpleBuddy *buddy;
 
     user_info = purple_notify_user_info_new ();

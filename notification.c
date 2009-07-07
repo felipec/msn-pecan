@@ -489,7 +489,7 @@ static void
 adc_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSession *session;
-    PnContact *user = NULL;
+    struct pn_contact *user = NULL;
     const gchar *list = NULL;
     const gchar *passport = NULL;
     gchar *friendly = NULL;
@@ -656,7 +656,7 @@ qng_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 static void
 fln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
-    PnContact *user;
+    struct pn_contact *user;
 
     user = pn_contactlist_find_contact(cmdproc->session->contactlist, cmd->params[0]);
     pn_contact_set_state(user, NULL);
@@ -673,7 +673,7 @@ iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     MsnSession *session;
     PurpleAccount *account;
     PurpleConnection *gc;
-    PnContact *user;
+    struct pn_contact *user;
     const char *state, *passport;
     gchar *friendly;
 
@@ -736,7 +736,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     MsnSession *session;
     PurpleAccount *account;
     PurpleConnection *gc;
-    PnContact *user;
+    struct pn_contact *user;
     unsigned long clientid;
     const char *state, *passport;
     gchar *friendly;
@@ -793,7 +793,7 @@ nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 }
 
 static void
-contact_update (PnContact *contact,
+contact_update (struct pn_contact *contact,
                 gpointer user_data)
 {
     if (contact->status == PN_STATUS_OFFLINE)
@@ -812,7 +812,7 @@ contact_update (PnContact *contact,
 static void
 chg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
-    PnContact *user;
+    struct pn_contact *user;
     PecanStatus old_status;
 
     user = msn_session_get_contact (cmdproc->session);
@@ -862,7 +862,7 @@ rea_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     else
     {
         /* This is for a buddy. */
-        PnContact *user;
+        struct pn_contact *user;
         user = pn_contactlist_find_contact(session->contactlist, who);
         if (user)
         {
@@ -885,7 +885,7 @@ sbp_cmd (MsnCmdProc *cmdproc,
     const gchar *contact_guid;
     const gchar *type;
     const gchar *value;
-    PnContact *contact;
+    struct pn_contact *contact;
 
     session = cmdproc->session;
     contact_guid = cmd->params[1];
@@ -914,7 +914,7 @@ prp_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     PurpleConnection *gc;
     PurpleAccount *account;
     const gchar *type, *value;
-    PnContact *user;
+    struct pn_contact *user;
 
     g_return_if_fail(cmd->param_count >= 3);
 
@@ -985,7 +985,7 @@ static void
 rem_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSession *session;
-    PnContact *user;
+    struct pn_contact *user;
     const char *list;
     const gchar *user_id; /* passport or guid */
     MsnListId list_id;
@@ -1085,7 +1085,7 @@ ubx_cmd_post (MsnCmdProc *cmdproc,
               gsize len)
 {
     MsnSession *session;
-    PnContact *contact;
+    struct pn_contact *contact;
     const gchar *passport;
 
     session = cmdproc->session;

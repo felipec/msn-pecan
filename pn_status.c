@@ -151,7 +151,7 @@ void
 pn_update_status (MsnSession *session)
 {
     MsnCmdProc *cmdproc;
-    PnContact *user;
+    struct pn_contact *user;
     const gchar *state_text;
     int client_id;
     int caps;

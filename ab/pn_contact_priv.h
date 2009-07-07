@@ -50,8 +50,7 @@ typedef struct _CurrentMedia
 /**
  * A contact.
  */
-struct PnContact
-{
+struct pn_contact {
     PnContactList *contactlist;
 
     gchar *passport; /**< The passport account. */

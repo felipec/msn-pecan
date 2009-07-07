@@ -43,7 +43,7 @@ typedef enum
     MSN_LIST_PL_OP = 0x10,
 } MsnListOp;
 
-typedef void (*PnContactListFunc) (PnContact *contact, gpointer user_data);
+typedef void (*PnContactListFunc) (struct pn_contact *contact, gpointer user_data);
 
 struct _PurpleBuddy;
 struct _PurpleGroup;
@@ -51,15 +51,15 @@ struct _PurpleGroup;
 MsnListId msn_get_list_id (const gchar *list);
 
 void msn_got_add_contact (MsnSession *session,
-                          PnContact *contact,
+                          struct pn_contact *contact,
                           MsnListId list_id,
                           const gchar *group_guid);
 void msn_got_rem_contact (MsnSession *session,
-                          PnContact *contact,
+                          struct pn_contact *contact,
                           MsnListId list_id,
                           const gchar *group_guid);
 void msn_got_lst_contact (MsnSession *session,
-                          PnContact *contact,
+                          struct pn_contact *contact,
                           const gchar *extra,
                           gint list_op,
                           GSList *group_ids);
@@ -67,11 +67,11 @@ void msn_got_lst_contact (MsnSession *session,
 PnContactList *pn_contactlist_new (MsnSession *session);
 void pn_contactlist_destroy (PnContactList *contactlist);
 void pn_contactlist_remove_contact (PnContactList *contactlist,
-                                    PnContact *contact);
-PnContact *pn_contactlist_find_contact (PnContactList *contactlist,
-                                        const gchar *passport);
-PnContact *pn_contactlist_find_contact_by_guid (PnContactList *contactlist,
-                                                const gchar *contact_guid);
+                                    struct pn_contact *contact);
+struct pn_contact *pn_contactlist_find_contact (PnContactList *contactlist,
+                                                const gchar *passport);
+struct pn_contact *pn_contactlist_find_contact_by_guid (PnContactList *contactlist,
+                                                        const gchar *contact_guid);
 void pn_contactlist_add_group (PnContactList *contactlist, struct pn_group *group);
 void pn_contactlist_remove_group (PnContactList *contactlist, struct pn_group *group);
 struct pn_group *pn_contactlist_find_group_with_id (PnContactList *contactlist,

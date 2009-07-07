@@ -46,7 +46,7 @@ conversation_created_cb (PurpleConversation *conv, gpointer data)
     gchar *str;
     const gchar *tmp_user, *friendly_name;
     MsnSession *session = data;
-    PnContact *contact;
+    struct pn_contact *contact;
 
     tmp_user = purple_conversation_get_name (conv);
     contact = pn_contactlist_find_contact (session->contactlist, tmp_user);
@@ -188,7 +188,7 @@ msn_session_get_password (MsnSession *session)
     return session->password;
 }
 
-PnContact *
+struct pn_contact *
 msn_session_get_contact (MsnSession *session)
 {
     g_return_val_if_fail (session, NULL);
