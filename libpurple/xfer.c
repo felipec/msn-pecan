@@ -217,7 +217,7 @@ gen_context(const char *file_name,
 void
 purple_pn_xfer_invite(PurpleXfer *xfer)
 {
-    PnPeerLink *link;
+    struct pn_peer_link *link;
     PnPeerCall *call;
     char *context;
     const char *fn;

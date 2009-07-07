@@ -23,7 +23,7 @@
 typedef struct PnPeerCall PnPeerCall;
 
 struct MsnSession;
-struct PnPeerLink;
+struct pn_peer_link;
 struct MsnSwitchBoard;
 
 #include <glib.h>
@@ -66,11 +66,11 @@ struct PnPeerCall
 
     int timer;
 
-    struct PnPeerLink *link;
+    struct pn_peer_link *link;
     unsigned int ref_count;
 };
 
-PnPeerCall *pn_peer_call_new(struct PnPeerLink *link);
+PnPeerCall *pn_peer_call_new(struct pn_peer_link *link);
 void pn_peer_call_free(PnPeerCall *call);
 PnPeerCall *pn_peer_call_ref(PnPeerCall *call);
 PnPeerCall *pn_peer_call_unref(PnPeerCall *call);

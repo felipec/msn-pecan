@@ -33,7 +33,7 @@
 #include "fix_purple.h"
 
 PnPeerMsg *
-pn_peer_msg_new(PnPeerLink *link)
+pn_peer_msg_new(struct pn_peer_link *link)
 {
     PnPeerMsg *peer_msg;
 
@@ -55,7 +55,7 @@ pn_peer_msg_new(PnPeerLink *link)
 void
 pn_peer_msg_free(PnPeerMsg *peer_msg)
 {
-    PnPeerLink *link;
+    struct pn_peer_link *link;
     GList *cur;
 
     if (!peer_msg)
@@ -184,7 +184,7 @@ pn_peer_msg_sip_new(PnPeerCall *call,
                     const char *content_type,
                     const char *content)
 {
-    PnPeerLink *link;
+    struct pn_peer_link *link;
     PnPeerMsg *peer_msg;
     gchar *body;
     gsize body_len;

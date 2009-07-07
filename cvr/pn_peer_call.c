@@ -58,7 +58,7 @@ timeout(gpointer data)
 }
 
 PnPeerCall *
-pn_peer_call_new(PnPeerLink *link)
+pn_peer_call_new(struct pn_peer_link *link)
 {
     PnPeerCall *call;
 
@@ -185,7 +185,7 @@ pn_peer_call_invite(PnPeerCall *call,
                     int app_id,
                     const char *context)
 {
-    PnPeerLink *link;
+    struct pn_peer_link *link;
     PnPeerMsg *peer_msg;
     char *header;
     char *content;

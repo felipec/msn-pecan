@@ -32,7 +32,7 @@ struct _PurpleProxyConnectData;
 
 struct PnDirectConn
 {
-    PnPeerLink *link;
+    struct pn_peer_link *link;
     PnPeerCall *initial_call;
 
     gboolean ack_sent;
@@ -50,7 +50,7 @@ struct PnDirectConn
     PecanStream *stream;
 };
 
-PnDirectConn *pn_direct_conn_new(PnPeerLink *link);
+PnDirectConn *pn_direct_conn_new(struct pn_peer_link *link);
 gboolean pn_direct_conn_connect(PnDirectConn *direct_conn,
                                 const char *host, int port);
 #if 0

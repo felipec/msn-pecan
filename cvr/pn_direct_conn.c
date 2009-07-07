@@ -43,7 +43,7 @@
 void
 pn_direct_conn_send_handshake(PnDirectConn *direct_conn)
 {
-    PnPeerLink *link;
+    struct pn_peer_link *link;
     PnPeerMsg *peer_msg;
 
     g_return_if_fail(direct_conn != NULL);
@@ -448,7 +448,7 @@ pn_direct_conn_listen(PnDirectConn *direct_conn)
 #endif
 
 PnDirectConn*
-pn_direct_conn_new(PnPeerLink *link)
+pn_direct_conn_new(struct pn_peer_link *link)
 {
     PnDirectConn *direct_conn;
 

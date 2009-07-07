@@ -23,9 +23,9 @@
 #include <glib.h>
 
 struct PnPeerCall;
-struct PnPeerLink;
+struct pn_peer_link;
 
-void pn_sip_recv(struct PnPeerLink *link,
+void pn_sip_recv(struct pn_peer_link *link,
                  const char *body);
 
 void pn_sip_send_ok(struct PnPeerCall *call,

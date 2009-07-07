@@ -140,7 +140,7 @@ request (PnContact *user)
     if (g_ascii_strcasecmp (user->passport,
                             msn_session_get_username (session)))
     {
-        PnPeerLink *link;
+        struct pn_peer_link *link;
         link = msn_session_get_peer_link (session, user->passport);
         pn_peer_link_request_object (link, info,
                                      dp_ok, dp_fail, obj);

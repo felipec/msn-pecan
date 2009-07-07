@@ -44,15 +44,15 @@
 #include "fix_purple_win32.h"
 #include <ft.h>
 
-static void send_msg_part(PnPeerLink *link, PnPeerMsg *peer_msg);
+static void send_msg_part(struct pn_peer_link *link, PnPeerMsg *peer_msg);
 
-PnPeerLink *
+struct pn_peer_link *
 pn_peer_link_new(MsnSession *session,
                  const char *username)
 {
-    PnPeerLink *link;
+    struct pn_peer_link *link;
 
-    link = g_new0(PnPeerLink, 1);
+    link = g_new0(struct pn_peer_link, 1);
 
 #ifdef PECAN_DEBUG_SLPLINK
     pn_info("link=%p", link);
@@ -73,7 +73,7 @@ pn_peer_link_new(MsnSession *session,
 }
 
 void
-pn_peer_link_free(PnPeerLink *link)
+pn_peer_link_free(struct pn_peer_link *link)
 {
     MsnSession *session;
 
@@ -97,16 +97,16 @@ pn_peer_link_free(PnPeerLink *link)
     g_free(link);
 }
 
-PnPeerLink *
-pn_peer_link_ref(PnPeerLink *link)
+struct pn_peer_link *
+pn_peer_link_ref(struct pn_peer_link *link)
 {
     link->ref_count++;
 
     return link;
 }
 
-PnPeerLink *
-pn_peer_link_unref(PnPeerLink *link)
+struct pn_peer_link *
+pn_peer_link_unref(struct pn_peer_link *link)
 {
     link->ref_count--;
 
@@ -118,7 +118,7 @@ pn_peer_link_unref(PnPeerLink *link)
     return link;
 }
 
-PnPeerLink *
+struct pn_peer_link *
 msn_session_find_peer_link(MsnSession *session,
                            const char *who)
 {
@@ -126,11 +126,11 @@ msn_session_find_peer_link(MsnSession *session,
     return g_hash_table_lookup(session->links, who);
 }
 
-PnPeerLink *
+struct pn_peer_link *
 msn_session_get_peer_link(MsnSession *session,
                           const char *username)
 {
-    PnPeerLink *link;
+    struct pn_peer_link *link;
 
     link = msn_session_find_peer_link(session, username);
 
@@ -143,21 +143,21 @@ msn_session_get_peer_link(MsnSession *session,
 }
 
 void
-pn_peer_link_add_call(PnPeerLink *link,
+pn_peer_link_add_call(struct pn_peer_link *link,
                       PnPeerCall *call)
 {
     link->slp_calls = g_list_append(link->slp_calls, call);
 }
 
 void
-pn_peer_link_remove_call(PnPeerLink *link,
+pn_peer_link_remove_call(struct pn_peer_link *link,
                          PnPeerCall *call)
 {
     link->slp_calls = g_list_remove(link->slp_calls, call);
 }
 
 PnPeerCall *
-pn_peer_link_find_slp_call(PnPeerLink *link,
+pn_peer_link_find_slp_call(struct pn_peer_link *link,
                            const char *id)
 {
     GList *l;
@@ -177,7 +177,7 @@ pn_peer_link_find_slp_call(PnPeerLink *link,
 }
 
 static inline PnPeerCall *
-find_session_call(PnPeerLink *link,
+find_session_call(struct pn_peer_link *link,
                   long id)
 {
     GList *l;
@@ -194,7 +194,7 @@ find_session_call(PnPeerLink *link,
 }
 
 static inline void
-send_msg(PnPeerLink *link,
+send_msg(struct pn_peer_link *link,
          PnPeerMsg *peer_msg)
 {
     MsnSwitchBoard *swboard;
@@ -237,7 +237,8 @@ msg_ack(MsnMessage *msg,
 
 /* We have received the message nak. */
 static void
-msg_nak(MsnMessage *msg, void *data)
+msg_nak(MsnMessage *msg,
+        void *data)
 {
     PnPeerMsg *peer_msg;
 
@@ -249,7 +250,7 @@ msg_nak(MsnMessage *msg, void *data)
 }
 
 static void
-send_msg_part(PnPeerLink *link,
+send_msg_part(struct pn_peer_link *link,
               PnPeerMsg *peer_msg)
 {
     MsnMessage *msg;
@@ -315,8 +316,8 @@ send_msg_part(PnPeerLink *link,
 }
 
 static void
-release_peer_msg(PnPeerLink *link,
-               PnPeerMsg *peer_msg)
+release_peer_msg(struct pn_peer_link *link,
+                 PnPeerMsg *peer_msg)
 {
     MsnMessage *msg;
 
@@ -372,7 +373,7 @@ release_peer_msg(PnPeerLink *link,
 }
 
 void
-pn_peer_link_queue_msg(PnPeerLink *link,
+pn_peer_link_queue_msg(struct pn_peer_link *link,
                        PnPeerMsg *peer_msg)
 {
     peer_msg->id = link->slp_seq_id++;
@@ -381,7 +382,7 @@ pn_peer_link_queue_msg(PnPeerLink *link,
 }
 
 void
-pn_peer_link_send_msg(PnPeerLink *link,
+pn_peer_link_send_msg(struct pn_peer_link *link,
                       PnPeerMsg *peer_msg)
 {
     peer_msg->id = link->slp_seq_id++;
@@ -390,7 +391,7 @@ pn_peer_link_send_msg(PnPeerLink *link,
 }
 
 void
-pn_peer_link_unleash(PnPeerLink *link)
+pn_peer_link_unleash(struct pn_peer_link *link)
 {
     PnPeerMsg *peer_msg;
 
@@ -405,7 +406,7 @@ pn_peer_link_unleash(PnPeerLink *link)
 }
 
 static inline void
-send_ack(PnPeerLink *link,
+send_ack(struct pn_peer_link *link,
          MsnMessage *msg)
 {
     PnPeerMsg *peer_msg;
@@ -427,7 +428,7 @@ send_ack(PnPeerLink *link,
 }
 
 static void
-process_peer_msg(PnPeerLink *link,
+process_peer_msg(struct pn_peer_link *link,
                  PnPeerMsg *peer_msg)
 {
     PnPeerCall *call = NULL;
@@ -501,7 +502,7 @@ process_peer_msg(PnPeerLink *link,
 }
 
 static inline PnPeerMsg *
-find_message(PnPeerLink *link,
+find_message(struct pn_peer_link *link,
              long session_id,
              long id)
 {
@@ -518,7 +519,7 @@ find_message(PnPeerLink *link,
 }
 
 void
-pn_peer_link_process_msg(PnPeerLink *link,
+pn_peer_link_process_msg(struct pn_peer_link *link,
                          MsnMessage *msg,
                          int type,
                          void *user_data)
@@ -670,7 +671,7 @@ pn_peer_link_process_msg(PnPeerLink *link,
 }
 
 void
-pn_peer_link_request_object(PnPeerLink *link,
+pn_peer_link_request_object(struct pn_peer_link *link,
                             const char *info,
                             MsnSlpCb cb,
                             MsnSlpEndCb end_cb,

@@ -23,7 +23,7 @@
 typedef struct PnPeerMsg PnPeerMsg;
 
 struct PnPeerCall;
-struct PnPeerLink;
+struct pn_peer_link;
 struct MsnSession;
 struct MsnMessage;
 struct MsnSwitchBoard;
@@ -39,7 +39,7 @@ struct MsnSwitchBoard;
 struct PnPeerMsg
 {
     struct PnPeerCall *call; /**< The call to which this slp message belongs (if applicable). */
-    struct PnPeerLink *link; /**< The peer link through which this slp message is being sent. */
+    struct pn_peer_link *link; /**< The peer link through which this slp message is being sent. */
     struct MsnSession *session;
 
     long session_id;
@@ -70,7 +70,7 @@ struct PnPeerMsg
     struct MsnSwitchBoard *swboard;
 };
 
-PnPeerMsg *pn_peer_msg_new(struct PnPeerLink *link);
+PnPeerMsg *pn_peer_msg_new(struct pn_peer_link *link);
 void pn_peer_msg_free(PnPeerMsg *peer_msg);
 PnPeerMsg *pn_peer_msg_ref(PnPeerMsg *peer_msg);
 PnPeerMsg *pn_peer_msg_unref(PnPeerMsg *peer_msg);

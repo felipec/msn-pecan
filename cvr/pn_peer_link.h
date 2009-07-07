@@ -20,8 +20,6 @@
 #ifndef PN_PEERLINK_H
 #define PN_PEERLINK_H
 
-typedef struct PnPeerLink PnPeerLink;
-
 struct MsnSession;
 struct PnPeerMsg;
 struct MsnMessage;
@@ -36,37 +34,37 @@ struct _PurpleXfer;
 typedef void (*MsnSlpCb) (PnPeerCall *call, const guchar *data, gsize size);
 typedef void (*MsnSlpEndCb) (PnPeerCall *call, struct MsnSession *session);
 
-PnPeerLink *pn_peer_link_new(struct MsnSession *session,
-                             const char *username);
-void pn_peer_link_free(PnPeerLink *link);
-PnPeerLink *pn_peer_link_ref(PnPeerLink *link);
-PnPeerLink *pn_peer_link_unref(PnPeerLink *link);
+struct pn_peer_link *pn_peer_link_new(struct MsnSession *session,
+                                      const char *username);
+void pn_peer_link_free(struct pn_peer_link *link);
+struct pn_peer_link *pn_peer_link_ref(struct pn_peer_link *link);
+struct pn_peer_link *pn_peer_link_unref(struct pn_peer_link *link);
 
-void pn_peer_link_add_call(PnPeerLink *link,
+void pn_peer_link_add_call(struct pn_peer_link *link,
                            PnPeerCall *call);
-void pn_peer_link_remove_call(PnPeerLink *link,
+void pn_peer_link_remove_call(struct pn_peer_link *link,
                               PnPeerCall *call);
-PnPeerCall *pn_peer_link_find_slp_call(PnPeerLink *link,
+PnPeerCall *pn_peer_link_find_slp_call(struct pn_peer_link *link,
                                        const char *id);
-void pn_peer_link_queue_msg(PnPeerLink *link,
+void pn_peer_link_queue_msg(struct pn_peer_link *link,
                             struct PnPeerMsg *peer_msg);
-void pn_peer_link_send_msg(PnPeerLink *link,
+void pn_peer_link_send_msg(struct pn_peer_link *link,
                            struct PnPeerMsg *peer_msg);
-void pn_peer_link_unleash(PnPeerLink *link);
-void pn_peer_link_process_msg(PnPeerLink *link,
+void pn_peer_link_unleash(struct pn_peer_link *link);
+void pn_peer_link_process_msg(struct pn_peer_link *link,
                               struct MsnMessage *msg,
                               int type,
                               void *user_data);
 
-void pn_peer_link_request_object(PnPeerLink *link,
+void pn_peer_link_request_object(struct pn_peer_link *link,
                                  const char *info,
                                  MsnSlpCb cb,
                                  MsnSlpEndCb end_cb,
                                  const PnMsnObj *obj);
 
-PnPeerLink *msn_session_find_peer_link(struct MsnSession *session,
-                                       const char *who);
-PnPeerLink *msn_session_get_peer_link(struct MsnSession *session,
-                                      const char *username);
+struct pn_peer_link *msn_session_find_peer_link(struct MsnSession *session,
+                                                const char *who);
+struct pn_peer_link *msn_session_get_peer_link(struct MsnSession *session,
+                                               const char *username);
 
 #endif /* PN_PEERLINK_H */

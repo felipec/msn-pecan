@@ -25,8 +25,7 @@
 struct MsnSession;
 struct PnDirectConn;
 
-struct PnPeerLink
-{
+struct pn_peer_link {
     char *local_user;
     char *remote_user;
 

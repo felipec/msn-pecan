@@ -1372,7 +1372,7 @@ datacast_msg (MsnCmdProc *cmdproc,
     {
 #if defined(PECAN_LIBSIREN)
         const char *data;
-        PnPeerLink *link;
+        struct pn_peer_link *link;
         PnMsnObj *obj;
 
         data = g_hash_table_lookup(body, "Data");
@@ -1395,7 +1395,7 @@ p2p_msg(MsnCmdProc *cmdproc,
         MsnMessage *msg)
 {
     MsnSession *session;
-    PnPeerLink *link;
+    struct pn_peer_link *link;
 
     session = cmdproc->session;
     link = msn_session_get_peer_link(session, msg->remote_user);
@@ -1431,7 +1431,7 @@ emoticon_msg(MsnCmdProc *cmdproc,
              MsnMessage *msg)
 {
     MsnSession *session;
-    PnPeerLink *link;
+    struct pn_peer_link *link;
     MsnSwitchBoard *swboard;
     PnMsnObj *obj;
     char **tokens;
