@@ -26,6 +26,7 @@
 #include "pn_log.h"
 
 #include "cvr/pn_peer_call_priv.h"
+#include "cvr/pn_peer_msg_priv.h"
 
 #include <string.h> /* for memcpy, memset */
 

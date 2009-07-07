@@ -22,50 +22,6 @@
 
 struct pn_peer_call;
 struct pn_peer_link;
-struct pn_buffer;
-
-struct MsnSession;
-struct MsnMessage;
-struct MsnSwitchBoard;
-
-#include <glib/gstdio.h>
-
-/**
- * A SLP Message  This contains everything that we will need to send a SLP
- * Message even if has to be sent in several parts.
- */
-struct pn_peer_msg {
-    struct pn_peer_call *call; /**< The call to which this slp message belongs (if applicable). */
-    struct pn_peer_link *link; /**< The peer link through which this slp message is being sent. */
-    struct MsnSession *session;
-
-    long session_id;
-    long id;
-    long ack_id;
-    long ack_sub_id;
-    guint64 ack_size;
-    long app_id;
-
-    gboolean sip; /**< A flag that states if this is a SIP slp message. */
-    long flags;
-
-    FILE *fp;
-    gchar *buffer;
-    guint64 offset;
-    guint64 size;
-
-    GList *msgs; /**< The real messages. */
-
-    struct MsnMessage *msg; /**< The temporary real message that will be sent. */
-
-#ifdef PECAN_DEBUG_SLP
-    const gchar *info;
-    gboolean text_body;
-#endif
-
-    unsigned int ref_count;
-    struct MsnSwitchBoard *swboard;
-};
 
 struct pn_peer_msg *pn_peer_msg_new(struct pn_peer_link *link);
 void pn_peer_msg_free(struct pn_peer_msg *peer_msg);
@@ -73,6 +29,7 @@ struct pn_peer_msg *pn_peer_msg_ref(struct pn_peer_msg *peer_msg);
 struct pn_peer_msg *pn_peer_msg_unref(struct pn_peer_msg *peer_msg);
 
 #ifdef PECAN_DEBUG_SLP
+struct MsnMessage;
 void pn_peer_msg_show(struct MsnMessage *msg);
 #endif
 

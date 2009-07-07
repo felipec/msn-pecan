@@ -18,6 +18,7 @@
  */
 
 #include "pn_peer_msg.h"
+#include "pn_peer_msg_priv.h"
 #include "pn_peer_link.h"
 #include "pn_log.h"
 
