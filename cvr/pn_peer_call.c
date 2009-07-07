@@ -133,59 +133,12 @@ pn_peer_call_unref(struct pn_peer_call *call)
 }
 
 void
-pn_peer_call_init(struct pn_peer_call *call)
-{
-    call->id = msn_rand_guid();
-}
-
-void
 pn_peer_call_session_init(struct pn_peer_call *call)
 {
     if (call->init_cb)
         call->init_cb(call);
 
     call->started = TRUE;
-}
-
-void
-pn_peer_call_invite(struct pn_peer_call *call,
-                    const char *euf_guid,
-                    int app_id,
-                    const char *context)
-{
-    struct pn_peer_link *link;
-    struct pn_peer_msg *peer_msg;
-    char *header;
-    char *content;
-
-    link = call->link;
-
-    call->branch = msn_rand_guid();
-
-    content = g_strdup_printf("EUF-GUID: {%s}\r\n"
-                              "SessionID: %lu\r\n"
-                              "AppID: %d\r\n"
-                              "Context: %s\r\n\r\n",
-                              euf_guid,
-                              call->session_id,
-                              app_id,
-                              context);
-
-    header = g_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
-                             pn_peer_link_get_passport(link));
-
-    peer_msg = pn_peer_msg_sip_new(call, 0, header, call->branch,
-                                   "application/x-msnmsgr-sessionreqbody", content);
-
-#ifdef PECAN_DEBUG_SLP
-    peer_msg->info = "SLP INVITE";
-    peer_msg->text_body = TRUE;
-#endif
-
-    pn_peer_link_send_msg(link, peer_msg);
-
-    g_free(header);
-    g_free(content);
 }
 
 void

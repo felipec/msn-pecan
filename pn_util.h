@@ -56,7 +56,6 @@ pn_handle_challenge (const gchar *input,
                      gchar *output);
 
 void msn_parse_socket(const char *str, char **ret_host, int *ret_port);
-char *msn_rand_guid(void);
 gchar *pn_normalize (const gchar *str);
 
 #if !GLIB_CHECK_VERSION(2,12,0)

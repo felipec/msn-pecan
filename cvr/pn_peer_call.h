@@ -32,12 +32,7 @@ void pn_peer_call_free(struct pn_peer_call *call);
 struct pn_peer_call *pn_peer_call_ref(struct pn_peer_call *call);
 struct pn_peer_call *pn_peer_call_unref(struct pn_peer_call *call);
 
-void pn_peer_call_init(struct pn_peer_call *call);
 void pn_peer_call_session_init(struct pn_peer_call *call);
-void pn_peer_call_invite(struct pn_peer_call *call,
-                         const char *euf_guid,
-                         int app_id,
-                         const char *context);
 void pn_peer_call_close(struct pn_peer_call *call);
 
 #endif /* PN_PEER_CALL_H */

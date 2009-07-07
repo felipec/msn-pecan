@@ -227,7 +227,6 @@ purple_pn_xfer_invite(PurpleXfer *xfer)
 
     link = xfer->data;
     call = pn_peer_call_new(link);
-    pn_peer_call_init(call);
 
     call->init_cb = send_file_cb;
     call->end_cb = xfer_end_cb;
@@ -244,8 +243,8 @@ purple_pn_xfer_invite(PurpleXfer *xfer)
 
     context = gen_context(fn, fp);
 
-    pn_peer_call_invite(call, "5D3E02AB-6190-11D3-BBBB-00C04F795683", 2,
-                        context);
+    pn_sip_send_invite(call, "5D3E02AB-6190-11D3-BBBB-00C04F795683", 2,
+                       context);
 
     g_free(context);
 }

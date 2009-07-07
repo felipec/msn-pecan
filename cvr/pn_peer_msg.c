@@ -134,10 +134,24 @@ pn_peer_msg_unref(struct pn_peer_msg *peer_msg)
     return peer_msg;
 }
 
-void
-pn_peer_msg_set_body(struct pn_peer_msg *peer_msg,
-                     gconstpointer *body,
-                     guint64 size)
+static inline char *
+rand_guid(void)
+{
+    return g_strdup_printf("%4X%4X-%4X-%4X-%4X-%4X%4X%4X",
+                           rand() % 0xAAFF + 0x1111,
+                           rand() % 0xAAFF + 0x1111,
+                           rand() % 0xAAFF + 0x1111,
+                           rand() % 0xAAFF + 0x1111,
+                           rand() % 0xAAFF + 0x1111,
+                           rand() % 0xAAFF + 0x1111,
+                           rand() % 0xAAFF + 0x1111,
+                           rand() % 0xAAFF + 0x1111);
+}
+
+static inline void
+set_body(struct pn_peer_msg *peer_msg,
+         gconstpointer *body,
+         guint64 size)
 {
     if (body)
         peer_msg->buffer = g_memdup(body, size);
@@ -145,14 +159,6 @@ pn_peer_msg_set_body(struct pn_peer_msg *peer_msg,
         peer_msg->buffer = g_malloc0(size);
 
     peer_msg->size = size;
-}
-
-void
-pn_peer_msg_set_image(struct pn_peer_msg *peer_msg,
-                      struct pn_buffer *image)
-{
-    peer_msg->size = image->len;
-    peer_msg->buffer = g_memdup(image->data, peer_msg->size);
 }
 
 #ifdef PECAN_DEBUG_SLP
@@ -184,13 +190,13 @@ pn_peer_msg_show(MsnMessage *msg)
 }
 #endif
 
-struct pn_peer_msg *
-pn_peer_msg_sip_new(struct pn_peer_call *call,
-                    int cseq,
-                    const char *header,
-                    const char *branch,
-                    const char *content_type,
-                    const char *content)
+static struct pn_peer_msg *
+sip_new(struct pn_peer_call *call,
+        int cseq,
+        const char *header,
+        const char *branch,
+        const char *content_type,
+        const char *content)
 {
     struct pn_peer_link *link;
     struct pn_peer_msg *peer_msg;
@@ -234,7 +240,7 @@ pn_peer_msg_sip_new(struct pn_peer_call *call,
     }
 
     peer_msg = pn_peer_msg_new(link);
-    pn_peer_msg_set_body(peer_msg, (gpointer) body, body_len);
+    set_body(peer_msg, (gpointer) body, body_len);
 
     peer_msg->sip = TRUE;
     peer_msg->call = call;
@@ -298,6 +304,48 @@ got_transresp(struct pn_peer_call *call,
 #endif /* MSN_DIRECTCONN */
 
 void
+pn_sip_send_invite(struct pn_peer_call *call,
+                   const char *euf_guid,
+                   int app_id,
+                   const char *context)
+{
+    struct pn_peer_link *link;
+    struct pn_peer_msg *peer_msg;
+    char *header;
+    char *content;
+
+    link = call->link;
+
+    call->branch = rand_guid();
+    call->id = rand_guid();
+
+    content = g_strdup_printf("EUF-GUID: {%s}\r\n"
+                              "SessionID: %lu\r\n"
+                              "AppID: %d\r\n"
+                              "Context: %s\r\n\r\n",
+                              euf_guid,
+                              call->session_id,
+                              app_id,
+                              context);
+
+    header = g_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
+                             pn_peer_link_get_passport(link));
+
+    peer_msg = sip_new(call, 0, header, call->branch,
+                       "application/x-msnmsgr-sessionreqbody", content);
+
+#ifdef PECAN_DEBUG_SLP
+    peer_msg->info = "SLP INVITE";
+    peer_msg->text_body = TRUE;
+#endif
+
+    pn_peer_link_send_msg(link, peer_msg);
+
+    g_free(header);
+    g_free(content);
+}
+
+void
 pn_sip_send_ok(struct pn_peer_call *call,
                const char *branch,
                const char *type,
@@ -309,9 +357,9 @@ pn_sip_send_ok(struct pn_peer_call *call,
     link = call->link;
 
     /* 200 OK */
-    peer_msg = pn_peer_msg_sip_new(call, 1,
-                                   "MSNSLP/1.0 200 OK",
-                                   branch, type, content);
+    peer_msg = sip_new(call, 1,
+                       "MSNSLP/1.0 200 OK",
+                       branch, type, content);
 
 #ifdef PECAN_DEBUG_SLP
     peer_msg->info = "SLP 200 OK";
@@ -335,9 +383,9 @@ pn_sip_send_decline(struct pn_peer_call *call,
     link = call->link;
 
     /* 603 Decline */
-    peer_msg = pn_peer_msg_sip_new(call, 1,
-                                   "MSNSLP/1.0 603 Decline",
-                                   branch, type, content);
+    peer_msg = sip_new(call, 1,
+                       "MSNSLP/1.0 603 Decline",
+                       branch, type, content);
 
 #ifdef PECAN_DEBUG_SLP
     peer_msg->info = "SLP 603 Decline";
@@ -348,6 +396,14 @@ pn_sip_send_decline(struct pn_peer_call *call,
 }
 
 #define MAX_FILE_NAME_LEN 0x226
+
+static inline void
+set_image(struct pn_peer_msg *peer_msg,
+          struct pn_buffer *image)
+{
+    peer_msg->size = image->len;
+    peer_msg->buffer = g_memdup(image->data, peer_msg->size);
+}
 
 static void
 got_sessionreq(struct pn_peer_call *call,
@@ -441,7 +497,7 @@ got_sessionreq(struct pn_peer_call *call,
         peer_msg = pn_peer_msg_new(link);
         peer_msg->call = call;
         peer_msg->session_id = call->session_id;
-        pn_peer_msg_set_body(peer_msg, NULL, 4);
+        set_body(peer_msg, NULL, 4);
 #ifdef PECAN_DEBUG_SLP
         peer_msg->info = "SLP DATA PREP";
 #endif
@@ -454,7 +510,7 @@ got_sessionreq(struct pn_peer_call *call,
 #ifdef PECAN_DEBUG_SLP
         peer_msg->info = "SLP DATA";
 #endif
-        pn_peer_msg_set_image(peer_msg, image);
+        set_image(peer_msg, image);
         pn_peer_link_queue_msg(link, peer_msg);
     }
     else if (strcmp(euf_guid, "5D3E02AB-6190-11D3-BBBB-00C04F795683") == 0) {
@@ -477,11 +533,10 @@ pn_sip_send_bye(struct pn_peer_call *call,
 
     header = g_strdup_printf("BYE MSNMSGR:%s MSNSLP/1.0",
                              msn_session_get_username(session));
-
-    peer_msg = pn_peer_msg_sip_new(call, 0, header,
-                                   "A0D624A6-6C0C-4283-A9E0-BC97B4B46D32",
-                                   type,
-                                   "\r\n");
+    peer_msg = sip_new(call, 0, header,
+                       "A0D624A6-6C0C-4283-A9E0-BC97B4B46D32",
+                       type,
+                       "\r\n");
     g_free(header);
 
 #ifdef PECAN_DEBUG_SLP
@@ -544,7 +599,7 @@ got_invite(struct pn_peer_call *call,
             /* ip_addr = purple_prefs_get_string("/purple/ft/public_ip"); */
             ip_port = "5190";
             listening = "true";
-            nonce = msn_rand_guid();
+            nonce = rand_guid();
 
             direct_conn = pn_direct_conn_new(link);
 
@@ -633,7 +688,7 @@ got_ok(struct pn_peer_call *call,
 
             link = call->link;
 
-            branch = msn_rand_guid();
+            branch = rand_guid();
 
             new_content = g_strdup_printf("Bridges: TRUDPv1 TCPv1\r\n"
                                           "NetID: 0\r\n"
@@ -644,9 +699,9 @@ got_ok(struct pn_peer_call *call,
             header = g_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
                                      link->remote_user);
 
-            peer_msg = pn_peer_msg_sip_new(call, 0, header, branch,
-                                           "application/x-msnmsgr-transreqbody",
-                                           new_content);
+            peer_msg = sip_new(call, 0, header, branch,
+                               "application/x-msnmsgr-transreqbody",
+                               new_content);
 
 #ifdef PECAN_DEBUG_SLP
             peer_msg->info = "SLP INVITE";

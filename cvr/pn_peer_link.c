@@ -753,14 +753,13 @@ pn_peer_link_request_object(struct pn_peer_link *link,
     g_free(msnobj_data);
 
     call = pn_peer_call_new(link);
-    pn_peer_call_init(call);
 
     call->data_info = g_strdup(info);
     call->cb = cb;
     call->end_cb = end_cb;
 
-    pn_peer_call_invite(call, "A4268EEC-FEC5-49E5-95C3-F126696BDBF6", 1,
-                        msnobj_base64);
+    pn_sip_send_invite(call, "A4268EEC-FEC5-49E5-95C3-F126696BDBF6", 1,
+                       msnobj_base64);
 
     g_free(msnobj_base64);
 }

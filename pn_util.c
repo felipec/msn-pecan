@@ -744,20 +744,6 @@ msn_parse_socket(const char *str, char **ret_host, int *ret_port)
     *ret_port = port;
 }
 
-char *
-msn_rand_guid()
-{
-    return g_strdup_printf("%4X%4X-%4X-%4X-%4X-%4X%4X%4X",
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111);
-}
-
 /** @todo remove this crap */
 gchar *
 pn_normalize (const gchar *str)
