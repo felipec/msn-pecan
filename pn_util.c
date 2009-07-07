@@ -23,7 +23,8 @@
 #include "pn_global.h"
 
 #include <string.h>
-#include <stdlib.h> /* for calloc, free*/
+#include <stdlib.h> /* for calloc, free */
+#include <stdio.h> /* for sscanf */
 
 #include <glib.h>
 

@@ -18,7 +18,7 @@
 
 #include <check.h>
 
-#include "pecan_util.h"
+#include "pn_util.h"
 
 typedef struct {
     const char *in;
@@ -35,7 +35,7 @@ START_TEST (test_url_decode)
     int i;
     for (i = 0; i < ARRAY_SIZE(a); i++) {
         char *r;
-        r = pecan_url_decode (a[i].in);
+        r = pn_url_decode (a[i].in);
         ck_assert_str_eq (r, a[i].out);
         g_free (r);
     }
@@ -60,7 +60,7 @@ START_TEST (test_html_unescape)
     int i;
     for (i = 0; i < ARRAY_SIZE(a); i++) {
         char *r;
-        r = pecan_html_unescape (a[i].in);
+        r = pn_html_unescape (a[i].in);
         fail_if(!r, "malformed");
         ck_assert_str_eq (r, a[i].out);
         g_free (r);

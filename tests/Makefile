@@ -24,10 +24,10 @@ ab_test_objects := ab.o \
 		   ../ab/pn_contact.o \
 		   ../ab/pn_group.o \
 		   ../ab/pn_contactlist.o \
-		   ../pecan_util.o
+		   ../pn_util.o
 
 printf_test_objects := printf.o \
-		       ../pecan_printf.o
+		       ../pn_printf.o
 
 # from Lauri Leukkunen's build system
 ifdef V
@@ -52,7 +52,7 @@ check_parser: LIBS := $(GOBJECT_LIBS) $(CHECK_LIBS)
 
 checks += check_parser
 
-check_util: util.o ../pecan_util.o
+check_util: util.o ../pn_util.o
 check_util: CFLAGS := $(CFLAGS) $(GOBJECT_CFLAGS) $(CHECK_CFLAGS)
 check_util: LIBS := $(GOBJECT_LIBS) $(CHECK_LIBS)
 
