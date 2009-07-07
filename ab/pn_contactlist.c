@@ -770,7 +770,7 @@ pn_contactlist_check_pending (struct pn_contact_list *contactlist)
 
 typedef struct
 {
-    PnContactListFunc func;
+    pn_contact_list_func_t func;
     gpointer user_data;
 } EachContactData;
 
@@ -786,7 +786,7 @@ contact_each (gpointer key,
 
 void
 pn_contactlist_foreach_contact (struct pn_contact_list *contactlist,
-                                PnContactListFunc func,
+                                pn_contact_list_func_t func,
                                 gpointer user_data)
 {
     EachContactData *tmp = g_new0 (EachContactData, 1);

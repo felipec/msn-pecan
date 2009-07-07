@@ -43,7 +43,7 @@ typedef enum
     MSN_LIST_PL_OP = 0x10,
 } MsnListOp;
 
-typedef void (*PnContactListFunc) (struct pn_contact *contact, gpointer user_data);
+typedef void (*pn_contact_list_func_t) (struct pn_contact *contact, gpointer user_data);
 
 struct _PurpleBuddy;
 struct _PurpleGroup;
@@ -107,7 +107,7 @@ void pn_contactlist_add_buddy_helper (struct pn_contact_list *contactlist,
                                       struct _PurpleGroup *group);
 
 void pn_contactlist_foreach_contact (struct pn_contact_list *contactlist,
-                                     PnContactListFunc func,
+                                     pn_contact_list_func_t func,
                                      gpointer user_data);
 
 #endif /* PN_CONTACTLIST_H */
