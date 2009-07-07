@@ -228,7 +228,7 @@ purple_pn_xfer_invite(PurpleXfer *xfer)
 
     link = xfer->data;
     call = pn_peer_call_new(link);
-    pn_peer_call_init(call, PN_PEER_CALL_DC);
+    pn_peer_call_init(call);
 
     call->init_cb = send_file_cb;
     call->end_cb = xfer_end_cb;

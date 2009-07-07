@@ -163,11 +163,9 @@ pn_peer_call_unref(struct pn_peer_call *call)
 }
 
 void
-pn_peer_call_init(struct pn_peer_call *call,
-                  PnPeerCallType type)
+pn_peer_call_init(struct pn_peer_call *call)
 {
     call->id = msn_rand_guid();
-    call->type = type;
 }
 
 void

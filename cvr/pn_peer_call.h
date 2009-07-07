@@ -26,15 +26,7 @@ struct MsnSwitchBoard;
 
 #include <glib.h>
 
-typedef enum {
-    PN_PEER_CALL_ANY,
-    PN_PEER_CALL_DC,
-} PnPeerCallType;
-
-struct pn_peer_call
-{
-    PnPeerCallType type;
-
+struct pn_peer_call {
     char *id;
     char *branch;
 
@@ -73,8 +65,7 @@ void pn_peer_call_free(struct pn_peer_call *call);
 struct pn_peer_call *pn_peer_call_ref(struct pn_peer_call *call);
 struct pn_peer_call *pn_peer_call_unref(struct pn_peer_call *call);
 
-void pn_peer_call_init(struct pn_peer_call *call,
-                       PnPeerCallType type);
+void pn_peer_call_init(struct pn_peer_call *call);
 void pn_peer_call_session_init(struct pn_peer_call *call);
 void pn_peer_call_invite(struct pn_peer_call *call,
                          const char *euf_guid,

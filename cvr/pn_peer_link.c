@@ -686,7 +686,7 @@ pn_peer_link_request_object(struct pn_peer_link *link,
     g_free(msnobj_data);
 
     call = pn_peer_call_new(link);
-    pn_peer_call_init(call, PN_PEER_CALL_ANY);
+    pn_peer_call_init(call);
 
     call->data_info = g_strdup(info);
     call->cb = cb;
