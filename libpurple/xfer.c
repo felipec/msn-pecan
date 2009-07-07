@@ -24,6 +24,8 @@
 #include "cvr/pn_peer_msg.h"
 #include "session.h"
 
+#include "cvr/pn_peer_link_priv.h"
+
 #include "pn_log.h"
 
 #include <string.h> /* for memcpy, memset */

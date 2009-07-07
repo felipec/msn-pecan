@@ -23,11 +23,8 @@
 typedef struct PnPeerLink PnPeerLink;
 
 struct MsnSession;
-struct MsnSwitchboard;
 struct PnPeerMsg;
-struct PnDirectConn;
 struct MsnMessage;
-struct MsnSlpSession;
 
 struct _PurpleXfer;
 
@@ -38,24 +35,6 @@ struct _PurpleXfer;
 
 typedef void (*MsnSlpCb) (PnPeerCall *call, const guchar *data, gsize size);
 typedef void (*MsnSlpEndCb) (PnPeerCall *call, struct MsnSession *session);
-
-struct PnPeerLink
-{
-    char *local_user;
-    char *remote_user;
-
-    int slp_seq_id;
-    int slp_session_id;
-
-    GList *slp_calls;
-    GList *slp_msgs;
-
-    GQueue *slp_msg_queue;
-    struct MsnSession *session;
-    struct PnDirectConn *direct_conn;
-
-    unsigned int ref_count;
-};
 
 PnPeerLink *pn_peer_link_new(struct MsnSession *session,
                              const char *username);

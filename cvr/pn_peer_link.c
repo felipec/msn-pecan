@@ -18,6 +18,7 @@
  */
 
 #include "pn_peer_link.h"
+#include "pn_peer_link_priv.h"
 
 #include "session.h"
 #include "switchboard.h"

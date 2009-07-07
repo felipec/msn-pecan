@@ -28,6 +28,7 @@
 
 #if defined(PECAN_CVR)
 #include "cvr/pn_peer_link.h"
+#include "cvr/pn_peer_link_priv.h"
 #endif /* defined(PECAN_CVR) */
 
 #if defined(PECAN_LIBSIREN)

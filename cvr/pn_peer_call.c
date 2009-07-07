@@ -26,6 +26,8 @@
 #include "pn_util.h"
 #include "pn_log.h"
 
+#include "pn_peer_link_priv.h"
+
 #include <string.h>
 
 #ifdef MSN_DIRECTCONN
