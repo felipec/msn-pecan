@@ -85,7 +85,7 @@ got_transresp(struct pn_peer_call *call,
               const char *ips_str,
               int port)
 {
-    PnDirectConn *direct_conn;
+    struct pn_direct_conn *direct_conn;
     char **ip_addrs, **c;
 
     direct_conn = pn_direct_conn_new(call->link);
@@ -334,7 +334,7 @@ got_invite(struct pn_peer_call *call,
 
         if (FALSE) {
 #if 0
-            PnDirectConn *direct_conn;
+            struct pn_direct_conn *direct_conn;
             /* const char *ip_addr; */
             char *ip_port;
             int port;

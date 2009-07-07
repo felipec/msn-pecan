@@ -649,7 +649,7 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
 #ifdef MSN_DIRECTCONN
             case 0x100:
                 {
-                    PnDirectConn *direct_conn = link->direct_conn;
+                    struct pn_direct_conn *direct_conn = link->direct_conn;
 
                     direct_conn->ack_recv = TRUE;
 

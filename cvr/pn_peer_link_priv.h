@@ -23,7 +23,7 @@
 #include <glib.h>
 
 struct MsnSession;
-struct PnDirectConn;
+struct pn_direct_conn;
 
 struct pn_peer_link {
     char *local_user;
@@ -37,7 +37,7 @@ struct pn_peer_link {
 
     GQueue *slp_msg_queue;
     struct MsnSession *session;
-    struct PnDirectConn *direct_conn;
+    struct pn_direct_conn *direct_conn;
 
     unsigned int ref_count;
 };

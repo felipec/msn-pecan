@@ -41,7 +41,7 @@
  **************************************************************************/
 
 void
-pn_direct_conn_send_handshake(PnDirectConn *direct_conn)
+pn_direct_conn_send_handshake(struct pn_direct_conn *direct_conn)
 {
     struct pn_peer_link *link;
     struct pn_peer_msg *peer_msg;
@@ -175,7 +175,7 @@ create_listener(int port)
 #endif
 
 static GIOStatus
-pn_direct_conn_write(PnDirectConn *direct_conn,
+pn_direct_conn_write(struct pn_direct_conn *direct_conn,
                      const char *data, size_t len)
 {
     guint32 body_len;
@@ -226,7 +226,7 @@ pn_direct_conn_write(PnDirectConn *direct_conn,
 
 #if 0
 void
-pn_direct_conn_parse_nonce(PnDirectConn *direct_conn, const char *nonce)
+pn_direct_conn_parse_nonce(struct pn_direct_conn *direct_conn, const char *nonce)
 {
     guint32 t1;
     guint16 t2;
@@ -254,7 +254,7 @@ pn_direct_conn_parse_nonce(PnDirectConn *direct_conn, const char *nonce)
 #endif
 
 void
-pn_direct_conn_send_msg(PnDirectConn *direct_conn, MsnMessage *msg)
+pn_direct_conn_send_msg(struct pn_direct_conn *direct_conn, MsnMessage *msg)
 {
     char *body;
     size_t body_len;
@@ -265,7 +265,7 @@ pn_direct_conn_send_msg(PnDirectConn *direct_conn, MsnMessage *msg)
 }
 
 static void
-pn_direct_conn_process_msg(PnDirectConn *direct_conn, MsnMessage *msg)
+pn_direct_conn_process_msg(struct pn_direct_conn *direct_conn, MsnMessage *msg)
 {
     pn_debug ("process_msg");
 
@@ -275,7 +275,7 @@ pn_direct_conn_process_msg(PnDirectConn *direct_conn, MsnMessage *msg)
 static gboolean
 read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
 {
-    PnDirectConn* direct_conn;
+    struct pn_direct_conn* direct_conn;
     gchar *body;
     guint32 body_len;
     gsize len;
@@ -344,7 +344,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
 static void
 connect_cb(gpointer data, gint source, const gchar *error_message)
 {
-    PnDirectConn* direct_conn;
+    struct pn_direct_conn* direct_conn;
     int fd;
 
     pn_debug ("source=%d", source);
@@ -398,7 +398,7 @@ direct_conn_connect_cb(gpointer data, gint source, const gchar *error_message)
 }
 
 gboolean
-pn_direct_conn_connect(PnDirectConn *direct_conn, const char *host, int port)
+pn_direct_conn_connect(struct pn_direct_conn *direct_conn, const char *host, int port)
 {
     MsnSession *session;
 
@@ -427,7 +427,7 @@ pn_direct_conn_connect(PnDirectConn *direct_conn, const char *host, int port)
 
 #if 0
 void
-pn_direct_conn_listen(PnDirectConn *direct_conn)
+pn_direct_conn_listen(struct pn_direct_conn *direct_conn)
 {
     int port;
     int fd;
@@ -447,14 +447,14 @@ pn_direct_conn_listen(PnDirectConn *direct_conn)
 }
 #endif
 
-PnDirectConn*
+struct pn_direct_conn*
 pn_direct_conn_new(struct pn_peer_link *link)
 {
-    PnDirectConn *direct_conn;
+    struct pn_direct_conn *direct_conn;
 
     pn_log ("begin");
 
-    direct_conn = g_new0(PnDirectConn, 1);
+    direct_conn = g_new0(struct pn_direct_conn, 1);
 
     direct_conn->link = link;
 
@@ -469,7 +469,7 @@ pn_direct_conn_new(struct pn_peer_link *link)
 }
 
 void
-pn_direct_conn_destroy(PnDirectConn *direct_conn)
+pn_direct_conn_destroy(struct pn_direct_conn *direct_conn)
 {
     pn_log ("begin");
 

@@ -20,8 +20,6 @@
 #ifndef PN_DIRECT_CONN_H
 #define PN_DIRECT_CONN_H
 
-typedef struct PnDirectConn PnDirectConn;
-
 #include "cvr/pn_peer_link.h"
 
 #include "cmd/msg.h"
@@ -30,8 +28,7 @@ typedef struct PnDirectConn PnDirectConn;
 struct PnNode;
 struct _PurpleProxyConnectData;
 
-struct PnDirectConn
-{
+struct pn_direct_conn {
     struct pn_peer_link *link;
     struct pn_peer_call *initial_call;
 
@@ -50,15 +47,15 @@ struct PnDirectConn
     PecanStream *stream;
 };
 
-PnDirectConn *pn_direct_conn_new(struct pn_peer_link *link);
-gboolean pn_direct_conn_connect(PnDirectConn *direct_conn,
+struct pn_direct_conn *pn_direct_conn_new(struct pn_peer_link *link);
+gboolean pn_direct_conn_connect(struct pn_direct_conn *direct_conn,
                                 const char *host, int port);
 #if 0
-void pn_direct_conn_listen(PnDirectConn *direct_conn);
+void pn_direct_conn_listen(struct pn_direct_conn *direct_conn);
 #endif
-void pn_direct_conn_send_msg(PnDirectConn *direct_conn, MsnMessage *msg);
-void pn_direct_conn_parse_nonce(PnDirectConn *direct_conn, const char *nonce);
-void pn_direct_conn_destroy(PnDirectConn *direct_conn);
-void pn_direct_conn_send_handshake(PnDirectConn *direct_conn);
+void pn_direct_conn_send_msg(struct pn_direct_conn *direct_conn, MsnMessage *msg);
+void pn_direct_conn_parse_nonce(struct pn_direct_conn *direct_conn, const char *nonce);
+void pn_direct_conn_destroy(struct pn_direct_conn *direct_conn);
+void pn_direct_conn_send_handshake(struct pn_direct_conn *direct_conn);
 
 #endif /* PN_DIRECT_CONN_H */
