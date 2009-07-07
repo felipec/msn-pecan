@@ -29,7 +29,6 @@
 #if defined(PECAN_CVR)
 #include "cvr/pn_peer_link.h"
 #include "cvr/pn_peer_call.h"
-#include "cvr/pn_peer_link_priv.h"
 #endif /* defined(PECAN_CVR) */
 
 #if defined(PECAN_LIBSIREN)
@@ -1322,14 +1321,18 @@ got_voice_clip(struct pn_peer_call *call, const guchar *data, gsize size)
 #else
         str = g_strdup_printf(_("sent you a voice clip. Copy the following link in Safari to play it: %s"), decoded_file);
 #endif /* ADIUM */
-        got_datacast_inform_user(call->swboard->cmdproc, call->link->remote_user, str);
+        got_datacast_inform_user(call->swboard->cmdproc,
+                                 pn_peer_link_get_passport(call->link),
+                                 str);
 
         g_free (decoded_file);
     } else {
         pn_error ("couldn't create temporany file to store the received voice clip!\n");
 
         str = g_strdup_printf(_("sent you a voice clip, but it cannot be played due to an error happened while storing the file."));
-        got_datacast_inform_user(call->swboard->cmdproc, call->link->remote_user, str);
+        got_datacast_inform_user(call->swboard->cmdproc,
+                                 pn_peer_link_get_passport(call->link),
+                                 str);
     }
 
     g_free (str);

@@ -26,8 +26,6 @@
 #include "pn_util.h"
 #include "pn_log.h"
 
-#include "pn_peer_link_priv.h"
-
 #include <string.h>
 
 #ifdef MSN_DIRECTCONN
@@ -68,28 +66,11 @@ pn_peer_call_new(struct pn_peer_link *link)
 
     call->link = link;
 
-    {
-        MsnSwitchBoard *swboard;
-
-        swboard = msn_session_get_swboard(link->session, link->remote_user);
-
-        if (!swboard) {
-            pn_error("couldn't get swboard");
-            g_free(call);
-            return NULL;
-        }
-
-        swboard->calls = g_list_prepend(swboard->calls, call);
-
-        call->swboard = swboard;
-    }
-
     pn_peer_link_ref(link);
     pn_peer_link_add_call(link, call);
 
     /* The official client seems to timeout calls after 5 minutes */
     call->timer = g_timeout_add_seconds (30, timeout, call);
-    call->session_id = link->slp_session_id++;
 
     call->ref_count++;
 
@@ -99,7 +80,6 @@ pn_peer_call_new(struct pn_peer_link *link)
 void
 pn_peer_call_free(struct pn_peer_call *call)
 {
-    GList *e;
     MsnSession *session;
 
     if (!call)
@@ -114,17 +94,7 @@ pn_peer_call_free(struct pn_peer_call *call)
     g_free(call->branch);
     g_free(call->data_info);
 
-    for (e = call->link->slp_msgs; e; ){
-        struct pn_peer_msg *peer_msg = e->data;
-        e = e->next;
-
-        pn_log("freeing peer_msg=%p", peer_msg);
-
-        if (peer_msg->call == call)
-            pn_peer_msg_unref(peer_msg);
-    }
-
-    session = call->link->session;
+    session = pn_peer_link_get_session(call->link);
 
     if (call->end_cb)
         call->end_cb(call, session);
@@ -202,7 +172,7 @@ pn_peer_call_invite(struct pn_peer_call *call,
                               context);
 
     header = g_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
-                             link->remote_user);
+                             pn_peer_link_get_passport(link));
 
     peer_msg = pn_peer_msg_sip_new(call, 0, header, call->branch,
                                    "application/x-msnmsgr-sessionreqbody", content);

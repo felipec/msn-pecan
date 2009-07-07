@@ -24,8 +24,6 @@
 #include "cvr/pn_peer_msg.h"
 #include "session.h"
 
-#include "cvr/pn_peer_link_priv.h"
-
 #include "pn_log.h"
 
 #include <string.h> /* for memcpy, memset */
@@ -264,7 +262,7 @@ purple_pn_xfer_got_invite(struct pn_peer_call *call,
     char *file_name;
     gunichar2 *uni_name;
 
-    account = msn_session_get_user_data (call->link->session);
+    account = msn_session_get_user_data (pn_peer_link_get_session (call->link));
 
     call->cb = xfer_completed_cb;
     call->end_cb = xfer_end_cb;
@@ -274,7 +272,7 @@ purple_pn_xfer_got_invite(struct pn_peer_call *call,
     call->pending = TRUE;
 
     xfer = purple_xfer_new(account, PURPLE_XFER_RECEIVE,
-                           call->link->remote_user);
+                           pn_peer_link_get_passport (call->link));
     if (xfer)
     {
         bin = (char *)purple_base64_decode(context, &bin_len);

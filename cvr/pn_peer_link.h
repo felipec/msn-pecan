@@ -40,10 +40,17 @@ void pn_peer_link_free(struct pn_peer_link *link);
 struct pn_peer_link *pn_peer_link_ref(struct pn_peer_link *link);
 struct pn_peer_link *pn_peer_link_unref(struct pn_peer_link *link);
 
+const char *pn_peer_link_get_passport(const struct pn_peer_link *link);
+struct MsnSession *pn_peer_link_get_session(const struct pn_peer_link *link);
+
 void pn_peer_link_add_call(struct pn_peer_link *link,
                            struct pn_peer_call *call);
 void pn_peer_link_remove_call(struct pn_peer_link *link,
                               struct pn_peer_call *call);
+void pn_peer_link_add_msg(struct pn_peer_link *link,
+                          struct pn_peer_msg *peer_msg);
+void pn_peer_link_remove_msg(struct pn_peer_link *link,
+                             struct pn_peer_msg *peer_msg);
 struct pn_peer_call *pn_peer_link_find_slp_call(struct pn_peer_link *link,
                                                 const char *id);
 void pn_peer_link_queue_msg(struct pn_peer_link *link,

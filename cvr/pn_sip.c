@@ -24,8 +24,6 @@
 #include "pn_log.h"
 #include "pn_buffer.h"
 
-#include "pn_peer_link_priv.h"
-
 #include "cmd/cmdproc_private.h"
 #include "cmd/msg_private.h"
 
@@ -259,8 +257,10 @@ got_sessionreq(struct pn_peer_call *call,
         pn_peer_msg_set_image(peer_msg, image);
         pn_peer_link_queue_msg(link, peer_msg);
     }
-    else if (strcmp(euf_guid, "5D3E02AB-6190-11D3-BBBB-00C04F795683") == 0)
-        call->link->session->xfer_invite_cb(call, branch, context);
+    else if (strcmp(euf_guid, "5D3E02AB-6190-11D3-BBBB-00C04F795683") == 0) {
+        MsnSession *session = pn_peer_link_get_session(call->link);
+        session->xfer_invite_cb(call, branch, context);
+    }
 }
 
 void
@@ -270,11 +270,13 @@ pn_sip_send_bye(struct pn_peer_call *call,
     struct pn_peer_link *link;
     struct pn_peer_msg *peer_msg;
     char *header;
+    MsnSession *session;
 
     link = call->link;
+    session = pn_peer_link_get_session(link);
 
     header = g_strdup_printf("BYE MSNMSGR:%s MSNSLP/1.0",
-                             link->local_user);
+                             msn_session_get_username(session));
 
     peer_msg = pn_peer_msg_sip_new(call, 0, header,
                                  "A0D624A6-6C0C-4283-A9E0-BC97B4B46D32",

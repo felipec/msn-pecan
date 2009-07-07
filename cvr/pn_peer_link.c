@@ -18,7 +18,6 @@
  */
 
 #include "pn_peer_link.h"
-#include "pn_peer_link_priv.h"
 
 #include "session.h"
 #include "switchboard.h"
@@ -43,6 +42,23 @@
 /* libpurple stuff. */
 #include "fix_purple_win32.h"
 #include <ft.h>
+
+struct pn_peer_link {
+    char *local_user;
+    char *remote_user;
+
+    int slp_seq_id;
+    int slp_session_id;
+
+    GList *slp_calls;
+    GList *slp_msgs;
+
+    GQueue *slp_msg_queue;
+    struct MsnSession *session;
+    struct pn_direct_conn *direct_conn;
+
+    unsigned int ref_count;
+};
 
 static void send_msg_part(struct pn_peer_link *link, struct pn_peer_msg *peer_msg);
 
@@ -118,6 +134,18 @@ pn_peer_link_unref(struct pn_peer_link *link)
     return link;
 }
 
+const char *
+pn_peer_link_get_passport(const struct pn_peer_link *link)
+{
+    return link->remote_user;
+}
+
+MsnSession *
+pn_peer_link_get_session(const struct pn_peer_link *link)
+{
+    return link->session;
+}
+
 struct pn_peer_link *
 msn_session_find_peer_link(MsnSession *session,
                            const char *who)
@@ -146,6 +174,20 @@ void
 pn_peer_link_add_call(struct pn_peer_link *link,
                       struct pn_peer_call *call)
 {
+    MsnSwitchBoard *swboard;
+
+    swboard = msn_session_get_swboard(link->session, link->remote_user);
+
+    if (!swboard) {
+        pn_error("couldn't get swboard");
+        return;
+    }
+
+    swboard->calls = g_list_prepend(swboard->calls, call);
+
+    call->swboard = swboard;
+    call->session_id = link->slp_session_id++;
+
     link->slp_calls = g_list_append(link->slp_calls, call);
 }
 
@@ -153,7 +195,31 @@ void
 pn_peer_link_remove_call(struct pn_peer_link *link,
                          struct pn_peer_call *call)
 {
+    GList *e;
+
     link->slp_calls = g_list_remove(link->slp_calls, call);
+
+    for (e = link->slp_msgs; e; ) {
+        struct pn_peer_msg *peer_msg = e->data;
+        e = e->next;
+
+        if (peer_msg->call == call)
+            pn_peer_msg_unref(peer_msg);
+    }
+}
+
+void
+pn_peer_link_add_msg(struct pn_peer_link *link,
+                     struct pn_peer_msg *peer_msg)
+{
+    link->slp_msgs = g_list_append(link->slp_msgs, peer_msg);
+}
+
+void
+pn_peer_link_remove_msg(struct pn_peer_link *link,
+                        struct pn_peer_msg *peer_msg)
+{
+    link->slp_msgs = g_list_remove(link->slp_msgs, peer_msg);
 }
 
 struct pn_peer_call *

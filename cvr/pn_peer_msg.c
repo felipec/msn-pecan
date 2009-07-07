@@ -19,7 +19,6 @@
 
 #include "pn_peer_msg.h"
 #include "pn_peer_link.h"
-#include "pn_peer_link_priv.h"
 
 #include "pn_peer_call.h"
 #include "session.h"
@@ -47,7 +46,7 @@ pn_peer_msg_new(struct pn_peer_link *link)
 
     peer_msg->link = link;
 
-    link->slp_msgs = g_list_append(link->slp_msgs, peer_msg);
+    pn_peer_link_add_msg(link, peer_msg);
 
     peer_msg->ref_count++;
 
@@ -90,7 +89,7 @@ pn_peer_msg_free(struct pn_peer_msg *peer_msg)
         msg->ack_data = NULL;
     }
 
-    link->slp_msgs = g_list_remove(link->slp_msgs, peer_msg);
+    pn_peer_link_remove_msg(link, peer_msg);
 
     g_free(peer_msg);
 }
@@ -191,8 +190,10 @@ pn_peer_msg_sip_new(struct pn_peer_call *call,
     gchar *body;
     gsize body_len;
     gsize content_len;
+    MsnSession *session;
 
     link = call->link;
+    session = pn_peer_link_get_session(link);
 
     /* Let's remember that "content" should end with a 0x00 */
 
@@ -209,8 +210,8 @@ pn_peer_msg_sip_new(struct pn_peer_call *call,
                            "Content-Length: %" G_GSIZE_FORMAT "\r\n"
                            "\r\n",
                            header,
-                           link->remote_user,
-                           link->local_user,
+                           pn_peer_link_get_passport(link),
+                           msn_session_get_username(session),
                            branch,
                            cseq,
                            call->id,

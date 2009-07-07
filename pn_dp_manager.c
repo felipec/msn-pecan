@@ -23,7 +23,6 @@
 
 #include "cvr/pn_peer_call.h"
 #include "cvr/pn_peer_link.h"
-#include "cvr/pn_peer_link_priv.h"
 
 #include "session_private.h"
 #include "ab/pn_contact_priv.h"
@@ -85,16 +84,18 @@ dp_ok (struct pn_peer_call *call,
        gsize size)
 {
     const char *info;
+    const char *passport;
 
     info = call->data_info;
-    pn_info ("passport=[%s]", call->link->remote_user);
+    passport = pn_peer_link_get_passport(call->link);
+    pn_info ("passport=[%s]", passport);
 
 #ifdef HAVE_LIBPURPLE
     {
         PurpleAccount *account;
-        account = msn_session_get_user_data (call->link->session);
+        account = msn_session_get_user_data (pn_peer_link_get_session (call->link));
 
-        purple_buddy_icons_set_for_user (account, call->link->remote_user,
+        purple_buddy_icons_set_for_user (account, passport,
                                          g_memdup (data, size), size, info);
     }
 #endif /* HAVE_LIBPURPLE */
@@ -109,7 +110,7 @@ dp_fail (struct pn_peer_call *call,
 
     pn_warning ("unknown error");
 
-    passport = call->link->remote_user;
+    passport = pn_peer_link_get_passport(call->link);
 
     contact = pn_contactlist_find_contact (session->contactlist, passport);
 
