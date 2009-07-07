@@ -23,7 +23,6 @@
 #include "switchboard.h"
 #include "pn_peer_call.h"
 #include "pn_peer_msg.h"
-#include "pn_sip.h"
 #include "pn_log.h"
 
 #include "ab/pn_contact.h"

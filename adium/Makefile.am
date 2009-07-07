@@ -33,7 +33,6 @@ MSNSOURCES = msn.c \
 	     io/pn_cmd_server.c \
 	     io/pn_http_server.c \
 	     io/pn_ssl_conn.c \
-	     cvr/pn_sip.c \
 	     cvr/pn_peer_call.c \
 	     cvr/pn_peer_link.c \
 	     cvr/pn_peer_msg.c \

@@ -18,7 +18,6 @@
  */
 
 #include "xfer.h"
-#include "cvr/pn_sip.h"
 #include "cvr/pn_peer_call.h"
 #include "cvr/pn_peer_link.h"
 #include "cvr/pn_peer_msg.h"

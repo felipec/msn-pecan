@@ -103,8 +103,7 @@ objects := msn.o \
 	   fix_purple.o
 
 ifdef CVR
-  objects += cvr/pn_sip.o \
-	     cvr/pn_peer_call.o \
+  objects += cvr/pn_peer_call.o \
 	     cvr/pn_peer_link.o \
 	     cvr/pn_peer_msg.o \
 	     cvr/pn_msnobj.o

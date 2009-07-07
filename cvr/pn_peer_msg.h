@@ -77,8 +77,6 @@ void pn_peer_msg_set_body(struct pn_peer_msg *peer_msg,
                           guint64 size);
 void pn_peer_msg_set_image(struct pn_peer_msg *peer_msg,
                            struct pn_buffer *image);
-void pn_peer_msg_open_file(struct pn_peer_msg *peer_msg,
-                           const char *file_name);
 struct pn_peer_msg *pn_peer_msg_sip_new(struct pn_peer_call *call,
                                         int cseq,
                                         const char *header,
@@ -89,5 +87,21 @@ struct pn_peer_msg *pn_peer_msg_sip_new(struct pn_peer_call *call,
 #ifdef PECAN_DEBUG_SLP
 void pn_peer_msg_show(struct MsnMessage *msg);
 #endif
+
+void pn_sip_recv(struct pn_peer_link *link,
+                 const char *body);
+
+void pn_sip_send_ok(struct pn_peer_call *call,
+                    const char *branch,
+                    const char *type,
+                    const char *content);
+
+void pn_sip_send_decline(struct pn_peer_call *call,
+                         const char *branch,
+                         const char *type,
+                         const char *content);
+
+void pn_sip_send_bye(struct pn_peer_call *call,
+                     const char *type);
 
 #endif /* PN_PEER_MSG_H */
