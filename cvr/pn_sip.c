@@ -118,8 +118,8 @@ pn_sip_send_ok(struct pn_peer_call *call,
 
     /* 200 OK */
     peer_msg = pn_peer_msg_sip_new(call, 1,
-                                 "MSNSLP/1.0 200 OK",
-                                 branch, type, content);
+                                   "MSNSLP/1.0 200 OK",
+                                   branch, type, content);
 
 #ifdef PECAN_DEBUG_SLP
     peer_msg->info = "SLP 200 OK";
@@ -144,8 +144,8 @@ pn_sip_send_decline(struct pn_peer_call *call,
 
     /* 603 Decline */
     peer_msg = pn_peer_msg_sip_new(call, 1,
-                                 "MSNSLP/1.0 603 Decline",
-                                 branch, type, content);
+                                   "MSNSLP/1.0 603 Decline",
+                                   branch, type, content);
 
 #ifdef PECAN_DEBUG_SLP
     peer_msg->info = "SLP 603 Decline";
@@ -279,9 +279,9 @@ pn_sip_send_bye(struct pn_peer_call *call,
                              msn_session_get_username(session));
 
     peer_msg = pn_peer_msg_sip_new(call, 0, header,
-                                 "A0D624A6-6C0C-4283-A9E0-BC97B4B46D32",
-                                 type,
-                                 "\r\n");
+                                   "A0D624A6-6C0C-4283-A9E0-BC97B4B46D32",
+                                   type,
+                                   "\r\n");
     g_free(header);
 
 #ifdef PECAN_DEBUG_SLP
@@ -445,8 +445,8 @@ got_ok(struct pn_peer_call *call,
                                      link->remote_user);
 
             peer_msg = pn_peer_msg_sip_new(call, 0, header, branch,
-                                         "application/x-msnmsgr-transreqbody",
-                                         new_content);
+                                           "application/x-msnmsgr-transreqbody",
+                                           new_content);
 
 #ifdef PECAN_DEBUG_SLP
             peer_msg->info = "SLP INVITE";
