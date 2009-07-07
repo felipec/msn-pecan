@@ -85,12 +85,6 @@ pn_peer_link_free(PnPeerLink *link)
 
     session = link->session;
 
-    if (link->swboard)
-        link->swboard->links = g_list_remove(link->swboard->links, link);
-
-    while (link->slp_calls)
-        pn_peer_call_unref(link->slp_calls->data);
-
 #ifdef MSN_DIRECTCONN
     if (link->direct_conn)
         pn_direct_conn_destroy(link->direct_conn);
@@ -200,23 +194,14 @@ find_session_call(PnPeerLink *link,
 
 static inline void
 send_msg(PnPeerLink *link,
-         MsnMessage *msg)
+         PnPeerMsg *peer_msg)
 {
-    if (!link->swboard) {
-        MsnSwitchBoard *swboard;
-        swboard = msn_session_get_swboard(link->session, link->remote_user);
-
-        if (!swboard)
-            return;
-
-        pn_peer_link_ref(link);
-
-        swboard->links = g_list_prepend(swboard->links, link);
-
-        link->swboard = swboard;
-    }
-
-    msn_switchboard_send_msg(link->swboard, msg, TRUE);
+    MsnSwitchBoard *swboard;
+    if (peer_msg->call)
+        swboard = peer_msg->call->swboard;
+    else
+        swboard = peer_msg->swboard;
+    msn_switchboard_send_msg(swboard, peer_msg->msg, TRUE);
 }
 
 /* We have received the message ack */
@@ -307,9 +292,9 @@ send_msg_part(PnPeerLink *link,
         (peer_msg->flags == 0x100 || link->direct_conn->ack_recv))
         pn_direct_conn_send_msg(link->direct_conn, msg);
     else
-        send_msg(link, msg);
+        send_msg(link, peer_msg);
 #else
-    send_msg(link, msg);
+    send_msg(link, peer_msg);
 #endif /* MSN_DIRECTCONN */
 
     if (peer_msg->call) {
@@ -470,7 +455,7 @@ process_peer_msg(PnPeerLink *link,
                     g_free(body_str);
                     body_str = g_utf16_to_utf8((gunichar2*) start, charsize, NULL, NULL, NULL);
                     msgid = g_strdup_printf("{handwritten:%ld}", peer_msg->id);
-                    msn_handwritten_msg_show(peer_msg->link->swboard, msgid, body_str + 7, link->remote_user);
+                    msn_handwritten_msg_show(peer_msg->call->swboard, msgid, body_str + 7, link->remote_user);
                     g_free(msgid);
                 }
                 else {
@@ -533,7 +518,9 @@ find_message(PnPeerLink *link,
 
 void
 pn_peer_link_process_msg(PnPeerLink *link,
-                         MsnMessage *msg)
+                         MsnMessage *msg,
+                         int type,
+                         void *user_data)
 {
     PnPeerMsg *peer_msg;
     const char *data;
@@ -633,10 +620,15 @@ pn_peer_link_process_msg(PnPeerLink *link,
         return;
 #endif
 
+    if (!peer_msg->call)
+        peer_msg->swboard = user_data;
+
     if (msg->msnslp_header.offset + msg->msnslp_header.length
         >= msg->msnslp_header.total_size)
     {
         pn_peer_msg_ref(peer_msg);
+        if (peer_msg->call)
+            pn_peer_call_ref(peer_msg->call);
 
         /* All the pieces of the peer_msg have been received */
         process_peer_msg(link, peer_msg);
@@ -670,6 +662,8 @@ pn_peer_link_process_msg(PnPeerLink *link,
                 break;
         }
 
+        if (peer_msg->call)
+            pn_peer_call_unref(peer_msg->call);
         pn_peer_msg_unref(peer_msg);
     }
 }

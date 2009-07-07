@@ -208,10 +208,10 @@ msn_switchboard_free (MsnSwitchBoard *swboard)
     g_signal_handler_disconnect (swboard->conn, swboard->error_handler);
 
 #if defined(PECAN_CVR)
-    for (l = swboard->links; l; l = l->next) {
-        PnPeerLink *link = l->data;
-        link->swboard = NULL;
-        pn_peer_link_unref(link);
+    for (l = swboard->calls; l; l = l->next) {
+        PnPeerCall *call = l->data;
+        call->swboard = NULL;
+        pn_peer_call_unref(call);
     }
 #endif /* defined(PECAN_CVR) */
 
@@ -1320,14 +1320,14 @@ got_voice_clip(PnPeerCall *call, const guchar *data, gsize size)
 #else
         str = g_strdup_printf(_("sent you a voice clip. Copy the following link in Safari to play it: %s"), decoded_file);
 #endif /* ADIUM */
-        got_datacast_inform_user(call->link->swboard->cmdproc, call->link->remote_user, str);
+        got_datacast_inform_user(call->swboard->cmdproc, call->link->remote_user, str);
 
         g_free (decoded_file);
     } else {
         pn_error ("couldn't create temporany file to store the received voice clip!\n");
 
         str = g_strdup_printf(_("sent you a voice clip, but it cannot be played due to an error happened while storing the file."));
-        got_datacast_inform_user(call->link->swboard->cmdproc, call->link->remote_user, str);
+        got_datacast_inform_user(call->swboard->cmdproc, call->link->remote_user, str);
     }
 
     g_free (str);
@@ -1399,7 +1399,7 @@ p2p_msg(MsnCmdProc *cmdproc,
     session = cmdproc->session;
     link = msn_session_get_peer_link(session, msg->remote_user);
 
-    pn_peer_link_process_msg(link, msg);
+    pn_peer_link_process_msg(link, msg, 0, cmdproc->data);
 }
 
 static void
@@ -1407,11 +1407,10 @@ got_emoticon(PnPeerCall *call,
              const guchar *data,
              gsize size)
 {
-
     PurpleConversation *conv;
     MsnSwitchBoard *swboard;
 
-    swboard = call->link->swboard;
+    swboard = call->swboard;
     conv = swboard->conv;
 
     if (conv) {
@@ -1481,7 +1480,6 @@ emoticon_msg(MsnCmdProc *cmdproc,
             PurpleConversation *conv;
 
             swboard = cmdproc->data;
-            link->swboard = swboard;
             conv = swboard->conv;
 
             /* If the conversation doesn't exist then this is a custom smiley

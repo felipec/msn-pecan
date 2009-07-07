@@ -22,11 +22,11 @@
 
 typedef struct PnPeerMsg PnPeerMsg;
 
-struct MsnSlpSesison;
 struct PnPeerCall;
 struct PnPeerLink;
 struct MsnSession;
 struct MsnMessage;
+struct MsnSwitchBoard;
 
 #include "io/pn_buffer.h"
 
@@ -67,6 +67,7 @@ struct PnPeerMsg
 #endif
 
     unsigned int ref_count;
+    struct MsnSwitchBoard *swboard;
 };
 
 PnPeerMsg *pn_peer_msg_new(struct PnPeerLink *link);

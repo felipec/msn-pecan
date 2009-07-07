@@ -52,7 +52,6 @@ struct PnPeerLink
 
     GQueue *slp_msg_queue;
     struct MsnSession *session;
-    struct MsnSwitchBoard *swboard;
     struct PnDirectConn *direct_conn;
 
     unsigned int ref_count;
@@ -76,7 +75,9 @@ void pn_peer_link_send_msg(PnPeerLink *link,
                            struct PnPeerMsg *peer_msg);
 void pn_peer_link_unleash(PnPeerLink *link);
 void pn_peer_link_process_msg(PnPeerLink *link,
-                              struct MsnMessage *msg);
+                              struct MsnMessage *msg,
+                              int type,
+                              void *user_data);
 
 void pn_peer_link_request_object(PnPeerLink *link,
                                  const char *info,

@@ -269,7 +269,7 @@ pn_direct_conn_process_msg(PnDirectConn *direct_conn, MsnMessage *msg)
 {
     pn_debug ("process_msg");
 
-    pn_peer_link_process_msg(direct_conn->link, msg);
+    pn_peer_link_process_msg(direct_conn->link, msg, 1, direct_conn);
 }
 
 static gboolean

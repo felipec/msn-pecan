@@ -89,7 +89,7 @@ struct MsnSwitchBoard
 
     MsnSBErrorType error; /**< The error that occurred in this switchboard
                             (if applicable). */
-    GList *links; /**< The list of peer links that are using this switchboard. */
+    GList *calls; /**< The list of peer calls that are using this switchboard. */
 
     PnCmdServer *conn;
     gulong open_handler;

@@ -36,10 +36,6 @@
 #include "fix_purple_win32.h"
 #include <ft.h>
 
-#define PN_PEER_CALL_TIMEOUT 30 0000
-
-/* #define PECAN_DEBUG_PEER_CALL */
-
 static gboolean
 timeout(gpointer data)
 {
@@ -47,9 +43,7 @@ timeout(gpointer data)
 
     call = data;
 
-#ifdef PECAN_DEBUG_PEER_CALL
-    pn_info("call=%p", call);
-#endif
+    pn_log("call=%p", call);
 
     if (!call->pending && !call->progress) {
         pn_peer_call_unref(call);
@@ -68,11 +62,25 @@ pn_peer_call_new(PnPeerLink *link)
 
     call = g_new0(PnPeerCall, 1);
 
-#ifdef PECAN_DEBUG_PEER_CALL
-    pn_info("call=%p", call);
-#endif
+    pn_log("call=%p", call);
 
     call->link = link;
+
+    {
+        MsnSwitchBoard *swboard;
+
+        swboard = msn_session_get_swboard(link->session, link->remote_user);
+
+        if (!swboard) {
+            pn_error("couldn't get swboard");
+            g_free(call);
+            return NULL;
+        }
+
+        swboard->calls = g_list_prepend(swboard->calls, call);
+
+        call->swboard = swboard;
+    }
 
     pn_peer_link_ref(link);
     pn_peer_link_add_call(link, call);
@@ -95,9 +103,7 @@ pn_peer_call_free(PnPeerCall *call)
     if (!call)
 	    return;
 
-#ifdef PECAN_DEBUG_PEER_CALL
-    pn_info("call=%p", call);
-#endif
+    pn_log("call=%p", call);
 
     if (call->timer)
         g_source_remove(call->timer);
@@ -110,9 +116,7 @@ pn_peer_call_free(PnPeerCall *call)
         PnPeerMsg *peer_msg = e->data;
         e = e->next;
 
-#ifdef PECAN_DEBUG_PEER_CALL_VERBOSE
-        pn_info("peer_msg=%p", peer_msg);
-#endif
+        pn_log("freeing peer_msg=%p", peer_msg);
 
         if (peer_msg->call == call)
             pn_peer_msg_unref(peer_msg);
@@ -128,6 +132,9 @@ pn_peer_call_free(PnPeerCall *call)
 
     if (call->xfer)
         purple_xfer_unref(call->xfer);
+
+    if (call->swboard)
+        call->swboard->calls = g_list_remove(call->swboard->calls, call);
 
     g_free(call);
 }

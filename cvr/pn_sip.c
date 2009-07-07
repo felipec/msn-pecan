@@ -601,7 +601,8 @@ pn_sip_recv(PnPeerLink *link,
         call = pn_peer_link_find_slp_call(link, call_id);
         g_free(call_id);
 
-        pn_peer_call_unref(call);
+        if (call)
+            pn_peer_call_unref(call);
         return;
     }
 }

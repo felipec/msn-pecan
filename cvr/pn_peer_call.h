@@ -24,6 +24,7 @@ typedef struct PnPeerCall PnPeerCall;
 
 struct MsnSession;
 struct PnPeerLink;
+struct MsnSwitchBoard;
 
 #include <glib.h>
 
@@ -41,6 +42,8 @@ struct PnPeerCall
 
     long session_id;
     long app_id;
+
+    struct MsnSwitchBoard *swboard;
 
     gboolean pending; /**< A flag that states if we should wait for this
                         call to start and do not time out. */
