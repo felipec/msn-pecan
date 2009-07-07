@@ -22,15 +22,15 @@
 
 #include <glib.h>
 
-#include "pn_group.h"
+struct pn_group;
+
+struct MsnSesion;
 
 typedef struct
 {
     gchar *who;
     gchar *old_group_guid;
 } MsnMoveBuddy;
-
-struct MsnSesion;
 
 struct pn_contact_list {
     struct MsnSession *session;

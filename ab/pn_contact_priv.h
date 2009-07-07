@@ -22,10 +22,12 @@
 
 #include <glib.h>
 
-#include "pn_contactlist.h"
+struct pn_contact_list;
+
 #include "pn_status.h"
+
 #if defined(PECAN_CVR)
-#include "cvr/pn_msnobj.h"
+struct pn_msnobj;
 #endif /* defined(PECAN_CVR) */
 
 /**

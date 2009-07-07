@@ -19,6 +19,7 @@
 
 #include "session.h"
 #include "pn_contactlist.h"
+#include "pn_group.h"
 #include "pn_contactlist_priv.h"
 #include "pn_contact_priv.h"
 #include "pn_log.h"

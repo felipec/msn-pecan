@@ -36,6 +36,7 @@
 #include "ab/pn_contactlist.h"
 #include "ab/pn_contactlist_priv.h"
 #include "ab/pn_contact_priv.h"
+#include "ab/pn_group.h"
 
 #include "io/pn_cmd_server.h"
 #include "io/pn_http_server.h"

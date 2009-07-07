@@ -19,6 +19,7 @@
 
 #include "pn_contact.h"
 #include "pn_contact_priv.h"
+#include "pn_contactlist.h"
 #include "pn_contactlist_priv.h"
 #include "pn_log.h"
 #include "pn_util.h"

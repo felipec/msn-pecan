@@ -18,6 +18,7 @@
  */
 
 #include "pn_group.h"
+#include "pn_contactlist.h"
 
 /**
  * A group.

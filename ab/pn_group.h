@@ -20,9 +20,10 @@
 #ifndef PN_GROUP_H
 #define PN_GROUP_H
 
-struct pn_group;
+#include <glib.h>
 
-#include "pn_contactlist.h"
+struct pn_group;
+struct pn_contact_list;
 
 struct pn_group *pn_group_new (struct pn_contact_list *contactlist,
                                const gchar *name,

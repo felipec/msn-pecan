@@ -21,9 +21,10 @@
 #define PN_CONTACTLIST_H
 
 struct pn_contact_list;
+struct pn_contact;
+struct pn_group;
 
-#include "pn_contact.h"
-#include "pn_group.h"
+struct MsnSession;
 
 typedef enum
 {
@@ -50,21 +51,21 @@ struct _PurpleGroup;
 
 MsnListId msn_get_list_id (const gchar *list);
 
-void msn_got_add_contact (MsnSession *session,
+void msn_got_add_contact (struct MsnSession *session,
                           struct pn_contact *contact,
                           MsnListId list_id,
                           const gchar *group_guid);
-void msn_got_rem_contact (MsnSession *session,
+void msn_got_rem_contact (struct MsnSession *session,
                           struct pn_contact *contact,
                           MsnListId list_id,
                           const gchar *group_guid);
-void msn_got_lst_contact (MsnSession *session,
+void msn_got_lst_contact (struct MsnSession *session,
                           struct pn_contact *contact,
                           const gchar *extra,
                           gint list_op,
                           GSList *group_ids);
 
-struct pn_contact_list *pn_contactlist_new (MsnSession *session);
+struct pn_contact_list *pn_contactlist_new (struct MsnSession *session);
 void pn_contactlist_destroy (struct pn_contact_list *contactlist);
 void pn_contactlist_remove_contact (struct pn_contact_list *contactlist,
                                     struct pn_contact *contact);

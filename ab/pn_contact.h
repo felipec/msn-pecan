@@ -21,15 +21,14 @@
 #define PN_CONTACT_H
 
 struct pn_contact;
+struct pn_contact_list;
 
 #include "session.h"
 #if defined(PECAN_CVR)
-#include "cvr/pn_msnobj.h"
+struct pn_msnobj;
 #endif /* defined(PECAN_CVR) */
 
 #include "io/pn_buffer.h"
-
-#include "pn_contactlist.h"
 
 /**
  * Creates a new contact structure.

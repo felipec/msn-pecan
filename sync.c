@@ -25,6 +25,7 @@
 #include "cmd/command_private.h"
 #include "cmd/cmdproc_private.h"
 
+#include "ab/pn_group.h"
 #include "ab/pn_contact_priv.h"
 
 #include <string.h>
