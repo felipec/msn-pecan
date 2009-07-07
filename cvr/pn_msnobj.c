@@ -40,7 +40,7 @@ struct pn_msnobj {
 
     gchar *creator;
     gsize size;
-    PnMsnObjType type;
+    int type;
     gchar *location;
     gchar *friendly;
     gchar *sha1d;
@@ -126,7 +126,7 @@ struct pn_msnobj *
 pn_msnobj_new_from_image(PnBuffer *image,
                          const char *location,
                          const char *creator,
-                         PnMsnObjType type)
+                         int type)
 {
     struct pn_msnobj *obj = NULL;
     PurpleCipherContext *ctx;
@@ -226,7 +226,7 @@ pn_msnobj_to_string(const struct pn_msnobj *obj)
     return str;
 }
 
-PnMsnObjType
+int
 pn_msnobj_get_type(const struct pn_msnobj *obj)
 {
     return obj->type;

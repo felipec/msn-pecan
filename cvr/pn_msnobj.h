@@ -24,15 +24,14 @@
 
 #include "io/pn_buffer.h"
 
-typedef enum
-{
+enum {
     PN_MSNOBJ_UNKNOWN, /**< Unknown object */
     PN_MSNOBJ_RESERVED1, /**< Reserved */
     PN_MSNOBJ_EMOTICON, /**< Custom Emoticon */
     PN_MSNOBJ_USERTILE, /**< UserTile (buddy icon) */
     PN_MSNOBJ_RESERVED2, /**< Reserved */
     PN_MSNOBJ_BACKGROUND, /**< Background */
-} PnMsnObjType;
+};
 
 /**
  * Creates a msnobj structure.
@@ -63,7 +62,7 @@ struct pn_msnobj *pn_msnobj_new_from_string(const gchar *str);
 struct pn_msnobj *pn_msnobj_new_from_image(PnBuffer *image,
                                            const char *location,
                                            const char *creator,
-                                           PnMsnObjType type);
+                                           int type);
 
 /**
  * Frees an msnobj structure.
@@ -88,7 +87,7 @@ gchar *pn_msnobj_to_string(const struct pn_msnobj *obj);
  *
  * @return The object type.
  */
-PnMsnObjType pn_msnobj_get_type(const struct pn_msnobj *obj);
+int pn_msnobj_get_type(const struct pn_msnobj *obj);
 
 /**
  * Returns a msnobj's location value.
