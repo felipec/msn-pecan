@@ -20,16 +20,16 @@
 #ifndef PN_PEERLINK_H
 #define PN_PEERLINK_H
 
-struct MsnSession;
+#include <glib.h>
+
 struct pn_peer_msg;
+struct pn_peer_call;
+struct pn_msnobj;
+
+struct MsnSession;
 struct MsnMessage;
 
 struct _PurpleXfer;
-
-#include <glib.h>
-
-#include "pn_peer_call.h"
-#include "cvr/pn_msnobj.h"
 
 typedef void (*MsnSlpCb) (struct pn_peer_call *call, const guchar *data, gsize size);
 typedef void (*MsnSlpEndCb) (struct pn_peer_call *call, struct MsnSession *session);

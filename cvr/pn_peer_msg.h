@@ -22,6 +22,7 @@
 
 struct pn_peer_call;
 struct pn_peer_link;
+
 struct MsnSession;
 struct MsnMessage;
 struct MsnSwitchBoard;

@@ -20,8 +20,9 @@
 #ifndef PN_PEER_CALL_H
 #define PN_PEER_CALL_H
 
-struct MsnSession;
 struct pn_peer_link;
+
+struct MsnSession;
 struct MsnSwitchBoard;
 
 #include <glib.h>

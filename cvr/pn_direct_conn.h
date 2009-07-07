@@ -20,7 +20,7 @@
 #ifndef PN_DIRECT_CONN_H
 #define PN_DIRECT_CONN_H
 
-#include "cvr/pn_peer_link.h"
+struct pn_peer_link;
 
 #include "cmd/msg.h"
 #include "io/pn_stream.h"
