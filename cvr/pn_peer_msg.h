@@ -22,7 +22,7 @@
 
 typedef struct PnPeerMsg PnPeerMsg;
 
-struct PnPeerCall;
+struct pn_peer_call;
 struct pn_peer_link;
 struct MsnSession;
 struct MsnMessage;
@@ -38,7 +38,7 @@ struct MsnSwitchBoard;
  */
 struct PnPeerMsg
 {
-    struct PnPeerCall *call; /**< The call to which this slp message belongs (if applicable). */
+    struct pn_peer_call *call; /**< The call to which this slp message belongs (if applicable). */
     struct pn_peer_link *link; /**< The peer link through which this slp message is being sent. */
     struct MsnSession *session;
 
@@ -82,7 +82,7 @@ void pn_peer_msg_set_image(PnPeerMsg *peer_msg,
                            PnBuffer *image);
 void pn_peer_msg_open_file(PnPeerMsg *peer_msg,
                            const char *file_name);
-PnPeerMsg *pn_peer_msg_sip_new(struct PnPeerCall *call,
+PnPeerMsg *pn_peer_msg_sip_new(struct pn_peer_call *call,
                                int cseq,
                                const char *header,
                                const char *branch,

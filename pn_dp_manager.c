@@ -78,7 +78,7 @@ queue (PnDpManager *dpm,
 }
 
 static void
-dp_ok (PnPeerCall *call,
+dp_ok (struct pn_peer_call *call,
        const guchar *data,
        gsize size)
 {
@@ -99,7 +99,7 @@ dp_ok (PnPeerCall *call,
 }
 
 static void
-dp_fail (PnPeerCall *call,
+dp_fail (struct pn_peer_call *call,
          MsnSession *session)
 {
     const gchar *passport;

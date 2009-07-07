@@ -177,7 +177,7 @@ pn_peer_msg_show(MsnMessage *msg)
 #endif
 
 PnPeerMsg *
-pn_peer_msg_sip_new(PnPeerCall *call,
+pn_peer_msg_sip_new(struct pn_peer_call *call,
                     int cseq,
                     const char *header,
                     const char *branch,

@@ -210,7 +210,7 @@ msn_switchboard_free (MsnSwitchBoard *swboard)
 
 #if defined(PECAN_CVR)
     for (l = swboard->calls; l; l = l->next) {
-        PnPeerCall *call = l->data;
+        struct pn_peer_call *call = l->data;
         call->swboard = NULL;
         pn_peer_call_unref(call);
     }
@@ -1299,7 +1299,7 @@ control_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 
 #if defined(PECAN_LIBSIREN)
 static void
-got_voice_clip(PnPeerCall *call, const guchar *data, gsize size)
+got_voice_clip(struct pn_peer_call *call, const guchar *data, gsize size)
 {
     FILE *f;
     char *file;
@@ -1404,7 +1404,7 @@ p2p_msg(MsnCmdProc *cmdproc,
 }
 
 static void
-got_emoticon(PnPeerCall *call,
+got_emoticon(struct pn_peer_call *call,
              const guchar *data,
              gsize size)
 {

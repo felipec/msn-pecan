@@ -31,8 +31,8 @@ struct _PurpleXfer;
 #include "pn_peer_call.h"
 #include "cvr/pn_msnobj.h"
 
-typedef void (*MsnSlpCb) (PnPeerCall *call, const guchar *data, gsize size);
-typedef void (*MsnSlpEndCb) (PnPeerCall *call, struct MsnSession *session);
+typedef void (*MsnSlpCb) (struct pn_peer_call *call, const guchar *data, gsize size);
+typedef void (*MsnSlpEndCb) (struct pn_peer_call *call, struct MsnSession *session);
 
 struct pn_peer_link *pn_peer_link_new(struct MsnSession *session,
                                       const char *username);
@@ -41,11 +41,11 @@ struct pn_peer_link *pn_peer_link_ref(struct pn_peer_link *link);
 struct pn_peer_link *pn_peer_link_unref(struct pn_peer_link *link);
 
 void pn_peer_link_add_call(struct pn_peer_link *link,
-                           PnPeerCall *call);
+                           struct pn_peer_call *call);
 void pn_peer_link_remove_call(struct pn_peer_link *link,
-                              PnPeerCall *call);
-PnPeerCall *pn_peer_link_find_slp_call(struct pn_peer_link *link,
-                                       const char *id);
+                              struct pn_peer_call *call);
+struct pn_peer_call *pn_peer_link_find_slp_call(struct pn_peer_link *link,
+                                                const char *id);
 void pn_peer_link_queue_msg(struct pn_peer_link *link,
                             struct PnPeerMsg *peer_msg);
 void pn_peer_link_send_msg(struct pn_peer_link *link,

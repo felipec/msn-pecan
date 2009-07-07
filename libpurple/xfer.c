@@ -35,7 +35,7 @@
 static void
 xfer_init(PurpleXfer *xfer)
 {
-    PnPeerCall *call;
+    struct pn_peer_call *call;
     char *content;
 
     pn_info("xfer_init");
@@ -57,7 +57,7 @@ xfer_init(PurpleXfer *xfer)
 static void
 xfer_cancel(PurpleXfer *xfer)
 {
-    PnPeerCall *call;
+    struct pn_peer_call *call;
     char *content;
 
     call = xfer->data;
@@ -82,7 +82,7 @@ xfer_cancel(PurpleXfer *xfer)
 }
 
 static void
-xfer_progress_cb(PnPeerCall *call,
+xfer_progress_cb(struct pn_peer_call *call,
                  gsize total_length,
                  gsize len,
                  gsize offset)
@@ -98,7 +98,7 @@ xfer_progress_cb(PnPeerCall *call,
 }
 
 static void
-xfer_end_cb(PnPeerCall *call,
+xfer_end_cb(struct pn_peer_call *call,
             MsnSession *session)
 {
     if ((purple_xfer_get_status(call->xfer) != PURPLE_XFER_STATUS_DONE) &&
@@ -110,7 +110,7 @@ xfer_end_cb(PnPeerCall *call,
 }
 
 static void
-xfer_completed_cb(PnPeerCall *call,
+xfer_completed_cb(struct pn_peer_call *call,
                   const guchar *body,
                   gsize size)
 {
@@ -120,7 +120,7 @@ xfer_completed_cb(PnPeerCall *call,
 }
 
 static void
-send_file_cb(PnPeerCall *call)
+send_file_cb(struct pn_peer_call *call)
 {
     PnPeerMsg *peer_msg;
     struct stat st;
@@ -218,7 +218,7 @@ void
 purple_pn_xfer_invite(PurpleXfer *xfer)
 {
     struct pn_peer_link *link;
-    PnPeerCall *call;
+    struct pn_peer_call *call;
     char *context;
     const char *fn;
     const char *fp;
@@ -252,7 +252,7 @@ purple_pn_xfer_invite(PurpleXfer *xfer)
 }
 
 void
-purple_pn_xfer_got_invite(PnPeerCall *call,
+purple_pn_xfer_got_invite(struct pn_peer_call *call,
                           const char *branch,
                           const char *context)
 {

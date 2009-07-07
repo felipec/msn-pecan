@@ -33,7 +33,7 @@ struct _PurpleProxyConnectData;
 struct PnDirectConn
 {
     struct pn_peer_link *link;
-    PnPeerCall *initial_call;
+    struct pn_peer_call *initial_call;
 
     gboolean ack_sent;
     gboolean ack_recv;

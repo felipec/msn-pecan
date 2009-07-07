@@ -20,8 +20,6 @@
 #ifndef PN_PEER_CALL_H
 #define PN_PEER_CALL_H
 
-typedef struct PnPeerCall PnPeerCall;
-
 struct MsnSession;
 struct pn_peer_link;
 struct MsnSwitchBoard;
@@ -33,7 +31,7 @@ typedef enum {
     PN_PEER_CALL_DC,
 } PnPeerCallType;
 
-struct PnPeerCall
+struct pn_peer_call
 {
     PnPeerCallType type;
 
@@ -52,17 +50,17 @@ struct PnPeerCall
     gboolean started; /**< A flag that states if this call's session has
                         been initiated. */
 
-    void (*progress_cb)(PnPeerCall *call,
+    void (*progress_cb)(struct pn_peer_call *call,
                         gsize total_length, gsize len, gsize offset);
-    void (*init_cb)(PnPeerCall *call);
+    void (*init_cb)(struct pn_peer_call *call);
 
     /* Can be checksum, or smile */
     char *data_info;
 
     void *xfer;
 
-    void (*cb)(PnPeerCall *call, const guchar *data, gsize size);
-    void (*end_cb)(PnPeerCall *call, struct MsnSession *session);
+    void (*cb)(struct pn_peer_call *call, const guchar *data, gsize size);
+    void (*end_cb)(struct pn_peer_call *call, struct MsnSession *session);
 
     int timer;
 
@@ -70,18 +68,18 @@ struct PnPeerCall
     unsigned int ref_count;
 };
 
-PnPeerCall *pn_peer_call_new(struct pn_peer_link *link);
-void pn_peer_call_free(PnPeerCall *call);
-PnPeerCall *pn_peer_call_ref(PnPeerCall *call);
-PnPeerCall *pn_peer_call_unref(PnPeerCall *call);
+struct pn_peer_call *pn_peer_call_new(struct pn_peer_link *link);
+void pn_peer_call_free(struct pn_peer_call *call);
+struct pn_peer_call *pn_peer_call_ref(struct pn_peer_call *call);
+struct pn_peer_call *pn_peer_call_unref(struct pn_peer_call *call);
 
-void pn_peer_call_init(PnPeerCall *call,
+void pn_peer_call_init(struct pn_peer_call *call,
                        PnPeerCallType type);
-void pn_peer_call_session_init(PnPeerCall *call);
-void pn_peer_call_invite(PnPeerCall *call,
+void pn_peer_call_session_init(struct pn_peer_call *call);
+void pn_peer_call_invite(struct pn_peer_call *call,
                          const char *euf_guid,
                          int app_id,
                          const char *context);
-void pn_peer_call_close(PnPeerCall *call);
+void pn_peer_call_close(struct pn_peer_call *call);
 
 #endif /* PN_PEER_CALL_H */

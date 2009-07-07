@@ -144,24 +144,24 @@ msn_session_get_peer_link(MsnSession *session,
 
 void
 pn_peer_link_add_call(struct pn_peer_link *link,
-                      PnPeerCall *call)
+                      struct pn_peer_call *call)
 {
     link->slp_calls = g_list_append(link->slp_calls, call);
 }
 
 void
 pn_peer_link_remove_call(struct pn_peer_link *link,
-                         PnPeerCall *call)
+                         struct pn_peer_call *call)
 {
     link->slp_calls = g_list_remove(link->slp_calls, call);
 }
 
-PnPeerCall *
+struct pn_peer_call *
 pn_peer_link_find_slp_call(struct pn_peer_link *link,
                            const char *id)
 {
     GList *l;
-    PnPeerCall *call;
+    struct pn_peer_call *call;
 
     if (!id)
         return NULL;
@@ -176,12 +176,12 @@ pn_peer_link_find_slp_call(struct pn_peer_link *link,
     return NULL;
 }
 
-static inline PnPeerCall *
+static inline struct pn_peer_call *
 find_session_call(struct pn_peer_link *link,
                   long id)
 {
     GList *l;
-    PnPeerCall *call;
+    struct pn_peer_call *call;
 
     for (l = link->slp_calls; l; l = l->next) {
         call = l->data;
@@ -338,7 +338,7 @@ release_peer_msg(struct pn_peer_link *link,
         case 0x1000020:
         case 0x1000030:
             {
-                PnPeerCall *call = peer_msg->call;
+                struct pn_peer_call *call = peer_msg->call;
 
                 if (call) {
                     msg->msnslp_header.session_id = call->session_id;
@@ -431,7 +431,7 @@ static void
 process_peer_msg(struct pn_peer_link *link,
                  PnPeerMsg *peer_msg)
 {
-    PnPeerCall *call = NULL;
+    struct pn_peer_call *call = NULL;
     gpointer body;
     gsize body_len;
 
@@ -677,7 +677,7 @@ pn_peer_link_request_object(struct pn_peer_link *link,
                             MsnSlpEndCb end_cb,
                             const PnMsnObj *obj)
 {
-    PnPeerCall *call;
+    struct pn_peer_call *call;
     char *msnobj_data;
     char *msnobj_base64;
 

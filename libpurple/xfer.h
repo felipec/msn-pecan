@@ -20,11 +20,11 @@
 #ifndef XFER_H
 #define XFER_H
 
-struct PnPeerCall;
+struct pn_peer_call;
 struct _PurpleXfer;
 
 void purple_pn_xfer_invite(struct _PurpleXfer *xfer);
-void purple_pn_xfer_got_invite(struct PnPeerCall *call,
+void purple_pn_xfer_got_invite(struct pn_peer_call *call,
                                const char *branch,
                                const char *context);
 

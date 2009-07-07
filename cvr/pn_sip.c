@@ -80,7 +80,7 @@ get_token(const char *str,
 
 #ifdef MSN_DIRECTCONN
 static void
-got_transresp(PnPeerCall *call,
+got_transresp(struct pn_peer_call *call,
               const char *nonce,
               const char *ips_str,
               int port)
@@ -108,7 +108,7 @@ got_transresp(PnPeerCall *call,
 #endif /* MSN_DIRECTCONN */
 
 void
-pn_sip_send_ok(PnPeerCall *call,
+pn_sip_send_ok(struct pn_peer_call *call,
                const char *branch,
                const char *type,
                const char *content)
@@ -134,7 +134,7 @@ pn_sip_send_ok(PnPeerCall *call,
 }
 
 void
-pn_sip_send_decline(PnPeerCall *call,
+pn_sip_send_decline(struct pn_peer_call *call,
                     const char *branch,
                     const char *type,
                     const char *content)
@@ -160,7 +160,7 @@ pn_sip_send_decline(PnPeerCall *call,
 #define MAX_FILE_NAME_LEN 0x226
 
 static void
-got_sessionreq(PnPeerCall *call,
+got_sessionreq(struct pn_peer_call *call,
                const char *branch,
                const char *euf_guid,
                const char *context)
@@ -264,7 +264,7 @@ got_sessionreq(PnPeerCall *call,
 }
 
 void
-pn_sip_send_bye(PnPeerCall *call,
+pn_sip_send_bye(struct pn_peer_call *call,
                 const char *type)
 {
     struct pn_peer_link *link;
@@ -291,7 +291,7 @@ pn_sip_send_bye(PnPeerCall *call,
 }
 
 static void
-got_invite(PnPeerCall *call,
+got_invite(struct pn_peer_call *call,
            const char *branch,
            const char *type,
            const char *content)
@@ -410,7 +410,7 @@ got_invite(PnPeerCall *call,
 }
 
 static void
-got_ok(PnPeerCall *call,
+got_ok(struct pn_peer_call *call,
        const char *type,
        const char *content)
 {
@@ -509,7 +509,7 @@ void
 pn_sip_recv(struct pn_peer_link *link,
             const char *body)
 {
-    PnPeerCall *call;
+    struct pn_peer_call *call;
 
     if (!body) {
         pn_warning("received bogus message");

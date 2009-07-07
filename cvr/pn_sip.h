@@ -22,23 +22,23 @@
 
 #include <glib.h>
 
-struct PnPeerCall;
+struct pn_peer_call;
 struct pn_peer_link;
 
 void pn_sip_recv(struct pn_peer_link *link,
                  const char *body);
 
-void pn_sip_send_ok(struct PnPeerCall *call,
+void pn_sip_send_ok(struct pn_peer_call *call,
                     const char *branch,
                     const char *type,
                     const char *content);
 
-void pn_sip_send_decline(struct PnPeerCall *call,
+void pn_sip_send_decline(struct pn_peer_call *call,
                          const char *branch,
                          const char *type,
                          const char *content);
 
-void pn_sip_send_bye(struct PnPeerCall *call,
+void pn_sip_send_bye(struct pn_peer_call *call,
                      const char *type);
 
 #endif /* PN_SIP_H */

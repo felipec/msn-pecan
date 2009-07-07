@@ -41,7 +41,7 @@
 static gboolean
 timeout(gpointer data)
 {
-    PnPeerCall *call;
+    struct pn_peer_call *call;
 
     call = data;
 
@@ -57,12 +57,12 @@ timeout(gpointer data)
     return TRUE;
 }
 
-PnPeerCall *
+struct pn_peer_call *
 pn_peer_call_new(struct pn_peer_link *link)
 {
-    PnPeerCall *call;
+    struct pn_peer_call *call;
 
-    call = g_new0(PnPeerCall, 1);
+    call = g_new0(struct pn_peer_call, 1);
 
     pn_log("call=%p", call);
 
@@ -97,7 +97,7 @@ pn_peer_call_new(struct pn_peer_link *link)
 }
 
 void
-pn_peer_call_free(PnPeerCall *call)
+pn_peer_call_free(struct pn_peer_call *call)
 {
     GList *e;
     MsnSession *session;
@@ -141,16 +141,16 @@ pn_peer_call_free(PnPeerCall *call)
     g_free(call);
 }
 
-PnPeerCall *
-pn_peer_call_ref(PnPeerCall *call)
+struct pn_peer_call *
+pn_peer_call_ref(struct pn_peer_call *call)
 {
     call->ref_count++;
 
     return call;
 }
 
-PnPeerCall *
-pn_peer_call_unref(PnPeerCall *call)
+struct pn_peer_call *
+pn_peer_call_unref(struct pn_peer_call *call)
 {
     call->ref_count--;
 
@@ -163,7 +163,7 @@ pn_peer_call_unref(PnPeerCall *call)
 }
 
 void
-pn_peer_call_init(PnPeerCall *call,
+pn_peer_call_init(struct pn_peer_call *call,
                   PnPeerCallType type)
 {
     call->id = msn_rand_guid();
@@ -171,7 +171,7 @@ pn_peer_call_init(PnPeerCall *call,
 }
 
 void
-pn_peer_call_session_init(PnPeerCall *call)
+pn_peer_call_session_init(struct pn_peer_call *call)
 {
     if (call->init_cb)
         call->init_cb(call);
@@ -180,7 +180,7 @@ pn_peer_call_session_init(PnPeerCall *call)
 }
 
 void
-pn_peer_call_invite(PnPeerCall *call,
+pn_peer_call_invite(struct pn_peer_call *call,
                     const char *euf_guid,
                     int app_id,
                     const char *context)
@@ -221,7 +221,7 @@ pn_peer_call_invite(PnPeerCall *call,
 }
 
 void
-pn_peer_call_close(PnPeerCall *call)
+pn_peer_call_close(struct pn_peer_call *call)
 {
     pn_sip_send_bye(call, "application/x-msnmsgr-sessionclosebody");
     pn_peer_link_unleash(call->link);

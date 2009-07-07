@@ -33,9 +33,9 @@
 struct MsnNotification;
 struct MsnNexus;
 struct MsnSync;
-struct PnPeerCall;
+struct pn_peer_call;
 
-typedef void (*PnXferInviteCb) (struct PnPeerCall *call,
+typedef void (*PnXferInviteCb) (struct pn_peer_call *call,
                                 const char *branch,
                                 const char *context);
 
