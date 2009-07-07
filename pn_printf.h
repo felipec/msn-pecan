@@ -24,8 +24,8 @@
 #define PN_CUSTOM_PRINTF
 
 #ifdef PN_CUSTOM_PRINTF
-gchar *pn_strdup_vprintf (const gchar *format, va_list args);
-gchar *pn_strdup_printf (const gchar *format, ...);
+char *pn_strdup_vprintf(const char *format, va_list args);
+char *pn_strdup_printf(const char *format, ...);
 #else
 #define pn_strdup_vprintf g_strdup_vprintf
 #define pn_strdup_printf g_strdup_printf
