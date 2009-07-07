@@ -1217,7 +1217,7 @@ add_buddy (PurpleConnection *gc,
            PurpleGroup *group)
 {
     MsnSession *session;
-    PnContactList *contactlist;
+    struct pn_contact_list *contactlist;
 
     session = gc->proto_data;
     contactlist = session->contactlist;
@@ -1237,7 +1237,7 @@ rem_buddy (PurpleConnection *gc,
            PurpleGroup *group)
 {
     MsnSession *session;
-    PnContactList *contactlist;
+    struct pn_contact_list *contactlist;
     const gchar *group_name;
 
     session = gc->proto_data;
@@ -1295,7 +1295,7 @@ group_buddy (PurpleConnection *gc,
              const gchar *new_group_name)
 {
     MsnSession *session;
-    PnContactList *contactlist;
+    struct pn_contact_list *contactlist;
 
     session = gc->proto_data;
     contactlist = session->contactlist;
@@ -1352,7 +1352,7 @@ add_permit (PurpleConnection *gc,
             const gchar *who)
 {
     MsnSession *session;
-    PnContactList *contactlist;
+    struct pn_contact_list *contactlist;
     struct pn_contact *user;
 
     session = gc->proto_data;
@@ -1376,7 +1376,7 @@ add_deny (PurpleConnection *gc,
           const gchar *who)
 {
     MsnSession *session;
-    PnContactList *contactlist;
+    struct pn_contact_list *contactlist;
     struct pn_contact *user;
 
     session = gc->proto_data;
@@ -1400,7 +1400,7 @@ rem_permit (PurpleConnection *gc,
             const gchar *who)
 {
     MsnSession *session;
-    PnContactList *contactlist;
+    struct pn_contact_list *contactlist;
     struct pn_contact *user;
 
     session = gc->proto_data;
@@ -1425,7 +1425,7 @@ rem_deny (PurpleConnection *gc,
           const gchar *who)
 {
     MsnSession *session;
-    PnContactList *contactlist;
+    struct pn_contact_list *contactlist;
     struct pn_contact *user;
 
     session = gc->proto_data;

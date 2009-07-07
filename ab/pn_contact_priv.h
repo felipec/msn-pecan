@@ -51,7 +51,7 @@ typedef struct _CurrentMedia
  * A contact.
  */
 struct pn_contact {
-    PnContactList *contactlist;
+    struct pn_contact_list *contactlist;
 
     gchar *passport; /**< The passport account. */
     gchar *store_name; /**< The name stored in the server. */

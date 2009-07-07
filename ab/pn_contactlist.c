@@ -182,7 +182,7 @@ get_store_name (struct pn_contact *contact)
 }
 
 static void
-request_add_group (PnContactList *contactlist,
+request_add_group (struct pn_contact_list *contactlist,
                    const gchar *who,
                    const gchar *old_group_guid,
                    const gchar *new_group_name)
@@ -444,12 +444,12 @@ msn_got_lst_contact (MsnSession *session,
  * UserList functions
  **************************************************************************/
 
-PnContactList *
+struct pn_contact_list *
 pn_contactlist_new (MsnSession *session)
 {
-    PnContactList *contactlist;
+    struct pn_contact_list *contactlist;
 
-    contactlist = g_new0 (PnContactList, 1);
+    contactlist = g_new0 (struct pn_contact_list, 1);
 
     contactlist->session = session;
 
@@ -466,7 +466,7 @@ pn_contactlist_new (MsnSession *session)
 }
 
 void
-pn_contactlist_destroy (PnContactList *contactlist)
+pn_contactlist_destroy (struct pn_contact_list *contactlist)
 {
     g_hash_table_destroy (contactlist->contact_guids);
     g_hash_table_destroy (contactlist->contact_names);
@@ -477,7 +477,7 @@ pn_contactlist_destroy (PnContactList *contactlist)
 }
 
 void
-pn_contactlist_remove_contact (PnContactList *contactlist,
+pn_contactlist_remove_contact (struct pn_contact_list *contactlist,
                                struct pn_contact *contact)
 {
     {
@@ -491,7 +491,7 @@ pn_contactlist_remove_contact (PnContactList *contactlist,
 }
 
 struct pn_contact *
-pn_contactlist_find_contact (PnContactList *contactlist,
+pn_contactlist_find_contact (struct pn_contact_list *contactlist,
                              const gchar *passport)
 {
     g_return_val_if_fail (passport, NULL);
@@ -500,7 +500,7 @@ pn_contactlist_find_contact (PnContactList *contactlist,
 }
 
 struct pn_contact *
-pn_contactlist_find_contact_by_guid (PnContactList *contactlist,
+pn_contactlist_find_contact_by_guid (struct pn_contact_list *contactlist,
                                      const gchar *guid)
 {
     g_return_val_if_fail (guid, NULL);
@@ -509,7 +509,7 @@ pn_contactlist_find_contact_by_guid (PnContactList *contactlist,
 }
 
 void
-pn_contactlist_add_group (PnContactList *contactlist,
+pn_contactlist_add_group (struct pn_contact_list *contactlist,
                           struct pn_group *group)
 {
     g_hash_table_insert (contactlist->group_names, g_strdup (pn_group_get_name (group)), group);
@@ -522,7 +522,7 @@ pn_contactlist_add_group (PnContactList *contactlist,
 }
 
 void
-pn_contactlist_remove_group (PnContactList *contactlist,
+pn_contactlist_remove_group (struct pn_contact_list *contactlist,
                              struct pn_group *group)
 {
     {
@@ -535,7 +535,7 @@ pn_contactlist_remove_group (PnContactList *contactlist,
 }
 
 struct pn_group *
-pn_contactlist_find_group_with_id (PnContactList *contactlist,
+pn_contactlist_find_group_with_id (struct pn_contact_list *contactlist,
                                    const gchar *guid)
 {
     g_return_val_if_fail (contactlist, NULL);
@@ -547,7 +547,7 @@ pn_contactlist_find_group_with_id (PnContactList *contactlist,
 }
 
 struct pn_group *
-pn_contactlist_find_group_with_name (PnContactList *contactlist,
+pn_contactlist_find_group_with_name (struct pn_contact_list *contactlist,
                                      const gchar *name)
 {
     g_return_val_if_fail (contactlist, NULL);
@@ -560,7 +560,7 @@ pn_contactlist_find_group_with_name (PnContactList *contactlist,
 }
 
 const gchar *
-pn_contactlist_find_group_id (PnContactList *contactlist,
+pn_contactlist_find_group_id (struct pn_contact_list *contactlist,
                               const gchar *group_name)
 {
     struct pn_group *group;
@@ -574,7 +574,7 @@ pn_contactlist_find_group_id (PnContactList *contactlist,
 }
 
 const gchar *
-pn_contactlist_find_group_name (PnContactList *contactlist,
+pn_contactlist_find_group_name (struct pn_contact_list *contactlist,
                                 const gchar *group_guid)
 {
     struct pn_group *group;
@@ -588,7 +588,7 @@ pn_contactlist_find_group_name (PnContactList *contactlist,
 }
 
 void
-pn_contactlist_rename_group_id (PnContactList *contactlist,
+pn_contactlist_rename_group_id (struct pn_contact_list *contactlist,
                                 const gchar *group_guid,
                                 const gchar *new_name)
 {
@@ -601,7 +601,7 @@ pn_contactlist_rename_group_id (PnContactList *contactlist,
 }
 
 void
-pn_contactlist_remove_group_id (PnContactList *contactlist,
+pn_contactlist_remove_group_id (struct pn_contact_list *contactlist,
                                 const gchar *group_guid)
 {
     struct pn_group *group;
@@ -615,7 +615,7 @@ pn_contactlist_remove_group_id (PnContactList *contactlist,
 }
 
 void
-pn_contactlist_rem_buddy (PnContactList *contactlist,
+pn_contactlist_rem_buddy (struct pn_contact_list *contactlist,
                           const gchar *who,
                           gint list_id,
                           const gchar *group_name)
@@ -662,7 +662,7 @@ pn_contactlist_rem_buddy (PnContactList *contactlist,
 }
 
 void
-pn_contactlist_add_buddy (PnContactList *contactlist,
+pn_contactlist_add_buddy (struct pn_contact_list *contactlist,
                           const gchar *who,
                           gint list_id,
                           const gchar *group_name)
@@ -715,7 +715,7 @@ pn_contactlist_add_buddy (PnContactList *contactlist,
 }
 
 void
-pn_contactlist_move_buddy (PnContactList *contactlist,
+pn_contactlist_move_buddy (struct pn_contact_list *contactlist,
                            const gchar *who,
                            const gchar *old_group_name,
                            const gchar *new_group_name)
@@ -747,7 +747,7 @@ contact_check_pending (gpointer key,
 {
     const gchar *passport;
     struct pn_contact *contact;
-    PnContactList *contactlist;
+    struct pn_contact_list *contactlist;
 
     passport = key;
     contact = value;
@@ -763,7 +763,7 @@ contact_check_pending (gpointer key,
 }
 
 void
-pn_contactlist_check_pending (PnContactList *contactlist)
+pn_contactlist_check_pending (struct pn_contact_list *contactlist)
 {
     g_hash_table_foreach (contactlist->contact_names, contact_check_pending, contactlist);
 }
@@ -785,7 +785,7 @@ contact_each (gpointer key,
 }
 
 void
-pn_contactlist_foreach_contact (PnContactList *contactlist,
+pn_contactlist_foreach_contact (struct pn_contact_list *contactlist,
                                 PnContactListFunc func,
                                 gpointer user_data)
 {
@@ -801,7 +801,7 @@ pn_contactlist_foreach_contact (PnContactList *contactlist,
  * Purple functions
  **************************************************************************/
 void
-pn_contactlist_add_buddy_helper (PnContactList *contactlist,
+pn_contactlist_add_buddy_helper (struct pn_contact_list *contactlist,
                                  PurpleBuddy *buddy,
                                  PurpleGroup *purple_group)
 {

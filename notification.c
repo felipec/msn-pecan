@@ -630,7 +630,7 @@ adg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     if (cmd->trans && cmd->trans->data)
     {
         /* pn_contactlist_move_buddy(); */
-        PnContactList *contactlist = cmdproc->session->contactlist;
+        struct pn_contact_list *contactlist = cmdproc->session->contactlist;
         MsnMoveBuddy *data = cmd->trans->data;
 
         pn_contactlist_add_buddy(contactlist, data->who, MSN_LIST_FL, group_name);

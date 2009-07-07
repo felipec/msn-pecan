@@ -28,7 +28,7 @@ struct pn_group {
 };
 
 struct pn_group *
-pn_group_new (PnContactList *contactlist,
+pn_group_new (struct pn_contact_list *contactlist,
               const gchar *name,
               const gchar *guid)
 {

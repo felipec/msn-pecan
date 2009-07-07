@@ -38,7 +38,7 @@
 #endif /* HAVE_LIBPURPLE */
 
 struct pn_contact *
-pn_contact_new (PnContactList *contactlist)
+pn_contact_new (struct pn_contact_list *contactlist)
 {
     struct pn_contact *contact;
 
@@ -457,7 +457,7 @@ pn_contact_add_group_id (struct pn_contact *contact,
 
 #ifdef HAVE_LIBPURPLE
     {
-        PnContactList *contactlist;
+        struct pn_contact_list *contactlist;
         PurpleAccount *account;
         PurpleBuddy *b = NULL;
         PurpleGroup *g = NULL;

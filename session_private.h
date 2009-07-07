@@ -49,7 +49,7 @@ struct MsnSession
 
     GHashTable *config; /**< Configuration options. */
 
-    PnContactList *contactlist;
+    struct pn_contact_list *contactlist;
     PecanOimSession *oim_session;
     PnDpManager *dp_manager;
 

@@ -32,8 +32,7 @@ typedef struct
 
 struct MsnSesion;
 
-struct PnContactList
-{
+struct pn_contact_list {
     struct MsnSession *session;
 
     GHashTable *contact_names;

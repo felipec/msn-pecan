@@ -20,7 +20,7 @@
 #ifndef PN_CONTACTLIST_H
 #define PN_CONTACTLIST_H
 
-typedef struct PnContactList PnContactList;
+struct pn_contact_list;
 
 #include "pn_contact.h"
 #include "pn_group.h"
@@ -64,49 +64,49 @@ void msn_got_lst_contact (MsnSession *session,
                           gint list_op,
                           GSList *group_ids);
 
-PnContactList *pn_contactlist_new (MsnSession *session);
-void pn_contactlist_destroy (PnContactList *contactlist);
-void pn_contactlist_remove_contact (PnContactList *contactlist,
+struct pn_contact_list *pn_contactlist_new (MsnSession *session);
+void pn_contactlist_destroy (struct pn_contact_list *contactlist);
+void pn_contactlist_remove_contact (struct pn_contact_list *contactlist,
                                     struct pn_contact *contact);
-struct pn_contact *pn_contactlist_find_contact (PnContactList *contactlist,
+struct pn_contact *pn_contactlist_find_contact (struct pn_contact_list *contactlist,
                                                 const gchar *passport);
-struct pn_contact *pn_contactlist_find_contact_by_guid (PnContactList *contactlist,
+struct pn_contact *pn_contactlist_find_contact_by_guid (struct pn_contact_list *contactlist,
                                                         const gchar *contact_guid);
-void pn_contactlist_add_group (PnContactList *contactlist, struct pn_group *group);
-void pn_contactlist_remove_group (PnContactList *contactlist, struct pn_group *group);
-struct pn_group *pn_contactlist_find_group_with_id (PnContactList *contactlist,
+void pn_contactlist_add_group (struct pn_contact_list *contactlist, struct pn_group *group);
+void pn_contactlist_remove_group (struct pn_contact_list *contactlist, struct pn_group *group);
+struct pn_group *pn_contactlist_find_group_with_id (struct pn_contact_list *contactlist,
                                                     const gchar *group_guid);
-struct pn_group *pn_contactlist_find_group_with_name (PnContactList *contactlist,
+struct pn_group *pn_contactlist_find_group_with_name (struct pn_contact_list *contactlist,
                                                       const gchar *name);
-const gchar *pn_contactlist_find_group_id (PnContactList *contactlist,
+const gchar *pn_contactlist_find_group_id (struct pn_contact_list *contactlist,
                                            const gchar *group_name);
-const gchar *pn_contactlist_find_group_name (PnContactList *contactlist,
+const gchar *pn_contactlist_find_group_name (struct pn_contact_list *contactlist,
                                              const gchar *group_guid);
-void pn_contactlist_rename_group_id (PnContactList *contactlist,
+void pn_contactlist_rename_group_id (struct pn_contact_list *contactlist,
                                      const gchar *group_guid,
                                      const gchar *new_name);
-void pn_contactlist_remove_group_id (PnContactList *contactlist,
+void pn_contactlist_remove_group_id (struct pn_contact_list *contactlist,
                                      const gchar *group_guid);
 
-void pn_contactlist_rem_buddy (PnContactList *contactlist,
+void pn_contactlist_rem_buddy (struct pn_contact_list *contactlist,
                                const gchar *who,
                                gint list_id,
                                const gchar *group_name);
-void pn_contactlist_add_buddy (PnContactList *contactlist,
+void pn_contactlist_add_buddy (struct pn_contact_list *contactlist,
                                const gchar *who,
                                gint list_id,
                                const gchar *group_name);
-void pn_contactlist_move_buddy (PnContactList *contactlist,
+void pn_contactlist_move_buddy (struct pn_contact_list *contactlist,
                                 const gchar *who,
                                 const gchar *old_group_name,
                                 const gchar *new_group_name);
-void pn_contactlist_check_pending (PnContactList *contactlist);
+void pn_contactlist_check_pending (struct pn_contact_list *contactlist);
 
-void pn_contactlist_add_buddy_helper (PnContactList *contactlist,
+void pn_contactlist_add_buddy_helper (struct pn_contact_list *contactlist,
                                       struct _PurpleBuddy *buddy,
                                       struct _PurpleGroup *group);
 
-void pn_contactlist_foreach_contact (PnContactList *contactlist,
+void pn_contactlist_foreach_contact (struct pn_contact_list *contactlist,
                                      PnContactListFunc func,
                                      gpointer user_data);
 

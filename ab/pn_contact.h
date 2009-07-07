@@ -38,7 +38,7 @@ struct pn_contact;
  *
  * @return A new contact structure.
  */
-struct pn_contact *pn_contact_new (PnContactList *contactlist);
+struct pn_contact *pn_contact_new (struct pn_contact_list *contactlist);
 
 /**
  * Destroys a contact structure.

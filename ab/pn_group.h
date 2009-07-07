@@ -24,7 +24,7 @@ struct pn_group;
 
 #include "pn_contactlist.h"
 
-struct pn_group *pn_group_new (PnContactList *contactlist,
+struct pn_group *pn_group_new (struct pn_contact_list *contactlist,
                                const gchar *name,
                                const gchar *guid);
 void pn_group_free (struct pn_group *group);
