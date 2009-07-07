@@ -27,6 +27,8 @@
 
 #include "cmd/msg_private.h"
 
+#include "pn_peer_call_priv.h"
+
 #include <glib/gstdio.h>
 #include <string.h>
 

@@ -27,40 +27,6 @@ struct MsnSwitchBoard;
 
 #include <glib.h>
 
-struct pn_peer_call {
-    char *id;
-    char *branch;
-
-    long session_id;
-    long app_id;
-
-    struct MsnSwitchBoard *swboard;
-
-    gboolean pending; /**< A flag that states if we should wait for this
-                        call to start and do not time out. */
-    gboolean progress; /**< A flag that states if there has been progress since
-                         the last time out. */
-    gboolean started; /**< A flag that states if this call's session has
-                        been initiated. */
-
-    void (*progress_cb)(struct pn_peer_call *call,
-                        gsize total_length, gsize len, gsize offset);
-    void (*init_cb)(struct pn_peer_call *call);
-
-    /* Can be checksum, or smile */
-    char *data_info;
-
-    void *xfer;
-
-    void (*cb)(struct pn_peer_call *call, const guchar *data, gsize size);
-    void (*end_cb)(struct pn_peer_call *call, struct MsnSession *session);
-
-    int timer;
-
-    struct pn_peer_link *link;
-    unsigned int ref_count;
-};
-
 struct pn_peer_call *pn_peer_call_new(struct pn_peer_link *link);
 void pn_peer_call_free(struct pn_peer_call *call);
 struct pn_peer_call *pn_peer_call_ref(struct pn_peer_call *call);

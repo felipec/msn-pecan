@@ -18,6 +18,7 @@
  */
 
 #include "pn_peer_call.h"
+#include "pn_peer_call_priv.h"
 
 #include "pn_sip.h"
 #include "pn_peer_link.h"

@@ -30,6 +30,8 @@
 
 #include "session_private.h"
 
+#include "pn_peer_call_priv.h"
+
 #ifdef MSN_DIRECTCONN
 #include "pn_direct_conn.h"
 #endif /* MSN_DIRECTCONN */
