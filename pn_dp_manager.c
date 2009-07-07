@@ -19,7 +19,7 @@
 #include "pn_dp_manager.h"
 #include "pn_log.h"
 
-#include "io/pn_buffer.h"
+#include "pn_buffer.h"
 
 #include "cvr/pn_peer_call.h"
 #include "cvr/pn_peer_link.h"

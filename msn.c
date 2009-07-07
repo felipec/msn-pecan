@@ -26,7 +26,7 @@
 #include "pn_log.h"
 #include "pn_locale.h"
 #include "pn_status.h"
-#include "io/pn_buffer.h"
+#include "pn_buffer.h"
 
 #include "switchboard.h"
 #include "notification.h"

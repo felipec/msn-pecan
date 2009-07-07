@@ -22,7 +22,7 @@
 #include "pn_peer_call.h"
 #include "pn_peer_msg.h"
 #include "pn_log.h"
-#include "io/pn_buffer.h"
+#include "pn_buffer.h"
 
 #include "pn_peer_link_priv.h"
 

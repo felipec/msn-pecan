@@ -18,7 +18,7 @@ cmd_parser_test_objects := cmd_parser.o \
 			   ../pn_log.o
 
 buffer_test_objects := buffer.o \
-		       ../io/pn_buffer.o
+		       ../pn_buffer.o
 
 ab_test_objects := ab.o \
 		   ../ab/pn_contact.o \
@@ -40,7 +40,7 @@ endif
 
 all: 
 
-check_buffer: buffer.o ../io/pn_buffer.o
+check_buffer: buffer.o ../pn_buffer.o
 check_buffer: CFLAGS := $(CFLAGS) $(GOBJECT_CFLAGS) $(CHECK_CFLAGS)
 check_buffer: LIBS := $(GOBJECT_LIBS) $(CHECK_LIBS)
 

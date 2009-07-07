@@ -81,6 +81,7 @@ objects := msn.o \
 	   pn_log.o \
 	   pn_printf.o \
 	   pn_util.o \
+	   pn_buffer.o \
 	   pn_error.o \
 	   pn_status.o \
 	   pn_oim.o \
@@ -90,7 +91,6 @@ objects := msn.o \
 	   cmd/msg.o \
 	   cmd/table.o \
 	   cmd/transaction.o \
-	   io/pn_buffer.o \
 	   io/pn_parser.o \
 	   ab/pn_group.o \
 	   ab/pn_contact.o \

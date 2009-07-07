@@ -25,7 +25,7 @@
 #include "pn_status.h"
 #include "pn_dp_manager.h"
 #include "ab/pn_contact_priv.h"
-#include "io/pn_buffer.h"
+#include "pn_buffer.h"
 
 #if defined(PECAN_CVR)
 #include "cvr/pn_peer_link.h"

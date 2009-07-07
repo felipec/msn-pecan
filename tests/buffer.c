@@ -19,7 +19,7 @@
 #include <check.h>
 
 #include <glib.h>
-#include "io/pn_buffer.h"
+#include "pn_buffer.h"
 
 #include <string.h>
 

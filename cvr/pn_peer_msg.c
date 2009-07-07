@@ -24,7 +24,7 @@
 #include "pn_peer_call.h"
 #include "session.h"
 
-#include "io/pn_buffer.h"
+#include "pn_buffer.h"
 
 #include "cmd/msg_private.h"
 

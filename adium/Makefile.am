@@ -13,6 +13,7 @@ MSNSOURCES = msn.c \
 	     pn_log.c \
 	     pn_printf.c \
 	     pn_util.c \
+	     pn_buffer.c \
 	     pn_error.c \
 	     pn_status.c \
 	     pn_oim.c \
@@ -23,7 +24,6 @@ MSNSOURCES = msn.c \
 	     cmd/msg.c \
 	     cmd/table.c \
 	     cmd/transaction.c \
-	     io/pn_buffer.c \
 	     io/pn_parser.c \
 	     ab/pn_group.c \
 	     ab/pn_contact.c \

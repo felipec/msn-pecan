@@ -20,7 +20,7 @@
 #include "cvr/pn_msnobj.h"
 #include "pn_log.h"
 
-#include "io/pn_buffer.h"
+#include "pn_buffer.h"
 
 #include <string.h>
 #include <stdlib.h>
