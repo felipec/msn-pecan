@@ -25,8 +25,6 @@ typedef struct PnContactList PnContactList;
 #include "pn_contact.h"
 #include "pn_group.h"
 
-#include "cmd/cmdproc.h"
-
 typedef enum
 {
     MSN_LIST_FL,

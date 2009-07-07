@@ -25,6 +25,8 @@
 #include "pn_locale.h"
 #include "pn_util.h"
 
+#include "cmd/cmdproc.h"
+
 /** @todo this is disabled for testing only */
 #ifdef HAVE_LIBPURPLE
 #include "session_private.h"

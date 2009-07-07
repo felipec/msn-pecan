@@ -27,6 +27,7 @@
 #include "ab/pn_contact.h"
 
 #include "session_private.h"
+#include "cmd/cmdproc.h"
 
 #include <string.h>
 
