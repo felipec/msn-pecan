@@ -21,22 +21,19 @@
 
 #include <glib.h>
 
-typedef struct PnBuffer PnBuffer;
-
-struct PnBuffer
-{
+struct pn_buffer {
     gchar *data;
     gchar *alloc_data;
     gsize size;
     gsize len;
 };
 
-PnBuffer *pn_buffer_new (void);
-PnBuffer *pn_buffer_new_and_alloc (gsize size);
-PnBuffer *pn_buffer_new_memdup (const gpointer data, gsize size);
-void pn_buffer_free (PnBuffer *buffer);
-void pn_buffer_resize (PnBuffer *buffer, gsize new_size);
-gchar *pn_buffer_to_string (PnBuffer *buffer);
-void pn_buffer_prepare (PnBuffer *buffer, gsize extra_size);
+struct pn_buffer *pn_buffer_new (void);
+struct pn_buffer *pn_buffer_new_and_alloc (gsize size);
+struct pn_buffer *pn_buffer_new_memdup (const gpointer data, gsize size);
+void pn_buffer_free (struct pn_buffer *buffer);
+void pn_buffer_resize (struct pn_buffer *buffer, gsize new_size);
+gchar *pn_buffer_to_string (struct pn_buffer *buffer);
+void pn_buffer_prepare (struct pn_buffer *buffer, gsize extra_size);
 
 #endif /* PN_BUFFER_H */

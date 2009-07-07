@@ -175,7 +175,7 @@ got_sessionreq(struct pn_peer_call *call,
         struct pn_peer_msg *peer_msg;
         struct pn_msnobj *obj;
         char *msnobj_data;
-        PnBuffer *image;
+        struct pn_buffer *image;
         int type;
 
         /* Send Ok */

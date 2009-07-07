@@ -132,7 +132,7 @@ void pn_contact_set_guid (struct pn_contact *contact,
  * @param img The buddy icon image
  */
 void pn_contact_set_buddy_icon (struct pn_contact *contact,
-                                PnBuffer *buffer);
+                                struct pn_buffer *buffer);
 
 /**
  * Adds the group ID for a contact.

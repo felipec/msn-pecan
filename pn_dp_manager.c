@@ -157,7 +157,7 @@ request (struct pn_contact *user)
 
         if (my_obj)
         {
-            PnBuffer *image;
+            struct pn_buffer *image;
             image = pn_msnobj_get_image (my_obj);
             data = image->data;
             len = image->len;

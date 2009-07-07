@@ -1011,7 +1011,7 @@ msn_msg_grab_emoticons(const char *msg, const char *username)
 
     for (; smileys; smileys = g_list_delete_link(smileys, smileys))
     {
-        PnBuffer *buffer;
+        struct pn_buffer *buffer;
         smiley = smileys->data;
 
         ptr = g_strstr_len(msg, length, purple_smiley_get_shortcut(smiley));
@@ -1615,7 +1615,7 @@ set_buddy_icon (PurpleConnection *gc,
     user = msn_session_get_contact (session);
 
     {
-        PnBuffer *image;
+        struct pn_buffer *image;
         if (img)
             image = pn_buffer_new_memdup ((const gpointer) purple_imgstore_get_data (img),
                                           purple_imgstore_get_size (img));

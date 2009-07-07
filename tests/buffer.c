@@ -31,7 +31,7 @@ static guint times = 0x10;
 
 START_TEST (test_basic)
 {
-    PnBuffer *buf;
+    struct pn_buffer *buf;
 
     buf = pn_buffer_new ();
     pn_buffer_free (buf);
@@ -57,7 +57,7 @@ static void
 prepare_helper (guint times,
                 gboolean write)
 {
-    PnBuffer *buf;
+    struct pn_buffer *buf;
     guint i;
 
     buf = pn_buffer_new ();

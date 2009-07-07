@@ -129,7 +129,7 @@ pn_peer_msg_set_body(struct pn_peer_msg *peer_msg,
 
 void
 pn_peer_msg_set_image(struct pn_peer_msg *peer_msg,
-                      PnBuffer *image)
+                      struct pn_buffer *image)
 {
     peer_msg->size = image->len;
     peer_msg->buffer = g_memdup(image->data, peer_msg->size);

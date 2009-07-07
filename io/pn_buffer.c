@@ -20,11 +20,11 @@
 
 #define BUFFER_SIZE 0x1000
 
-PnBuffer *
+struct pn_buffer *
 pn_buffer_new (void)
 {
-    PnBuffer *buffer;
-    buffer = g_new (PnBuffer, 1);
+    struct pn_buffer *buffer;
+    buffer = g_new (struct pn_buffer, 1);
     buffer->data = NULL;
     buffer->alloc_data = NULL;
     buffer->size = 0;
@@ -32,28 +32,28 @@ pn_buffer_new (void)
     return buffer;
 }
 
-PnBuffer *
+struct pn_buffer *
 pn_buffer_new_and_alloc (gsize size)
 {
-    PnBuffer *buffer;
+    struct pn_buffer *buffer;
 
     if (size <= 0)
         size = BUFFER_SIZE;
 
-    buffer = g_new (PnBuffer, 1);
+    buffer = g_new (struct pn_buffer, 1);
     buffer->data = buffer->alloc_data = g_malloc (size);
     buffer->size = size;
     buffer->len = 0;
     return buffer;
 }
 
-PnBuffer *
+struct pn_buffer *
 pn_buffer_new_memdup (gpointer data,
                       gsize size)
 {
-    PnBuffer *buffer;
+    struct pn_buffer *buffer;
 
-    buffer = g_new (PnBuffer, 1);
+    buffer = g_new (struct pn_buffer, 1);
     buffer->size = buffer->len = size;
     buffer->data = buffer->alloc_data = g_memdup (data, size);
 
@@ -61,7 +61,7 @@ pn_buffer_new_memdup (gpointer data,
 }
 
 void
-pn_buffer_free (PnBuffer *buffer)
+pn_buffer_free (struct pn_buffer *buffer)
 {
     if (!buffer)
         return;
@@ -71,7 +71,7 @@ pn_buffer_free (PnBuffer *buffer)
 }
 
 void
-pn_buffer_resize (PnBuffer *buffer,
+pn_buffer_resize (struct pn_buffer *buffer,
                   gsize new_size)
 {
     new_size = ((new_size / BUFFER_SIZE) + 1) * BUFFER_SIZE;
@@ -80,7 +80,7 @@ pn_buffer_resize (PnBuffer *buffer,
 }
 
 void
-pn_buffer_prepare (PnBuffer *buffer,
+pn_buffer_prepare (struct pn_buffer *buffer,
                    gsize extra_size)
 {
     if (extra_size <= buffer->size - buffer->len)

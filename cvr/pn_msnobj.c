@@ -46,7 +46,7 @@ struct pn_msnobj {
     gchar *sha1d;
     gchar *sha1c;
 
-    PnBuffer *image;
+    struct pn_buffer *image;
 };
 
 #define GET_STRING_TAG(field, id) \
@@ -123,7 +123,7 @@ pn_msnobj_new_from_string(const gchar *str)
 }
 
 struct pn_msnobj *
-pn_msnobj_new_from_image(PnBuffer *image,
+pn_msnobj_new_from_image(struct pn_buffer *image,
                          const char *location,
                          const char *creator,
                          int type)
@@ -246,7 +246,7 @@ pn_msnobj_get_sha1(const struct pn_msnobj *obj)
 
 void
 pn_msnobj_set_image(struct pn_msnobj *obj,
-                    PnBuffer *buffer)
+                    struct pn_buffer *buffer)
 {
     pn_buffer_free(obj->image);
     obj->image = buffer;
@@ -267,7 +267,7 @@ find_local(const gchar *sha1)
     return NULL;
 }
 
-PnBuffer *
+struct pn_buffer *
 pn_msnobj_get_image(const struct pn_msnobj *obj)
 {
     struct pn_msnobj *local_obj;

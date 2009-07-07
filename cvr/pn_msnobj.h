@@ -59,7 +59,7 @@ struct pn_msnobj *pn_msnobj_new_from_string(const gchar *str);
  *
  * @return A new msnobj structure
  */
-struct pn_msnobj *pn_msnobj_new_from_image(PnBuffer *image,
+struct pn_msnobj *pn_msnobj_new_from_image(struct pn_buffer *image,
                                            const char *location,
                                            const char *creator,
                                            int type);
@@ -113,7 +113,7 @@ const gchar *pn_msnobj_get_sha1(const struct pn_msnobj *obj);
  * @param obj The object.
  * @param buffer The image to associate.
  */
-void pn_msnobj_set_image(struct pn_msnobj *obj, PnBuffer *buffer);
+void pn_msnobj_set_image(struct pn_msnobj *obj, struct pn_buffer *buffer);
 
 /**
  * Returns the image associated with the msnobj.
@@ -122,6 +122,6 @@ void pn_msnobj_set_image(struct pn_msnobj *obj, PnBuffer *buffer);
  *
  * @return The associated image.
  */
-PnBuffer *pn_msnobj_get_image(const struct pn_msnobj *obj);
+struct pn_buffer *pn_msnobj_get_image(const struct pn_msnobj *obj);
 
 #endif /* PN_MSNOBJ_H */

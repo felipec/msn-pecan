@@ -416,7 +416,7 @@ msn_session_finish_login (MsnSession *session)
     img = purple_buddy_icons_find_account_icon (account);
 
     {
-        PnBuffer *image;
+        struct pn_buffer *image;
         if (img)
             image = pn_buffer_new_memdup ((const gpointer) purple_imgstore_get_data (img),
                                              purple_imgstore_get_size (img));

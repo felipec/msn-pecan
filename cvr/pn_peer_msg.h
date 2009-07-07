@@ -77,7 +77,7 @@ void pn_peer_msg_set_body(struct pn_peer_msg *peer_msg,
                           gconstpointer *body,
                           guint64 size);
 void pn_peer_msg_set_image(struct pn_peer_msg *peer_msg,
-                           PnBuffer *image);
+                           struct pn_buffer *image);
 void pn_peer_msg_open_file(struct pn_peer_msg *peer_msg,
                            const char *file_name);
 struct pn_peer_msg *pn_peer_msg_sip_new(struct pn_peer_call *call,

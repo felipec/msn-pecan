@@ -428,7 +428,7 @@ pn_contact_set_guid (struct pn_contact *contact,
 
 void
 pn_contact_set_buddy_icon (struct pn_contact *contact,
-                           PnBuffer *image)
+                           struct pn_buffer *image)
 {
 #if defined(PECAN_CVR)
 #ifdef HAVE_LIBPURPLE
