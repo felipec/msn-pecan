@@ -70,7 +70,7 @@ pn_peer_call_new(struct pn_peer_link *link)
     pn_peer_link_add_call(link, call);
 
     /* The official client seems to timeout calls after 5 minutes */
-    call->timer = g_timeout_add_seconds (30, timeout, call);
+    call->timer = g_timeout_add_seconds (5 * 60, timeout, call);
 
     call->ref_count++;
 
