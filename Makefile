@@ -241,9 +241,9 @@ uninstall:
 %.mo:: %.po
 	$(MSGFMT) -c -o $@ $<
 
-install_locales: $(foreach e,$(CATALOGS),po/libmsn-pecan-$(e).mo)
+install_locales: $(foreach e,$(CATALOGS),po/$(e).mo)
 	for x in $(CATALOGS); do \
-	install -D po/libmsn-pecan-$$x.mo $(data_dir)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
+	install -D po/$$x.mo $(data_dir)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
 	done
 
 -include $(deps)
