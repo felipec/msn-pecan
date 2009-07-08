@@ -89,7 +89,7 @@ dp_ok (struct pn_peer_call *call,
 
     info = call->data_info;
     passport = pn_peer_link_get_passport(call->link);
-    pn_info ("passport=[%s]", passport);
+    pn_debug ("passport=[%s]", passport);
 
 #ifdef HAVE_LIBPURPLE
     {
@@ -193,7 +193,7 @@ release (PnDpManager *dpm)
 {
     struct pn_contact *user;
 
-    pn_info ("releasing ud");
+    pn_debug ("releasing ud");
 
     while (dpm->window > 0)
     {
@@ -203,7 +203,7 @@ release (PnDpManager *dpm)
 
         if (g_queue_is_empty (queue))
         {
-            pn_info ("queue empty");
+            pn_debug ("queue empty");
             return;
         }
 
