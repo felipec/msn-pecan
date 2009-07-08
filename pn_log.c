@@ -95,6 +95,34 @@ pn_base_log_helper (guint level,
 
     va_start (args, fmt);
 
+#if defined(PURPLE_DEBUG)
+    PurpleDebugUiOps *ops;
+    PurpleDebugLevel purple_level;
+
+    ops = purple_debug_get_ui_ops();
+
+    switch (level) {
+        case PN_LOG_LEVEL_ERROR:
+            purple_level = PURPLE_DEBUG_ERROR; break;
+        case PN_LOG_LEVEL_WARNING:
+            purple_level = PURPLE_DEBUG_WARNING; break;
+        case PN_LOG_LEVEL_INFO:
+            purple_level = PURPLE_DEBUG_INFO; break;
+        case PN_LOG_LEVEL_DEBUG:
+            purple_level = PURPLE_DEBUG_MISC; break;
+        case PN_LOG_LEVEL_LOG:
+            purple_level = PURPLE_DEBUG_MISC; break;
+        default:
+            purple_level = PURPLE_DEBUG_MISC; break;
+    }
+
+    if (!ops || !ops->print ||
+        (ops->is_enabled && !ops->is_enabled(purple_level, "msn-pecan")))
+    {
+        return;
+    }
+#endif
+
     tmp = pn_strdup_vprintf (fmt, args);
 
 #if defined(PN_DEBUG_FILE)
@@ -117,25 +145,10 @@ pn_base_log_helper (guint level,
     }
 #elif defined(PURPLE_DEBUG)
     {
-        PurpleDebugLevel purple_level;
-
-        switch (level)
-        {
-            case PN_LOG_LEVEL_ERROR:
-                purple_level = PURPLE_DEBUG_ERROR; break;
-            case PN_LOG_LEVEL_WARNING:
-                purple_level = PURPLE_DEBUG_WARNING; break;
-            case PN_LOG_LEVEL_INFO:
-                purple_level = PURPLE_DEBUG_INFO; break;
-            case PN_LOG_LEVEL_DEBUG:
-                purple_level = PURPLE_DEBUG_MISC; break;
-            case PN_LOG_LEVEL_LOG:
-                purple_level = PURPLE_DEBUG_MISC; break;
-            default:
-                purple_level = PURPLE_DEBUG_MISC; break;
-        }
-
-        purple_debug (purple_level, "msn-pecan", "%s:%d:%s() %s\n", file, line, function, tmp);
+        char *arg_s;
+        arg_s = g_strdup_printf("%s\n", tmp);
+        ops->print(purple_level, "msn-pecan", arg_s);
+        g_free(arg_s);
     }
 #else
     g_print ("%s %s:%d:%s() %s\n",
