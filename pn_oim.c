@@ -213,7 +213,7 @@ read_cb (PnNode *conn,
 {
     OimRequest *oim_request;
     GIOStatus status = G_IO_STATUS_NORMAL;
-    gchar *str = NULL;
+    gchar *str = NULL, *message = NULL;
 
     oim_request = data;
 
@@ -256,8 +256,7 @@ read_cb (PnNode *conn,
         }
     }
 
-    /** @todo can we really be sure it's just one line? */
-    if (oim_request->parser_state == 2)
+    while (oim_request->parser_state == 2)
     {
         gsize terminator_pos;
 
@@ -271,23 +270,40 @@ read_cb (PnNode *conn,
 
         if (str)
         {
-            PurpleConversation *conv;
-            gchar *tmp;
+            gchar *tmp, *incomplete_msg = message;
 
             str[terminator_pos] = '\0';
 
             tmp = (gchar *) purple_base64_decode (str, NULL);
-            pn_debug ("oim: passport=[%s],msg=[%s]", oim_request->passport, tmp);
-            conv = purple_conversation_new (PURPLE_CONV_TYPE_IM,
-                                            msn_session_get_user_data (oim_request->oim_session->session), 
-                                            oim_request->passport);
 
-            purple_conversation_write (conv, NULL, tmp,
-                                       PURPLE_MESSAGE_RECV | PURPLE_MESSAGE_DELAYED, oim_request->date);
+            if (incomplete_msg)
+            {
+                message = g_strconcat (incomplete_msg, tmp, NULL);
+                g_free (incomplete_msg);
+                g_free (tmp);
+            }
+            else
+                message = tmp;
 
-            g_free (tmp);
+            if (str[0] == '\0' || strchr (str, '<'))
+                oim_request->parser_state++;
+
             g_free (str);
         }
+    }
+
+    if (message)
+    {
+        PurpleConversation *conv;
+        pn_debug ("oim: passport=[%s],msg=[%s]", oim_request->passport, message);
+        conv = purple_conversation_new (PURPLE_CONV_TYPE_IM,
+                                        msn_session_get_user_data (oim_request->oim_session->session),
+                                        oim_request->passport);
+
+        purple_conversation_write (conv, NULL, message,
+                                   PURPLE_MESSAGE_RECV | PURPLE_MESSAGE_DELAYED, oim_request->date);
+
+        g_free (message);
     }
 
 leave:
