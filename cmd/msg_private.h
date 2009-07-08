@@ -64,6 +64,8 @@ struct MsnMessage
     gchar *charset;
     gchar *body;
     gsize body_len;
+    guint total_chunks;   /**< How many chunks in this multi-part message */
+    guint received_chunks; /**< How many chunks we've received so far */
 
     GHashTable *attr_table;
     GList *attr_list;

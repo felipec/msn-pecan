@@ -18,6 +18,7 @@
  */
 
 #include "cmdproc_private.h"
+#include "msg_private.h"
 #include "transaction_private.h"
 #include "table_private.h"
 #include "command_private.h"
@@ -40,6 +41,9 @@ msn_cmdproc_new (void)
     cmdproc->transactions = g_hash_table_new_full (g_direct_hash, g_direct_equal,
                                                    NULL, (GDestroyNotify) msn_transaction_unref);
 
+    cmdproc->multiparts = g_hash_table_new_full (g_str_hash, g_str_equal,
+                                                 NULL, (GDestroyNotify) msn_message_unref);
+
     return cmdproc;
 }
 
@@ -52,6 +56,8 @@ msn_cmdproc_destroy (MsnCmdProc *cmdproc)
 
     msn_command_free (cmdproc->last_cmd);
     g_hash_table_destroy (cmdproc->transactions);
+
+    g_hash_table_destroy (cmdproc->multiparts);
 
     g_free (cmdproc);
 
@@ -239,6 +245,79 @@ msn_cmdproc_process_msg (MsnCmdProc *cmdproc,
                          MsnMessage *msg)
 {
     MsnMsgTypeCb cb;
+    const gchar *message_id = NULL;
+
+    /* Multi-part messages */
+    if ((message_id = msn_message_get_attr (msg, "Message-ID")))
+    {
+        const gchar *chunk_text = msn_message_get_attr (msg, "Chunks");
+        guint chunk;
+
+        if (chunk_text)
+        {
+            chunk = strtol (chunk_text, NULL, 10);
+            /* 1024 chunks of ~1300 bytes is ~1MB, which seems OK to prevent
+               some random client causing pidgin to hog a ton of memory.
+               Probably should figure out the maximum that the official client
+               actually supports, though. */
+            if (chunk > 0 && chunk < 1024)
+            {
+                msg->total_chunks = chunk;
+                msg->received_chunks = 1;
+                g_hash_table_insert (cmdproc->multiparts, (gpointer) message_id, msn_message_ref (msg));
+
+                pn_debug ("chunked message: message_id=[%s],total chunks=[%d]", message_id, chunk);
+            }
+            else
+            {
+                pn_error ("chunked message: message_id=[%s] has too many chunks: %d", message_id, chunk);
+            }
+
+            return;
+        }
+        else
+        {
+            chunk_text = msn_message_get_attr (msg, "Chunk");
+
+            if (chunk_text != NULL)
+            {
+                MsnMessage *first = g_hash_table_lookup (cmdproc->multiparts, message_id);
+                chunk = strtol (chunk_text, NULL, 10);
+
+                if (first == NULL)
+                {
+                    pn_error ("chunked message: unable to find first chunk of message_id %s to correspond with chunk %d", message_id, chunk+1);
+                }
+                else if (first->received_chunks == chunk)
+                {
+                    /* Chunk is from 1 to total-1 (doesn't count first one) */
+                    pn_info ("chunked message: received chunk %d of %d, message_id=[%s]", chunk+1, first->total_chunks, message_id);
+
+                    first->body = g_realloc (first->body, first->body_len + msg->body_len);
+                    memcpy (first->body + first->body_len, msg->body, msg->body_len);
+                    first->body_len += msg->body_len;
+                    first->received_chunks++;
+
+                    if (first->received_chunks != first->total_chunks)
+                        return;
+                    else
+                        /* We're done! Send it along... The caller takes care of
+                           freeing the old one. */
+                        msg = first;
+                }
+                else
+                {
+                    /* TODO: Can you legitimately receive chunks out of order? */
+                    g_hash_table_remove (cmdproc->multiparts, message_id);
+                    return;
+                }
+            }
+            else
+            {
+                pn_error("chunked message: received message_id=[%s] with no chunk number", message_id);
+            }
+        }
+    }
 
     if (!msn_message_get_content_type (msg))
     {
@@ -249,15 +328,14 @@ msn_cmdproc_process_msg (MsnCmdProc *cmdproc,
     cb = g_hash_table_lookup (cmdproc->cbs_table->msgs,
                               msn_message_get_content_type (msg));
 
-    if (!cb)
-    {
+    if (cb)
+        cb (cmdproc, msg);
+    else
         pn_warning ("unhandled content-type: [%s]",
                     msn_message_get_content_type (msg));
 
-        return;
-    }
-
-    cb (cmdproc, msg);
+    if (message_id != NULL)
+        g_hash_table_remove (cmdproc->multiparts, message_id);
 }
 
 void
