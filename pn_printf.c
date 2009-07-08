@@ -327,10 +327,17 @@ pn_vsnprintf(char *buffer,
                                 flags |= FL_UPPER;
                                 /* fall through */
                             case 'p': /* Pointer */
-                                base = 16;
-                                prec = (CHAR_BIT * sizeof(void *) + 3) / 4;
-                                flags |= FL_HASH;
                                 val = (uintmax_t) (uintptr_t) va_arg(ap, void *);
+                                if (!val) {
+                                    sarg = "(nil)";
+                                    slen = strlen(sarg);
+                                    goto is_string;
+                                }
+
+                                base = 16;
+                                /* I like this better, but it's not comformant */
+                                /* prec = (CHAR_BIT * sizeof(void *) + 3) / 4; */
+                                flags |= FL_HASH;
                                 goto is_integer;
 
                             case 'd': /* Signed decimal output */
