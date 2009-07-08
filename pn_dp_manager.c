@@ -109,9 +109,9 @@ dp_fail (struct pn_peer_call *call,
     const gchar *passport;
     struct pn_contact *contact;
 
-    pn_warning ("unknown error");
-
     passport = pn_peer_link_get_passport(call->link);
+
+    pn_warning ("error retrieving dp of '%s'", passport);
 
     contact = pn_contactlist_find_contact (session->contactlist, passport);
 
