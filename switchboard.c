@@ -1506,6 +1506,67 @@ emoticon_msg(MsnCmdProc *cmdproc,
     g_strfreev(tokens);
 }
 
+#ifdef HAVE_LIBPURPLE
+void
+invite_msg (MsnCmdProc *cmdproc, MsnMessage *msg)
+{
+    GHashTable *body;
+    const gchar *guid;
+
+    MsnSession *session;
+    PurpleAccount *account;
+
+    session = cmdproc->session;
+    account = msn_session_get_user_data(session);
+
+    body = msn_message_get_hashtable_from_body (msg);
+
+    if (!body) {
+        pn_warning ("unable to parse invite body");
+
+        return;
+    }
+
+    guid = g_hash_table_lookup(body, "Application-GUID");
+
+    if (!guid) {
+        const gchar *cmd = g_hash_table_lookup (body, "Invitation-Command");
+
+        if (cmd && strcmp(cmd, "CANCEL") == 0) {
+            const gchar *code = g_hash_table_lookup (body, "Cancel-Code");
+
+            pn_info ("MSMSGS invitation cancelled: %s", code ? code : "no reason given");
+        }
+        else
+            pn_warning ("missing: Application-GUID");
+    } else if (strcmp (guid, "{02D3C01F-BF30-4825-A83A-DE7AF41648AA}") == 0) {
+        pn_info ("got a call from computer");
+
+        if (session) {
+            PurpleConversation *conv = NULL;
+            gchar *from = msg->remote_user;
+            gchar *buf = NULL;
+
+            if (from)
+                conv = purple_find_conversation_with_account (PURPLE_CONV_TYPE_IM, from, account);
+
+            if (conv)
+                buf = g_strdup_printf(_("%s sent you a voice chat invite, which is not yet supported."), from);
+
+            if (buf) {
+                purple_conversation_write(conv, NULL, buf, PURPLE_MESSAGE_SYSTEM | PURPLE_MESSAGE_NOTIFY, time(NULL));
+
+                g_free(buf);
+            }
+        }
+    }
+    else
+        pn_warning ("unhandled invite msg with GUID=[%s]", guid);
+
+    g_hash_table_destroy (body);
+}
+#endif
+
 /**************************************************************************
  * Connect stuff
  **************************************************************************/
@@ -1757,6 +1818,8 @@ msn_switchboard_init(void)
                            emoticon_msg);
     msn_table_add_msg_type(cbs_table, "image/gif",
                            msn_handwritten_msg);
+    msn_table_add_msg_type(cbs_table, "text/x-msmsgsinvite",
+                           invite_msg);
 #endif /* defined(PECAN_CVR) */
     msn_table_add_msg_type(cbs_table, "text/x-msnmsgr-datacast",
                            datacast_msg);
