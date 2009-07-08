@@ -1,3 +1,4 @@
 check_buffer
 check_parser
 check_util
+check_printf

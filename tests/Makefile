@@ -58,6 +58,12 @@ check_util: LIBS := $(GOBJECT_LIBS) $(CHECK_LIBS)
 
 checks += check_util
 
+check_printf: printf.o ../pn_printf.o
+check_printf: CFLAGS := $(CFLAGS) $(GOBJECT_CFLAGS) $(CHECK_CFLAGS)
+check_printf: LIBS := $(GOBJECT_LIBS) $(CHECK_LIBS)
+
+checks += check_printf
+
 all: $(checks)
 
 check_%::
@@ -68,9 +74,6 @@ cmd_parser_test: $(cmd_parser_test_objects)
 	$(CC) $(GOBJECT_LIBS) $+ -o $@
 
 ab_test: $(ab_test_objects)
-	$(CC) $(GOBJECT_LIBS) $+ -o $@
-
-printf_test: $(printf_test_objects)
 	$(CC) $(GOBJECT_LIBS) $+ -o $@
 
 %.o: %.c
