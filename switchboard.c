@@ -781,8 +781,6 @@ void
 msn_switchboard_send_msg(MsnSwitchBoard *swboard, MsnMessage *msg,
                          gboolean queue)
 {
-    g_return_if_fail(swboard);
-    g_return_if_fail(msg     != NULL);
 
     if (msn_switchboard_can_send(swboard))
         release_msg(swboard, msg);
