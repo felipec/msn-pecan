@@ -475,24 +475,28 @@ pn_peer_link_unleash(struct pn_peer_link *link)
 
 static inline void
 send_ack(struct pn_peer_link *link,
-         MsnMessage *msg)
+         struct pn_peer_msg *peer_msg)
 {
-    struct pn_peer_msg *peer_msg;
+    struct pn_peer_msg *ack_msg;
+    MsnMessage *msg = peer_msg->msg;
 
-    peer_msg = pn_peer_msg_new(link);
+    ack_msg = pn_peer_msg_new(link);
 
-    peer_msg->session_id = msg->msnslp_header.session_id;
-    peer_msg->size = msg->msnslp_header.total_size;
-    peer_msg->flags = 0x02;
-    peer_msg->ack_id = msg->msnslp_header.id;
-    peer_msg->ack_sub_id = msg->msnslp_header.ack_id;
-    peer_msg->ack_size = msg->msnslp_header.total_size;
+    ack_msg->session_id = msg->msnslp_header.session_id;
+    ack_msg->size = msg->msnslp_header.total_size;
+    ack_msg->flags = 0x02;
+    ack_msg->ack_id = msg->msnslp_header.id;
+    ack_msg->ack_sub_id = msg->msnslp_header.ack_id;
+    ack_msg->ack_size = msg->msnslp_header.total_size;
+
+    ack_msg->call = peer_msg->call;
+    ack_msg->swboard = peer_msg->swboard;
 
 #ifdef PECAN_DEBUG_SLP
-    peer_msg->info = "SLP ACK";
+    ack_msg->info = "SLP ACK";
 #endif
 
-    pn_peer_link_send_msg(link, peer_msg);
+    pn_peer_link_send_msg(link, ack_msg);
 }
 
 static void
@@ -622,6 +626,7 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
         peer_msg->session_id = msg->msnslp_header.session_id;
         peer_msg->size = msg->msnslp_header.total_size;
         peer_msg->flags = msg->msnslp_header.flags;
+        peer_msg->msg = msg;
 
         if (peer_msg->session_id) {
             if (!peer_msg->call)
@@ -712,7 +717,7 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
             case 0x1000030:
                 /* Release all the messages and send the ACK */
 
-                send_ack(link, msg);
+                send_ack(link, peer_msg);
                 pn_peer_link_unleash(link);
                 break;
 #ifdef MSN_DIRECTCONN
