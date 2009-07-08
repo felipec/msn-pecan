@@ -55,6 +55,7 @@ START_TEST (test_printf)
     t_printf ("   D", "%4X", 13);
     t_printf ("000D", "%.4X", 13);
     t_printf ("000D", "%04X", 13);
+    t_printf ("foo", "%.*s", 3, "foobar");
 
 }
 END_TEST
