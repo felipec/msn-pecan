@@ -21,6 +21,7 @@
 #include "pn_peer_msg_priv.h"
 #include "pn_peer_link.h"
 #include "pn_log.h"
+#include "pn_locale.h"
 
 #include "pn_peer_call.h"
 #include "pn_msnobj.h"
@@ -526,6 +527,52 @@ got_sessionreq(struct pn_peer_call *call,
         MsnSession *session = pn_peer_link_get_session(call->link);
         session->xfer_invite_cb(call, branch, context);
     }
+#ifdef HAVE_LIBPURPLE
+    else if (strcmp (euf_guid, "1C9AA97E-9C05-4583-A3BD-908A196F1E92") == 0) {
+        pn_info ("got a webcam request");
+
+        if (call && call->link && pn_peer_link_get_session (call->link)) {
+            PurpleConversation *conv;
+            PurpleAccount *account;
+            const gchar *from = pn_peer_link_get_passport (call->link);
+
+            account = msn_session_get_user_data (pn_peer_link_get_session (call->link));
+            conv = purple_find_conversation_with_account (PURPLE_CONV_TYPE_IM, from, account);
+
+            if (conv) {
+                gchar *buf;
+
+                buf = g_strdup_printf (_("%s requests to view your webcam, but this request is not yet supported."), from);
+
+                purple_conversation_write (conv, NULL, buf, PURPLE_MESSAGE_SYSTEM | PURPLE_MESSAGE_NOTIFY, time (NULL));
+
+                g_free(buf);
+            }
+        }
+    }
+    else if (strcmp (euf_guid, "4BD96FC0-AB17-4425-A14A-439185962DC8") == 0) {
+        pn_info ("got a webcam invite");
+
+        if (call && call->link && pn_peer_link_get_session (call->link)) {
+            PurpleConversation *conv;
+            PurpleAccount *account;
+            const gchar *from = pn_peer_link_get_passport (call->link);
+
+            account = msn_session_get_user_data (pn_peer_link_get_session (call->link));
+            conv = purple_find_conversation_with_account (PURPLE_CONV_TYPE_IM, from, account);
+
+            if (conv) {
+                char *buf;
+
+                buf = g_strdup_printf(_("%s has sent you a webcam invite, which is not yet supported."), from);
+
+                purple_conversation_write (conv, NULL, buf, PURPLE_MESSAGE_SYSTEM | PURPLE_MESSAGE_NOTIFY, time (NULL));
+
+                g_free(buf);
+            }
+        }
+    }
+#endif
 }
 
 void
