@@ -222,6 +222,32 @@ pn_http_server_free (PnHttpServer *http_conn)
     pn_log ("end");
 }
 
+/* get proxy auth info and set up proxy auth header */
+static inline char *
+get_auth(PnNode *conn)
+{
+    const char *username, *password;
+    PurpleProxyInfo *gpi;
+    char *tmp, *auth;
+
+    gpi = purple_proxy_get_setup(msn_session_get_user_data(conn->session));
+    if (!gpi)
+        return NULL;
+
+    username = purple_proxy_info_get_username(gpi);
+    password = purple_proxy_info_get_password(gpi);
+    if (!username && !password)
+        return NULL;
+
+    auth = g_strdup_printf("%s:%s", username ? username : "", password ? password : "");
+    tmp = purple_base64_encode((const guchar *) auth, strlen(auth));
+    g_free(auth);
+    auth = g_strdup_printf("Proxy-Authorization: Basic %s\r\n", tmp);
+    g_free(tmp);
+
+    return auth;
+}
+
 static gboolean
 http_poll (gpointer data)
 {
@@ -258,6 +284,8 @@ http_poll (gpointer data)
         pn_debug ("waiting for response");
         return TRUE;
     }
+
+    auth = get_auth(conn);
 
     params = g_strdup_printf ("Action=poll&SessionID=%s",
                               (gchar *) http_conn->cur->foo_data);
@@ -753,27 +781,6 @@ foo_write (PnNode *conn,
         gchar *auth = NULL;
         gchar *session_id;
 
-        /* get proxy auth info and set up proxy auth header */
-        {
-            PurpleProxyInfo *gpi;
-            gpi = purple_proxy_get_setup(msn_session_get_user_data(conn->session));
-            if (gpi)
-            {
-                const char *username, *password;
-                username = purple_proxy_info_get_username(gpi);
-                password = purple_proxy_info_get_password(gpi);
-                if (username || password)
-                {
-                    char *tmp;
-                    auth = g_strdup_printf("%s:%s", username ? username : "", password ? password : "");
-                    tmp = purple_base64_encode((const guchar *)auth, strlen(auth));
-                    g_free(auth);
-                    auth = g_strdup_printf("Proxy-Authorization: Basic %s\r\n", tmp);
-                    g_free(tmp);
-                }
-            }
-        }
-
         session_id = prev->foo_data;
 
         if (session_id)
@@ -787,6 +794,8 @@ foo_write (PnNode *conn,
                                       prev->type == PN_NODE_NS ? "NS" : "SB",
                                       prev->hostname);
         }
+
+        auth = get_auth(conn);
 
         /** @todo investigate why this returns NULL sometimes. */
         header = g_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
