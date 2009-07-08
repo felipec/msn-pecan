@@ -55,19 +55,16 @@ void pn_base_log_helper (PecanLogLevel level, const gchar *file, const gchar *fu
 void pn_dump_file (const gchar *buffer, gsize len);
 #endif /* PN_DUMP_FILE */
 
-#define pn_print(...) g_print (__VA_ARGS__);
+#define pn_base_log(level, ...) pn_base_log_helper (level, __FILE__, __func__, __LINE__, __VA_ARGS__)
 
-#define pn_base_log(level, ...) pn_base_log_helper (level, __FILE__, __func__, __LINE__, __VA_ARGS__);
-
-#define pn_error(...) pn_base_log (PN_LOG_LEVEL_ERROR, __VA_ARGS__);
-#define pn_warning(...) pn_base_log (PN_LOG_LEVEL_WARNING, __VA_ARGS__);
-#define pn_info(...) pn_base_log (PN_LOG_LEVEL_INFO, __VA_ARGS__);
-#define pn_debug(...) pn_base_log (PN_LOG_LEVEL_DEBUG, __VA_ARGS__);
-#define pn_log(...) pn_base_log (PN_LOG_LEVEL_LOG, __VA_ARGS__);
+#define pn_error(...) pn_base_log (PN_LOG_LEVEL_ERROR, __VA_ARGS__)
+#define pn_warning(...) pn_base_log (PN_LOG_LEVEL_WARNING, __VA_ARGS__)
+#define pn_info(...) pn_base_log (PN_LOG_LEVEL_INFO, __VA_ARGS__)
+#define pn_debug(...) pn_base_log (PN_LOG_LEVEL_DEBUG, __VA_ARGS__)
+#define pn_log(...) pn_base_log (PN_LOG_LEVEL_LOG, __VA_ARGS__)
 
 #elif !defined(PN_DEBUG)
 
-#define pn_print(...) {}
 #define pn_error(...) {}
 #define pn_warning(...) {}
 #define pn_info(...) {}

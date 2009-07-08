@@ -138,10 +138,10 @@ pn_base_log_helper (guint level,
         purple_debug (purple_level, "msn-pecan", "%s:%d:%s() %s\n", file, line, function, tmp);
     }
 #else
-    pn_print ("%s %s:%d:%s() %s\n",
-              log_level_to_string (level),
-              file, line, function,
-              tmp);
+    g_print ("%s %s:%d:%s() %s\n",
+             log_level_to_string (level),
+             file, line, function,
+             tmp);
 #endif
     g_free (tmp);
 
