@@ -1588,7 +1588,7 @@ msn_switchboard_request_add_user(MsnSwitchBoard *swboard, const char *user)
 
     if (!swboard->ready)
     {
-        pn_warning ("not ready yet");
+        pn_debug ("not ready yet");
         g_queue_push_tail (swboard->invites, g_strdup (user));
         return;
     }
@@ -1732,6 +1732,10 @@ msn_switchboard_init(void)
     msn_table_add_cmd(cbs_table, NULL, "JOI", joi_cmd);
     msn_table_add_cmd(cbs_table, NULL, "BYE", bye_cmd);
     msn_table_add_cmd(cbs_table, NULL, "OUT", out_cmd);
+
+    /* avoid unhandled command warnings */
+    msn_table_add_cmd(cbs_table, NULL, "ANS", NULL);
+    msn_table_add_cmd(cbs_table, NULL, "CAL", NULL);
 
 #if 0
     /* They might skip the history */

@@ -413,7 +413,8 @@ connect_impl (PnNode *conn,
     }
     else
     {
-        pn_node_close (conn);
+        if (conn->stream)
+            pn_node_close (conn);
 
 #ifdef PECAN_SOCKET
         pn_socket_connect (hostname, port, connect_cb, conn);
@@ -447,7 +448,7 @@ close_impl (PnNode *conn)
 
     if (!conn->stream)
     {
-        pn_warning ("not connected: conn=%p", conn);
+        pn_error ("not connected: conn=%p", conn);
     }
 
 #ifndef PECAN_SOCKET
@@ -624,7 +625,8 @@ dispose (GObject *obj)
     {
         conn->dispose_has_run = TRUE;
 
-        pn_node_close (conn);
+        if (conn->stream)
+            pn_node_close (conn);
 
         g_free (conn->name);
     }

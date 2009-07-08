@@ -20,6 +20,8 @@
 #include "session.h"
 #include "sync.h"
 
+#include "pn_log.h"
+
 #include "session_private.h"
 
 #include "cmd/command_private.h"
@@ -282,6 +284,19 @@ bpr_cmd (MsnCmdProc *cmdproc,
     }
 }
 
+static void
+not_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload, size_t len)
+{
+    pn_info ("incoming notification: [%s]", payload);
+}
+
+static void
+not_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
+{
+    cmd->payload_len = atoi(cmd->params[0]);
+    cmdproc->last_cmd->payload_cb = not_cmd_post;
+}
+
 void
 msn_sync_init (void)
 {
@@ -296,6 +311,7 @@ msn_sync_init (void)
     msn_table_add_cmd (cbs_table, NULL, "LSG", lsg_cmd);
     msn_table_add_cmd (cbs_table, NULL, "LST", lst_cmd);
     msn_table_add_cmd (cbs_table, NULL, "BPR", bpr_cmd);
+    msn_table_add_cmd (cbs_table, NULL, "NOT", not_cmd);
 }
 
 void

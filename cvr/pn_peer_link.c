@@ -564,8 +564,8 @@ process_peer_msg(struct pn_peer_link *link,
             pn_peer_call_session_init(call);
 #endif /* MSN_DIRECTCONN */
         default:
-            pn_warning("slp_process_msg: unprocessed SLP message with flags 0x%08lx",
-                       peer_msg->flags);
+            pn_debug("slp_process_msg: unprocessed SLP message with flags 0x%08lx",
+                     peer_msg->flags);
     }
 }
 
