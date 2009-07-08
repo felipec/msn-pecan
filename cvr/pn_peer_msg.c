@@ -232,6 +232,14 @@ sip_new(struct pn_peer_call *call,
                            content_type,
                            content_len);
 
+    /* show first line */
+    {
+        char *end;
+        end = strchr(body, '\r');
+        if (end)
+            pn_info("send sip: %.*s", end - body, body);
+    }
+
     body_len = strlen(body);
 
     if (content_len > 0) {
@@ -772,6 +780,14 @@ pn_sip_recv(struct pn_peer_link *link,
     if (!body) {
         pn_warning("received bogus message");
         return;
+    }
+
+    /* show first line */
+    {
+        char *end;
+        end = strchr(body, '\r');
+        if (end)
+            pn_info("recv sip: %.*s", end - body, body);
     }
 
     if (strncmp(body, "INVITE", strlen("INVITE")) == 0) {
