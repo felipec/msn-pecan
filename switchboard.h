@@ -236,13 +236,13 @@ gboolean msn_switchboard_chat_invite(MsnSwitchBoard *swboard, const char *who);
 void msn_switchboard_request(MsnSwitchBoard *swboard);
 void msn_switchboard_request_add_user(MsnSwitchBoard *swboard, const char *user);
 
-/** Displays handwritten messages (inserts them into conversation as custom smiley)
+/**
+ * Shows an ink message from this switchboard.
  *
- * @param swboard The command processor.
- * @param msgid     Unique ID for the message.
- * @param data     The image data.
- * @param passport     The email address of the sending user.
+ * @param swboard  The switchboard.
+ * @param passport The user that sent the ink.
+ * @param data     The ink data.
  */
-void msn_handwritten_msg_show(MsnSwitchBoard *swboard, const char* msgid, const char* data, char* passport);
+void switchboard_show_ink (MsnSwitchBoard *swboard, const char *passport, const char *data);
 
 #endif /* MSN_SWITCHBOARD_H */

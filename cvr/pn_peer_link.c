@@ -516,25 +516,45 @@ process_peer_msg(struct pn_peer_link *link,
             {
                 char *body_str;
 
-                /* Handwritten messages are just dumped down the line with no MSNObject */
-                if (peer_msg->session_id == 64) {
-                    const char *start;
-                    char *msgid;
-                    int charsize;
-                    /* Just to be evil they put a 0 in the string just before the data you want,
-                       and then convert to utf-16 */
-                    body_str = g_utf16_to_utf8((gunichar2*) body, body_len / 2, NULL, NULL, NULL);
-                    start = (char*) body + (strlen(body_str) + 1) * 2;
-                    charsize = (body_len / 2) - (strlen(body_str) + 1);
+                if (peer_msg->session_id == 64)
+                {
+                    /* This is for handwritten messages (ink) */
+                    GError *error;
+                    glong items_read, items_written;
+
+                    body_str = g_utf16_to_utf8 ((gunichar2 *) body, body_len / 2, &items_read, &items_written, &error);
+                    body_len -= items_read * 2 + 2;
+                    body += items_read * 2 + 2;
+
+                    if (body_str == NULL || body_len <= 0 || strstr (body_str, "image/gif") == NULL)
+                    {
+                        if (error != NULL)
+                            pn_error ("ink receiving: unable to convert ink header from UTF-16 to UTF-8: %s", error->message);
+                        else
+                            pn_error ("ink receiving: unknown format\n");
+
+                        g_free(body_str);
+
+                        return;
+                    }
+
                     g_free(body_str);
-                    body_str = g_utf16_to_utf8((gunichar2*) start, charsize, NULL, NULL, NULL);
-                    msgid = g_strdup_printf("{handwritten:%ld}", peer_msg->id);
-                    msn_handwritten_msg_show(peer_msg->call->swboard, msgid, body_str + 7, link->remote_user);
-                    g_free(msgid);
+
+                    body_str = g_utf16_to_utf8 ((gunichar2 *) body, body_len / 2, &items_read, &items_written, &error);
+
+                    if (!body_str)
+                    {
+                        pn_error ("ink receiving: unable to convert ink body from UTF-16 to UTF-8: %s", error->message);
+
+                        return;
+                    }
+
+                    switchboard_show_ink (peer_msg->call->swboard, link->remote_user, body_str);
                 }
-                else {
-                    body_str = g_strndup(body, body_len);
-                    pn_sip_recv(link, body_str);
+                else
+                {
+                    body_str = g_strndup ((const char *) body, body_len);
+                    pn_sip_recv (link, body_str);
                 }
                 g_free(body_str);
                 break;

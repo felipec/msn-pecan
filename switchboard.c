@@ -1211,66 +1211,57 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 }
 
 #if defined(PECAN_CVR)
-void
-msn_handwritten_msg_show(MsnSwitchBoard *swboard, const char* msgid, const char* data, char* passport)
+static void
+handwritten_msg (MsnCmdProc *cmdproc, MsnMessage *msg)
 {
-    guchar *guc;
+    const char *body;
     size_t body_len;
-    PurpleAccount *account;
-    PurpleConnection *connection;
-    
-    account = msn_session_get_user_data (swboard->session);
-    connection = purple_account_get_connection (account);
 
-    guc = purple_base64_decode(data, &body_len);
-    if (!guc || !body_len) 
-        return;
-    
-    /* Grab the conv for this swboard. If there isn't one and it's an IM then create it,
-    otherwise the smileys won't work, this needs to be fixed. */
-    if (swboard->conv == NULL)
-    {
-        if (swboard->current_users > 1) 
-            swboard->conv = purple_find_chat(connection, swboard->chat_id);
-        else
-        {
-            swboard->conv = purple_find_conversation_with_account(PURPLE_CONV_TYPE_IM,
-                                    passport, account);
-            if (swboard->conv == NULL)
-                swboard->conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, passport);
-        }
-    }
-
-    if (purple_conv_custom_smiley_add(swboard->conv, msgid, 0, "", 0)) {
-        purple_conv_custom_smiley_write(swboard->conv, msgid, guc, body_len);
-        purple_conv_custom_smiley_close(swboard->conv, msgid);
-    }
-    
-    if (swboard->current_users > 1 ||
-        ((swboard->conv != NULL) &&
-         purple_conversation_get_type(swboard->conv) == PURPLE_CONV_TYPE_CHAT))
-        serv_got_chat_in(connection, swboard->chat_id, passport, 0, msgid,
-                         time(NULL));
-    else
-        serv_got_im(connection, passport, msgid, 0, time(NULL));
-
-    g_free(guc);
+    body = msn_message_get_bin_data (msg, &body_len);
+    switchboard_show_ink (cmdproc->data, msg->remote_user, body);
 }
 
-static void
-msn_handwritten_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
+void
+switchboard_show_ink (MsnSwitchBoard *swboard, const char *passport,
+                      const char *data)
 {
-    char *passport, *bodydup;
-    const char *body, *msgid;
-    size_t body_len;
-    
-    passport = msg->remote_user;
-    msgid = msn_message_get_attr(msg, "Message-ID");
+    PurpleConnection *gc;
+    PurpleAccount *account;
+    guchar *image_data;
+    size_t image_len;
+    int imgid;
+    char *image_msg;
 
-    body = msn_message_get_bin_data(msg, &body_len);
-    bodydup = g_strndup(body+7, body_len-7);
-    msn_handwritten_msg_show(cmdproc->data, msgid, bodydup, passport);
-    g_free(bodydup);
+    if (!purple_str_has_prefix (data, "base64:"))
+    {
+        pn_error ("ink receiving: ignoring ink not in base64 format");
+
+        return;
+    }
+
+    account = msn_session_get_user_data (swboard->session);
+    gc = purple_account_get_connection (account);
+
+    data += sizeof ("base64:") - 1;
+    image_data = purple_base64_decode (data, &image_len);
+    if (!image_data || !image_len)
+    {
+        pn_error("ink receiving: unable to decode ink from base64 format");
+
+        return;
+    }
+
+    imgid = purple_imgstore_add_with_id (image_data, image_len, NULL);
+    image_msg = g_strdup_printf ("<IMG ID=%d/>", imgid);
+
+    if (swboard->current_users > 1 || ((swboard->conv != NULL) &&
+        purple_conversation_get_type(swboard->conv) == PURPLE_CONV_TYPE_CHAT))
+        serv_got_chat_in (gc, swboard->chat_id, passport, 0, image_msg, time(NULL));
+    else
+        serv_got_im (gc, passport, image_msg, 0, time(NULL));
+
+    purple_imgstore_unref_by_id (imgid);
+    g_free (image_msg);
 }
 #endif /* defined(PECAN_CVR) */
 
@@ -1817,7 +1808,7 @@ msn_switchboard_init(void)
     msn_table_add_msg_type(cbs_table, "text/x-mms-animemoticon",
                            emoticon_msg);
     msn_table_add_msg_type(cbs_table, "image/gif",
-                           msn_handwritten_msg);
+                           handwritten_msg);
     msn_table_add_msg_type(cbs_table, "text/x-msmsgsinvite",
                            invite_msg);
 #endif /* defined(PECAN_CVR) */
