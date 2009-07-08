@@ -300,6 +300,8 @@ struct pn_msnobj *pn_contact_get_object (const struct pn_contact *contact);
  */
 GHashTable *pn_contact_get_client_caps (const struct pn_contact *contact);
 
+gboolean pn_contact_is_blocked (const struct pn_contact *contact);
+
 gboolean pn_contact_can_receive (const struct pn_contact *contact);
 
 #endif /* PN_CONTACT_H */

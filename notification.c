@@ -1435,14 +1435,17 @@ initial_mdata_msg (MsnCmdProc *cmdproc,
                         {
                             gchar *passport;
                             gchar *message_id;
+                            struct pn_contact *contact;
 
                             passport = pn_get_xml_field ("E", start, end);
+                            contact = pn_contactlist_find_contact (session->contactlist, passport);
 
                             message_id = pn_get_xml_field ("I", start, end);
 
-                            pn_oim_session_request (session->oim_session,
-                                                    passport,
-                                                    message_id);
+                            if (contact && !(pn_contact_is_blocked (contact)))
+                                pn_oim_session_request (session->oim_session,
+                                                        passport,
+                                                        message_id);
 
                             g_free (passport);
                             g_free (message_id);

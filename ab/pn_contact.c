@@ -648,8 +648,8 @@ pn_contact_get_client_caps (const struct pn_contact *contact)
     return contact->clientcaps;
 }
 
-static inline gboolean
-is_blocked (const struct pn_contact *contact)
+gboolean
+pn_contact_is_blocked (const struct pn_contact *contact)
 {
     return ((contact->list_op & (1 << MSN_LIST_BL)) ? true : false);
 }
@@ -663,7 +663,7 @@ is_offline (const struct pn_contact *contact)
 gboolean
 pn_contact_can_receive (const struct pn_contact *contact)
 {
-    if (is_blocked (contact))
+    if (pn_contact_is_blocked (contact))
         return false;
 
     if (is_offline (contact))
