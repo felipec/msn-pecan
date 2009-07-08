@@ -34,7 +34,9 @@
 #include <debug.h>
 #endif /* PURPLE_DEBUG */
 
-#ifndef PECAN_LOG_LEVEL
+#ifdef PECAN_DEVEL
+#define PECAN_LOG_LEVEL PN_LOG_LEVEL_LOG
+#else
 #define PECAN_LOG_LEVEL PN_LOG_LEVEL_INFO
 #endif
 
@@ -96,10 +98,8 @@ pn_base_log_helper (guint level,
     va_start (args, fmt);
 
 #if defined(PURPLE_DEBUG)
-    PurpleDebugUiOps *ops;
     PurpleDebugLevel purple_level;
-
-    ops = purple_debug_get_ui_ops();
+    PurpleDebugUiOps *ops;
 
     switch (level) {
         case PN_LOG_LEVEL_ERROR:
@@ -116,11 +116,16 @@ pn_base_log_helper (guint level,
             purple_level = PURPLE_DEBUG_MISC; break;
     }
 
+    ops = purple_debug_get_ui_ops();
+
+    /* avoid extra processing unless we are on development */
+#if !defined(PECAN_DEVEL)
     if (!ops || !ops->print ||
         (ops->is_enabled && !ops->is_enabled(purple_level, "msn-pecan")))
     {
         return;
     }
+#endif
 #endif
 
     tmp = pn_strdup_vprintf (fmt, args);
@@ -143,19 +148,23 @@ pn_base_log_helper (guint level,
                        tmp);
         }
     }
-#elif defined(PURPLE_DEBUG)
-    {
+#else
+#if defined(PURPLE_DEBUG)
+    if (level <= PN_LOG_LEVEL_INFO) {
         char *arg_s;
         arg_s = g_strdup_printf("%s\n", tmp);
         ops->print(purple_level, "msn-pecan", arg_s);
         g_free(arg_s);
     }
-#else
+#endif
+#if defined(PECAN_DEVEL)
     g_print ("%s %s:%d:%s() %s\n",
              log_level_to_string (level),
              file, line, function,
              tmp);
 #endif
+#endif /* PN_DEBUG_FILE */
+
     g_free (tmp);
 
     va_end (args);

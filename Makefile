@@ -25,7 +25,7 @@ ifdef DEBUG
 endif
 
 ifdef DEVEL
-	CFLAGS += -DPECAN_LOG_LEVEL=PN_LOG_LEVEL_LOG
+	CFLAGS += -DPECAN_DEVEL
 endif
 
 EXTRA_WARNINGS := -Wall -Wextra -Wformat-nonliteral -Wcast-align -Wpointer-arith \
