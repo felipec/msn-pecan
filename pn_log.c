@@ -51,6 +51,7 @@ log_level_to_string (PecanLogLevel level)
         case PN_LOG_LEVEL_INFO: return "INFO"; break;
         case PN_LOG_LEVEL_DEBUG: return "DEBUG"; break;
         case PN_LOG_LEVEL_LOG: return "LOG"; break;
+        case PN_LOG_LEVEL_TEST: return "TEST"; break;
         default: return "Unknown"; break;
     }
 }
@@ -91,8 +92,9 @@ pn_base_log_helper (guint level,
 {
     gchar *tmp;
     va_list args;
+    gboolean console_print = FALSE;
 
-    if (level > PECAN_LOG_LEVEL)
+    if (level > PECAN_LOG_LEVEL && level != PN_LOG_LEVEL_TEST)
         return;
 
     va_start (args, fmt);
@@ -109,6 +111,7 @@ pn_base_log_helper (guint level,
         case PN_LOG_LEVEL_INFO:
             purple_level = PURPLE_DEBUG_INFO; break;
         case PN_LOG_LEVEL_DEBUG:
+        case PN_LOG_LEVEL_TEST:
             purple_level = PURPLE_DEBUG_MISC; break;
         case PN_LOG_LEVEL_LOG:
             purple_level = PURPLE_DEBUG_MISC; break;
@@ -120,10 +123,12 @@ pn_base_log_helper (guint level,
 
     /* avoid extra processing unless we are on development */
 #if !defined(PECAN_DEVEL)
-    if (!ops || !ops->print ||
-        (ops->is_enabled && !ops->is_enabled(purple_level, "msn-pecan")))
-    {
-        return;
+    if (level != PN_LOG_LEVEL_TEST) {
+        if (!ops || !ops->print ||
+            (ops->is_enabled && !ops->is_enabled(purple_level, "msn-pecan")))
+        {
+            return;
+        }
     }
 #endif
 #endif
@@ -150,7 +155,7 @@ pn_base_log_helper (guint level,
     }
 #else
 #if defined(PURPLE_DEBUG)
-    if (level <= PN_LOG_LEVEL_INFO) {
+    if (level <= PN_LOG_LEVEL_INFO || level == PN_LOG_LEVEL_TEST) {
         char *arg_s;
         arg_s = g_strdup_printf("%s\n", tmp);
         ops->print(purple_level, "msn-pecan", arg_s);
@@ -158,12 +163,18 @@ pn_base_log_helper (guint level,
     }
 #endif
 #if defined(PECAN_DEVEL)
-    g_print ("%s %s:%d:%s() %s\n",
-             log_level_to_string (level),
-             file, line, function,
-             tmp);
+    console_print = TRUE;
+#else
+    if (level == PN_LOG_LEVEL_TEST)
+        console_print = TRUE;
 #endif
 #endif /* PN_DEBUG_FILE */
+
+    if (console_print)
+        g_print ("%s %s:%d:%s() %s\n",
+                 log_level_to_string (level),
+                 file, line, function,
+                 tmp);
 
     g_free (tmp);
 

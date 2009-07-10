@@ -45,7 +45,8 @@ enum PecanLogLevel
     PN_LOG_LEVEL_WARNING,
     PN_LOG_LEVEL_INFO,
     PN_LOG_LEVEL_DEBUG,
-    PN_LOG_LEVEL_LOG
+    PN_LOG_LEVEL_LOG,
+    PN_LOG_LEVEL_TEST,
 };
 
 typedef enum PecanLogLevel PecanLogLevel;
@@ -62,6 +63,7 @@ void pn_dump_file (const gchar *buffer, gsize len);
 #define pn_info(...) pn_base_log (PN_LOG_LEVEL_INFO, __VA_ARGS__)
 #define pn_debug(...) pn_base_log (PN_LOG_LEVEL_DEBUG, __VA_ARGS__)
 #define pn_log(...) pn_base_log (PN_LOG_LEVEL_LOG, __VA_ARGS__)
+#define pn_test(...) pn_base_log (PN_LOG_LEVEL_TEST, __VA_ARGS__)
 
 #elif !defined(PN_DEBUG)
 
@@ -70,6 +72,7 @@ void pn_dump_file (const gchar *buffer, gsize len);
 #define pn_info(...) {}
 #define pn_debug(...) {}
 #define pn_log(...) {}
+#define pn_test(...) {}
 #define pn_dump_file(...) {}
 
 #endif /* !defined(PN_DEBUG) */
