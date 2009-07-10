@@ -1590,7 +1590,6 @@ convo_closed (PurpleConnection *gc,
 {
     MsnSession *session;
     MsnSwitchBoard *swboard;
-    PurpleConversation *conv;
 
     session = gc->proto_data;
 
@@ -1599,10 +1598,9 @@ convo_closed (PurpleConnection *gc,
     if (!swboard)
         return;
 
-    conv = swboard->conv;
+    swboard->conv = NULL;
 
     g_hash_table_remove (session->conversations, who);
-    swboard->conv = NULL;
 }
 
 static void
