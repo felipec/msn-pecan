@@ -36,6 +36,7 @@ struct MsnCmdProc
     MsnTable *cbs_table;
     MsnErrorCb error_handler;
 
+    /** @todo this doesn't belong here. */
     GHashTable *multiparts; /**< Multi-part message ID's */
 
     gpointer data; /**< Extra data, like the switchboard. */
