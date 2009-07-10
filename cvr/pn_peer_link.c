@@ -646,6 +646,7 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
         peer_msg->ack_id = msg->msnslp_header.ack_id;
         peer_msg->size = msg->msnslp_header.total_size;
         peer_msg->flags = msg->msnslp_header.flags;
+        peer_msg->msg = msg;
 
         if (peer_msg->session_id) {
             if (!peer_msg->call)
