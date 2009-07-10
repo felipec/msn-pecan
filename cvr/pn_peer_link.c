@@ -478,16 +478,15 @@ send_ack(struct pn_peer_link *link,
          struct pn_peer_msg *peer_msg)
 {
     struct pn_peer_msg *ack_msg;
-    MsnMessage *msg = peer_msg->msg;
 
     ack_msg = pn_peer_msg_new(link);
 
-    ack_msg->session_id = msg->msnslp_header.session_id;
-    ack_msg->size = msg->msnslp_header.total_size;
+    ack_msg->session_id = peer_msg->session_id;
+    ack_msg->size = peer_msg->size;
     ack_msg->flags = 0x02;
-    ack_msg->ack_id = msg->msnslp_header.id;
-    ack_msg->ack_sub_id = msg->msnslp_header.ack_id;
-    ack_msg->ack_size = msg->msnslp_header.total_size;
+    ack_msg->ack_id = peer_msg->id;
+    ack_msg->ack_sub_id = peer_msg->ack_id;
+    ack_msg->ack_size = peer_msg->size;
 
     ack_msg->call = peer_msg->call;
     ack_msg->swboard = peer_msg->swboard;
@@ -644,9 +643,9 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
         peer_msg = pn_peer_msg_new(link);
         peer_msg->id = msg->msnslp_header.id;
         peer_msg->session_id = msg->msnslp_header.session_id;
+        peer_msg->ack_id = msg->msnslp_header.ack_id;
         peer_msg->size = msg->msnslp_header.total_size;
         peer_msg->flags = msg->msnslp_header.flags;
-        peer_msg->msg = msg;
 
         if (peer_msg->session_id) {
             if (!peer_msg->call)
