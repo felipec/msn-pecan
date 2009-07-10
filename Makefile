@@ -11,8 +11,8 @@ PURPLE_LIBS := $(shell pkg-config --libs purple)
 PURPLE_LIBDIR := $(shell pkg-config --variable=libdir purple)
 PURPLE_DATADIR := $(shell pkg-config --variable=datadir purple)
 
-GOBJECT_CFLAGS := $(shell pkg-config --cflags gobject-2.0)
-GOBJECT_LIBS := $(shell pkg-config --libs gobject-2.0)
+GIO_CFLAGS := $(shell pkg-config --cflags gio-2.0)
+GIO_LIBS := $(shell pkg-config --libs gio-2.0)
 
 # default configuration options
 CVR := y
@@ -183,7 +183,7 @@ else
   Q = @
 endif
 
-plugin_libs := $(PURPLE_LIBS) $(GOBJECT_LIBS)
+plugin_libs := $(PURPLE_LIBS) $(GIO_LIBS)
 
 ifdef LIBSIREN
   plugin_libs += $(LIBSIREN_LIBS)
@@ -194,7 +194,7 @@ ifdef LIBMSPACK
 endif
 
 $(plugin): $(objects)
-$(plugin): CFLAGS := $(CFLAGS) $(PURPLE_CFLAGS) $(GOBJECT_CFLAGS) $(FALLBACK_CFLAGS) -D VERSION='"$(version)"'
+$(plugin): CFLAGS := $(CFLAGS) $(PURPLE_CFLAGS) $(GIO_CFLAGS) $(FALLBACK_CFLAGS) -D VERSION='"$(version)"'
 $(plugin): LIBS := $(plugin_libs)
 
 %.dylib::
