@@ -30,5 +30,9 @@ GIOStatus pn_parser_read_line (PnParser *parser,
                                gsize *length,
                                gsize *terminator_pos,
                                GError **error);
+GIOStatus pn_parser_read (PnParser *parser,
+                          gchar **buf_return,
+                          gsize length,
+                          GError **error);
 
 #endif /* PN_PARSER_H */

@@ -144,3 +144,73 @@ leave:
 
     return status;
 }
+
+GIOStatus
+pn_parser_read (PnParser *parser,
+                gchar **buf_return,
+                gsize length,
+                GError **error)
+{
+    GIOStatus status = G_IO_STATUS_NORMAL;
+
+    pn_log ("begin");
+
+    if (parser->need_more)
+    {
+        gchar buf[0x2000 + 1];
+        gsize bytes_read;
+
+        status = pn_node_read (parser->node, buf, 0x2000, &bytes_read, NULL);
+
+        if (status != G_IO_STATUS_NORMAL)
+            goto leave;
+
+        /* append buf to rx_buf */
+        parser->rx_buf = g_realloc (parser->rx_buf, bytes_read + parser->rx_len + 1);
+        memcpy (parser->rx_buf + parser->rx_len, buf, bytes_read + 1);
+        parser->rx_len += bytes_read;
+    }
+
+    if (parser->rx_len < length)
+    {
+        /* The chunk is incomplete. */
+        parser->need_more = TRUE;
+        status = G_IO_STATUS_AGAIN;
+        goto leave;
+    }
+
+    if (buf_return)
+        *buf_return = g_strndup (parser->rx_buf, length);
+
+    {
+        gchar *tmp;
+
+        parser->rx_len -= length;
+
+        tmp = parser->rx_buf;
+
+        if (parser->rx_len > 0)
+        {
+            parser->rx_buf = g_memdup (parser->rx_buf + length, parser->rx_len);
+            parser->need_more = FALSE;
+        }
+        else
+        {
+            parser->rx_buf = NULL;
+            parser->need_more = TRUE;
+        }
+
+        g_free (tmp);
+    }
+
+leave:
+    if (status != G_IO_STATUS_NORMAL)
+    {
+        if (buf_return)
+            *buf_return = NULL;
+    }
+
+    pn_log ("end");
+
+    return status;
+}
