@@ -52,7 +52,7 @@ struct OimRequest
     PnParser *parser;
     guint parser_state;
     guint32 date;
-    gsize payload;
+    gsize content_size;
 
     gulong open_sig_handler;
     PnNode *conn;
@@ -208,16 +208,26 @@ next_request (PecanOimSession *oim_session)
 }
 
 static void
+process_body (OimRequest *oim_request,
+              const char *body,
+              gsize length)
+{
+    gchar *message = NULL;
+
+    pn_debug("body=[%.*s]", length, body);
+}
+
+static void
 read_cb (PnNode *conn,
          gpointer data)
 {
     OimRequest *oim_request;
     GIOStatus status = G_IO_STATUS_NORMAL;
-    gchar *str = NULL, *message = NULL;
+    gchar *str = NULL;
 
     oim_request = data;
 
-    while (oim_request->parser_state < 2)
+    while (oim_request->parser_state == 0)
     {
         gsize terminator_pos;
 
@@ -233,34 +243,24 @@ read_cb (PnNode *conn,
         {
             str[terminator_pos] = '\0';
 
-            if (oim_request->parser_state == 1)
-            {
-#ifndef G_OS_WIN32
-                if (strncmp (str, "Date: ", 6) == 0)
-                {
-                    struct tm time;
-                    strptime (str + 6, "%d %b %Y %T %z", &time);
-                    oim_request->date = mktime (&time);
-                }
-#else
-                /** @todo find a way to parse the date in win32 */
-                oim_request->date = time (NULL);
-#endif
-            }
+            if (strncmp (str, "Content-Length: ", 16) == 0)
+                oim_request->content_size = atoi(str + 16);
 
             /* now comes the content */
-            if (str[0] == '\0')
+            if (str[0] == '\0') {
                 oim_request->parser_state++;
+                break;
+            }
 
             g_free (str);
         }
     }
 
-    while (oim_request->parser_state == 2)
+    if (oim_request->parser_state == 1)
     {
-        gsize terminator_pos;
+        gchar *body;
 
-        status = pn_parser_read_line (oim_request->parser, &str, NULL, &terminator_pos, NULL);
+        status = pn_parser_read (oim_request->parser, &body, oim_request->content_size, NULL);
 
         if (status == G_IO_STATUS_AGAIN)
             return;
@@ -268,42 +268,9 @@ read_cb (PnNode *conn,
         if (status != G_IO_STATUS_NORMAL)
             goto leave;
 
-        if (str)
-        {
-            gchar *tmp, *incomplete_msg = message;
+        process_body(oim_request, body, oim_request->content_size);
 
-            str[terminator_pos] = '\0';
-
-            tmp = (gchar *) purple_base64_decode (str, NULL);
-
-            if (incomplete_msg)
-            {
-                message = g_strconcat (incomplete_msg, tmp, NULL);
-                g_free (incomplete_msg);
-                g_free (tmp);
-            }
-            else
-                message = tmp;
-
-            if (str[0] == '\0' || strchr (str, '<'))
-                oim_request->parser_state++;
-
-            g_free (str);
-        }
-    }
-
-    if (message)
-    {
-        PurpleConversation *conv;
-        pn_debug ("oim: passport=[%s],msg=[%s]", oim_request->passport, message);
-        conv = purple_conversation_new (PURPLE_CONV_TYPE_IM,
-                                        msn_session_get_user_data (oim_request->oim_session->session),
-                                        oim_request->passport);
-
-        purple_conversation_write (conv, NULL, message,
-                                   PURPLE_MESSAGE_RECV | PURPLE_MESSAGE_DELAYED, oim_request->date);
-
-        g_free (message);
+        g_free(body);
     }
 
 leave:
