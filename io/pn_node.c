@@ -20,9 +20,6 @@
 #include "pn_stream.h"
 #include "pn_log.h"
 #include "pn_global.h"
-#ifdef PECAN_SOCKET
-#include "pn_socket.h"
-#endif /* PECAN_SOCKET */
 
 #include "session.h" /* for libpurple account */
 
@@ -299,58 +296,6 @@ pn_node_parse (PnNode *conn,
 
 /* PnNode stuff. */
 
-#ifdef PECAN_SOCKET
-static void
-connect_cb (PnSocket *sock,
-            gboolean success,
-            gpointer user_data)
-{
-    PnNode *conn;
-
-    pn_log ("begin");
-
-    conn = PN_NODE (user_data);
-    conn->connect_data = NULL;
-
-    g_object_ref (conn);
-
-    if (success)
-    {
-        GIOChannel *channel;
-
-        conn->stream = pn_stream_new (sock->fd);
-        channel = conn->stream->channel;
-
-        g_io_channel_set_encoding (channel, NULL, NULL);
-        g_io_channel_set_buffered (channel, FALSE);
-
-        conn->open = TRUE;
-
-        pn_info ("connected: conn=%p,channel=%p", conn, channel);
-        conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, conn);
-#if 0
-        g_io_add_watch (channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, close_cb, conn);
-#endif
-    }
-    else
-    {
-        conn->error = g_error_new_literal (PN_NODE_ERROR, PN_NODE_ERROR_OPEN,
-                                           "Unable to connect");
-
-        pn_node_error (conn);
-    }
-
-    {
-        PnNodeClass *class;
-        class = g_type_class_peek (PN_NODE_TYPE);
-        g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
-    }
-
-    g_object_unref (conn);
-
-    pn_log ("end");
-}
-#else
 static void
 connect_cb (gpointer data,
             gint source,
@@ -402,7 +347,6 @@ connect_cb (gpointer data,
 
     pn_log ("end");
 }
-#endif /* PECAN_SOCKET */
 
 static void
 connect_impl (PnNode *conn,
@@ -432,14 +376,10 @@ connect_impl (PnNode *conn,
         if (conn->stream)
             pn_node_close (conn);
 
-#ifdef PECAN_SOCKET
-        pn_socket_connect (hostname, port, connect_cb, conn);
-#else
 #ifdef HAVE_LIBPURPLE
         conn->connect_data = purple_proxy_connect (NULL, msn_session_get_user_data (conn->session),
                                                    hostname, port, connect_cb, conn);
 #endif /* HAVE_LIBPURPLE */
-#endif /* PECAN_SOCKET */
     }
 
     pn_log ("end");
@@ -470,7 +410,6 @@ close_impl (PnNode *conn)
         pn_error ("not connected: conn=%p", conn);
     }
 
-#ifndef PECAN_SOCKET
 #ifdef HAVE_LIBPURPLE
     if (conn->connect_data)
     {
@@ -478,7 +417,6 @@ close_impl (PnNode *conn)
         conn->connect_data = NULL;
     }
 #endif /* HAVE_LIBPURPLE */
-#endif /* !PECAN_SOCKET */
 
     if (conn->read_watch)
     {

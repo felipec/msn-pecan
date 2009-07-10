@@ -118,11 +118,6 @@ ifdef CVR
   objects += libpurple/xfer.o
 endif
 
-ifdef SOCKET
-  objects += io/pn_socket.o
-  override CFLAGS += -DPECAN_SOCKET -D__USE_GNU
-endif
-
 ifdef DIRECTCONN
   objects += cvr/pn_direct_conn.o
   override CFLAGS += -DMSN_DIRECTCONN
