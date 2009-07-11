@@ -545,16 +545,6 @@ msg_error_helper(MsnCmdProc *cmdproc, MsnMessage *msg, MsnMsgErrorType error)
         const char *format, *str_reason;
         char *body_str, *body_enc, *pre, *post;
 
-#if 0
-        if (swboard->conv == NULL)
-        {
-            if (msg->ack_ref)
-                msn_message_unref(msg);
-
-            return;
-        }
-#endif
-
         if (error == MSN_MSG_ERROR_TIMEOUT)
         {
             str_reason = _("Message may have not been sent "
@@ -622,8 +612,7 @@ msg_error_helper(MsnCmdProc *cmdproc, MsnMessage *msg, MsnMsgErrorType error)
 
     /* If a timeout occurs we want the msg around just in case we
      * receive the ACK after the timeout. */
-    if (msg->ack_ref && error != MSN_MSG_ERROR_TIMEOUT)
-    {
+    if (error != MSN_MSG_ERROR_TIMEOUT) {
         swboard->ack_list = g_list_remove(swboard->ack_list, msg);
         msn_message_unref(msg);
     }
@@ -694,13 +683,11 @@ release_msg(MsnSwitchBoard *swboard, MsnMessage *msg)
 
     if (msg->type == MSN_MSG_TEXT)
     {
-        msg->ack_ref = TRUE;
         msn_message_ref(msg);
         swboard->ack_list = g_list_append(swboard->ack_list, msg);
     }
     else if (msg->type == MSN_MSG_SLP)
     {
-        msg->ack_ref = TRUE;
         msn_message_ref(msg);
         swboard->ack_list = g_list_append(swboard->ack_list, msg);
 #if 0

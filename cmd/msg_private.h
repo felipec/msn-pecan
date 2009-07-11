@@ -70,9 +70,6 @@ struct MsnMessage
     GHashTable *attr_table;
     GList *attr_list;
 
-    gboolean ack_ref; /**< A flag that states if this message has
-                        been ref'ed for using it in a callback. */
-
     MsnCommand *cmd;
     MsnTransaction *trans;
 
