@@ -54,6 +54,7 @@
 #include "fix_purple_win32.h"
 #include <account.h>
 #include <prefs.h>
+#include <version.h>
 
 static MsnTable *cbs_table;
 
@@ -1061,7 +1062,11 @@ save_plus_sound_cb(PurpleUtilFetchUrlData *url_data, gpointer user_data,
         fwrite(sound, len, 1, f);
 
 #ifndef ADIUM
+#if PURPLE_VERSION_CHECK(2,6,0)
+        str = g_strdup_printf (_("sent you a Messenger Plus! sound. Click <a href='audio://%s'>here</a> to play it."), path_mp3);
+#else
         str = g_strdup_printf (_("sent you a Messenger Plus! sound. Click <a href='file://%s'>here</a> to play it."), path_mp3);
+#endif /* PURPLE_VERSION_CHECK(2,6,0) */
 #else
         str = g_strdup_printf (_("sent you a Messenger Plus! sound. Copy the following link in Safari to play it: %s"), path_mp3);
 #endif /* ADIUM */
