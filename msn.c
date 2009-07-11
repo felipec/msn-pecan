@@ -471,11 +471,7 @@ show_send_to_mobile_cb(PurpleBlistNode *node, gpointer ignored)
 
 static gboolean
 msn_offline_message(const PurpleBuddy *buddy) {
-    struct pn_contact *user;
-    if (buddy == NULL)
-        return FALSE;
-    user = buddy->proto_data;
-    return user && user->mobile;
+    return TRUE;
 }
 
 static void
@@ -1051,17 +1047,23 @@ send_im (PurpleConnection *gc,
 
     session = gc->proto_data;
 
-    /* Send to mobile when contact is offline. */
+    /** @todo don't call libpurple functions */
     {
-        struct pn_contact *contact;
-        contact = pn_contactlist_find_contact (session->contactlist, who);
-        if (contact && contact->status == PN_STATUS_OFFLINE && contact->mobile)
-        {
-            gchar *text;
-            text = purple_markup_strip_html (message);
-            send_to_mobile (gc, who, text);
-            g_free (text);
-            return 1;
+        PurpleBuddy *buddy;
+        PurplePresence *presence;
+
+        buddy = purple_find_buddy (gc->account, who);
+
+        if (buddy) {
+            presence = purple_buddy_get_presence (buddy);
+
+            if (purple_presence_is_status_primitive_active (presence, PURPLE_STATUS_MOBILE)) {
+                gchar *text;
+                text = purple_markup_strip_html (message);
+                send_to_mobile (gc, who, text);
+                g_free (text);
+                return 1;
+            }
         }
     }
 
@@ -1074,6 +1076,25 @@ send_im (PurpleConnection *gc,
         g_free (msgtext);
 
         return -7; /* E2BIG */
+    }
+
+    {
+        struct pn_contact *contact;
+        MsnSwitchBoard *swboard;
+
+        contact = pn_contactlist_find_contact (session->contactlist, who);
+
+        swboard = msn_session_find_swboard (session, who);
+
+        if (contact && contact->status == PN_STATUS_OFFLINE && !swboard)
+        {
+            pn_oim_session_request (session->oim_session,
+                                    who,
+                                    NULL,
+                                    msgtext,
+                                    PN_SEND_OIM);
+            return 1;
+        }
     }
 
     {

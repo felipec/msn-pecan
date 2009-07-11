@@ -1445,7 +1445,9 @@ initial_mdata_msg (MsnCmdProc *cmdproc,
                             if (contact && !(pn_contact_is_blocked (contact)))
                                 pn_oim_session_request (session->oim_session,
                                                         passport,
-                                                        message_id);
+                                                        message_id,
+                                                        NULL,
+                                                        PN_RECEIVE_OIM);
 
                             g_free (passport);
                             g_free (message_id);

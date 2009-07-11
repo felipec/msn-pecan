@@ -85,6 +85,8 @@ struct pn_contact {
     gulong client_id;
 
     gint list_op;
+
+    gint sent_oims;
 };
 
 #endif /* PN_CONTACT_PRIV_H */
