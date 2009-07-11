@@ -37,6 +37,11 @@ void msn_cmdproc_send_valist (MsnCmdProc *cmdproc, const char *command, const ch
 
 void msn_cmdproc_send_trans (MsnCmdProc *cmdproc, MsnTransaction *trans);
 
+void msn_cmdproc_set_timeout (MsnCmdProc *cmdproc,
+                              guint interval,
+                              GSourceFunc function,
+                              gpointer data);
+
 void msn_cmdproc_destroy (MsnCmdProc *cmdproc);
 void msn_cmdproc_flush (MsnCmdProc *cmdproc);
 void msn_cmdproc_process_msg (MsnCmdProc *cmdproc, MsnMessage *msg);

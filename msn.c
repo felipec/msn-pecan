@@ -1591,21 +1591,6 @@ chat_send (PurpleConnection *gc,
 }
 
 static void
-msn_keepalive(PurpleConnection *gc)
-{
-    MsnSession *session;
-
-    session = gc->proto_data;
-
-    if (!msn_session_get_bool (session, "use_http_method"))
-    {
-        MsnCmdProc *cmdproc;
-        cmdproc = session->notification->cmdproc;
-        msn_cmdproc_send_quick(cmdproc, "PNG", NULL, NULL);
-    }
-}
-
-static void
 convo_closed (PurpleConnection *gc,
               const gchar *who)
 {
@@ -1770,7 +1755,7 @@ static PurplePluginProtocolInfo prpl_info =
     chat_leave, /* chat_leave */
     NULL, /* chat_whisper */
     chat_send, /* chat_send */
-    msn_keepalive, /* keepalive */
+    NULL, /* keepalive */
     NULL, /* register_user */
     NULL, /* get_cb_info */
     NULL, /* get_cb_away */

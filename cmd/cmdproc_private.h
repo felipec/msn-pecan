@@ -23,6 +23,7 @@
 #include "cmdproc.h"
 #include "table.h"
 #include "transaction.h"
+#include "pn_timer.h"
 
 struct MsnSession;
 struct PnNode;
@@ -45,6 +46,8 @@ struct MsnCmdProc
 
     GHashTable *transactions;
     struct PnNode *conn;
+
+    struct pn_timer *timer;
 };
 
 #endif /* MSN_CMDPROC_PRIVATE_H */

@@ -55,6 +55,8 @@ msn_cmdproc_destroy (MsnCmdProc *cmdproc)
 
     pn_debug ("cmdproc=%p", cmdproc);
 
+    pn_timer_free (cmdproc->timer);
+
     msn_command_free (cmdproc->last_cmd);
     g_hash_table_destroy (cmdproc->transactions);
 
@@ -75,6 +77,16 @@ msn_cmdproc_flush (MsnCmdProc *cmdproc)
     g_hash_table_remove_all (cmdproc->transactions);
 
     pn_log ("end");
+}
+
+void
+msn_cmdproc_set_timeout (MsnCmdProc *cmdproc,
+                         guint interval,
+                         GSourceFunc function,
+                         gpointer data)
+{
+    cmdproc->timer = pn_timer_new (function, data);
+    pn_timer_start (cmdproc->timer, interval);
 }
 
 static void
@@ -131,6 +143,9 @@ msn_cmdproc_send_trans (MsnCmdProc *cmdproc,
         memcpy (data + len, trans->payload, trans->payload_len);
         len += trans->payload_len;
     }
+
+    if (cmdproc->timer)
+        pn_timer_restart(cmdproc->timer);
 
     {
         GIOStatus status;

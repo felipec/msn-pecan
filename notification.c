@@ -297,6 +297,16 @@ cvr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
                      msn_session_get_username(cmdproc->session));
 }
 
+static gboolean
+timeout (gpointer data)
+{
+    MsnCmdProc *cmdproc = data;
+    pn_timer_cancel(cmdproc->timer);
+    msn_cmdproc_send_quick(cmdproc, "PNG", NULL, NULL);
+
+    return FALSE;
+}
+
 static void
 usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
@@ -312,6 +322,8 @@ usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     {
         /* OK */
         msn_cmdproc_send(cmdproc, "SYN", "%s %s", "0", "0");
+        if (!msn_session_get_bool (session, "use_http_method"))
+            msn_cmdproc_set_timeout(cmdproc, 30, timeout, cmdproc);
     }
     else if (!g_ascii_strcasecmp(cmd->params[1], "TWN"))
     {
@@ -651,7 +663,7 @@ adg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 static void
 qng_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
-    /** @todo set the png timeout to the argument of this command */
+    pn_timer_start(cmdproc->timer, atoi(cmd->params[0]));
 }
 
 static void
