@@ -62,6 +62,8 @@ void pn_node_link (PnNode *conn, PnNode *next);
 /* Can destroy the node. */
 void pn_node_error (PnNode *conn);
 
+void pn_node_set_id (PnNode *conn, guint id, const gchar *name);
+
 GType pn_node_get_type (void);
 
 #endif /* PN_NODE_H */

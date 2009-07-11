@@ -24,6 +24,7 @@
 #include "command_private.h"
 
 #include "io/pn_node.h"
+#include "io/pn_node_private.h"
 
 #include "pn_log.h"
 
@@ -93,7 +94,10 @@ show_debug_cmd (MsnCmdProc *cmdproc,
     if ((show[len - 1] == '\n') && (show[len - 2] == '\r'))
         show[len - 2] = '\0';
 
-    pn_info ("%c: %03d: %s", tmp, cmdproc->count, show);
+    if (cmdproc->conn->name)
+        pn_info ("%c: %03d: %s: %s", tmp, cmdproc->conn->id, cmdproc->conn->name, show);
+    else
+        pn_info ("%c: %03d: %s", tmp, cmdproc->conn->id, show);
 
     g_free (show);
 }

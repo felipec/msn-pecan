@@ -209,6 +209,15 @@ pn_node_free (PnNode *conn)
 }
 
 void
+pn_node_set_id (PnNode *conn,
+                guint id,
+                const gchar *name)
+{
+    conn->id = id;
+    conn->name = g_strdup (name);
+}
+
+void
 pn_node_error (PnNode *conn)
 {
     g_return_if_fail (conn != NULL);
@@ -436,7 +445,8 @@ close_impl (PnNode *conn)
 
     pn_log ("begin");
 
-    pn_log ("conn=%p,name=%s", conn, conn->name);
+    pn_info ("closing '%s'\n", conn->name);
+    pn_debug ("conn=%p,name=%s", conn, conn->name);
 
     if (conn->next)
     {

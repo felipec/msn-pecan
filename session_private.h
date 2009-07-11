@@ -97,6 +97,7 @@ struct MsnSession
     } autoupdate_tune;
 
     PnXferInviteCb xfer_invite_cb;
+    guint conn_count;
 };
 
 #endif /* SESSION_PRIVATE_H */

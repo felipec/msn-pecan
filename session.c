@@ -27,6 +27,8 @@
 #include "ab/pn_contact_priv.h"
 #include "pn_buffer.h"
 
+#include "cmd/cmdproc_private.h"
+
 #if defined(PECAN_CVR)
 #include "cvr/pn_peer_link.h"
 #endif /* defined(PECAN_CVR) */
@@ -98,6 +100,9 @@ msn_session_new (const gchar *username,
     session->dp_manager = pn_dp_manager_new (session);
 
     session->notification = msn_notification_new (session);
+    pn_node_set_id(session->notification->cmdproc->conn,
+                   session->conn_count++, "ns");
+
     session->contactlist = pn_contactlist_new (session);
 
     session->user = pn_contact_new (NULL);
@@ -315,6 +320,7 @@ msn_session_get_swboard (MsnSession *session,
         swboard->im_user = g_strdup(username);
         msn_switchboard_request(swboard);
         msn_switchboard_request_add_user(swboard, username);
+        pn_node_set_id(swboard->cmdproc->conn, session->conn_count++, username);
     }
 
     return swboard;

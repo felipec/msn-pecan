@@ -45,6 +45,7 @@ struct PnNode
 
     PnNodeType type;
 
+    guint id;
     gchar *name;
 
     gpointer data; /**< Client data. */
