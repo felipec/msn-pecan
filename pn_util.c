@@ -920,3 +920,17 @@ pn_html_unescape (const char *url)
 malformed:
     return g_string_free (dest, TRUE);
 }
+
+char *
+pn_rand_guid(void)
+{
+    return g_strdup_printf("%4X%4X-%4X-%4X-%4X-%4X%4X%4X",
+                           rand() % 0xAAFF + 0x1111,
+                           rand() % 0xAAFF + 0x1111,
+                           rand() % 0xAAFF + 0x1111,
+                           rand() % 0xAAFF + 0x1111,
+                           rand() % 0xAAFF + 0x1111,
+                           rand() % 0xAAFF + 0x1111,
+                           rand() % 0xAAFF + 0x1111,
+                           rand() % 0xAAFF + 0x1111);
+}

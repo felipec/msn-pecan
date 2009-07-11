@@ -22,6 +22,7 @@
 #include "pn_peer_link.h"
 #include "pn_log.h"
 #include "pn_locale.h"
+#include "pn_util.h"
 
 #include "pn_peer_call.h"
 #include "pn_msnobj.h"
@@ -134,20 +135,6 @@ pn_peer_msg_unref(struct pn_peer_msg *peer_msg)
     }
 
     return peer_msg;
-}
-
-static inline char *
-rand_guid(void)
-{
-    return g_strdup_printf("%4X%4X-%4X-%4X-%4X-%4X%4X%4X",
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111,
-                           rand() % 0xAAFF + 0x1111);
 }
 
 static inline void
@@ -326,8 +313,8 @@ pn_sip_send_invite(struct pn_peer_call *call,
 
     link = call->link;
 
-    call->branch = rand_guid();
-    call->id = rand_guid();
+    call->branch = pn_rand_guid();
+    call->id = pn_rand_guid();
 
     content = g_strdup_printf("EUF-GUID: {%s}\r\n"
                               "SessionID: %lu\r\n"
@@ -655,7 +642,7 @@ got_invite(struct pn_peer_call *call,
             /* ip_addr = purple_prefs_get_string("/purple/ft/public_ip"); */
             ip_port = "5190";
             listening = "true";
-            nonce = rand_guid();
+            nonce = pn_rand_guid();
 
             direct_conn = pn_direct_conn_new(link);
 
@@ -744,7 +731,7 @@ got_ok(struct pn_peer_call *call,
 
             link = call->link;
 
-            branch = rand_guid();
+            branch = pn_rand_guid();
 
             new_content = g_strdup_printf("Bridges: TRUDPv1 TCPv1\r\n"
                                           "NetID: 0\r\n"
