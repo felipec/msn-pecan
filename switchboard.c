@@ -128,6 +128,15 @@ close_cb (PnNode *conn,
     msn_switchboard_close (swboard);
 }
 
+static gboolean
+timeout (gpointer data)
+{
+    MsnSwitchBoard *swboard = data;
+    msn_switchboard_close (swboard);
+
+    return FALSE;
+}
+
 /**************************************************************************
  * Main
  **************************************************************************/
@@ -189,6 +198,7 @@ msn_switchboard_new(MsnSession *session)
         swboard->error_handler = g_signal_connect (conn, "error", G_CALLBACK (close_cb), swboard);
     }
 
+    swboard->timer = pn_timer_new(timeout, swboard);
     swboard->ref_count++;
 
     return swboard;
@@ -205,6 +215,8 @@ msn_switchboard_free (MsnSwitchBoard *swboard)
     pn_log ("swboard=%p", swboard);
 
     g_return_if_fail(swboard);
+
+    pn_timer_free(swboard->timer);
 
     g_signal_handler_disconnect (swboard->conn, swboard->open_handler);
     g_signal_handler_disconnect (swboard->conn, swboard->close_handler);
@@ -699,6 +711,8 @@ release_msg(MsnSwitchBoard *swboard, MsnMessage *msg)
 #endif
     }
 
+    pn_timer_start(swboard->timer, 60);
+
     trans->payload = payload;
     trans->payload_len = payload_len;
 
@@ -857,6 +871,7 @@ static void
 msg_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload, size_t len)
 {
     MsnMessage *msg;
+    MsnSwitchBoard *swboard = cmdproc->data;
 
     msg = msn_message_new_from_cmd(cmd);
 
@@ -870,6 +885,8 @@ msg_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload, size_t len)
 
     msg->remote_user = g_strdup(cmd->params[0]);
     msn_cmdproc_process_msg(cmdproc, msg);
+
+    pn_timer_start(swboard->timer, 60);
 
     msn_message_unref(msg);
 }

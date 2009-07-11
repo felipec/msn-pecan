@@ -42,6 +42,7 @@ typedef enum
 
 #include "io/pn_cmd_server.h"
 #include "io/pn_node.h"
+#include "pn_timer.h"
 
 struct MsnSession;
 struct MsnMessage;
@@ -97,6 +98,7 @@ struct MsnSwitchBoard
     gulong error_handler;
 
     guint ref_count;
+    struct pn_timer *timer;
 };
 
 /**
