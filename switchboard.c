@@ -1733,7 +1733,6 @@ msn_switchboard_close(MsnSwitchBoard *swboard)
     }
 
     swboard->closed = TRUE;
-    swboard->conv = NULL;
 
     /* Don't let a write error destroy the switchboard before we do. */
     msn_switchboard_ref(swboard);
