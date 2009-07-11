@@ -1267,6 +1267,7 @@ rng_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     msn_switchboard_set_auth_key(swboard, cmd->params[3]);
     swboard->im_user = g_strdup(cmd->params[4]);
     /* msn_switchboard_add_user(swboard, cmd->params[4]); */
+    pn_node_set_id(swboard->cmdproc->conn, session->conn_count++, cmd->params[4]);
 
     if (!msn_switchboard_connect(swboard, host, port))
         msn_switchboard_close(swboard);
