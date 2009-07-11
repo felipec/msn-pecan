@@ -163,7 +163,7 @@ send_receive_request (PnNode *conn,
                             conn->session->passport_cookie.t,
                             conn->session->passport_cookie.p,
                             oim_request->message_id,
-                            "true");
+                            "false");
 
     body_len = strlen (body);
 
@@ -181,6 +181,68 @@ send_receive_request (PnNode *conn,
                               body_len,
                               "rsi.hotmail.com",
                               /* session->passport_info.mspauth, */
+                              body);
+
+    g_free (body);
+
+    pn_debug ("header=[%s]", header);
+    /* pn_debug ("body=[%s]", body); */
+
+    {
+        gsize len;
+        pn_node_write (conn, header, strlen (header), &len, NULL);
+        pn_debug ("write_len=%d", len);
+    }
+
+    g_free (header);
+
+    pn_log ("end");
+}
+
+static inline void
+send_delete_request (PnNode *conn,
+                     OimRequest *oim_request)
+{
+    gchar *body;
+    gchar *header;
+    gsize body_len;
+
+    pn_log ("begin");
+
+    body = g_strdup_printf ("<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+                            "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
+                            "<soap:Header>"
+                            "<PassportCookie xmlns=\"http://www.hotmail.msn.com/ws/2004/09/oim/rsi\">"
+                            "<t>%s</t>"
+                            "<p>%s</p>"
+                            "</PassportCookie>"
+                            "</soap:Header>"
+                            "<soap:Body>"
+                            "<DeleteMessages xmlns=\"http://www.hotmail.msn.com/ws/2004/09/oim/rsi\">"
+                            "<messageIds>"
+                            "<messageId>%s</messageId>"
+                            "</messageIds>"
+                            "</DeleteMessages>"
+                            "</soap:Body>"
+                            "</soap:Envelope>",
+                            conn->session->passport_cookie.t,
+                            conn->session->passport_cookie.p,
+                            oim_request->message_id);
+
+    body_len = strlen (body);
+
+    header = g_strdup_printf ("POST /rsi/rsi.asmx HTTP/1.1\r\n"
+                              "Accept: */*\r\n"
+                              "SOAPAction: \"http://www.hotmail.msn.com/ws/2004/09/oim/rsi/DeleteMessages\"\r\n"
+                              "Content-Type: text/xml; charset=utf-8\r\n"
+                              "Content-Length: %" G_GSIZE_FORMAT "\r\n"
+                              "User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)\r\n"
+                              "Host: %s\r\n"
+                              "Connection: Keep-Alive\r\n"
+                              "Cache-Control: no-cache\r\n"
+                              "\r\n%s",
+                              body_len,
+                              "rsi.hotmail.com",
                               body);
 
     g_free (body);
@@ -328,6 +390,8 @@ open_cb (PnNode *conn,
 
     if (oim_request->type == PN_RECEIVE_OIM)
         send_receive_request (conn, oim_request);
+    else if (oim_request->type == PN_DELETE_OIM)
+        send_delete_request (conn, oim_request);
     else
         send_send_request (conn, oim_request);
 
@@ -347,6 +411,13 @@ next_request (PecanOimSession *oim_session)
     oim_request = g_queue_pop_head (oim_session->request_queue);
 
     if (oim_request) {
+        if (oim_request->type == PN_RECEIVE_OIM)
+        {
+            g_queue_push_tail (oim_session->request_queue,
+                               oim_request_new (oim_session, oim_request->passport,
+                               oim_request->message_id, NULL, PN_DELETE_OIM));
+        }
+
         if (oim_session->got_lockkey)
         {
             oim_session->got_lockkey = FALSE;
@@ -409,6 +480,17 @@ process_body_receive (OimRequest *oim_request,
 
         g_free (message);
     }
+}
+
+static void
+process_body_delete (OimRequest *oim_request,
+                     char *body,
+                     gsize length)
+{
+    pn_test("body=[%.*s]", length, body);
+
+    if (strstr (body, "Schema validation error"))
+        pn_error ("deleting oim=[%s]: schema validation error", oim_request->message_id);
 }
 
 static void
@@ -515,6 +597,8 @@ read_cb (PnNode *conn,
 
         if (oim_request->type == PN_RECEIVE_OIM)
             process_body_receive (oim_request, body, oim_request->content_size);
+        else if (oim_request->type == PN_DELETE_OIM)
+            process_body_delete (oim_request, body, oim_request->content_size);
         else
             process_body_send (oim_request, body, oim_request->content_size);
 
@@ -548,10 +632,10 @@ oim_process_requests (PecanOimSession *oim_session)
         oim_request->parser = pn_parser_new (conn);
         pn_ssl_conn_set_read_cb (ssl_conn, read_cb, oim_request);
 
-        if (oim_request->type == PN_RECEIVE_OIM)
-            pn_node_connect (conn, "rsi.hotmail.com", 443);
-        else
+        if (oim_request->type == PN_SEND_OIM)
             pn_node_connect (conn, "ows.messenger.msn.com", 443);
+        else
+            pn_node_connect (conn, "rsi.hotmail.com", 443);
 
         oim_request->conn = conn;
         oim_request->open_sig_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), oim_request);

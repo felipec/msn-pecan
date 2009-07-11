@@ -22,6 +22,7 @@
 typedef enum
 {
     PN_RECEIVE_OIM,
+    PN_DELETE_OIM,
     PN_SEND_OIM
 
 } OimRequestType;
