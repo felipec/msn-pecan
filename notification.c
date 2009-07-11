@@ -472,7 +472,7 @@ chl_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     MsnTransaction *trans;
     gchar buf[32];
 
-    pn_handle_challenge (cmd->params[1], "PROD0101{0RM?UBW", buf);
+    pn_handle_challenge (cmd->params[1], "PROD0101{0RM?UBW", "CFHUR$52U_{VIX5T", buf);
 
     /* trans = msn_transaction_new(cmdproc, "QRY", "%s 32", "PROD0038W!61ZTF9"); */
     trans = msn_transaction_new (cmdproc, "QRY", "%s 32", "PROD0101{0RM?UBW");

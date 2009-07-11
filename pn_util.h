@@ -53,6 +53,7 @@ void msn_import_html(const char *html, char **attributes, char **message);
 void
 pn_handle_challenge (const gchar *input,
                      const gchar *product_id,
+                     const gchar *product_key,
                      gchar *output);
 
 void msn_parse_socket(const char *str, char **ret_host, int *ret_port);

@@ -638,9 +638,9 @@ msn_import_html(const char *html, char **attributes, char **message)
 void
 pn_handle_challenge (const gchar *input,
                      const gchar *product_id,
+                     const gchar *product_key,
                      gchar *output)
 {
-    const gchar *productKey = "CFHUR$52U_{VIX5T";
     const gchar *hexChars = "0123456789abcdef";
     char buf[BUFSIZE];
     unsigned char md5Hash[16], *newHash;
@@ -660,7 +660,7 @@ pn_handle_challenge (const gchar *input,
         context = purple_cipher_context_new (cipher, NULL);
 
         purple_cipher_context_append (context, (const guchar *) input, strlen (input));
-        purple_cipher_context_append (context, (const guchar *) productKey, strlen (productKey));
+        purple_cipher_context_append (context, (const guchar *) product_key, strlen (product_key));
 
         purple_cipher_context_digest (context, sizeof (md5Hash), md5Hash, NULL);
         purple_cipher_context_destroy (context);
