@@ -633,17 +633,6 @@ msg_error_helper(MsnCmdProc *cmdproc, MsnMessage *msg, MsnMsgErrorType error)
  * Message Stuff
  **************************************************************************/
 
-/** Called when a message times out. */
-static void
-msg_timeout(MsnCmdProc *cmdproc, MsnTransaction *trans)
-{
-    MsnMessage *msg;
-
-    msg = trans->data;
-
-    msg_error_helper(cmdproc, msg, MSN_MSG_ERROR_TIMEOUT);
-}
-
 /** Called when we receive an error of a message. */
 static void
 msg_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
@@ -708,14 +697,12 @@ release_msg(MsnSwitchBoard *swboard, MsnMessage *msg)
         msg->ack_ref = TRUE;
         msn_message_ref(msg);
         swboard->ack_list = g_list_append(swboard->ack_list, msg);
-        msn_transaction_set_timeout_cb(trans, msg_timeout);
     }
     else if (msg->type == MSN_MSG_SLP)
     {
         msg->ack_ref = TRUE;
         msn_message_ref(msg);
         swboard->ack_list = g_list_append(swboard->ack_list, msg);
-        msn_transaction_set_timeout_cb(trans, msg_timeout);
 #if 0
         if (msg->ack_cb != NULL)
         {

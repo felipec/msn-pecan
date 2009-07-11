@@ -371,10 +371,6 @@ msn_cmdproc_process_cmd (MsnCmdProc *cmdproc,
     if (cmd->tr_id)
         cmd->trans = trans = g_hash_table_lookup (cmdproc->transactions, GINT_TO_POINTER (cmd->tr_id));
 
-    /* transaction finished. clear timeouts. */
-    if (trans)
-        msn_transaction_flush (trans);
-
     if (g_ascii_isdigit (cmd->base[0]))
     {
         if (trans)

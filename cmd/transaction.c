@@ -66,9 +66,6 @@ msn_transaction_destroy (MsnTransaction *trans)
     if (trans->callbacks && trans->has_custom_callbacks)
         g_hash_table_destroy (trans->callbacks);
 
-    if (trans->timer)
-        g_source_remove (trans->timer);
-
     g_free (trans);
 }
 
@@ -92,16 +89,6 @@ msn_transaction_unref (MsnTransaction *trans)
     }
 
     return trans;
-}
-
-void
-msn_transaction_flush (MsnTransaction *trans)
-{
-    if (trans->timer)
-    {
-        g_source_remove (trans->timer);
-        trans->timer = 0;
-    }
 }
 
 gchar *
@@ -159,36 +146,6 @@ msn_transaction_add_cb (MsnTransaction *trans,
     }
 
     g_hash_table_insert (trans->callbacks, g_strdup (answer), cb);
-}
-
-static gboolean
-transaction_timeout (gpointer data)
-{
-    MsnTransaction *trans;
-
-    trans = data;
-    g_return_val_if_fail (trans, FALSE);
-
-    pn_log ("cmd=[%s],trid=[%d],params=[%s]",
-            trans->command, trans->trId, trans->params);
-
-    if (trans->timeout_cb)
-        trans->timeout_cb (trans->cmdproc, trans);
-
-    return FALSE;
-}
-
-void
-msn_transaction_set_timeout_cb (MsnTransaction *trans,
-                                MsnTimeoutCb cb)
-{
-    if (trans->timer)
-    {
-        pn_error ("this shouldn't be happening");
-        g_source_remove (trans->timer);
-    }
-    trans->timeout_cb = cb;
-    trans->timer = g_timeout_add_seconds (60, transaction_timeout, trans);
 }
 
 void
