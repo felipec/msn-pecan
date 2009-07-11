@@ -51,7 +51,6 @@ struct OimRequest
     gchar *message_id;
     PnParser *parser;
     guint parser_state;
-    guint32 date;
     gsize content_size;
 
     gulong open_sig_handler;
@@ -209,12 +208,51 @@ next_request (PecanOimSession *oim_session)
 
 static void
 process_body (OimRequest *oim_request,
-              const char *body,
+              char *body,
               gsize length)
 {
     gchar *message = NULL;
+    gchar *cur;
+    guint32 date = 0;
 
     pn_debug("body=[%.*s]", length, body);
+
+    /** @todo find a way to parse the date in win32 */
+#ifndef G_OS_WIN32
+    cur = strstr(body, "Date: ");
+    if (cur) {
+        struct tm time;
+        cur += 6;
+        date = mktime (&time);
+        strptime (cur, "%d %b %Y %T %z", &time);
+    }
+#endif
+
+    if (date == 0)
+        date = time (NULL);
+
+    cur = strstr (body, "\r\n\r\n");
+    if (cur) {
+        gchar *end;
+        cur += 2;
+        end = strstr (cur, "\r\n\r\n");
+        *end = '\0';
+        message = (gchar *) purple_base64_decode (cur, NULL);
+    }
+
+    if (message)
+    {
+        PurpleConversation *conv;
+        pn_debug ("oim: passport=[%s],msg=[%s]", oim_request->passport, message);
+        conv = purple_conversation_new (PURPLE_CONV_TYPE_IM,
+                                        msn_session_get_user_data (oim_request->oim_session->session),
+                                        oim_request->passport);
+
+        purple_conversation_write (conv, NULL, message,
+                                   PURPLE_MESSAGE_RECV | PURPLE_MESSAGE_DELAYED, date);
+
+        g_free (message);
+    }
 }
 
 static void
