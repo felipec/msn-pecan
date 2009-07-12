@@ -36,6 +36,12 @@
 #include "pn_siren7.h"
 #endif /* defined(PECAN_LIBSIREN) */
 
+#if defined(PECAN_LIBMSPACK)
+#include "ext/libmspack/mspack.h"
+#include "ext/swfobject.h"
+#include <glib/gprintf.h>
+#endif /* defined(PECAN_LIBMSPACK) */
+
 #include "session_private.h"
 
 #include "cmd/cmdproc_private.h"
@@ -55,6 +61,17 @@
 #include <account.h>
 #include <prefs.h>
 #include <version.h>
+
+#define WINK_HTML_TEMPLATE "<h1 style=\"text-align:center\">Playing MSN Wink</h1>\n" \
+"<div style=\"width:400; height: 300; border: 1px solid black; margin:auto; text-align: center\">\n" \
+"<object type=\"application/x-shockwave-flash\" data=\"%s\" width=\"400\" height=\"300\">\n" \
+"<param name=\"movie\" value=\"%s\"/>\n" \
+"<param name=\"loop\" value=\"false\"/>\n" \
+"<div style=\"padding: 5px\">\n" \
+"<h2>Your browser does not support Shockwave Flash.</h2>\n" \
+"This software is required to play winks.<p><img src=\"%s\"/></div></object></div>"
+
+#undef close
 
 static MsnTable *cbs_table;
 
@@ -1325,6 +1342,93 @@ got_voice_clip(struct pn_peer_call *call, const guchar *data, gsize size)
 }
 #endif /* defined(PECAN_LIBSIREN) */
 
+static gboolean
+extract_wink(struct pn_peer_call *slpcall, const guchar *data, gsize size) {
+#if defined(PECAN_LIBMSPACK)
+	struct mscab_decompressor *dec;
+	struct mscabd_cabinet *cab;
+	struct mscabd_file *fileincab;
+	FILE *f;
+	char *msg, *swf_msg, *emot_name, *emot;
+	size_t emot_len;
+	const gchar *tmpdir;
+	char *swf_path, *img_path, *html_path;
+	char *path, *craff;
+	if (!(f = purple_mkstemp(&path, TRUE))) {
+		pn_info("couldn\'t open temp file for .cab image\n");
+		return FALSE;
+	}
+	fwrite(data, size, 1, f);
+	fclose(f);
+	if (!(dec = mspack_create_cab_decompressor(NULL))) {
+		pn_info("couldn\'t create decompressor\n");
+		return FALSE;
+	}
+	if (!(cab = dec->open(dec, path))) {
+		pn_info("couldn\'t open .cab file\n");
+		return FALSE;
+	}
+	tmpdir = (gchar*)g_get_tmp_dir();
+	fileincab = cab->files;
+	swf_path = img_path = NULL;
+	while (fileincab) {
+		craff = g_build_filename(tmpdir, fileincab->filename, NULL);
+		dec->extract(dec, fileincab, craff);
+		if (strstr(fileincab->filename, ".swf")) swf_path = craff;
+		else if (strstr(fileincab->filename, ".png") || strstr(fileincab->filename, ".jpg") ||
+					strstr(fileincab->filename, ".gif"))
+			img_path = craff;
+		else g_free(craff);
+		fileincab = fileincab->next;
+	}
+	/* don't g_free(tmpdir) - it's just a ref to a global */
+	pn_info("Listed files\n");
+	dec->close(dec, cab);
+	mspack_destroy_cab_decompressor(dec);
+	g_free(path);
+	pn_info("swf_path %s\n", swf_path);
+	emot_name = swf_msg = NULL;
+	if (swf_path) {
+		if ((f = purple_mkstemp(&html_path, FALSE))) {
+			g_fprintf(f, WINK_HTML_TEMPLATE, swf_path, swf_path, img_path);
+			fclose(f);
+			swf_msg = g_strdup_printf(
+						"<a href=\"file://%s\">Click here to view the wink in your web browser</a>",
+						html_path);
+			g_free(html_path);
+		} else
+			swf_msg = g_strdup_printf(
+						"<a href=\"file://%s\">Click here to view the wink in your web browser</a>",
+						swf_path);
+	}
+	emot_name = NULL;
+	if (img_path) {
+		if (g_file_get_contents(img_path, &emot, &emot_len, NULL)) {
+			emot_name = g_strdup_printf("{IMAGE:%s}", img_path);
+		} else {
+			emot=NULL;
+		}
+	}
+	if (emot_name) msg = g_strdup_printf(" sent a wink: %s\n%s", emot_name, swf_msg);
+	else msg = g_strdup_printf(" sent a wink\n%s", swf_msg);
+	got_datacast_inform_user(slpcall->swboard->cmdproc, pn_peer_link_get_passport(slpcall->link),
+							msg);
+	g_free(emot_name);
+	/* Blows: probably the smiley code doesn't copy it.. g_free(emot); */
+	g_free(msg); g_free(swf_msg);	g_free(img_path); g_free(swf_path);
+	return TRUE;
+#else
+	return FALSE;
+#endif
+}
+static void
+got_wink(struct pn_peer_call *slpcall, const guchar *data, gsize size)
+{
+	if (!(extract_wink (slpcall, data, size)))
+		got_datacast_inform_user(slpcall->swboard->cmdproc, pn_peer_link_get_passport(slpcall->link),
+			" sent a wink, but it could not be displayed");
+}
+
 static void
 datacast_msg (MsnCmdProc *cmdproc,
               MsnMessage *msg)
@@ -1357,6 +1461,17 @@ datacast_msg (MsnCmdProc *cmdproc,
     else if (strcmp (id, "2") == 0)
     {
         /* winks */
+        const char *data;
+        struct pn_peer_link *link;
+        struct pn_msnobj *obj;
+
+        data = g_hash_table_lookup(body, "Data");
+        obj = pn_msnobj_new_from_string(data);
+
+        link = msn_session_get_peer_link(cmdproc->session, passport);
+        pn_peer_link_request_object(link, data, got_wink, NULL, obj);
+
+        pn_msnobj_free(obj);
     }
     else if (strcmp (id, "3") == 0)
     {
