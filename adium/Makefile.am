@@ -43,6 +43,11 @@ MSNSOURCES = msn.c \
 	     ext/libsiren/decoder.c \
 	     ext/libsiren/huffman.c \
 	     ext/libsiren/rmlt.c \
+	     ext/libmspack/cabd.c \
+	     ext/libmspack/mszipd.c \
+	     ext/libmspack/lzxd.c \
+	     ext/libmspack/qtmd.c \
+	     ext/libmspack/system.c \
 	     fix_purple.c
 
 AM_CFLAGS = $(st)
@@ -81,6 +86,7 @@ AM_CPPFLAGS = \
 	      -DPECAN_CVR \
 	      -DPECAN_USE_PSM \
 	      -DPECAN_LIBSIREN \
+	      -DPECAN_LIBMSPACK \
 	      -DRECEIVE_PLUS_SOUNDS \
 	      -DGETTEXT_PACKAGE='"pidgin"' \
 	      -DENABLE_NLS \

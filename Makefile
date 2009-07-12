@@ -15,6 +15,7 @@ GOBJECT_LIBS := $(shell pkg-config --libs gobject-2.0)
 # default configuration options
 CVR := y
 LIBSIREN := y
+LIBMSPACK := y
 PLUS_SOUNDS := y
 DEBUG := y
 
@@ -54,6 +55,11 @@ endif
 ifdef LIBSIREN
   override CFLAGS += -DPECAN_LIBSIREN
   LIBSIREN_LIBS := -lm
+endif
+
+ifdef LIBMSPACK
+  override CFLAGS += -DPECAN_LIBMSPACK
+  LIBMSPACK_LIBS := -lm
 endif
 
 ifdef PLUS_SOUNDS
@@ -129,6 +135,14 @@ ifdef LIBSIREN
 	     pn_siren7.o
 endif
 
+ifdef LIBMSPACK
+  objects += ext/libmspack/cabd.o \
+	     ext/libmspack/mszipd.o \
+	     ext/libmspack/lzxd.o \
+	     ext/libmspack/qtmd.o \
+	     ext/libmspack/system.o
+endif
+
 sources := $(objects:.o=.c)
 deps := $(objects:.o=.d)
 
@@ -176,6 +190,10 @@ plugin_libs := $(PURPLE_LIBS) $(GOBJECT_LIBS)
 
 ifdef LIBSIREN
   plugin_libs += $(LIBSIREN_LIBS)
+endif
+
+ifdef LIBMSPACK
+  plugin_libs += $(LIBMSPACK_LIBS)
 endif
 
 $(plugin): $(objects)
