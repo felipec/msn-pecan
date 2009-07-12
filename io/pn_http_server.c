@@ -345,6 +345,60 @@ http_poll (gpointer data)
     return TRUE;
 }
 
+#if defined(USE_GIO)
+static void
+connect_cb(GObject *source,
+           GAsyncResult *res,
+           gpointer user_data)
+{
+    GSocketConnection *socket_conn;
+    PnNode *conn;
+    PnHttpServer *http_conn;
+
+    conn = PN_NODE(user_data);
+    http_conn = PN_HTTP_SERVER(user_data);
+    socket_conn = g_socket_client_connect_to_host_finish(G_SOCKET_CLIENT(source), res, NULL);
+
+    g_object_unref(source);
+
+    g_object_ref(conn);
+
+    if (socket_conn) {
+        GIOChannel *channel;
+        GSocket *socket;
+
+        conn->socket_conn = socket_conn;
+        socket = g_socket_connection_get_socket(socket_conn);
+        conn->stream = pn_stream_new(g_socket_get_fd(socket));
+        channel = conn->stream->channel;
+
+        g_io_channel_set_encoding (channel, NULL, NULL);
+        g_io_channel_set_line_term (channel, "\r\n", 2);
+
+        http_conn->timer = pn_timer_new (http_poll, http_conn);
+        pn_timer_start (http_conn->timer, 2);
+
+        conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, conn);
+
+        {
+            PnNodeClass *class;
+            class = g_type_class_peek (PN_NODE_TYPE);
+            g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
+        }
+    }
+    else {
+        PnNodeClass *class;
+        class = g_type_class_peek (PN_NODE_TYPE);
+
+        conn->error = g_error_new_literal (PN_NODE_ERROR, PN_NODE_ERROR_OPEN,
+                                           "Unable to connect");
+
+        g_signal_emit (G_OBJECT (conn), class->error_sig, 0, conn);
+    }
+
+    g_object_unref(conn);
+}
+#elif defined(HAVE_LIBPURPLE)
 static void
 connect_cb (gpointer data,
             gint source,
@@ -397,6 +451,7 @@ connect_cb (gpointer data,
 
     pn_log ("end");
 }
+#endif
 
 static void
 connect_impl (PnNode *conn,
@@ -411,20 +466,26 @@ connect_impl (PnNode *conn,
 
     if (!conn->stream)
     {
+        port = 80;
+        pn_debug ("conn=%p,hostname=%s,port=%d", conn, hostname, port);
+        if (conn->prev->type == PN_NODE_NS)
+            hostname = http_conn->gateway;
+
+#if defined(USE_GIO)
+        GSocketClient *client;
+        client = g_socket_client_new();
+        g_socket_client_connect_to_host_async(client, hostname, port,
+                                              NULL, connect_cb, conn);
+#elif defined(HAVE_LIBPURPLE)
         /* close a pending connection */
         /* this can happen when reconecting before receiving the connection
          * callback. */
         if (conn->connect_data)
-        {
             purple_proxy_connect_cancel (conn->connect_data);
-        }
 
-        if (conn->prev->type == PN_NODE_NS)
-            hostname = http_conn->gateway;
-        port = 80;
-        pn_debug ("conn=%p,hostname=%s,port=%d", conn, hostname, port);
         conn->connect_data = purple_proxy_connect (NULL, msn_session_get_user_data (conn->session),
                                                    hostname, port, connect_cb, conn);
+#endif
         return;
     }
     else
