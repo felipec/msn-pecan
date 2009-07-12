@@ -45,7 +45,7 @@ struct PecanOimSession
     MsnSession *session;
     GQueue *request_queue;
 
-    gchar lockkey[32];
+    gchar *lockkey;
     gboolean got_lockkey;
 };
 
@@ -131,6 +131,8 @@ pn_oim_session_free (PecanOimSession *oim_session)
         }
     }
     g_queue_free (oim_session->request_queue);
+
+    g_free (oim_session->lockkey);
 
     g_free (oim_session);
 }
@@ -511,7 +513,12 @@ process_body_send (OimRequest *oim_request,
         end = strchr (cur, '<');
         lockkey = g_strndup (cur, end - cur);
 
+        g_free (oim_request->oim_session->lockkey);
+        oim_request->oim_session->lockkey = NULL;
+
+        oim_request->oim_session->lockkey = g_malloc (33);
         pn_handle_challenge (lockkey, "PROD01065C%ZFN6F", "O4BG@C7BWLYQX?5G", oim_request->oim_session->lockkey);
+        oim_request->oim_session->lockkey[32] = '\0';
 
         g_free (lockkey);
 
@@ -525,10 +532,15 @@ process_body_send (OimRequest *oim_request,
         PurpleAccount *account;
         const gchar *error;
 
-        if (strstr (body, "q0:SystemUnavailable"))
-            error = _("The following message wasn't sent because the system is unavailable. This normally happens when the user is blocked or does not exist.");
+        if (strstr (body, "q0:AuthenticationFailed"))
+            error = _("The following message wasn't sent due to an authentication error. "
+                      "Please logout and login again before sending a new message.");
+        else if (strstr (body, "q0:SystemUnavailable"))
+            error = _("The following message wasn't sent because the system is unavailable. "
+                      "This normally happens when the user is blocked or does not exist.");
         else if (strstr (body, "q0:SenderThrottleLimitExceeded"))
-            error = _("The following message wasn't sent because you've sent messages too quickly.");
+            error = _("The following message wasn't sent because you've sent messages too quickly. "
+                      "Please wait about 10 seconds before sending again the message.");
         else if (strstr (body, "q0:MessageTooLarge"))
             error = _("The following message wasn't sent because it's too large.");
         else
