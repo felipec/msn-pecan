@@ -25,10 +25,7 @@
 typedef struct MsnNexus MsnNexus;
 
 #include "session.h"
-
-struct _PurpleSslConnection;
-
-typedef void (*_PurpleInputFunction) (gpointer, gint, guint);
+#include "io/pn_parser.h"
 
 struct MsnNexus {
     MsnSession *session;
@@ -36,16 +33,12 @@ struct MsnNexus {
     char *login_host;
     char *login_path;
     GHashTable *challenge_data;
-    struct _PurpleSslConnection *gsc;
 
-    guint input_handler;
-
-    char *write_buf;
-    gssize written_len;
-    _PurpleInputFunction written_cb;
-
-    char *read_buf;
-    gsize read_len;
+    PnParser *parser;
+    guint parser_state;
+    PnNode *conn;
+    gulong open_handler;
+    GString *header;
 };
 
 void msn_nexus_connect(MsnNexus *nexus);

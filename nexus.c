@@ -19,8 +19,11 @@
 
 #include "nexus.h"
 #include "pn_log.h"
-#include "pn_locale.h"
 #include "pn_util.h"
+#include "pn_locale.h"
+
+#include "io/pn_ssl_conn.h"
+#include "io/pn_node_private.h"
 
 #include <stdlib.h> /* for strtoul */
 #include <string.h> /* for strncpy, strlen, strchr */
@@ -30,11 +33,7 @@
 #include "session.h"
 #include "session_private.h"
 
-#include <errno.h> /* for EAGAIN */
-
 /* libpurple */
-#include "fix_purple_win32.h"
-#include <sslconn.h>
 #include <util.h> /* for url_encode */
 
 MsnNexus *
@@ -53,8 +52,11 @@ msn_nexus_new(MsnSession *session)
 void
 msn_nexus_destroy(MsnNexus *nexus)
 {
-    if (nexus->gsc)
-        purple_ssl_close(nexus->gsc);
+    g_signal_handler_disconnect(nexus->conn, nexus->open_handler);
+    pn_parser_free(nexus->parser);
+
+    if (nexus->header)
+        g_string_free(nexus->header, TRUE);
 
     g_free(nexus->login_host);
     g_free(nexus->login_path);
@@ -62,93 +64,10 @@ msn_nexus_destroy(MsnNexus *nexus)
     if (nexus->challenge_data)
         g_hash_table_destroy(nexus->challenge_data);
 
-    if (nexus->input_handler > 0)
-        purple_input_remove(nexus->input_handler);
-    g_free(nexus->write_buf);
-    g_free(nexus->read_buf);
-
     g_free(nexus);
 }
 
-static gssize
-msn_ssl_read(MsnNexus *nexus)
-{
-    gssize len;
-    char temp_buf[4096];
-
-    if ((len = purple_ssl_read(nexus->gsc, temp_buf,
-                               sizeof(temp_buf))) > 0)
-    {
-        nexus->read_buf = g_realloc(nexus->read_buf,
-                                    nexus->read_len + len + 1);
-        strncpy(nexus->read_buf + nexus->read_len, temp_buf, len);
-        nexus->read_len += len;
-        nexus->read_buf[nexus->read_len] = '\0';
-    }
-
-    return len;
-}
-
-static void
-nexus_write_cb(gpointer data, gint source, PurpleInputCondition cond)
-{
-    MsnNexus *nexus = data;
-    gssize len, total_len;
-
-    total_len = strlen(nexus->write_buf);
-
-    len = purple_ssl_write(nexus->gsc,
-                           nexus->write_buf + nexus->written_len,
-                           total_len - nexus->written_len);
-
-    if (len < 0 && errno == EAGAIN)
-        return;
-    else if (len <= 0) {
-        purple_input_remove(nexus->input_handler);
-        nexus->input_handler = 0;
-        msn_session_set_error(nexus->session, MSN_ERROR_AUTH,
-                              _("nexus stream error"));
-        return;
-    }
-    nexus->written_len += len;
-
-    if (nexus->written_len < total_len)
-        return;
-
-    purple_input_remove(nexus->input_handler);
-    nexus->input_handler = 0;
-
-    g_free(nexus->write_buf);
-    nexus->write_buf = NULL;
-    nexus->written_len = 0;
-
-    nexus->written_cb(nexus, source, 0);
-}
-
 /* login */
-
-static void
-login_connect_cb(gpointer data, PurpleSslConnection *gsc,
-                 PurpleInputCondition cond);
-
-static void
-login_error_cb(PurpleSslConnection *gsc, PurpleSslErrorType error, void *data)
-{
-    MsnNexus *nexus;
-    MsnSession *session;
-
-    nexus = data;
-    g_return_if_fail(nexus);
-
-    nexus->gsc = NULL;
-
-    session = nexus->session;
-    g_return_if_fail(session);
-
-    msn_session_set_error(session, MSN_ERROR_AUTH, _("Unable to connect"));
-    /* the above line will result in nexus being destroyed, so we don't want
-     * to destroy it here, or we'd crash */
-}
 
 static void
 got_header(MsnNexus *nexus,
@@ -205,13 +124,7 @@ got_header(MsnNexus *nexus,
         g_free(nexus->login_host);
         nexus->login_host = g_strdup(location);
 
-        g_free(nexus->read_buf);
-        nexus->read_buf = NULL;
-        nexus->read_len = 0;
-
-        nexus->gsc = purple_ssl_connect(msn_session_get_user_data (session),
-                                        nexus->login_host, PURPLE_SSL_DEFAULT_PORT,
-                                        login_connect_cb, login_error_cb, nexus);
+        pn_node_connect(nexus->conn, nexus->login_host, 443);
         return;
     }
     else if (strstr(header, "HTTP/1.1 401 Unauthorized")) {
@@ -251,44 +164,56 @@ parse_error:
 }
 
 static void
-nexus_login_written_cb(gpointer data, gint source, PurpleInputCondition cond)
+login_read_cb(PnNode *conn,
+              gpointer data)
 {
     MsnNexus *nexus = data;
-    MsnSession *session;
-    int len;
+    GIOStatus status = G_IO_STATUS_NORMAL;
+    gchar *str = NULL;
 
-    session = nexus->session;
-    g_return_if_fail(session);
+    if (!nexus->header)
+        nexus->header = g_string_new(NULL);
 
-    if (nexus->input_handler == 0)
-        /* TODO: Use purple_ssl_input_add()? */
-        nexus->input_handler = purple_input_add(nexus->gsc->fd,
-                                                PURPLE_INPUT_READ, nexus_login_written_cb, nexus);
+    g_object_ref (conn);
 
+    while (nexus->parser_state == 0) {
+        gsize terminator_pos;
 
-    len = msn_ssl_read(nexus);
+        status = pn_parser_read_line(nexus->parser, &str, NULL, &terminator_pos, NULL);
 
-    if (len < 0 && errno == EAGAIN)
-        return;
-    else if (len < 0) {
-        purple_input_remove(nexus->input_handler);
-        nexus->input_handler = 0;
-        msn_session_set_error(session, MSN_ERROR_AUTH,
-                              _("nexus stream error"));
-        return;
+        if (status == G_IO_STATUS_AGAIN) {
+            g_object_unref(conn);
+            return;
+        }
+
+        if (status != G_IO_STATUS_NORMAL) {
+            msn_session_set_error(nexus->session, MSN_ERROR_AUTH,
+                                  _("nexus stream error"));
+            goto leave;
+        }
+
+        if (str) {
+            str[terminator_pos] = '\0';
+
+            nexus->header = g_string_append(nexus->header, str);
+
+            if (str[0] == '\0') {
+                gchar *tmp;
+                nexus->parser_state++;
+                tmp = g_string_free(nexus->header, FALSE);
+                nexus->header = NULL;
+                got_header(nexus, tmp);
+                g_free(tmp);
+                break;
+            }
+
+            g_free(str);
+        }
     }
 
-    if (g_strstr_len(nexus->read_buf, nexus->read_len,
-                     "\r\n\r\n") == NULL)
-        return;
-
-    purple_input_remove(nexus->input_handler);
-    nexus->input_handler = 0;
-
-    purple_ssl_close(nexus->gsc);
-    nexus->gsc = NULL;
-
-    got_header(nexus, nexus->read_buf);
+leave:
+    pn_node_close(conn);
+    g_object_unref(conn);
 }
 
 /* this guards against missing entries */
@@ -301,21 +226,23 @@ get_key(GHashTable *challenge_data,
     return entry ? entry : "(null)";
 }
 
-void
-login_connect_cb(gpointer data, PurpleSslConnection *gsc,
-                 PurpleInputCondition cond)
+static void
+login_open_cb(PnNode *conn,
+              gpointer data)
 {
-    MsnNexus *nexus;
+    MsnNexus *nexus = data;
     MsnSession *session;
     const char *username, *password;
     char *req, *head, *tail;
     guint32 ctint;
+    GIOStatus status = G_IO_STATUS_NORMAL;
 
-    nexus = data;
-    g_return_if_fail(nexus);
+    g_return_if_fail(conn);
+
+    g_signal_handler_disconnect(conn, nexus->open_handler);
+    nexus->open_handler = 0;
 
     session = nexus->session;
-    g_return_if_fail(session);
 
     username = msn_session_get_username(session);
     password = msn_session_get_password(session);
@@ -350,122 +277,140 @@ login_connect_cb(gpointer data, PurpleSslConnection *gsc,
     g_free(head);
     g_free(tail);
 
-    nexus->write_buf = req;
-    nexus->written_len = 0;
+    status = pn_node_write(conn, req, strlen(req), NULL, NULL);
 
-    nexus->read_len = 0;
-
-    nexus->written_cb = nexus_login_written_cb;
-
-    nexus->input_handler = purple_input_add(gsc->fd, PURPLE_INPUT_WRITE,
-                                            nexus_write_cb, nexus);
-
-    nexus_write_cb(nexus, gsc->fd, PURPLE_INPUT_WRITE);
-
-    return;
-}
-
-static void
-nexus_connect_written_cb(gpointer data, gint source, PurpleInputCondition cond)
-{
-    MsnNexus *nexus = data;
-    int len;
-    char *base, *da_login;
-
-    if (nexus->input_handler == 0)
-        /* TODO: Use purple_ssl_input_add()? */
-        nexus->input_handler = purple_input_add(nexus->gsc->fd,
-                                                PURPLE_INPUT_READ, nexus_connect_written_cb, nexus);
-
-    /* Get the PassportURLs line. */
-    len = msn_ssl_read(nexus);
-
-    if (len < 0 && errno == EAGAIN)
-        return;
-    else if (len < 0) {
-        purple_input_remove(nexus->input_handler);
-        nexus->input_handler = 0;
+    if (status != G_IO_STATUS_NORMAL) {
         msn_session_set_error(nexus->session, MSN_ERROR_AUTH,
                               _("nexus stream error"));
-        return;
     }
 
-    if (g_strstr_len(nexus->read_buf, nexus->read_len,
-                     "\r\n\r\n") == NULL)
-        return;
-
-    purple_input_remove(nexus->input_handler);
-    nexus->input_handler = 0;
-
-    base = strstr(nexus->read_buf, "PassportURLs");
-    if (!base)
-        goto parse_error;
-
-    da_login = strstr(base, "DALogin=");
-    if (da_login) {
-        char *c;
-
-        da_login += 8; /* skip over "DALogin=" */
-
-        c = strchr(da_login, ',');
-        if (c)
-            *c = '\0';
-
-        c = strchr(da_login, '/');
-        if (c) {
-            nexus->login_path = g_strdup(c);
-            *c = '\0';
-        }
-
-        nexus->login_host = g_strdup(da_login);
-    }
-
-    g_free(nexus->read_buf);
-    nexus->read_buf = NULL;
-    nexus->read_len = 0;
-
-    purple_ssl_close(nexus->gsc);
-
-    /* Now begin the connection to the login server. */
-    nexus->gsc = purple_ssl_connect(msn_session_get_user_data (nexus->session),
-                                    nexus->login_host, PURPLE_SSL_DEFAULT_PORT,
-                                    login_connect_cb, login_error_cb, nexus);
-
-    return;
-
-parse_error:
-    msn_session_set_error(nexus->session, MSN_ERROR_AUTH,
-                          _("nexus parse error"));
+    g_free(req);
 }
 
 /* nexus */
 
-static void
-nexus_connect_cb(gpointer data, PurpleSslConnection *gsc,
-                 PurpleInputCondition cond)
+static inline char *
+get_field(char *s1, const char *s2)
 {
-    MsnNexus *nexus;
+    if (strncmp(s1, s2, strlen(s2)) == 0)
+        return s1 += strlen(s2);
+    return NULL;
+}
 
-    nexus = data;
-    g_return_if_fail(nexus);
+static void
+nexus_read_cb(PnNode *conn,
+              gpointer data)
+{
+    MsnNexus *nexus = data;
+    GIOStatus status = G_IO_STATUS_NORMAL;
+    gchar *str = NULL;
 
-    nexus->write_buf = g_strdup("GET /rdr/pprdr.asp\r\n\r\n");
-    nexus->written_len = 0;
+    while (nexus->parser_state == 0) {
+        gsize terminator_pos;
 
-    nexus->read_len = 0;
+        status = pn_parser_read_line(nexus->parser, &str, NULL, &terminator_pos, NULL);
 
-    nexus->written_cb = nexus_connect_written_cb;
+        if (status == G_IO_STATUS_AGAIN)
+            return;
 
-    nexus->input_handler = purple_input_add(gsc->fd, PURPLE_INPUT_WRITE,
-                                            nexus_write_cb, nexus);
+        if (status != G_IO_STATUS_NORMAL) {
+            msn_session_set_error(nexus->session, MSN_ERROR_AUTH,
+                                  _("nexus stream error"));
+            goto leave;
+        }
 
-    nexus_write_cb(nexus, gsc->fd, PURPLE_INPUT_WRITE);
+        if (str) {
+            char *field;
+            str[terminator_pos] = '\0';
+
+            if ((field = get_field(str, "PassportURLs: "))) {
+                char *da_login;
+
+                da_login = strstr(field, "DALogin=");
+                if (da_login) {
+                    char *c;
+
+                    da_login += 8; /* skip over "DALogin=" */
+
+                    c = strchr(da_login, ',');
+                    if (c)
+                        *c = '\0';
+
+                    c = strchr(da_login, '/');
+                    if (c) {
+                        nexus->login_path = g_strdup(c);
+                        *c = '\0';
+                    }
+
+                    nexus->login_host = g_strdup(da_login);
+                }
+            }
+
+            g_free(str);
+
+            if (nexus->login_host) {
+                PnSslConn *ssl_conn;
+                PnNode *conn;
+
+                ssl_conn = pn_ssl_conn_new("login", PN_NODE_NULL);
+
+                conn = PN_NODE(ssl_conn);
+                conn->session = nexus->session;
+
+                nexus->parser = pn_parser_new(conn);
+                pn_ssl_conn_set_read_cb(ssl_conn, login_read_cb, nexus);
+
+                pn_node_connect(conn, nexus->login_host, 443);
+
+                nexus->conn = conn;
+                nexus->open_handler = g_signal_connect(conn, "open", G_CALLBACK(login_open_cb), nexus);
+
+                goto leave;
+            }
+        }
+    }
+
+leave:
+    pn_node_close(conn);
+}
+
+static void
+nexus_open_cb(PnNode *conn,
+              gpointer data)
+{
+    MsnNexus *nexus = data;
+    const gchar *req = "GET /rdr/pprdr.asp\r\n\r\n";
+    GIOStatus status = G_IO_STATUS_NORMAL;
+
+    g_return_if_fail(conn);
+
+    g_signal_handler_disconnect(conn, nexus->open_handler);
+    nexus->open_handler = 0;
+
+    pn_node_write(conn, req, strlen(req), NULL, NULL);
+
+    if (status != G_IO_STATUS_NORMAL) {
+        msn_session_set_error(nexus->session, MSN_ERROR_AUTH,
+                              _("nexus stream error"));
+    }
 }
 
 void
 msn_nexus_connect(MsnNexus *nexus)
 {
-    nexus->gsc = purple_ssl_connect(msn_session_get_user_data (nexus->session),
-                                    "nexus.passport.com", PURPLE_SSL_DEFAULT_PORT,
-                                    nexus_connect_cb, login_error_cb, nexus);
+    PnSslConn *ssl_conn;
+    PnNode *conn;
+
+    ssl_conn = pn_ssl_conn_new("nexus", PN_NODE_NULL);
+
+    conn = PN_NODE(ssl_conn);
+    conn->session = nexus->session;
+
+    nexus->parser = pn_parser_new(conn);
+    pn_ssl_conn_set_read_cb(ssl_conn, nexus_read_cb, nexus);
+
+    pn_node_connect(conn, "nexus.passport.com", 443);
+
+    nexus->conn = conn;
+    nexus->open_handler = g_signal_connect(conn, "open", G_CALLBACK(nexus_open_cb), nexus);
 }
