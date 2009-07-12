@@ -1490,6 +1490,68 @@ initial_mdata_msg (MsnCmdProc *cmdproc,
 }
 
 static void
+oim_msg (MsnCmdProc *cmdproc,
+         MsnMessage *msg)
+{
+    GHashTable *table;
+    gchar *mdata;
+
+    table = msn_message_get_hashtable_from_body (msg);
+
+    mdata = g_hash_table_lookup (table, "Mail-Data");
+
+    if (mdata)
+    {
+        MsnSession *session;
+        const gchar *start;
+        const gchar *end;
+        guint len;
+
+        session = cmdproc->session;
+
+        len = strlen (mdata);
+        start = g_strstr_len (mdata, len, "<M>");
+
+        while (start)
+        {
+            start += strlen ("<M>");
+            end = g_strstr_len (start, len - (start - mdata), "</M>");
+
+            if (end > start)
+            {
+                gchar *read_set;
+
+                read_set = pn_get_xml_field ("RS", start, end);
+
+                if (strcmp (read_set, "0") == 0)
+                {
+                    gchar *passport;
+                    gchar *message_id;
+                    struct pn_contact *contact;
+
+                    passport = pn_get_xml_field ("E", start, end);
+                    contact = pn_contactlist_find_contact (session->contactlist, passport);
+
+                    message_id = pn_get_xml_field ("I", start, end);
+
+                    if (contact && !(pn_contact_is_blocked (contact)))
+                        pn_oim_session_request (session->oim_session, passport, message_id,
+                                                NULL, PN_RECEIVE_OIM);
+
+                    g_free (passport);
+                    g_free (message_id);
+                }
+
+                g_free (read_set);
+                start = end + strlen ("</M>");
+            }
+
+            start = g_strstr_len (start, len - (start - mdata), "<M>");
+        }
+    }
+}
+
+static void
 email_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
 {
     MsnSession *session;
@@ -1731,6 +1793,9 @@ msn_notification_init(void)
     msn_table_add_msg_type(cbs_table,
                            "text/x-msmsgsinitialmdatanotification",
                            initial_mdata_msg);
+    msn_table_add_msg_type(cbs_table,
+                           "text/x-msmsgsoimnotification",
+                           oim_msg);
     msn_table_add_msg_type(cbs_table,
                            "text/x-msmsgsemailnotification",
                            email_msg);
