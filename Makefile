@@ -121,11 +121,11 @@ ifdef DIRECTCONN
 endif
 
 ifdef LIBSIREN
-  objects += lib/libsiren/common.o \
-	     lib/libsiren/dct4.o \
-	     lib/libsiren/decoder.o \
-	     lib/libsiren/huffman.o \
-	     lib/libsiren/rmlt.o \
+  objects += ext/libsiren/common.o \
+	     ext/libsiren/dct4.o \
+	     ext/libsiren/decoder.o \
+	     ext/libsiren/huffman.o \
+	     ext/libsiren/rmlt.o \
 	     pn_siren7.o
 endif
 

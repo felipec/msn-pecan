@@ -38,11 +38,11 @@ MSNSOURCES = msn.c \
 	     cvr/pn_peer_msg.c \
 	     cvr/pn_msnobj.c \
 	     libpurple/xfer.c \
-	     lib/libsiren/common.c \
-	     lib/libsiren/dct4.c \
-	     lib/libsiren/decoder.c \
-	     lib/libsiren/huffman.c \
-	     lib/libsiren/rmlt.c \
+	     ext/libsiren/common.c \
+	     ext/libsiren/dct4.c \
+	     ext/libsiren/decoder.c \
+	     ext/libsiren/huffman.c \
+	     ext/libsiren/rmlt.c \
 	     fix_purple.c
 
 AM_CFLAGS = $(st)
