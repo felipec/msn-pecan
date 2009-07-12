@@ -171,6 +171,9 @@ pn_update_status (MsnSession *session)
 #if defined(PECAN_LIBSIREN)
     caps |= PN_CLIENT_CAP_VOICE_CLIP;
 #endif
+#if defined(PECAN_LIBMSPACK)
+    caps |= PN_CLIENT_CAP_WINKS;
+#endif
 #endif
 
     client_id = caps | (PN_CLIENT_VER_7_5 << 24);

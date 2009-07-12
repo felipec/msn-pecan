@@ -62,17 +62,6 @@
 #include <prefs.h>
 #include <version.h>
 
-#define WINK_HTML_TEMPLATE "<h1 style=\"text-align:center\">Playing MSN Wink</h1>\n" \
-"<div style=\"width:400; height: 300; border: 1px solid black; margin:auto; text-align: center\">\n" \
-"<object type=\"application/x-shockwave-flash\" data=\"%s\" width=\"400\" height=\"300\">\n" \
-"<param name=\"movie\" value=\"%s\"/>\n" \
-"<param name=\"loop\" value=\"false\"/>\n" \
-"<div style=\"padding: 5px\">\n" \
-"<h2>Your browser does not support Shockwave Flash.</h2>\n" \
-"This software is required to play winks.<p><img src=\"%s\"/></div></object></div>"
-
-#undef close
-
 static MsnTable *cbs_table;
 
 static void
@@ -1343,90 +1332,142 @@ got_voice_clip(struct pn_peer_call *call, const guchar *data, gsize size)
 #endif /* defined(PECAN_LIBSIREN) */
 
 static gboolean
-extract_wink(struct pn_peer_call *slpcall, const guchar *data, gsize size) {
-#if defined(PECAN_LIBMSPACK)
-	struct mscab_decompressor *dec;
-	struct mscabd_cabinet *cab;
-	struct mscabd_file *fileincab;
-	FILE *f;
-	char *msg, *swf_msg, *emot_name, *emot;
-	size_t emot_len;
-	const gchar *tmpdir;
-	char *swf_path, *img_path, *html_path;
-	char *path, *craff;
-	if (!(f = purple_mkstemp(&path, TRUE))) {
-		pn_info("couldn\'t open temp file for .cab image\n");
-		return FALSE;
-	}
-	fwrite(data, size, 1, f);
-	fclose(f);
-	if (!(dec = mspack_create_cab_decompressor(NULL))) {
-		pn_info("couldn\'t create decompressor\n");
-		return FALSE;
-	}
-	if (!(cab = dec->open(dec, path))) {
-		pn_info("couldn\'t open .cab file\n");
-		return FALSE;
-	}
-	tmpdir = (gchar*)g_get_tmp_dir();
-	fileincab = cab->files;
-	swf_path = img_path = NULL;
-	while (fileincab) {
-		craff = g_build_filename(tmpdir, fileincab->filename, NULL);
-		dec->extract(dec, fileincab, craff);
-		if (strstr(fileincab->filename, ".swf")) swf_path = craff;
-		else if (strstr(fileincab->filename, ".png") || strstr(fileincab->filename, ".jpg") ||
-					strstr(fileincab->filename, ".gif"))
-			img_path = craff;
-		else g_free(craff);
-		fileincab = fileincab->next;
-	}
-	/* don't g_free(tmpdir) - it's just a ref to a global */
-	pn_info("Listed files\n");
-	dec->close(dec, cab);
-	mspack_destroy_cab_decompressor(dec);
-	g_free(path);
-	pn_info("swf_path %s\n", swf_path);
-	emot_name = swf_msg = NULL;
-	if (swf_path) {
-		if ((f = purple_mkstemp(&html_path, FALSE))) {
-			g_fprintf(f, WINK_HTML_TEMPLATE, swf_path, swf_path, img_path);
-			fclose(f);
-			swf_msg = g_strdup_printf(
-						"<a href=\"file://%s\">Click here to view the wink in your web browser</a>",
-						html_path);
-			g_free(html_path);
-		} else
-			swf_msg = g_strdup_printf(
-						"<a href=\"file://%s\">Click here to view the wink in your web browser</a>",
-						swf_path);
-	}
-	emot_name = NULL;
-	if (img_path) {
-		if (g_file_get_contents(img_path, &emot, &emot_len, NULL)) {
-			emot_name = g_strdup_printf("{IMAGE:%s}", img_path);
-		} else {
-			emot=NULL;
-		}
-	}
-	if (emot_name) msg = g_strdup_printf(" sent a wink: %s\n%s", emot_name, swf_msg);
-	else msg = g_strdup_printf(" sent a wink\n%s", swf_msg);
-	got_datacast_inform_user(slpcall->swboard->cmdproc, pn_peer_link_get_passport(slpcall->link),
-							msg);
-	g_free(emot_name);
-	/* Blows: probably the smiley code doesn't copy it.. g_free(emot); */
-	g_free(msg); g_free(swf_msg);	g_free(img_path); g_free(swf_path);
-	return TRUE;
-#else
-	return FALSE;
-#endif
-}
-static void
-got_wink(struct pn_peer_call *slpcall, const guchar *data, gsize size)
+extract_wink(struct pn_peer_call *call, const guchar *data, gsize size)
 {
-	if (!(extract_wink (slpcall, data, size)))
-		got_datacast_inform_user(slpcall->swboard->cmdproc, pn_peer_link_get_passport(slpcall->link),
-			" sent a wink, but it could not be displayed");
+#if defined(PECAN_LIBMSPACK)
+    struct mscab_decompressor *dec;
+    struct mscabd_cabinet *cab;
+    struct mscabd_file *fileincab;
+    FILE *f;
+    char *msg, *swf_msg, *emot_name, *emot;
+    size_t emot_len;
+    const gchar *tmpdir;
+    char *swf_path, *img_path, *html_path;
+    char *path, *craff;
+    int imgid;
+
+    if (!(f = purple_mkstemp(&path, TRUE)))
+    {
+        pn_error("Couldn't open temp file for .cab image.\n");
+        return FALSE;
+    }
+
+    fwrite(data, size, 1, f);
+    fclose(f);
+
+    if (!(dec = mspack_create_cab_decompressor(NULL)))
+    {
+        pn_error("Couldn't create decompressor.\n");
+        return FALSE;
+    }
+    if (!(cab = dec->open(dec, path)))
+    {
+        pn_error("Couldn't open .cab file.\n");
+        return FALSE;
+    }
+    tmpdir = (gchar*)g_get_tmp_dir();
+    fileincab = cab->files;
+    swf_path = img_path = NULL;
+    while (fileincab)
+    {
+        craff = g_build_filename(tmpdir, fileincab->filename, NULL);
+        dec->extract(dec, fileincab, craff);
+        if (strstr(fileincab->filename, ".swf")) swf_path = craff;
+        else if (strstr(fileincab->filename, ".png") || strstr(fileincab->filename, ".jpg") ||
+                strstr(fileincab->filename, ".gif"))
+            img_path = craff;
+        else g_free(craff);
+        fileincab = fileincab->next;
+    }
+    /* don't g_free(tmpdir) - it's just a ref to a global */
+    dec->close(dec, cab);
+    mspack_destroy_cab_decompressor(dec);
+    g_free(path);
+
+    pn_info("swf_path %s\n", swf_path);
+    emot_name = swf_msg = NULL;
+    if (swf_path)
+    {
+        if ((f = purple_mkstemp(&html_path, FALSE)))
+        {
+            g_fprintf(f, "<script type='text/javascript'>\n" \
+                SWFOBJECT "\n</script>\n" \
+                "<script type='text/javascript'>\n" \
+                "setTimeout('Redirect()',0);\n" \
+                "function Redirect() {\n" \
+                "if (swfobject.hasFlashPlayerVersion('9.0.0')) location.href = 'file://%s';\n" \
+                "else document.getElementById('wink').style.visibility = '';\n" \
+                "}\n" \
+                "</script>\n" \
+                "<div style='visibility:hidden' id='wink'>\n" \
+                "<h2>Your browser does not support Shockwave Flash.</h2>\n" \
+                "This software is required to play winks.<p><img src='%s'/>\n" \
+                "<a href='http://www.adobe.com/go/getflashplayer'>\n" \
+                "<img src='http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif' " \
+                "alt='Get Adobe Flash player' /></a></p>\n" \
+                "</div>", swf_path, img_path);
+            fclose(f);
+            swf_msg = g_strdup_printf(
+                _("<a href=\"file://%s\">Click here to view the wink in your web browser</a>"),
+                html_path);
+            g_free(html_path);
+        }
+        else
+        {
+            swf_msg = g_strdup_printf(
+                _("<a href=\"file://%s\">Click here to view the wink in your web browser</a>"),
+                swf_path);
+        }
+    }
+
+    imgid = 0;
+    if (img_path)
+    {
+        if (g_file_get_contents(img_path, &emot, &emot_len, NULL))
+        {
+            PurpleConversation *conv;
+            MsnSwitchBoard *swboard;
+            PurpleAccount *account;
+
+            swboard = call->swboard;
+            conv = swboard->conv;
+            account = msn_session_get_user_data(swboard->session);
+
+            if (!conv)
+                conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, pn_peer_link_get_passport(call->link));
+
+            imgid = purple_imgstore_add_with_id(emot, emot_len, NULL);
+            emot_name = g_strdup_printf ("<IMG ID=%d/>", imgid);
+
+        }
+        else
+        {
+            emot = NULL;
+        }
+    }
+    if (emot_name)
+        msg = g_strdup_printf(_("sent a wink: %s\n%s"), emot_name, swf_msg);
+    else
+        msg = g_strdup_printf(_("sent a wink\n%s"), swf_msg);
+
+    got_datacast_inform_user(call->swboard->cmdproc, pn_peer_link_get_passport(call->link),
+        msg);
+    purple_imgstore_unref_by_id (imgid);
+    g_free (emot_name);
+    /* Blows: probably the smiley code doesn't copy it.. g_free(emot); */
+    g_free(msg); g_free(swf_msg); g_free(img_path); g_free(swf_path);
+    return TRUE;
+#else
+    return FALSE;
+#endif /* defined(PECAN_LIBMSPACK) */
+}
+
+static void
+got_wink(struct pn_peer_call *call, const guchar *data, gsize size)
+{
+    if (!(extract_wink (call, data, size)))
+        got_datacast_inform_user(call->swboard->cmdproc, pn_peer_link_get_passport(call->link),
+        _("sent a wink, but it could not be displayed."));
 }
 
 static void
@@ -1460,6 +1501,7 @@ datacast_msg (MsnCmdProc *cmdproc,
     }
     else if (strcmp (id, "2") == 0)
     {
+#if defined(PECAN_LIBMSPACK)
         /* winks */
         const char *data;
         struct pn_peer_link *link;
@@ -1472,6 +1514,7 @@ datacast_msg (MsnCmdProc *cmdproc,
         pn_peer_link_request_object(link, data, got_wink, NULL, obj);
 
         pn_msnobj_free(obj);
+#endif /* defined(PECAN_LIBMSPACK) */
     }
     else if (strcmp (id, "3") == 0)
     {
