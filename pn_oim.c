@@ -505,12 +505,11 @@ process_body_send (OimRequest *oim_request,
     cur = strstr (body, "<LockKeyChallenge ");
     if (cur)
     {
-        gsize lockkey_len;
-        gchar *lockkey;
+        gchar *lockkey, *end;
 
-        lockkey_len = strlen (cur) - 67 - strlen (strstr ((const char*) body, "</LockKeyChallenge>"));
-        lockkey = malloc (lockkey_len);
-        strncpy (lockkey, cur + 67, lockkey_len);
+        cur = strchr (cur, '>') + 1;
+        end = strchr (cur, '<');
+        lockkey = g_strndup (cur, end - cur);
 
         pn_handle_challenge (lockkey, "PROD01065C%ZFN6F", "O4BG@C7BWLYQX?5G", oim_request->oim_session->lockkey);
 
@@ -530,6 +529,8 @@ process_body_send (OimRequest *oim_request,
             error = _("The following message wasn't sent because the system is unavailable. This normally happens when the user is blocked or does not exist.");
         else if (strstr (body, "q0:SenderThrottleLimitExceeded"))
             error = _("The following message wasn't sent because you've sent messages too quickly.");
+        else if (strstr (body, "q0:MessageTooLarge"))
+            error = _("The following message wasn't sent because it's too large.");
         else
             return;
 
