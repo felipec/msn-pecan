@@ -1446,9 +1446,9 @@ extract_wink(struct pn_peer_call *call, const guchar *data, gsize size)
         }
     }
     if (emot_name)
-        msg = g_strdup_printf(_("sent a wink: %s\n%s"), emot_name, swf_msg);
+        msg = g_strdup_printf(_("sent a wink:\n%s\n%s"), emot_name, swf_msg);
     else
-        msg = g_strdup_printf(_("sent a wink\n%s"), swf_msg);
+        msg = g_strdup_printf(_("sent a wink.\n%s"), swf_msg);
 
     got_datacast_inform_user(call->swboard->cmdproc, pn_peer_link_get_passport(call->link),
         msg);
