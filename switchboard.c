@@ -630,9 +630,11 @@ msg_error_helper(MsnCmdProc *cmdproc, MsnMessage *msg, MsnMsgErrorType error)
 
     /* If a timeout occurs we want the msg around just in case we
      * receive the ACK after the timeout. */
-    if (error != MSN_MSG_ERROR_TIMEOUT) {
-        swboard->ack_list = g_list_remove(swboard->ack_list, msg);
-        msn_message_unref(msg);
+    if (msg->type == MSN_MSG_TEXT && msg->type == MSN_MSG_SLP) {
+        if (error != MSN_MSG_ERROR_TIMEOUT) {
+            swboard->ack_list = g_list_remove(swboard->ack_list, msg);
+            msn_message_unref(msg);
+        }
     }
 }
 
@@ -646,33 +648,6 @@ msg_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
 {
     msg_error_helper(cmdproc, trans->data, MSN_MSG_ERROR_UNKNOWN);
 }
-
-#if 0
-/** Called when we receive an ack of a special message. */
-static void
-msg_ack(MsnCmdProc *cmdproc, MsnCommand *cmd)
-{
-    MsnMessage *msg;
-
-    msg = cmd->trans->data;
-
-    if (msg->ack_cb != NULL)
-        msg->ack_cb(msg->ack_data);
-
-    msn_message_unref(msg);
-}
-
-/** Called when we receive a nak of a special message. */
-static void
-msg_nak(MsnCmdProc *cmdproc, MsnCommand *cmd)
-{
-    MsnMessage *msg;
-
-    msg = cmd->trans->data;
-
-    msn_message_unref(msg);
-}
-#endif
 
 static void
 release_msg(MsnSwitchBoard *swboard, MsnMessage *msg)
@@ -699,22 +674,9 @@ release_msg(MsnSwitchBoard *swboard, MsnMessage *msg)
     /* Data for callbacks */
     msn_transaction_set_data(trans, msg);
 
-    if (msg->type == MSN_MSG_TEXT)
-    {
+    if (msg->type == MSN_MSG_TEXT || msg->type == MSN_MSG_SLP) {
         msn_message_ref(msg);
         swboard->ack_list = g_list_append(swboard->ack_list, msg);
-    }
-    else if (msg->type == MSN_MSG_SLP)
-    {
-        msn_message_ref(msg);
-        swboard->ack_list = g_list_append(swboard->ack_list, msg);
-#if 0
-        if (msg->ack_cb != NULL)
-        {
-            msn_transaction_add_cb(trans, "ACK", msg_ack);
-            msn_transaction_add_cb(trans, "NAK", msg_nak);
-        }
-#endif
     }
 
     pn_timer_start(swboard->timer, 60);
