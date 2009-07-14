@@ -1097,6 +1097,10 @@ send_im (PurpleConnection *gc,
         }
     }
 
+    /* a message to ourselves? */
+    if (contact_is_account_quick (session, who))
+        return -1;
+
     {
         MsnMessage *msg;
         msg = msn_message_new_plain (msgtext);
@@ -1104,10 +1108,6 @@ send_im (PurpleConnection *gc,
 
         g_free (msgformat);
         g_free (msgtext);
-
-        /* a message to ourselves? */
-        if (contact_is_account_quick (session, who))
-            return -1;
 
         {
             MsnSwitchBoard *swboard;
