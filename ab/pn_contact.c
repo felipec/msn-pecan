@@ -26,6 +26,8 @@
 
 #include "pn_dp_manager.h" /* for pn_dp_manager_contact_set_object */
 
+#include "session_private.h"
+
 #include <string.h>
 #include <stdbool.h>
 
@@ -651,7 +653,20 @@ pn_contact_get_client_caps (const struct pn_contact *contact)
 gboolean
 pn_contact_is_blocked (const struct pn_contact *contact)
 {
-    return ((contact->list_op & (1 << MSN_LIST_BL)) ? true : false);
+    MsnSession *session;
+
+    if (contact->list_op & (1 << MSN_LIST_BL))
+        return true;
+
+    if (contact->list_op & (1 << MSN_LIST_AL))
+        return false;
+
+    session = contact->contactlist->session;
+
+    if (session->default_permission == PN_PERM_DENY)
+        return true;
+    else
+        return false;
 }
 
 static inline gboolean

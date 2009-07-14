@@ -27,6 +27,12 @@ typedef struct MsnSession MsnSession;
 struct MsnSwitchBoard;
 struct _PurpleAccount;
 
+typedef enum
+{
+    PN_PERM_DENY,
+    PN_PERM_ALLOW
+} PnPermission;
+
 /**
  * Types of errors.
  */

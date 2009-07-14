@@ -45,11 +45,13 @@ static void
 blp_cmd (MsnCmdProc *cmdproc,
          MsnCommand *cmd)
 {
+    MsnSession *session;
     PurpleAccount *account;
     const char *list_name;
 
     list_name = cmd->params[0];
-    account = msn_session_get_user_data (cmdproc->session);
+    session = cmdproc->session;
+    account = msn_session_get_user_data (session);
 
     if (g_ascii_strcasecmp (list_name, "AL") == 0)
     {
@@ -60,6 +62,8 @@ blp_cmd (MsnCmdProc *cmdproc,
          * In other words, deny some.
          */
         account->perm_deny = PURPLE_PRIVACY_DENY_USERS;
+
+        session->default_permission = PN_PERM_ALLOW;
     }
     else
     {
@@ -69,6 +73,8 @@ blp_cmd (MsnCmdProc *cmdproc,
          * In other words, permit some.
          */
         account->perm_deny = PURPLE_PRIVACY_ALLOW_USERS;
+
+        session->default_permission = PN_PERM_DENY;
     }
 }
 

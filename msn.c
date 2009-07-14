@@ -704,7 +704,7 @@ tooltip_text (PurpleBuddy *buddy,
      * XXX: This can die as soon as purple_privacy_check() knows that
      * XXX: this prpl always honors both the allow and deny lists. */
     purple_notify_user_info_add_pair (user_info, _("Blocked"),
-                                      ((user->list_op & (1 << MSN_LIST_BL)) ? _("Yes") : _("No")));
+                                      (pn_contact_is_blocked (user) ? _("Yes") : _("No")));
 }
 
 static inline PurpleStatusType *

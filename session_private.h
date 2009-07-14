@@ -53,6 +53,8 @@ struct MsnSession
     PecanOimSession *oim_session;
     PnDpManager *dp_manager;
 
+    PnPermission default_permission;
+
     gboolean connected;
     gboolean logged_in; /** @todo move to libpurple user_data and cancel
                           operations that require us to be logged in. */
