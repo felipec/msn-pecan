@@ -992,7 +992,8 @@ msn_emoticon_destroy(MsnEmoticon *emoticon)
 }
 
 static GSList *
-msn_msg_grab_emoticons(const char *msg, const char *username)
+grab_emoticons(MsnSession *session,
+               const char *msg)
 {
     GSList *list;
     GList *smileys;
@@ -1001,10 +1002,12 @@ msn_msg_grab_emoticons(const char *msg, const char *username)
     char *ptr;
     MsnEmoticon *emoticon;
     int length;
+    const char *username;
 
     list = NULL;
     smileys = purple_smileys_get_all();
     length = strlen(msg);
+    username = msn_session_get_username (session);
 
     for (; smileys; smileys = g_list_delete_link(smileys, smileys))
     {
@@ -1103,54 +1106,43 @@ send_im (PurpleConnection *gc,
 
     {
         MsnMessage *msg;
+        MsnSwitchBoard *swboard;
+
         msg = msn_message_new_plain (msgtext);
         msn_message_set_attr (msg, "X-MMS-IM-Format", msgformat);
 
         g_free (msgformat);
         g_free (msgtext);
 
-        {
-            MsnSwitchBoard *swboard;
-
-            swboard = msn_session_get_swboard (session, who);
+        swboard = msn_session_get_swboard (session, who);
 
 #if defined(PECAN_CVR)
 #if PURPLE_VERSION_CHECK(2,5,0)
-            const char *username;
+        MsnEmoticon *smile;
+        GSList *smileys;
+        GString *emoticons = NULL;
 
-            username = msn_session_get_username (session);
+        pn_debug ("send via switchboard");
+        smileys = grab_emoticons(session, message);
 
-            if (g_ascii_strcasecmp (who, username) != 0)
-            {
-                MsnEmoticon *smile;
-                GSList *smileys;
-                GString *emoticons = NULL;
+        while (smileys) {
+            smile = (MsnEmoticon *) smileys->data;
+            emoticons = msn_msg_emoticon_add(emoticons, smile);
+            msn_emoticon_destroy(smile);
+            smileys = g_slist_delete_link(smileys, smileys);
+        }
 
-                pn_debug ("send via switchboard");
-                smileys = msn_msg_grab_emoticons (message, username);
-
-                while (smileys)
-                {
-                    smile = (MsnEmoticon*)smileys->data;
-                    emoticons = msn_msg_emoticon_add(emoticons, smile);
-                    msn_emoticon_destroy(smile);
-                    smileys = g_slist_delete_link(smileys, smileys);
-                }
-
-                if (emoticons)
-                {
-                    msn_send_emoticons(swboard, emoticons);
-                    g_string_free(emoticons, TRUE);
-                }
-            }
+        if (emoticons) {
+            msn_send_emoticons(swboard, emoticons);
+            g_string_free(emoticons, TRUE);
+        }
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
 #endif /* defined(PECAN_CVR) */
 
-            if (flags & PURPLE_MESSAGE_AUTO_RESP)
-                msn_message_set_flag (msg, 'U');
+        if (flags & PURPLE_MESSAGE_AUTO_RESP)
+            msn_message_set_flag (msg, 'U');
 
-            msn_switchboard_send_msg (swboard, msg, TRUE);
-        }
+        msn_switchboard_send_msg (swboard, msg, TRUE);
 
         msn_message_unref (msg);
     }
