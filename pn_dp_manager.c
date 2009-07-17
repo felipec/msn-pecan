@@ -100,6 +100,17 @@ dp_ok (struct pn_peer_call *call,
                                          g_memdup (data, size), size, info);
     }
 #endif /* HAVE_LIBPURPLE */
+
+    {
+        MsnSession *session;
+        struct pn_contact *contact;
+
+        session = pn_peer_link_get_session (call->link);
+        contact = pn_contactlist_find_contact (session->contactlist, passport);
+
+        if (contact && contact->dp_failed_attempts > 0)
+            contact->dp_failed_attempts = 0;
+    }
 }
 
 static void
@@ -116,7 +127,14 @@ dp_fail (struct pn_peer_call *call,
     contact = pn_contactlist_find_contact (session->contactlist, passport);
 
     if (contact)
+    {
+        contact->dp_failed_attempts++;
+
+        if (contact->dp_failed_attempts == 5)
+            return;
+
         queue (session->dp_manager, contact);
+    }
 }
 
 static void

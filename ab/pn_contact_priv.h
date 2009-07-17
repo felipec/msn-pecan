@@ -87,6 +87,8 @@ struct pn_contact {
     gint list_op;
 
     gint sent_oims;
+
+    gint dp_failed_attempts;
 };
 
 #endif /* PN_CONTACT_PRIV_H */
