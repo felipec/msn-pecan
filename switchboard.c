@@ -623,7 +623,7 @@ msg_error_helper(MsnCmdProc *cmdproc, MsnMessage *msg, MsnMsgErrorType error)
         g_free(body_str);
     }
 
-    if (msg->type == MSN_MSG_TEXT && msg->type == MSN_MSG_SLP) {
+    if (msg->type == MSN_MSG_TEXT || msg->type == MSN_MSG_SLP) {
         swboard->ack_list = g_list_remove(swboard->ack_list, msg);
         msn_message_unref(msg);
     }
