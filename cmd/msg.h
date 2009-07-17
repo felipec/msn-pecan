@@ -38,7 +38,6 @@ typedef enum
 typedef enum
 {
     MSN_MSG_ERROR_NONE, /**< No error. */
-    MSN_MSG_ERROR_TIMEOUT, /**< The message timedout. */
     MSN_MSG_ERROR_NAK, /**< The message could not be sent. */
     MSN_MSG_ERROR_SB, /**< The error comes from the switchboard. */
     MSN_MSG_ERROR_UNKNOWN /**< An unknown error occurred. */
