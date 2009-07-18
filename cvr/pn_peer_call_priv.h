@@ -55,7 +55,7 @@ struct pn_peer_call {
     void (*cb)(struct pn_peer_call *call, const guchar *data, gsize size);
     void (*end_cb)(struct pn_peer_call *call, struct MsnSession *session);
 
-    int timer;
+    guint timer;
 
     struct pn_peer_link *link;
     unsigned int ref_count;
