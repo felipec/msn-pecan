@@ -456,13 +456,13 @@ close_impl (PnNode *conn)
 
     conn->open = FALSE;
 
-    if (conn->next)
-    {
-        pn_node_close (conn->next);
-    }
-
     g_free (conn->hostname);
     conn->hostname = NULL;
+
+    if (conn->next) {
+        pn_node_close (conn->next);
+        goto leave;
+    }
 
     if (!conn->stream)
     {
@@ -492,6 +492,7 @@ close_impl (PnNode *conn)
         conn->stream = NULL;
     }
 
+leave:
     pn_log ("end");
 }
 
