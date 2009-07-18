@@ -28,6 +28,7 @@
 #include "pn_http_server.h"
 #include "pn_node_private.h"
 #include "pn_stream.h"
+#include "pn_timer.h"
 #include "pn_log.h"
 #include "pn_global.h"
 
@@ -58,7 +59,7 @@ struct PnHttpServer
     gboolean waiting_response;
     GQueue *write_queue;
     guint content_length;
-    guint timeout_id;
+    struct pn_timer *timer;
     gchar *last_session_id;
     gchar *session;
     gchar *gateway;
@@ -110,15 +111,6 @@ process_queue (PnHttpServer *http_conn,
         g_free (queue_data->body);
         g_free (queue_data);
     }
-}
-
-static inline void
-reset_timer (PnHttpServer *http_conn)
-{
-    if (http_conn->timeout_id)
-        g_source_remove (http_conn->timeout_id);
-
-    http_conn->timeout_id = g_timeout_add_seconds (2, http_poll, http_conn);
 }
 
 static gboolean
@@ -185,7 +177,7 @@ read_cb (GIOChannel *source,
         }
 
         http_conn->waiting_response = FALSE;
-        reset_timer (http_conn);
+        pn_timer_restart (http_conn->timer);
 
         process_queue (http_conn, &conn->error);
 
@@ -375,7 +367,9 @@ connect_cb (gpointer data,
         g_io_channel_set_encoding (channel, NULL, NULL);
         g_io_channel_set_line_term (channel, "\r\n", 2);
 
-        http_conn->timeout_id = g_timeout_add_seconds (2, http_poll, http_conn);
+        http_conn->timer = pn_timer_new (http_poll, http_conn);
+        pn_timer_start (http_conn->timer, 2);
+
         conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, conn);
 
         {
@@ -448,11 +442,8 @@ close_impl (PnNode *conn)
 
     http_conn = PN_HTTP_SERVER (conn);
 
-    if (http_conn->timeout_id)
-    {
-        g_source_remove (http_conn->timeout_id);
-        http_conn->timeout_id = 0;
-    }
+    pn_timer_free(http_conn->timer);
+    http_conn->timer = NULL;
 
     g_free (http_conn->last_session_id);
     http_conn->last_session_id = NULL;
