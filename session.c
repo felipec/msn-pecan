@@ -64,7 +64,7 @@ conversation_created_cb (PurpleConversation *conv, gpointer data)
     {
         str = g_strdup_printf (_("You are not in %s's contact list."), friendly_name);
 
-        purple_conversation_write (conv, NULL, str, PURPLE_MESSAGE_SYSTEM, time (NULL));
+        purple_conversation_write (conv, NULL, str, PURPLE_MESSAGE_SYSTEM | PURPLE_MESSAGE_NOTIFY, time (NULL));
 
         g_free (str);
     }
