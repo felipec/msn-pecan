@@ -699,11 +699,6 @@ tooltip_text (PurpleBuddy *buddy,
                                           ((user->list_op & (1 << MSN_LIST_RL)) ? _("Yes") : _("No")));
     }
 
-    /** @todo what's the issue here? */
-    /* XXX: This is being shown in non-full tooltips because the
-     * XXX: blocked icon overlay isn't always accurate for MSN.
-     * XXX: This can die as soon as purple_privacy_check() knows that
-     * XXX: this prpl always honors both the allow and deny lists. */
     purple_notify_user_info_add_pair (user_info, _("Blocked"),
                                       (pn_contact_is_blocked (user) ? _("Yes") : _("No")));
 }

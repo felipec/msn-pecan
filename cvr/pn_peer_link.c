@@ -374,7 +374,7 @@ send_msg_part(struct pn_peer_link *link,
         {
             if (peer_msg->call->progress_cb)
                 peer_msg->call->progress_cb(peer_msg->call, peer_msg->size,
-                                          len, peer_msg->offset);
+                                            len, peer_msg->offset);
         }
     }
 

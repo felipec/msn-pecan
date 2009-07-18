@@ -548,16 +548,10 @@ msg_error_helper(MsnCmdProc *cmdproc, MsnMessage *msg, MsnMsgErrorType error)
 {
     MsnSwitchBoard *swboard;
 
-    g_return_if_fail(cmdproc != NULL);
-    g_return_if_fail(msg     != NULL);
-
-    if ((error != MSN_MSG_ERROR_SB) && (msg->nak_cb != NULL))
+    if ((error != MSN_MSG_ERROR_SB) && msg->nak_cb)
         msg->nak_cb(msg, msg->ack_data);
 
     swboard = cmdproc->data;
-
-    /* This is not good, and should be fixed somewhere else. */
-    g_return_if_fail (swboard);
 
     if (msg->type == MSN_MSG_TEXT && msn_message_get_flag (msg) != 'U')
     {
@@ -693,9 +687,8 @@ queue_msg(MsnSwitchBoard *swboard, MsnMessage *msg)
 
     pn_debug ("appending message to queue");
 
-    g_queue_push_tail(swboard->msg_queue, msg);
-
     msn_message_ref(msg);
+    g_queue_push_tail(swboard->msg_queue, msg);
 }
 
 static void

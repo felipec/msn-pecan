@@ -451,7 +451,7 @@ close_impl (PnNode *conn)
 
     pn_log ("begin");
 
-    pn_info ("closing '%s'\n", conn->name);
+    pn_info ("closing '%s'", conn->name);
     pn_debug ("conn=%p,name=%s", conn, conn->name);
 
     conn->open = FALSE;
