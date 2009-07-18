@@ -112,6 +112,15 @@ process_queue (PnHttpServer *http_conn,
     }
 }
 
+static inline void
+reset_timer (PnHttpServer *http_conn)
+{
+    if (http_conn->timeout_id)
+        g_source_remove (http_conn->timeout_id);
+
+    http_conn->timeout_id = g_timeout_add_seconds (2, http_poll, http_conn);
+}
+
 static gboolean
 read_cb (GIOChannel *source,
          GIOCondition condition,
@@ -176,6 +185,7 @@ read_cb (GIOChannel *source,
         }
 
         http_conn->waiting_response = FALSE;
+        reset_timer (http_conn);
 
         process_queue (http_conn, &conn->error);
 
@@ -747,15 +757,6 @@ leave:
     return status;
 }
 
-static inline void
-reset_timer (PnHttpServer *http_conn)
-{
-    if (http_conn->timeout_id)
-        g_source_remove (http_conn->timeout_id);
-
-    http_conn->timeout_id = g_timeout_add_seconds (2, http_poll, http_conn);
-}
-
 static GIOStatus
 foo_write (PnNode *conn,
            PnNode *prev,
@@ -867,8 +868,6 @@ foo_write (PnNode *conn,
             g_object_unref (http_conn->cur);
         http_conn->cur = prev;
         g_object_ref (G_OBJECT (http_conn->cur));
-
-        reset_timer (http_conn);
     }
     else
     {
