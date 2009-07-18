@@ -711,13 +711,15 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
     if (msg->msnslp_header.offset + msg->msnslp_header.length
         >= msg->msnslp_header.total_size)
     {
+        struct pn_peer_call *call = peer_msg->call;
+
         pn_peer_msg_ref(peer_msg);
 
-        if (!peer_msg->call)
+        if (!call)
             peer_msg->swboard = user_data;
 
-        if (peer_msg->call)
-            pn_peer_call_ref(peer_msg->call);
+        if (call)
+            pn_peer_call_ref(call);
 
         /* All the pieces of the peer_msg have been received */
         process_peer_msg(link, peer_msg);
@@ -751,8 +753,9 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
                 break;
         }
 
-        if (peer_msg->call)
-            pn_peer_call_unref(peer_msg->call);
+        if (call)
+            pn_peer_call_unref(call);
+
         pn_peer_msg_unref(peer_msg);
     }
 }
