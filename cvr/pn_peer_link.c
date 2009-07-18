@@ -372,8 +372,6 @@ send_msg_part(struct pn_peer_link *link,
             peer_msg->flags == 0x1000020 ||
             peer_msg->flags == 0x1000030)
         {
-            peer_msg->call->progress = TRUE;
-
             if (peer_msg->call->progress_cb)
                 peer_msg->call->progress_cb(peer_msg->call, peer_msg->size,
                                           len, peer_msg->offset);
@@ -703,8 +701,6 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
     if ((peer_msg->flags == 0x20 || peer_msg->flags == 0x1000020 || peer_msg->flags == 0x1000030) &&
         peer_msg->call)
     {
-        peer_msg->call->progress = TRUE;
-
         if (peer_msg->call->progress_cb)
             peer_msg->call->progress_cb(peer_msg->call, peer_msg->size,
                                         len, offset);

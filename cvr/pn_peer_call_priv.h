@@ -38,8 +38,6 @@ struct pn_peer_call {
 
     gboolean pending; /**< A flag that states if we should wait for this
                         call to start and do not time out. */
-    gboolean progress; /**< A flag that states if there has been progress since
-                         the last time out. */
     gboolean started; /**< A flag that states if this call's session has
                         been initiated. */
 

@@ -45,12 +45,11 @@ timeout(gpointer data)
 
     pn_log("call=%p", call);
 
-    if (!call->pending && !call->progress) {
+    if (!call->pending) {
+        pn_test("call timedout");
         pn_peer_call_unref(call);
         return FALSE;
     }
-
-    call->progress = FALSE;
 
     return TRUE;
 }
