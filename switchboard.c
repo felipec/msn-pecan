@@ -1146,8 +1146,8 @@ switchboard_show_ink (MsnSwitchBoard *swboard, const char *passport,
     PurpleAccount *account;
     guchar *image_data;
     size_t image_len;
-    int imgid;
-    char *image_msg;
+    FILE *f;
+    char *file, *image_msg;
 
     if (!purple_str_has_prefix (data, "base64:"))
     {
@@ -1168,8 +1168,21 @@ switchboard_show_ink (MsnSwitchBoard *swboard, const char *passport,
         return;
     }
 
-    imgid = purple_imgstore_add_with_id (image_data, image_len, NULL);
-    image_msg = g_strdup_printf ("<IMG ID=%d/>", imgid);
+    if ((f = purple_mkstemp (&file, TRUE)))
+    {
+        fwrite (image_data, image_len, 1, f);
+        fclose (f);
+
+        image_msg = g_strdup_printf ("<img src=\"file://%s\" alt=\"Received handwritten message\" />", file);
+
+        g_free (file);
+    }
+    else
+    {
+        pn_error ("ink receiving: unable to store ink image");
+
+        return;
+    }
 
     if (swboard->current_users > 1 || ((swboard->conv != NULL) &&
         purple_conversation_get_type(swboard->conv) == PURPLE_CONV_TYPE_CHAT))
@@ -1177,7 +1190,6 @@ switchboard_show_ink (MsnSwitchBoard *swboard, const char *passport,
     else
         serv_got_im (gc, passport, image_msg, 0, time(NULL));
 
-    purple_imgstore_unref_by_id (imgid);
     g_free (image_msg);
 }
 #endif /* defined(PECAN_CVR) */
