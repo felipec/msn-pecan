@@ -71,9 +71,6 @@ static void
 msg_error_helper(MsnCmdProc *cmdproc, MsnMessage *msg, MsnMsgErrorType error);
 
 static void
-msn_switchboard_report_user(MsnSwitchBoard *swboard, PurpleMessageFlags flags, const char *msg);
-
-static void
 open_cb (PnNode *conn,
          MsnSwitchBoard *swboard)
 {
@@ -491,20 +488,6 @@ msn_switchboard_get_conv(MsnSwitchBoard *swboard)
 }
 
 static void
-msn_switchboard_report_user(MsnSwitchBoard *swboard, PurpleMessageFlags flags, const char *msg)
-{
-    PurpleConversation *conv;
-
-    g_return_if_fail(swboard);
-    g_return_if_fail(msg != NULL);
-
-    if ((conv = msn_switchboard_get_conv(swboard)) != NULL)
-    {
-        purple_conversation_write(conv, NULL, msg, flags, time(NULL));
-    }
-}
-
-static void
 swboard_error_helper(MsnSwitchBoard *swboard, int reason, const char *passport)
 {
     g_return_if_fail(swboard);
@@ -550,69 +533,65 @@ msg_error_helper(MsnCmdProc *cmdproc, MsnMessage *msg, MsnMsgErrorType error)
 
     swboard = cmdproc->data;
 
-    if (msg->type == MSN_MSG_TEXT && msn_message_get_flag (msg) != 'U')
+    if (msg->type == MSN_MSG_TEXT &&
+        msn_message_get_flag (msg) != 'U')
     {
-        const char *format, *str_reason;
-        char *body_str, *body_enc, *pre, *post;
+        const char *reason;
+        char *body;
 
-        if (error == MSN_MSG_ERROR_SB)
-        {
-            switch (swboard->error)
-            {
+        if (error == MSN_MSG_ERROR_SB) {
+            switch (swboard->error) {
                 case MSN_SB_ERROR_OFFLINE:
-                    str_reason = _("Message could not be sent, "
-                                   "not allowed while invisible:");
+                    reason = _("Message could not be sent, "
+                               "not allowed while invisible:");
                     break;
                 case MSN_SB_ERROR_USER_OFFLINE:
-                    str_reason = _("Message could not be sent "
-                                   "because the user is offline:");
+                    reason = _("Message could not be sent "
+                               "because the user is offline:");
                     break;
                 case MSN_SB_ERROR_CONNECTION:
-                    str_reason = _("Message could not be sent "
-                                   "because a connection error occurred:");
+                    reason = _("Message could not be sent "
+                               "because a connection error occurred:");
                     break;
                 case MSN_SB_ERROR_TOO_FAST:
-                    str_reason = _("Message could not be sent "
-                                   "because we are sending too quickly:");
+                    reason = _("Message could not be sent "
+                               "because we are sending too quickly:");
                     break;
                 case MSN_SB_ERROR_AUTHFAILED:
-                    str_reason = _("Message could not be sent "
-                                   "because we were unable to establish a "
-                                   "session with the server. This is "
-                                   "likely a server problem, try again in "
-                                   "a few minutes:");
+                    reason = _("Message could not be sent "
+                               "because we were unable to establish a "
+                               "session with the server. This is "
+                               "likely a server problem, try again in "
+                               "a few minutes:");
                     break;
                 default:
-                    str_reason = _("Message could not be sent "
-                                   "because an error with "
-                                   "the switchboard occurred:");
+                    reason = _("Message could not be sent "
+                               "because an error with "
+                               "the switchboard occurred:");
                     break;
             }
         }
         else
+            reason = _("Message may have not been sent "
+                       "because an unknown error occurred:");
+
         {
-            str_reason = _("Message may have not been sent "
-                           "because an unknown error occurred:");
+            char *tmp;
+            tmp = msn_message_to_string(msg);
+            body = g_markup_escape_text(tmp, -1);
+            g_free(tmp);
         }
 
-        body_str = msn_message_to_string(msg);
-        body_enc = g_markup_escape_text(body_str, -1);
-        g_free(body_str);
+        {
+            PurpleConversation *conv;
 
-        format = msn_message_get_attr(msg, "X-MMS-IM-Format");
-        msn_parse_format(format, &pre, &post);
-        body_str = g_strdup_printf("%s%s%s", pre ? pre : "",
-                                   body_enc ? body_enc : "", post ? post : "");
-        g_free(body_enc);
-        g_free(pre);
-        g_free(post);
+            if ((conv = msn_switchboard_get_conv(swboard))) {
+                purple_conversation_write(conv, NULL, reason, PURPLE_MESSAGE_ERROR, time(NULL));
+                purple_conversation_write(conv, NULL, body, PURPLE_MESSAGE_RAW, time(NULL));
+            }
+        }
 
-        msn_switchboard_report_user(swboard, PURPLE_MESSAGE_ERROR,
-                                    str_reason);
-        msn_switchboard_report_user(swboard, PURPLE_MESSAGE_RAW,
-                                    body_str);
-
-        g_free(body_str);
+        g_free(body);
     }
 
     if (msg->trans && (msg->type == MSN_MSG_TEXT || msg->type == MSN_MSG_SLP)) {
