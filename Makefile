@@ -44,7 +44,7 @@ OTHER_WARNINGS := -D_FORTIFY_SOURCE=2 -fstack-protector -g3 -Wdisabled-optimizat
 CFLAGS += -Wall # $(EXTRA_WARNINGS)
 
 override CFLAGS += -D_XOPEN_SOURCE
-override CFLAGS += -I. -D GETTEXT_PACKAGE='"libmsn-pecan"' -DENABLE_NLS -DHAVE_LIBPURPLE -DPURPLE_DEBUG
+override CFLAGS += -I. -DENABLE_NLS -DHAVE_LIBPURPLE -DPURPLE_DEBUG
 
 ifdef CVR
   override CFLAGS += -DPECAN_CVR
@@ -156,7 +156,7 @@ ifeq ($(PLATFORM),darwin)
 else
 ifeq ($(PLATFORM),mingw32)
   SHLIBEXT := dll
-  LDFLAGS := -Wl,--enable-auto-image-base -Wl,--exclude-libs=libintl.a
+  LDFLAGS += -Wl,--enable-auto-image-base
   objects += win32/resource.res
 else
   SHLIBEXT := so

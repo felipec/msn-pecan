@@ -23,20 +23,11 @@
 #ifdef ENABLE_NLS
 #  include <locale.h>
 #  include <libintl.h>
-#  define _(String) ((const char *)dgettext(GETTEXT_PACKAGE, String))
-#  ifdef gettext_noop
-#    define N_(String) gettext_noop (String)
-#  else
-#    define N_(String) (String)
-#  endif
+#  define N_(s) (s)
+#  define _(s) ((const char *) dgettext("libmsn-pecan", (s)))
 #else
-#  include <locale.h>
-#  define N_(String) (String)
-#  ifndef _
-#    define _(String) ((const char *)String)
-#  endif
-#  define ngettext(Singular, Plural, Number) ((Number == 1) ? ((const char *)Singular) : ((const char *)Plural))
-#  define dngettext(Domain, Singular, Plural, Number) ((Number == 1) ? ((const char *)Singular) : ((const char *)Plural))
+#  define N_(s) (s)
+#  define _(s) ((const char *) s)
 #endif
 
 #endif /* PN_LOCALE_H */
