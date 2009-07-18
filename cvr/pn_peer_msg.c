@@ -381,6 +381,10 @@ got_sessionreq(struct pn_peer_call *call,
                const char *euf_guid,
                const char *context)
 {
+#ifdef HAVE_LIBPURPLE
+    const gchar *str = NULL;
+#endif /* HAVE_LIBPURPLE */
+
     pn_debug("euf_guid=[%s]", euf_guid);
 
     if (strcmp(euf_guid, "A4268EEC-FEC5-49E5-95C3-F126696BDBF6") == 0) {
@@ -491,46 +495,49 @@ got_sessionreq(struct pn_peer_call *call,
     else if (strcmp (euf_guid, "1C9AA97E-9C05-4583-A3BD-908A196F1E92") == 0) {
         pn_info ("got a webcam request");
 
-        if (call && call->link && pn_peer_link_get_session (call->link)) {
-            PurpleConversation *conv;
-            PurpleAccount *account;
-            const gchar *from = pn_peer_link_get_passport (call->link);
-
-            account = msn_session_get_user_data (pn_peer_link_get_session (call->link));
-            conv = purple_find_conversation_with_account (PURPLE_CONV_TYPE_IM, from, account);
-
-            if (conv) {
-                gchar *buf;
-
-                buf = g_strdup_printf (_("%s requests to view your webcam, but this request is not yet supported."), from);
-
-                purple_conversation_write (conv, NULL, buf, PURPLE_MESSAGE_SYSTEM | PURPLE_MESSAGE_NOTIFY, time (NULL));
-
-                g_free(buf);
-            }
-        }
+        str = _("requests to view your webcam, but this request is not yet supported.");
     }
     else if (strcmp (euf_guid, "4BD96FC0-AB17-4425-A14A-439185962DC8") == 0) {
         pn_info ("got a webcam invite");
 
-        if (call && call->link && pn_peer_link_get_session (call->link)) {
-            PurpleConversation *conv;
+        str = _("has sent you a webcam invite, which is not yet supported.");
+    }
+
+    if (str)
+    {
+        MsnSwitchBoard *swboard;
+        MsnSession *session;
+        struct pn_contact *contact;
+        const char *friendly_name, *passport;
+        gchar *buf;
+
+        swboard = call->swboard;
+        session = pn_peer_link_get_session (call->link);
+        passport = pn_peer_link_get_passport (call->link);
+
+        if (!swboard->conv)
+        {
             PurpleAccount *account;
-            const gchar *from = pn_peer_link_get_passport (call->link);
 
-            account = msn_session_get_user_data (pn_peer_link_get_session (call->link));
-            conv = purple_find_conversation_with_account (PURPLE_CONV_TYPE_IM, from, account);
+            account = msn_session_get_user_data (session);
 
-            if (conv) {
-                char *buf;
+            swboard->conv = purple_find_conversation_with_account (PURPLE_CONV_TYPE_IM, passport, account);
 
-                buf = g_strdup_printf(_("%s has sent you a webcam invite, which is not yet supported."), from);
-
-                purple_conversation_write (conv, NULL, buf, PURPLE_MESSAGE_SYSTEM | PURPLE_MESSAGE_NOTIFY, time (NULL));
-
-                g_free(buf);
-            }
+            if (!swboard->conv)
+                swboard->conv = purple_conversation_new (PURPLE_CONV_TYPE_IM, account, passport);
         }
+
+        contact = pn_contactlist_find_contact (session->contactlist, passport);
+
+        friendly_name = pn_contact_get_friendly_name (contact);
+        if (!friendly_name)
+            friendly_name = passport;
+
+        buf = g_strdup_printf ("%s %s", friendly_name, str);
+
+        purple_conversation_write (swboard->conv, NULL, buf, PURPLE_MESSAGE_SYSTEM | PURPLE_MESSAGE_NOTIFY, time (NULL));
+
+        g_free (buf);
     }
 #endif
 }
