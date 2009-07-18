@@ -980,7 +980,7 @@ save_plus_sound_cb(PurpleUtilFetchUrlData *url_data, gpointer user_data,
         str = g_strdup_printf (_("sent you a Messenger Plus! sound. Click <a href='file://%s'>here</a> to play it."), path_mp3);
 #endif /* PURPLE_VERSION_CHECK(2,6,0) */
 #else
-        str = g_strdup_printf (_("sent you a Messenger Plus! sound. Copy the following link in Safari to play it: %s"), path_mp3);
+        str = g_strdup_printf (_("sent you a Messenger Plus! sound. Copy the following link in your web browser to play it: file://%s"), path_mp3);
 #endif /* ADIUM */
         got_datacast_inform_user (cmdproc, passport, str);
 
@@ -1226,7 +1226,7 @@ got_voice_clip(struct pn_peer_call *call, const guchar *data, gsize size)
 #ifndef ADIUM
         str = g_strdup_printf(_("sent you a voice clip. Click <a href='file://%s'>here</a> to play it."), decoded_file);
 #else
-        str = g_strdup_printf(_("sent you a voice clip. Copy the following link in Safari to play it: %s"), decoded_file);
+        str = g_strdup_printf(_("sent you a voice clip. Copy the following link in your web browser to play it: file://%s"), decoded_file);
 #endif /* ADIUM */
         got_datacast_inform_user(call->swboard->cmdproc,
                                  pn_peer_link_get_passport(call->link),
