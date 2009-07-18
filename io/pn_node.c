@@ -216,6 +216,7 @@ pn_node_set_id (PnNode *conn,
                 const gchar *name)
 {
     conn->id = id;
+    g_free(conn->name);
     conn->name = g_strdup (name);
 }
 
