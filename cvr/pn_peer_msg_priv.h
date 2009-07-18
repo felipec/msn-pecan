@@ -27,6 +27,7 @@ struct MsnSession;
 struct MsnMessage;
 struct MsnSwitchBoard;
 
+#include <glib.h>
 #include <glib/gstdio.h>
 
 /**
