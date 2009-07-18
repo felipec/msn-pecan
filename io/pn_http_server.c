@@ -1000,6 +1000,8 @@ pn_http_server_get_type (void)
         type_info->instance_init = instance_init;
 
         type = g_type_register_static (PN_NODE_TYPE, "PnHttpServerType", type_info, 0);
+
+        g_free(type_info);
     }
 
     return type;
