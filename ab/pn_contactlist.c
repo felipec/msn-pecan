@@ -269,24 +269,6 @@ msn_got_add_contact (MsnSession *session,
 
         pn_info ("reverse list add: [%s]", passport);
 
-        /** @todo display a non-intrusive message */
-#if 0
-        PurpleConversation *convo;
-        convo = purple_find_conversation_with_account (PURPLE_CONV_TYPE_IM, passport, account);
-        if (convo)
-        {
-            PurpleBuddy *buddy;
-            gchar *msg;
-
-            buddy = purple_find_buddy (account, passport);
-            msg = g_strdup_printf (_("%s has added you to his or her buddy list."),
-                                   buddy ? purple_buddy_get_contact_alias(buddy) : passport);
-            purple_conv_im_write (PURPLE_CONV_IM (convo), passport, msg,
-                                  PURPLE_MESSAGE_SYSTEM, time (NULL));
-            g_free (msg);
-        }
-#endif
-
         if (!(contact->list_op & (MSN_LIST_AL_OP | MSN_LIST_BL_OP)))
         {
             got_new_entry (gc, contact,
@@ -332,26 +314,6 @@ msn_got_rem_contact (MsnSession *session,
     else if (list_id == MSN_LIST_BL)
     {
         purple_privacy_deny_remove (account, passport, TRUE);
-    }
-    else if (list_id == MSN_LIST_RL)
-    {
-        PurpleConversation *convo;
-
-        pn_info ("reverse list rem: [%s]", passport);
-
-        convo = purple_find_conversation_with_account (PURPLE_CONV_TYPE_IM, passport, account);
-        if (convo)
-        {
-            PurpleBuddy *buddy;
-            gchar *msg;
-
-            buddy = purple_find_buddy (account, passport);
-            msg = g_strdup_printf (_("%s has removed you from his or her buddy list."),
-                                   buddy ? purple_buddy_get_contact_alias (buddy) : passport);
-            purple_conv_im_write (PURPLE_CONV_IM (convo), passport, msg,
-                                  PURPLE_MESSAGE_SYSTEM, time (NULL));
-            g_free (msg);
-        }
     }
 
     contact->list_op &= ~(1 << list_id);
