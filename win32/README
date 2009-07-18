@@ -9,11 +9,14 @@ So that: pkg-config --libs purple
 Returns:
 -L/opt/win32/gtk-2.0/lib -L/opt/win32/libpurple/lib -lpurple -lglib-2.0 -lintl -liconv
 
-And: pkg-config --libs gobject-2.0
--L/opt/win32/gtk-2.0/lib -lgobject-2.0 -lglib-2.0 -lintl -liconv
-
 Then run:
-make CC=i386-mingw32-gcc PLATFORM=win32
+make CROSS_COMPILE=i686-pc-mingw32-
+
+== notes ==
+
+Fedora 11 includes a mingw32-gettext package that uses libintl-8.dll,
+unfortunately most GTK+ packages use intl.dll. So you'll need to either disable
+NLS or copy libintl.dll.a into the win32 subdir.
 
 == to-do ==
 

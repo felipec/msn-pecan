@@ -28,7 +28,7 @@ ifdef DEBUG
 endif
 
 ifdef DEVEL
-	CFLAGS += -DPECAN_DEVEL
+  CFLAGS += -DPECAN_DEVEL
 endif
 
 EXTRA_WARNINGS := -Wall -Wextra -Wformat-nonliteral -Wcast-align -Wpointer-arith \
@@ -156,7 +156,7 @@ ifeq ($(PLATFORM),darwin)
 else
 ifeq ($(PLATFORM),mingw32)
   SHLIBEXT := dll
-  LDFLAGS += -Wl,--enable-auto-image-base
+  LDFLAGS += -Wl,--enable-auto-image-base -L./win32
   objects += win32/resource.res
 else
   SHLIBEXT := so
