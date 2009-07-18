@@ -564,9 +564,6 @@ process_peer_msg(struct pn_peer_link *link,
             if (!call)
                 break;
 
-            if (call->timer)
-                purple_timeout_remove(call->timer);
-
             /* clear the error cb, otherwise it will be called when
              * the call is destroyed. */
             call->end_cb = NULL;
