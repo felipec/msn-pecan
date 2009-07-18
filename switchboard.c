@@ -164,7 +164,7 @@ msn_switchboard_new(MsnSession *session)
 
     {
         PnNode *conn;
-        swboard->conn = pn_cmd_server_new ("switchboard server", PN_NODE_SB);
+        swboard->conn = pn_cmd_server_new (PN_NODE_SB);
         conn = PN_NODE (swboard->conn);
 
         {

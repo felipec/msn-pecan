@@ -48,8 +48,7 @@ struct PnCmdServerClass
 static PnNodeClass *parent_class = NULL;
 
 PnCmdServer *
-pn_cmd_server_new (const gchar *name,
-                   PnNodeType type)
+pn_cmd_server_new (PnNodeType type)
 {
     PnCmdServer *conn;
 
@@ -59,7 +58,6 @@ pn_cmd_server_new (const gchar *name,
 
     {
         PnNode *tmp = PN_NODE (conn);
-        tmp->name = g_strdup (name);
         tmp->type = type;
     }
 

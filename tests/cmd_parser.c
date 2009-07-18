@@ -33,7 +33,7 @@ run_simple_test (const gchar *str,
     if (str)
         strcpy (buf, str);
 
-    cmdserv = pn_cmd_server_new ("foo", 0);
+    cmdserv = pn_cmd_server_new (0);
     pn_node_parse (PN_NODE (cmdserv), buf, buf_size - 1);
     pn_cmd_server_free (cmdserv);
 

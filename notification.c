@@ -160,7 +160,7 @@ msn_notification_new(MsnSession *session)
 
     {
         PnNode *conn;
-        notification->conn = pn_cmd_server_new ("notification server", PN_NODE_NS);
+        notification->conn = pn_cmd_server_new (PN_NODE_NS);
         conn = PN_NODE (notification->conn);
 
         {

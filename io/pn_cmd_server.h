@@ -31,7 +31,7 @@ typedef struct PnCmdServerClass PnCmdServerClass;
 #define PN_CMD_SERVER_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), PN_CMD_SERVER_TYPE, PnCmdServerClass))
 #define PN_CMD_SERVER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), PN_CMD_SERVER_TYPE, PnCmdServerClass))
 
-PnCmdServer *pn_cmd_server_new (const gchar *name, PnNodeType type);
+PnCmdServer *pn_cmd_server_new (PnNodeType type);
 void pn_cmd_server_free (PnCmdServer *conn);
 
 void pn_cmd_server_send (PnCmdServer *conn, const char *command, const char *format, ...);
