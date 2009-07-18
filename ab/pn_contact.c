@@ -117,6 +117,28 @@ pn_contact_update (struct pn_contact *contact)
 
     purple_prpl_got_user_status (account, contact->passport, pidgin_status, NULL);
 
+    if (contact->media.title && contact->status != PN_STATUS_OFFLINE) {
+        if (contact->media.type == CURRENT_MEDIA_MUSIC) {
+            purple_prpl_got_user_status(account, contact->passport, "tune",
+                                        PURPLE_TUNE_ARTIST, contact->media.artist,
+                                        PURPLE_TUNE_ALBUM, contact->media.album,
+                                        PURPLE_TUNE_TITLE, contact->media.title,
+                                        NULL);
+        }
+        else if (contact->media.type == CURRENT_MEDIA_GAMES) {
+            purple_prpl_got_user_status(account, contact->passport, "tune",
+                                        "game", contact->media.title,
+                                        NULL);
+        }
+        else if (contact->media.type == CURRENT_MEDIA_OFFICE) {
+            purple_prpl_got_user_status(account, contact->passport, "tune",
+                                        "office", contact->media.title,
+                                        NULL);
+        }
+    }
+    else
+        purple_prpl_got_user_status_deactive (account, contact->passport, "tune");
+
     if (contact->mobile && contact->status == PN_STATUS_OFFLINE)
         purple_prpl_got_user_status (account, contact->passport, "mobile", NULL);
     else
