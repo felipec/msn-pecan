@@ -234,6 +234,7 @@ msn_switchboard_free (MsnSwitchBoard *swboard)
         call->swboard = NULL;
         pn_peer_call_unref(call);
     }
+    g_list_free(swboard->calls);
 #endif /* defined(PECAN_CVR) */
 
     {
