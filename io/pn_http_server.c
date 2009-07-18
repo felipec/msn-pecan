@@ -176,10 +176,14 @@ read_cb (GIOChannel *source,
             }
         }
 
-        http_conn->waiting_response = FALSE;
-        pn_timer_restart (http_conn->timer);
+        if (conn->open)
+        {
+            http_conn->waiting_response = FALSE;
 
-        process_queue (http_conn, &conn->error);
+            pn_timer_restart (http_conn->timer);
+
+            process_queue (http_conn, &conn->error);
+        }
 
         if (conn->error)
         {
