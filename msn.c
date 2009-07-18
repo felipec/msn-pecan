@@ -600,7 +600,7 @@ status_text (PurpleBuddy *buddy)
                     artist = contact->media.artist;
                     album = contact->media.album;
 
-                    return g_strdup_printf ("♫ %s", purple_util_format_song_info (title, artist, album, NULL));
+                    return purple_util_format_song_info (title, artist, album, NULL);
                 }
             case CURRENT_MEDIA_GAMES:
                 return g_strdup_printf (_("Playing %s"), contact->media.title);
@@ -672,25 +672,26 @@ tooltip_text (PurpleBuddy *buddy,
 
         if (user->media.title)
         {
-
             if (user->media.type == CURRENT_MEDIA_MUSIC)
             {
                 const gchar *title, *artist, *album;
+                gchar *tmp;
 
                 title = user->media.title;
                 artist = user->media.artist;
                 album = user->media.album;
+                tmp = purple_util_format_song_info (title, artist, album, NULL);
 
-                purple_notify_user_info_add_pair (user_info, _("Now Listening"),
-                                                  purple_util_format_song_info (title, artist, album, NULL));
+                purple_notify_user_info_add_pair (user_info, _("Now Listening"), tmp);
+                g_free(tmp);
             }
             else if (user->media.type == CURRENT_MEDIA_GAMES)
             {
-                purple_notify_user_info_add_pair (user_info, _("Playing a game"), g_strdup (user->media.title));
+                purple_notify_user_info_add_pair (user_info, _("Playing a game"), user->media.title);
             }
             else if (user->media.type == CURRENT_MEDIA_OFFICE)
             {
-                purple_notify_user_info_add_pair (user_info, _("Working"), g_strdup (user->media.title));
+                purple_notify_user_info_add_pair (user_info, _("Working"), user->media.title);
             }
         }
 
