@@ -99,6 +99,13 @@ pn_base_log_helper (guint level,
 
     va_start (args, fmt);
 
+#if defined(PECAN_DEVEL)
+    console_print = TRUE;
+#else
+    if (level == PN_LOG_LEVEL_TEST)
+        console_print = TRUE;
+#endif
+
 #if defined(PURPLE_DEBUG)
     PurpleDebugLevel purple_level;
     PurpleDebugUiOps *ops;
@@ -119,18 +126,18 @@ pn_base_log_helper (guint level,
             purple_level = PURPLE_DEBUG_MISC; break;
     }
 
+    if (purple_debug_is_enabled())
+        console_print = TRUE;
+
     ops = purple_debug_get_ui_ops();
 
-    /* avoid extra processing unless we are on development */
-#if !defined(PECAN_DEVEL)
-    if (level != PN_LOG_LEVEL_TEST) {
+    if (!console_print) {
         if (!ops || !ops->print ||
             (ops->is_enabled && !ops->is_enabled(purple_level, "msn-pecan")))
         {
             return;
         }
     }
-#endif
 #endif
 
     tmp = pn_strdup_vprintf (fmt, args);
@@ -161,12 +168,6 @@ pn_base_log_helper (guint level,
         ops->print(purple_level, "msn-pecan", arg_s);
         g_free(arg_s);
     }
-#endif
-#if defined(PECAN_DEVEL)
-    console_print = TRUE;
-#else
-    if (level == PN_LOG_LEVEL_TEST)
-        console_print = TRUE;
 #endif
 #endif /* PN_DEBUG_FILE */
 
