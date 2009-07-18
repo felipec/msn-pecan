@@ -51,7 +51,12 @@ enum PecanLogLevel
 
 typedef enum PecanLogLevel PecanLogLevel;
 
-void pn_base_log_helper (PecanLogLevel level, const gchar *file, const gchar *function, gint line, const gchar *fmt, ...);
+void pn_base_log_helper (PecanLogLevel level,
+                         const gchar *file,
+                         const gchar *function,
+                         gint line,
+                         const gchar *fmt,
+                         ...) G_GNUC_PRINTF (5, 6);
 #ifdef PN_DUMP_FILE
 void pn_dump_file (const gchar *buffer, gsize len);
 #endif /* PN_DUMP_FILE */
