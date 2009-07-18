@@ -913,43 +913,43 @@ usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
  **************************************************************************/
 
 static void
-got_datacast_inform_user (MsnCmdProc *cmdproc,
-                          const char *passport,
-                          const char *str)
+notify_user (MsnCmdProc *cmdproc,
+             const char *passport,
+             const char *str)
 {
-    PurpleAccount *account;
     MsnSwitchBoard *swboard;
     struct pn_contact *contact;
     const char *friendly_name;
-    gchar *new_str;
+    gchar *buf;
 
-    account = msn_session_get_user_data (cmdproc->session);
     swboard = cmdproc->data;
-    contact = pn_contactlist_find_contact(cmdproc->session->contactlist, passport);
-    friendly_name = pn_contact_get_friendly_name(contact);
+
+    if (!swboard->conv)
+    {
+        PurpleAccount *account;
+
+        account = msn_session_get_user_data (cmdproc->session);
+
+        if (swboard->current_users > 1)
+            swboard->conv = purple_find_chat (account->gc, swboard->chat_id);
+        else
+            swboard->conv = purple_find_conversation_with_account (PURPLE_CONV_TYPE_IM, passport, account);
+
+        if (!swboard->conv)
+            swboard->conv = purple_conversation_new (PURPLE_CONV_TYPE_IM, account, passport);
+    }
+
+    contact = pn_contactlist_find_contact (cmdproc->session->contactlist, passport);
+
+    friendly_name = pn_contact_get_friendly_name (contact);
     if (!friendly_name)
         friendly_name = passport;
 
-    new_str = g_strdup_printf("%s %s", friendly_name, str);
+    buf = g_strdup_printf ("%s %s", friendly_name, str);
 
-    /* Grab the conv for this swboard. If there isn't one and it's an IM then create it,
-    otherwise the smileys won't work, this needs to be fixed. */
-    if (!swboard->conv)
-    {
-        if (swboard->current_users > 1)
-            swboard->conv = purple_find_chat(account->gc, swboard->chat_id);
-        else
-        {
-            swboard->conv = purple_find_conversation_with_account(PURPLE_CONV_TYPE_IM,
-                                                                  passport, account);
-            if (!swboard->conv)
-                swboard->conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, passport);
-        }
-    }
+    purple_conversation_write (swboard->conv, NULL, buf, PURPLE_MESSAGE_SYSTEM | PURPLE_MESSAGE_NOTIFY, time (NULL));
 
-    purple_conversation_write(swboard->conv, NULL, new_str, PURPLE_MESSAGE_SYSTEM, time(NULL));
-
-    g_free (new_str);
+    g_free (buf);
 }
 
 #if defined(RECEIVE_PLUS_SOUNDS)
@@ -982,7 +982,7 @@ save_plus_sound_cb(PurpleUtilFetchUrlData *url_data, gpointer user_data,
 #else
         str = g_strdup_printf (_("sent you a Messenger Plus! sound. Copy the following link in your web browser to play it: file://%s"), path_mp3);
 #endif /* ADIUM */
-        got_datacast_inform_user (cmdproc, passport, str);
+        notify_user (cmdproc, passport, str);
 
         fclose(f);
 
@@ -993,7 +993,7 @@ save_plus_sound_cb(PurpleUtilFetchUrlData *url_data, gpointer user_data,
         pn_error ("couldn't create temporany file to store the received Plus! sound!\n");
 
         str = g_strdup_printf (_("sent you a Messenger Plus! sound, but it cannot be played due to an error happened while storing the file."));
-        got_datacast_inform_user (cmdproc, passport, str);
+        notify_user (cmdproc, passport, str);
     }
 
     g_free(str);
@@ -1181,6 +1181,9 @@ switchboard_show_ink (MsnSwitchBoard *swboard, const char *passport,
     {
         pn_error ("ink receiving: unable to store ink image");
 
+        notify_user (swboard->cmdproc, passport, _("sent you an handwritten message,"
+                     " but it cannot be displayed due to an error happened while storing the file."));
+
         return;
     }
 
@@ -1222,11 +1225,11 @@ got_voice_clip(struct pn_peer_call *call, const guchar *data, gsize size)
 {
     FILE *f;
     char *file;
-    gchar *str;
 
     if ((f = purple_mkstemp(&file, TRUE)))
     {
         gchar *decoded_file;
+        gchar *str;
 
         fwrite(data, size, 1, f);
         fclose(f);
@@ -1240,28 +1243,26 @@ got_voice_clip(struct pn_peer_call *call, const guchar *data, gsize size)
 #else
         str = g_strdup_printf(_("sent you a voice clip. Copy the following link in your web browser to play it: file://%s"), decoded_file);
 #endif /* ADIUM */
-        got_datacast_inform_user(call->swboard->cmdproc,
-                                 pn_peer_link_get_passport(call->link),
-                                 str);
 
         g_free (decoded_file);
+
+        notify_user (call->swboard->cmdproc, pn_peer_link_get_passport(call->link), str);
+
+        g_free (str);
     } else {
         pn_error ("couldn't create temporany file to store the received voice clip!\n");
 
-        str = g_strdup_printf(_("sent you a voice clip, but it cannot be played due to an error happened while storing the file."));
-        got_datacast_inform_user(call->swboard->cmdproc,
-                                 pn_peer_link_get_passport(call->link),
-                                 str);
+        notify_user (call->swboard->cmdproc, pn_peer_link_get_passport(call->link),
+                     _("sent you a voice clip, but it cannot be played due"
+                       "to an error happened while storing the file."));
     }
-
-    g_free (str);
 }
 #endif /* defined(PECAN_LIBSIREN) */
 
+#if defined(PECAN_LIBMSPACK)
 static gboolean
 extract_wink(struct pn_peer_call *call, const guchar *data, gsize size)
 {
-#if defined(PECAN_LIBMSPACK)
     struct mscab_decompressor *dec;
     struct mscabd_cabinet *cab;
     struct mscabd_file *fileincab;
@@ -1377,25 +1378,23 @@ extract_wink(struct pn_peer_call *call, const guchar *data, gsize size)
     else
         msg = g_strdup_printf(_("sent a wink.\n%s"), swf_msg);
 
-    got_datacast_inform_user(call->swboard->cmdproc, pn_peer_link_get_passport(call->link),
+    notify_user (call->swboard->cmdproc, pn_peer_link_get_passport(call->link),
         msg);
     purple_imgstore_unref_by_id (imgid);
     g_free (emot_name);
     /* Blows: probably the smiley code doesn't copy it.. g_free(emot); */
     g_free(msg); g_free(swf_msg); g_free(img_path); g_free(swf_path);
     return TRUE;
-#else
-    return FALSE;
-#endif /* defined(PECAN_LIBMSPACK) */
 }
 
 static void
 got_wink(struct pn_peer_call *call, const guchar *data, gsize size)
 {
     if (!(extract_wink (call, data, size)))
-        got_datacast_inform_user(call->swboard->cmdproc, pn_peer_link_get_passport(call->link),
-        _("sent a wink, but it could not be displayed."));
+        notify_user (call->swboard->cmdproc, pn_peer_link_get_passport (call->link),
+                     _("sent a wink, but it could not be displayed."));
 }
+#endif /* defined(PECAN_LIBMSPACK) */
 
 static void
 datacast_msg (MsnCmdProc *cmdproc,
@@ -1585,12 +1584,6 @@ invite_msg (MsnCmdProc *cmdproc, MsnMessage *msg)
     GHashTable *body;
     const gchar *guid;
 
-    MsnSession *session;
-    PurpleAccount *account;
-
-    session = cmdproc->session;
-    account = msn_session_get_user_data(session);
-
     body = msn_message_get_hashtable_from_body (msg);
 
     if (!body) {
@@ -1612,25 +1605,11 @@ invite_msg (MsnCmdProc *cmdproc, MsnMessage *msg)
         else
             pn_warning ("missing: Application-GUID");
     } else if (strcmp (guid, "{02D3C01F-BF30-4825-A83A-DE7AF41648AA}") == 0) {
+        gchar *from = msg->remote_user;
+
         pn_info ("got a call from computer");
 
-        if (session) {
-            PurpleConversation *conv = NULL;
-            gchar *from = msg->remote_user;
-            gchar *buf = NULL;
-
-            if (from)
-                conv = purple_find_conversation_with_account (PURPLE_CONV_TYPE_IM, from, account);
-
-            if (conv)
-                buf = g_strdup_printf(_("%s sent you a voice chat invite, which is not yet supported."), from);
-
-            if (buf) {
-                purple_conversation_write(conv, NULL, buf, PURPLE_MESSAGE_SYSTEM | PURPLE_MESSAGE_NOTIFY, time(NULL));
-
-                g_free(buf);
-            }
-        }
+        notify_user (cmdproc, from, _(" sent you a voice chat invite, which is not yet supported."));
     }
     else
         pn_warning ("unhandled invite msg with GUID=[%s]", guid);
