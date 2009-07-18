@@ -126,7 +126,7 @@ send_file_cb(struct pn_peer_call *call)
     struct stat st;
     PurpleXfer *xfer;
 
-    peer_msg = pn_peer_msg_new(call->link);
+    peer_msg = pn_peer_msg_new();
     peer_msg->call = call;
     peer_msg->flags = 0x1000030;
 #ifdef PECAN_DEBUG_SLP

@@ -56,7 +56,7 @@
 #include "fix_purple.h"
 
 struct pn_peer_msg *
-pn_peer_msg_new(struct pn_peer_link *link)
+pn_peer_msg_new(void)
 {
     struct pn_peer_msg *peer_msg;
 
@@ -66,10 +66,6 @@ pn_peer_msg_new(struct pn_peer_link *link)
     pn_info("peer_msg=%p", peer_msg);
 #endif
 
-    peer_msg->link = link;
-
-    pn_peer_link_add_msg(link, peer_msg);
-
     peer_msg->ref_count++;
 
     return peer_msg;
@@ -78,9 +74,6 @@ pn_peer_msg_new(struct pn_peer_link *link)
 void
 pn_peer_msg_free(struct pn_peer_msg *peer_msg)
 {
-    struct pn_peer_link *link;
-    GList *cur;
-
     if (!peer_msg)
         return;
 
@@ -88,30 +81,10 @@ pn_peer_msg_free(struct pn_peer_msg *peer_msg)
     pn_info("peer_msg=%p", peer_msg);
 #endif
 
-    link = peer_msg->link;
-
     if (peer_msg->fp)
         fclose(peer_msg->fp);
 
     g_free(peer_msg->buffer);
-
-    for (cur = peer_msg->msgs; cur; cur = cur->next) {
-        /* Something is pointing to this peer_msg, so we should remove that
-         * pointer to prevent a crash. */
-        /* Ex: a user goes offline and after that we receive an ACK */
-
-        MsnMessage *msg = cur->data;
-
-#ifdef PECAN_DEBUG_SLPMSG
-        pn_info("Unlink peer_msg callbacks.\n");
-#endif
-
-        msg->ack_cb = NULL;
-        msg->nak_cb = NULL;
-        msg->ack_data = NULL;
-    }
-
-    pn_peer_link_remove_msg(link, peer_msg);
 
     g_free(peer_msg);
 }
@@ -236,7 +209,7 @@ sip_new(struct pn_peer_call *call,
         g_strlcat(body, content, body_len);
     }
 
-    peer_msg = pn_peer_msg_new(link);
+    peer_msg = pn_peer_msg_new();
     set_body(peer_msg, (gpointer) body, body_len);
 
     peer_msg->sip = TRUE;
@@ -491,7 +464,7 @@ got_sessionreq(struct pn_peer_call *call,
         pn_msnobj_free(obj);
 
         /* DATA PREP */
-        peer_msg = pn_peer_msg_new(link);
+        peer_msg = pn_peer_msg_new();
         peer_msg->call = call;
         peer_msg->session_id = call->session_id;
         set_body(peer_msg, NULL, 4);
@@ -501,7 +474,7 @@ got_sessionreq(struct pn_peer_call *call,
         pn_peer_link_queue_msg(link, peer_msg);
 
         /* DATA */
-        peer_msg = pn_peer_msg_new(link);
+        peer_msg = pn_peer_msg_new();
         peer_msg->call = call;
         peer_msg->flags = 0x20;
 #ifdef PECAN_DEBUG_SLP

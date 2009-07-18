@@ -548,9 +548,6 @@ msg_error_helper(MsnCmdProc *cmdproc, MsnMessage *msg, MsnMsgErrorType error)
 {
     MsnSwitchBoard *swboard;
 
-    if ((error != MSN_MSG_ERROR_SB) && msg->nak_cb)
-        msg->nak_cb(msg, msg->ack_data);
-
     swboard = cmdproc->data;
 
     if (msg->type == MSN_MSG_TEXT && msn_message_get_flag (msg) != 'U')
@@ -856,15 +853,7 @@ msg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 static void
 nak_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
-    MsnMessage *msg;
-
-    g_return_if_fail(cmd);
-    g_return_if_fail(cmd->trans);
-
-    msg = cmd->trans->data;
-
-    g_return_if_fail(msg);
-
+    MsnMessage *msg = cmd->trans->data;
     msg_error_helper(cmdproc, msg, MSN_MSG_ERROR_NAK);
 }
 
@@ -874,17 +863,17 @@ ack_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     MsnSwitchBoard *swboard;
     MsnMessage *msg;
 
-    g_return_if_fail(cmd);
-    g_return_if_fail(cmd->trans);
-
     msg = cmd->trans->data;
-
-    if (msg->ack_cb != NULL)
-        msg->ack_cb(msg, msg->ack_data);
 
     swboard = cmdproc->data;
     if (swboard)
         swboard->ack_list = g_list_remove(swboard->ack_list, msg);
+
+    if (msg->ack_cb)
+        msg->ack_cb(msg, msg->ack_data);
+
+    msg->nak_cb = NULL;
+
     msn_message_unref(msg);
 }
 

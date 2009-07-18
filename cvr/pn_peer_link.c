@@ -205,23 +205,12 @@ pn_peer_link_remove_call(struct pn_peer_link *link,
         struct pn_peer_msg *peer_msg = e->data;
         e = e->next;
 
-        if (peer_msg->call == call)
+        if (peer_msg->call == call) {
+            peer_msg->link = NULL;
+            link->slp_msgs = g_list_remove(link->slp_msgs, peer_msg);
             pn_peer_msg_unref(peer_msg);
+        }
     }
-}
-
-void
-pn_peer_link_add_msg(struct pn_peer_link *link,
-                     struct pn_peer_msg *peer_msg)
-{
-    link->slp_msgs = g_list_append(link->slp_msgs, peer_msg);
-}
-
-void
-pn_peer_link_remove_msg(struct pn_peer_link *link,
-                        struct pn_peer_msg *peer_msg)
-{
-    link->slp_msgs = g_list_remove(link->slp_msgs, peer_msg);
 }
 
 struct pn_peer_call *
@@ -283,6 +272,9 @@ msg_ack(MsnMessage *msg,
 
     peer_msg = data;
 
+    if (!peer_msg->link)
+        goto leave;
+
     real_size = (peer_msg->flags == 0x2) ? 0 : peer_msg->size;
 
     peer_msg->offset += msg->msnslp_header.length;
@@ -300,7 +292,9 @@ msg_ack(MsnMessage *msg,
         }
     }
 
+leave:
     peer_msg->msgs = g_list_remove(peer_msg->msgs, msg);
+    pn_peer_msg_unref(peer_msg);
 }
 
 /* We have received the message nak. */
@@ -312,9 +306,8 @@ msg_nak(MsnMessage *msg,
 
     peer_msg = data;
 
-    send_msg_part(peer_msg->link, peer_msg);
-
     peer_msg->msgs = g_list_remove(peer_msg->msgs, msg);
+    pn_peer_msg_unref(peer_msg);
 }
 
 static void
@@ -354,6 +347,7 @@ send_msg_part(struct pn_peer_link *link,
     msn_message_show_readable(msg, peer_msg->info, peer_msg->text_body);
 #endif
 
+    pn_peer_msg_ref(peer_msg);
     peer_msg->msgs = g_list_append(peer_msg->msgs, msg);
 
 #ifdef MSN_DIRECTCONN
@@ -386,6 +380,9 @@ release_peer_msg(struct pn_peer_link *link,
                  struct pn_peer_msg *peer_msg)
 {
     MsnMessage *msg;
+
+    peer_msg->link = link;
+    link->slp_msgs = g_list_append(link->slp_msgs, peer_msg);
 
     peer_msg->msg = msg = msn_message_new_msnslp();
 
@@ -477,7 +474,7 @@ send_ack(struct pn_peer_link *link,
 {
     struct pn_peer_msg *ack_msg;
 
-    ack_msg = pn_peer_msg_new(link);
+    ack_msg = pn_peer_msg_new();
 
     ack_msg->session_id = peer_msg->session_id;
     ack_msg->size = peer_msg->size;
@@ -635,13 +632,16 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
     offset = msg->msnslp_header.offset;
 
     if (offset == 0) {
-        peer_msg = pn_peer_msg_new(link);
+        peer_msg = pn_peer_msg_new();
         peer_msg->id = msg->msnslp_header.id;
         peer_msg->session_id = msg->msnslp_header.session_id;
         peer_msg->ack_id = msg->msnslp_header.ack_id;
         peer_msg->size = msg->msnslp_header.total_size;
         peer_msg->flags = msg->msnslp_header.flags;
         peer_msg->msg = msg;
+
+        peer_msg->link = link;
+        link->slp_msgs = g_list_append(link->slp_msgs, peer_msg);
 
         if (peer_msg->session_id) {
             if (!peer_msg->call)

@@ -61,6 +61,9 @@ msn_message_destroy(MsnMessage *msg)
     pn_log ("msg=%p", msg);
 #endif
 
+    if (msg->nak_cb)
+        msg->nak_cb(msg, msg->ack_data);
+
     /** @todo this is ugly, but we really need to kill the pending
      * transactions to avoid further ack/nak handling . */
     {

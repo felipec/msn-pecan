@@ -23,7 +23,7 @@
 struct pn_peer_call;
 struct pn_peer_link;
 
-struct pn_peer_msg *pn_peer_msg_new(struct pn_peer_link *link);
+struct pn_peer_msg *pn_peer_msg_new(void);
 void pn_peer_msg_free(struct pn_peer_msg *peer_msg);
 struct pn_peer_msg *pn_peer_msg_ref(struct pn_peer_msg *peer_msg);
 struct pn_peer_msg *pn_peer_msg_unref(struct pn_peer_msg *peer_msg);
