@@ -1,4 +1,6 @@
-CC := gcc
+CC := $(CROSS_COMPILE)gcc
+WINDRES := $(CROSS_COMPILE)windres
+
 XGETTEXT := xgettext
 MSGFMT := msgfmt
 
