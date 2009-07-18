@@ -172,6 +172,8 @@ connect_cb (gpointer data,
 
     if (gsc->fd >= 0)
     {
+        conn->open = TRUE;
+
         pn_info ("connected: conn=%p,ssl_conn=%p", conn, ssl_conn);
         purple_ssl_input_add (gsc, read_cb, conn);
     }

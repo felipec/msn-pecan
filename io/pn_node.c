@@ -123,6 +123,8 @@ open_cb (PnNode *next,
 
     pn_log ("begin");
 
+    conn->open = TRUE;
+
     {
         PnNodeClass *class;
         class = g_type_class_peek (PN_NODE_TYPE);
@@ -321,6 +323,8 @@ connect_cb (PnSocket *sock,
         g_io_channel_set_encoding (channel, NULL, NULL);
         g_io_channel_set_buffered (channel, FALSE);
 
+        conn->open = TRUE;
+
         pn_info ("connected: conn=%p,channel=%p", conn, channel);
         conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, conn);
 #if 0
@@ -369,6 +373,8 @@ connect_cb (gpointer data,
 
         g_io_channel_set_encoding (channel, NULL, NULL);
         g_io_channel_set_buffered (channel, FALSE);
+
+        conn->open = TRUE;
 
         pn_info ("connected: conn=%p,channel=%p", conn, channel);
         conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, conn);
@@ -447,6 +453,8 @@ close_impl (PnNode *conn)
 
     pn_info ("closing '%s'\n", conn->name);
     pn_debug ("conn=%p,name=%s", conn, conn->name);
+
+    conn->open = FALSE;
 
     if (conn->next)
     {

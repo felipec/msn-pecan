@@ -367,6 +367,8 @@ connect_cb (gpointer data,
         g_io_channel_set_encoding (channel, NULL, NULL);
         g_io_channel_set_line_term (channel, "\r\n", 2);
 
+        conn->open = TRUE;
+
         http_conn->timer = pn_timer_new (http_poll, http_conn);
         pn_timer_start (http_conn->timer, 2);
 

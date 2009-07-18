@@ -38,6 +38,7 @@ GQuark pn_node_error_quark (void);
 struct PnNode
 {
     GObject parent;
+    gboolean open;
     gboolean dispose_has_run;
 
     GError *error; /**< The current IO error .*/
