@@ -226,7 +226,7 @@ $(plugin): LIBS := $(plugin_libs)
 	$(WINDRES) $< -O coff -o $@
 
 clean:
-	find -name '*.mo' -delete
+	find -name '*.mo' | xargs rm -f
 	rm -f $(plugin) $(objects) $(deps)
 
 po:

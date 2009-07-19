@@ -20,6 +20,7 @@
 #define PN_TIMER_H
 
 #include <glib.h>
+#include "fix_purple.h"
 
 struct pn_timer {
     /** @todo implement our own GSource to allow time resetting. */
