@@ -45,6 +45,14 @@ struct PecanOimSession
     MsnSession *session;
     GQueue *request_queue;
 
+    struct
+    {
+        gchar *messenger_msn_com_t;
+        gchar *messenger_msn_com_p;
+
+        gchar *messengersecure_live_com;
+    } security_token;
+
     gchar *lockkey;
     gboolean got_lockkey;
 };
@@ -60,7 +68,7 @@ struct OimRequest
     gsize content_size;
     OimRequestType type;
 
-    /* receiving stuff */
+    /* receiving/deleting stuff */
     gchar *message_id;
 
     /* sending stuff */
@@ -132,6 +140,11 @@ pn_oim_session_free (PecanOimSession *oim_session)
     }
     g_queue_free (oim_session->request_queue);
 
+    g_free (oim_session->security_token.messenger_msn_com_t);
+    g_free (oim_session->security_token.messenger_msn_com_p);
+
+    g_free (oim_session->security_token.messengersecure_live_com);
+
     g_free (oim_session->lockkey);
 
     g_free (oim_session);
@@ -162,8 +175,8 @@ send_receive_request (PnNode *conn,
                             "</GetMessage>"
                             "</soap:Body>"
                             "</soap:Envelope>",
-                            conn->session->passport_cookie.t,
-                            conn->session->passport_cookie.p,
+                            oim_request->oim_session->security_token.messenger_msn_com_t,
+                            oim_request->oim_session->security_token.messenger_msn_com_p,
                             oim_request->message_id,
                             "false");
 
@@ -227,8 +240,8 @@ send_delete_request (PnNode *conn,
                             "</DeleteMessages>"
                             "</soap:Body>"
                             "</soap:Envelope>",
-                            conn->session->passport_cookie.t,
-                            conn->session->passport_cookie.p,
+                            oim_request->oim_session->security_token.messenger_msn_com_t,
+                            oim_request->oim_session->security_token.messenger_msn_com_p,
                             oim_request->message_id);
 
     body_len = strlen (body);
@@ -302,9 +315,9 @@ send_send_request (PnNode *conn,
                      "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
                      "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
                      "<soap:Header>"
-                     "<From memberName=\"%s\" friendlyName=\"%s%s%s\" xml:lang=\"en-US\" proxy=\"MSNMSGR\" xmlns=\"http://messenger.msn.com/ws/2004/09/oim/\" msnpVer=\"MSNP13\" buildVer=\"8.0.0328\"/>"
+                     "<From memberName=\"%s\" friendlyName=\"%s%s%s\" xml:lang=\"en-US\" proxy=\"MSNMSGR\" xmlns=\"http://messenger.msn.com/ws/2004/09/oim/\" msnpVer=\"MSNP15\" buildVer=\"8.5.1288.816\"/>"
                      "<To memberName=\"%s\" xmlns=\"http://messenger.msn.com/ws/2004/09/oim/\"/>"
-                     "<Ticket passport=\"%s%s%s%s\" appid=\"%s\" lockkey=\"%s\" xmlns=\"http://messenger.msn.com/ws/2004/09/oim/\"/>"
+                     "<Ticket passport=\"%s\" appid=\"%s\" lockkey=\"%s\" xmlns=\"http://messenger.msn.com/ws/2004/09/oim/\"/>"
                      "<Sequence xmlns=\"http://schemas.xmlsoap.org/ws/2003/03/rm\">"
                      "<Identifier xmlns=\"http://schemas.xmlsoap.org/ws/2002/07/utility\">http://messenger.msn.com</Identifier>"
                      "<MessageNumber>%d</MessageNumber>"
@@ -322,8 +335,8 @@ send_send_request (PnNode *conn,
                      session->username,
                      "=?utf-8?B?", friendly_name_base64, "?=",
                      oim_request->passport,
-                     "t=", session->passport_cookie.t, "&amp;p=", session->passport_cookie.p,
-                     "PROD01065C%ZFN6F",
+                     oim_request->oim_session->security_token.messengersecure_live_com,
+                     "PROD0119GSJUC$18",
                      oim_request->oim_session->lockkey ? oim_request->oim_session->lockkey : "",
                      contact->sent_oims,
                      "text",
@@ -354,7 +367,7 @@ send_send_request (PnNode *conn,
 
     header = g_strdup_printf ("POST /OimWS/oim.asmx HTTP/1.1\r\n"
                               "Accept: */*\r\n"
-                              "SOAPAction: \"http://messenger.msn.com/ws/2004/09/oim/Store\"\r\n"
+                              "SOAPAction: \"http://messenger.live.com/ws/2006/09/oim/Store2\"\r\n"
                               "Content-Type: text/xml; charset=utf-8\r\n"
                               "Content-Length: %" G_GSIZE_FORMAT "\r\n"
                               "User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)\r\n"
@@ -364,6 +377,101 @@ send_send_request (PnNode *conn,
                               "\r\n%s",
                               body_len,
                               "ows.messenger.msn.com",
+                              body);
+
+    g_free (body);
+
+    pn_debug ("header=[%s]", header);
+    /* pn_debug ("body=[%s]", body); */
+
+    {
+        gsize len;
+        pn_node_write (conn, header, strlen (header), &len, NULL);
+        pn_debug ("write_len=%d", len);
+    }
+
+    g_free (header);
+
+    pn_log ("end");
+}
+
+static inline void
+send_auth_request (PnNode *conn,
+                   OimRequest *oim_request)
+{
+    MsnSession *session;
+    gchar *body;
+    gchar *header;
+    gsize body_len;
+
+    pn_log ("begin");
+
+    session = oim_request->oim_session->session;
+
+    body = g_strdup_printf ("<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+                            "<Envelope xmlns=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:wsse=\"http://schemas.xmlsoap.org/ws/2003/06/secext\" xmlns:saml=\"urn:oasis:names:tc:SAML:1.0:assertion\" xmlns:wsp=\"http://schemas.xmlsoap.org/ws/2002/12/policy\" xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" xmlns:wsa=\"http://schemas.xmlsoap.org/ws/2004/03/addressing\" xmlns:wssc=\"http://schemas.xmlsoap.org/ws/2004/04/sc\" xmlns:wst=\"http://schemas.xmlsoap.org/ws/2004/04/trust\">"
+                            "<Header>"
+                            "<ps:AuthInfo xmlns:ps=\"http://schemas.microsoft.com/Passport/SoapServices/PPCRL\" Id=\"PPAuthInfo\">"
+                            "<ps:HostingApp>{7108E71A-9926-4FCB-BCC9-9A9D3F32E423}</ps:HostingApp>"
+                            "<ps:BinaryVersion>4</ps:BinaryVersion>"
+                            "<ps:UIVersion>1</ps:UIVersion>"
+                            "<ps:Cookies></ps:Cookies>"
+                            "<ps:RequestParams>AQAAAAIAAABsYwQAAAAxMDMz</ps:RequestParams>"
+                            "</ps:AuthInfo>"
+                            "<wsse:Security>"
+                            "<wsse:UsernameToken Id=\"user\">"
+                            "<wsse:Username>%s</wsse:Username>"
+                            "<wsse:Password>%s</wsse:Password>"
+                            "</wsse:UsernameToken>"
+                            "</wsse:Security>"
+                            "</Header>"
+                            "<Body>"
+                            "<ps:RequestMultipleSecurityTokens xmlns:ps=\"http://schemas.microsoft.com/Passport/SoapServices/PPCRL\" Id=\"RSTS\">"
+                            "<wst:RequestSecurityToken Id=\"RST0\">"
+                            "<wst:RequestType>http://schemas.xmlsoap.org/ws/2004/04/security/trust/Issue</wst:RequestType>"
+                            "<wsp:AppliesTo>"
+                            "<wsa:EndpointReference>"
+                            "<wsa:Address>http://Passport.NET/tb</wsa:Address>"
+                            "</wsa:EndpointReference>"
+                            "</wsp:AppliesTo>"
+                            "</wst:RequestSecurityToken>"
+                            "<wst:RequestSecurityToken Id=\"RST1\">"
+                            "<wst:RequestType>http://schemas.xmlsoap.org/ws/2004/04/security/trust/Issue</wst:RequestType>"
+                            "<wsp:AppliesTo>"
+                            "<wsa:EndpointReference>"
+                            "<wsa:Address>messenger.msn.com</wsa:Address>"
+                            "</wsa:EndpointReference>"
+                            "</wsp:AppliesTo>"
+                            "<wsse:PolicyReference URI=\"?id=507\"></wsse:PolicyReference>"
+                            "</wst:RequestSecurityToken>"
+                            "<wst:RequestSecurityToken Id=\"RST2\">"
+                            "<wst:RequestType>http://schemas.xmlsoap.org/ws/2004/04/security/trust/Issue</wst:RequestType>"
+                            "<wsp:AppliesTo>"
+                            "<wsa:EndpointReference>"
+                            "<wsa:Address>messengersecure.live.com</wsa:Address>"
+                            "</wsa:EndpointReference>"
+                            "</wsp:AppliesTo>"
+                            "<wsse:PolicyReference URI=\"MBI_SSL\"></wsse:PolicyReference>"
+                            "</wst:RequestSecurityToken>"
+                            "</ps:RequestMultipleSecurityTokens>"
+                            "</Body>"
+                            "</Envelope>",
+                            session->username,
+                            session->password);
+
+    body_len = strlen (body);
+
+    header = g_strdup_printf ("POST /RST.srf HTTP/1.1\r\n"
+                              "Accept: */*\r\n"
+                              "Content-Type: text/xml; charset=utf-8\r\n"
+                              "Content-Length: %" G_GSIZE_FORMAT "\r\n"
+                              "User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)\r\n"
+                              "Host: %s\r\n"
+                              "Connection: Keep-Alive\r\n"
+                              "Cache-Control: no-cache\r\n"
+                              "\r\n%s",
+                              body_len,
+                              "login.live.com",
                               body);
 
     g_free (body);
@@ -394,8 +502,10 @@ open_cb (PnNode *conn,
         send_receive_request (conn, oim_request);
     else if (oim_request->type == PN_DELETE_OIM)
         send_delete_request (conn, oim_request);
-    else
+    else if (oim_request->type == PN_SEND_OIM)
         send_send_request (conn, oim_request);
+    else
+        send_auth_request (conn, oim_request);
 
     g_signal_handler_disconnect (conn, oim_request->open_sig_handler);
     oim_request->open_sig_handler = 0;
@@ -412,7 +522,8 @@ next_request (PecanOimSession *oim_session)
 
     oim_request = g_queue_pop_head (oim_session->request_queue);
 
-    if (oim_request) {
+    if (oim_request)
+    {
         if (oim_request->type == PN_RECEIVE_OIM)
         {
             g_queue_push_tail (oim_session->request_queue,
@@ -424,7 +535,7 @@ next_request (PecanOimSession *oim_session)
         {
             oim_session->got_lockkey = FALSE;
 
-            g_queue_push_tail (oim_session->request_queue,
+            g_queue_push_head (oim_session->request_queue,
                                oim_request_new (oim_session, oim_request->passport, NULL,
                                oim_request->oim_message, PN_SEND_OIM));
         }
@@ -517,7 +628,7 @@ process_body_send (OimRequest *oim_request,
         oim_request->oim_session->lockkey = NULL;
 
         oim_request->oim_session->lockkey = g_malloc (33);
-        pn_handle_challenge (lockkey, "PROD01065C%ZFN6F", "O4BG@C7BWLYQX?5G", oim_request->oim_session->lockkey);
+        pn_handle_challenge (lockkey, "PROD0119GSJUC$18", "ILTXC!4IXB5FB*PX", oim_request->oim_session->lockkey);
         oim_request->oim_session->lockkey[32] = '\0';
 
         g_free (lockkey);
@@ -554,6 +665,44 @@ process_body_send (OimRequest *oim_request,
 
         purple_conversation_write (conv, NULL, error, PURPLE_MESSAGE_ERROR, time (NULL));
         purple_conversation_write (conv, NULL, oim_request->oim_message, PURPLE_MESSAGE_RAW, time (NULL));
+    }
+}
+
+static void
+process_body_auth (OimRequest *oim_request,
+                   char *body,
+                   gsize length)
+{
+    gchar *cur;
+
+    pn_test ("body=[%.*s]", length, body);
+
+    cur = strstr (body, "<wsse:BinarySecurityToken Id=\"PPToken1\">");
+    if (cur)
+    {
+        gchar *login_params, *end, **tokens;
+
+        cur = strchr (cur, '>') + 1;
+        end = strchr (cur, '<');
+        login_params = g_strndup (cur, end - cur);
+
+        tokens = g_strsplit (login_params, "&amp;", 2);
+
+        g_free (oim_request->oim_session->security_token.messenger_msn_com_t);
+        g_free (oim_request->oim_session->security_token.messenger_msn_com_p);
+
+        oim_request->oim_session->security_token.messenger_msn_com_t = g_strdup (tokens[0] + 2);
+        oim_request->oim_session->security_token.messenger_msn_com_p = g_strdup (tokens[1] + 2);
+    }
+
+    cur = strstr (body, "<wsse:BinarySecurityToken Id=\"Compact2\">");
+    if (cur)
+    {
+        gchar *end;
+
+        cur = strchr (cur, '>') + 1;
+        end = strchr (cur, '<');
+        oim_request->oim_session->security_token.messengersecure_live_com = g_strndup (cur, end - cur);
     }
 }
 
@@ -612,8 +761,10 @@ read_cb (PnNode *conn,
             process_body_receive (oim_request, body, oim_request->content_size);
         else if (oim_request->type == PN_DELETE_OIM)
             process_body_delete (oim_request, body, oim_request->content_size);
-        else
+        else if (oim_request->type == PN_SEND_OIM)
             process_body_send (oim_request, body, oim_request->content_size);
+        else
+            process_body_auth (oim_request, body, oim_request->content_size);
 
         g_free(body);
     }
@@ -647,6 +798,8 @@ oim_process_requests (PecanOimSession *oim_session)
 
         if (oim_request->type == PN_SEND_OIM)
             pn_node_connect (conn, "ows.messenger.msn.com", 443);
+        else if (oim_request->type == PN_SSO_AUTH_OIM)
+            pn_node_connect (conn, "login.live.com", 443);
         else
             pn_node_connect (conn, "rsi.hotmail.com", 443);
 
@@ -670,5 +823,10 @@ pn_oim_session_request (PecanOimSession *oim_session,
                        oim_request_new (oim_session, passport, message_id, oim_message, type));
 
     if (initial)
+    {
+        g_queue_push_head (oim_session->request_queue,
+                           oim_request_new (oim_session, NULL, NULL, NULL, PN_SSO_AUTH_OIM));
+
         oim_process_requests (oim_session);
+    }
 }
