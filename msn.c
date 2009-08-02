@@ -600,7 +600,11 @@ status_text (PurpleBuddy *buddy)
                     artist = contact->media.artist;
                     album = contact->media.album;
 
+#ifdef ADIUM
+                    return g_strdup_printf ("♫ %s", purple_util_format_song_info (title, artist, album, NULL));
+#else
                     return purple_util_format_song_info (title, artist, album, NULL);
+#endif /* ADIUM */
                 }
             case CURRENT_MEDIA_GAMES:
                 return g_strdup_printf (_("Playing %s"), contact->media.title);
