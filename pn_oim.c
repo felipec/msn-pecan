@@ -53,6 +53,12 @@ struct PecanOimSession
         gchar *messengersecure_live_com;
     } security_token;
 
+    struct
+    {
+        time_t messenger_msn_com;
+        time_t messengersecure_live_com;
+    } expiration_time;
+
     gchar *lockkey;
     gboolean got_lockkey;
 };
@@ -665,6 +671,27 @@ process_body_send (OimRequest *oim_request,
     }
 }
 
+static time_t
+parse_expiration_time (const char *str)
+{
+    int y, m, d, hour, min, sec;
+    struct tm tm;
+
+    sscanf (str, "%d-%d-%dT%d:%d:%dZ",
+            &y, &m, &d, &hour, &min, &sec);
+
+    memset(&tm, 0, sizeof(tm));
+    tm.tm_sec = sec;
+    tm.tm_min = min;
+    tm.tm_hour = hour;
+    tm.tm_mday = d;
+    tm.tm_mon = m-1;
+    tm.tm_year = y - 1900;
+    tm.tm_isdst = -1;
+
+    return mktime (&tm) - timezone;
+}
+
 static void
 process_body_auth (OimRequest *oim_request,
                    char *body,
@@ -692,6 +719,20 @@ process_body_auth (OimRequest *oim_request,
         oim_request->oim_session->security_token.messenger_msn_com_p = g_strdup (tokens[1] + 2);
     }
 
+    cur = strstr (body, "<wsa:Address>messenger.msn.com</wsa:Address>");
+    if (cur)
+    {
+        gchar *end, *expires;
+
+        cur = strstr (cur, "<wsu:Expires>") + 13;
+        end = strchr (cur, '<');
+        expires = g_strndup (cur, end - cur);
+
+        oim_request->oim_session->expiration_time.messenger_msn_com = parse_expiration_time (expires);
+
+        g_free (expires);
+    }
+
     cur = strstr (body, "<wsse:BinarySecurityToken Id=\"Compact2\">");
     if (cur)
     {
@@ -699,7 +740,24 @@ process_body_auth (OimRequest *oim_request,
 
         cur = strchr (cur, '>') + 1;
         end = strchr (cur, '<');
+
+        g_free (oim_request->oim_session->security_token.messengersecure_live_com);
+
         oim_request->oim_session->security_token.messengersecure_live_com = g_strndup (cur, end - cur);
+    }
+
+    cur = strstr (body, "<wsa:Address>messengersecure.live.com</wsa:Address>");
+    if (cur)
+    {
+        gchar *end, *expires;
+
+        cur = strstr (cur, "<wsu:Expires>") + 13;
+        end = strchr (cur, '<');
+        expires = g_strndup (cur, end - cur);
+
+        oim_request->oim_session->expiration_time.messengersecure_live_com = parse_expiration_time (expires);
+
+        g_free (expires);
     }
 }
 
@@ -781,6 +839,32 @@ oim_process_requests (PecanOimSession *oim_session)
     if (!oim_request)
         return;
 
+    if (oim_request->type != PN_SSO_AUTH_OIM)
+    {
+        time_t current_time = time (NULL);
+
+        if (oim_request->type == PN_RECEIVE_OIM || oim_request->type == PN_DELETE_OIM)
+        {
+            if (current_time >= oim_session->expiration_time.messenger_msn_com)
+            {
+                g_queue_push_head (oim_session->request_queue,
+                                   oim_request_new (oim_session, NULL, NULL, NULL, PN_SSO_AUTH_OIM));
+
+                oim_request = g_queue_peek_head (oim_session->request_queue);
+            }
+        }
+        else if (oim_request->type == PN_SEND_OIM)
+        {
+            if (current_time >= oim_session->expiration_time.messengersecure_live_com)
+            {
+                g_queue_push_head (oim_session->request_queue,
+                                   oim_request_new (oim_session, NULL, NULL, NULL, PN_SSO_AUTH_OIM));
+
+                oim_request = g_queue_peek_head (oim_session->request_queue);
+            }
+        }
+    }
+
     {
         PnSslConn *ssl_conn;
         PnNode *conn;
@@ -821,8 +905,10 @@ pn_oim_session_request (PecanOimSession *oim_session,
 
     if (initial)
     {
-        g_queue_push_head (oim_session->request_queue,
-                           oim_request_new (oim_session, NULL, NULL, NULL, PN_SSO_AUTH_OIM));
+        if (!(oim_session->expiration_time.messenger_msn_com &&
+            oim_session->expiration_time.messengersecure_live_com))
+            g_queue_push_head (oim_session->request_queue,
+                               oim_request_new (oim_session, NULL, NULL, NULL, PN_SSO_AUTH_OIM));
 
         oim_process_requests (oim_session);
     }
