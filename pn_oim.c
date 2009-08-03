@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include <time.h> /* for strptime */
+#include <time.h>
 
 #include "pn_oim.h"
 #include "io/pn_ssl_conn.h"
@@ -553,23 +553,44 @@ process_body_receive (OimRequest *oim_request,
 {
     gchar *message = NULL;
     gchar *cur;
-    guint32 date = 0;
+    time_t date;
 
     pn_debug("body=[%.*s]", (int) length, body);
 
-    /** @todo find a way to parse the date in win32 */
-#ifndef G_OS_WIN32
     cur = strstr(body, "Date: ");
     if (cur) {
-        struct tm time;
-        cur += 6;
-        date = mktime (&time);
-        strptime (cur, "%d %b %Y %T %z", &time);
-    }
-#endif
+        gchar *end, month[3], *months[13] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+        int d, m, y, hour, min, sec, timezone;
+        struct tm time, *tmp;
 
-    if (date == 0)
-        date = time (NULL);
+        cur = strchr (cur, ' ') + 1;
+        end = strchr (cur, '\n');
+        cur = g_strndup (cur, end - cur);
+
+        sscanf (cur, "%d %c%c%c %d %d:%d:%d %d", &d, &month[0], &month[1], &month[2], &y, &hour, &min, &sec, &timezone);
+
+        g_free (cur);
+
+        for (m = 0; strncmp (month, months[m], 3) != 0; m++);
+
+        timezone = timezone / 100;
+        hour -= timezone;
+
+        time.tm_sec = sec;
+        time.tm_min = min;
+        time.tm_hour = hour;
+        time.tm_mday = d;
+        time.tm_mon = m;
+        time.tm_year = y - 1900;
+
+        date = mktime (&time);
+
+        tmp = gmtime (&date);
+        timezone = (date - mktime (tmp)) / 3600;
+        time.tm_hour += timezone + time.tm_isdst;
+
+        date = mktime (&time);
+    }
 
     cur = strstr (body, "\r\n\r\n");
     if (cur) {
