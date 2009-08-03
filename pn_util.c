@@ -190,6 +190,28 @@ remove_plus_tags_from_str (const gchar* str)
 }
 
 gchar *
+pn_friendly_name_encode (const gchar *value)
+{
+    const gchar *cur, *b;
+    GString *string;
+
+    string = g_string_new_len(NULL, strlen(value));
+
+    cur = value;
+    do {
+        b = strpbrk(cur, "% ");
+        if (!b) {
+            g_string_append(string, cur);
+            break;
+        }
+        g_string_append_len(string, cur, b - cur);
+        g_string_append_printf(string, "%%%02x", *b);
+        cur = b + 1;
+    } while(*cur);
+    return g_string_free(string, FALSE);
+}
+
+gchar *
 pn_url_decode (const gchar *url)
 {
     gchar *new;

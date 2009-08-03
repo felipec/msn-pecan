@@ -26,6 +26,8 @@
 
 gchar *remove_plus_tags_from_str (const gchar *str);
 
+gchar *pn_friendly_name_encode (const gchar *value);
+
 gchar *pn_url_decode (const gchar *url);
 
 /**

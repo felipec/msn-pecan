@@ -205,8 +205,9 @@ msn_set_prp(PurpleConnection *gc, const char *type, const char *entry)
     }
     else
     {
-        msn_cmdproc_send(cmdproc, "PRP", "%s %s", type,
-                         purple_url_encode(entry));
+        gchar *value = pn_friendly_name_encode (entry);
+        msn_cmdproc_send (cmdproc, "PRP", "%s %s", type, value);
+        g_free (value);
     }
 }
 
