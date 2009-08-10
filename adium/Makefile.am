@@ -86,7 +86,6 @@ AM_CPPFLAGS = \
 	      -DPECAN_CVR \
 	      -DPECAN_USE_PSM \
 	      -DPECAN_LIBSIREN \
-	      -DPECAN_LIBMSPACK \
 	      -DRECEIVE_PLUS_SOUNDS \
 	      -DGETTEXT_PACKAGE='"pidgin"' \
 	      -DENABLE_NLS \
