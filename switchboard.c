@@ -1414,6 +1414,7 @@ datacast_msg (MsnCmdProc *cmdproc,
 
     if (strcmp (id, "1") == 0)
     {
+#if PURPLE_VERSION_CHECK(2,5,0)
         MsnSwitchBoard *swboard;
 
         swboard = cmdproc->data;
@@ -1424,6 +1425,9 @@ datacast_msg (MsnCmdProc *cmdproc,
             purple_prpl_got_attention_in_chat (connection, swboard->chat_id, passport, 0);
         else
             purple_prpl_got_attention (connection, passport, 0);
+#else
+        serv_got_attention (account->gc, passport, 0);
+#endif /* PURPLE_VERSION_CHECK(2,5,0) */
     }
     else if (strcmp (id, "2") == 0)
     {
