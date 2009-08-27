@@ -113,7 +113,7 @@ msn_session_new (const gchar *username,
     session->oim_session = pn_oim_session_new (session);
 
     session->conversations = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) msn_switchboard_unref);
-    session->chats = g_hash_table_new_full (g_int_hash, g_int_equal, NULL, (GDestroyNotify) msn_switchboard_unref);
+    session->chats = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) msn_switchboard_unref);
 
 #if defined(PECAN_CVR)
     session->links = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) pn_peer_link_unref);
