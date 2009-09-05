@@ -686,7 +686,7 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
 
     if (peer_msg->fp)
         len = fwrite(data, 1, len, peer_msg->fp);
-    else if (peer_msg->size) {
+    else if (peer_msg->size && peer_msg->buffer) {
         if (len > peer_msg->size || offset > (peer_msg->size - len)) {
             pn_error("oversized peer_msg");
             g_return_if_reached();
