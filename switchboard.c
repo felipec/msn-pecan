@@ -1365,7 +1365,7 @@ extract_wink(struct pn_peer_call *call, const guchar *data, gsize size)
                 conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, pn_peer_link_get_passport(call->link));
 
             imgid = purple_imgstore_add_with_id(emot, emot_len, NULL);
-            emot_name = g_strdup_printf ("<IMG ID=%d/>", imgid);
+            emot_name = g_strdup_printf ("<IMG ID='%d'/>", imgid);
 
         }
         else
