@@ -676,6 +676,7 @@ tooltip_text (PurpleBuddy *buddy,
         {
             if (user->media.type == CURRENT_MEDIA_MUSIC)
             {
+#ifndef ADIUM
                 const gchar *title, *artist, *album;
                 gchar *tmp;
 
@@ -686,6 +687,7 @@ tooltip_text (PurpleBuddy *buddy,
 
                 purple_notify_user_info_add_pair (user_info, _("Now Listening"), tmp);
                 g_free(tmp);
+#endif /* ADIUM */
             }
             else if (user->media.type == CURRENT_MEDIA_GAMES)
             {
