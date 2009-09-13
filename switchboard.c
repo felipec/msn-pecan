@@ -258,14 +258,14 @@ msn_switchboard_free (MsnSwitchBoard *swboard)
 
     /* msg_error_helper will both remove the msg from ack_list and
        unref it, so we don't need to do either here */
-    while ((l = swboard->ack_list) != NULL)
+    while ((l = swboard->ack_list))
         msg_error_helper(swboard->cmdproc, l->data, MSN_MSG_ERROR_SB);
 
     g_free(swboard->im_user);
     g_free(swboard->auth_key);
     g_free(swboard->session_id);
 
-    for (l = swboard->users; l != NULL; l = l->next)
+    for (l = swboard->users; l; l = l->next)
         g_free(l->data);
 
     if (swboard->cmdproc)
