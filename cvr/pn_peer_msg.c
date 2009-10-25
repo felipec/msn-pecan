@@ -198,7 +198,7 @@ sip_new(struct pn_peer_call *call,
         char *end;
         end = strchr(body, '\r');
         if (end)
-            pn_info("send sip: %.*s", (gint) (end - body), body);
+            pn_info("send sip: %.*s", (int) (end - body), body);
     }
 
     body_len = strlen(body);
@@ -801,7 +801,7 @@ pn_sip_recv(struct pn_peer_link *link,
         char *end;
         end = strchr(body, '\r');
         if (end)
-            pn_info("recv sip: %.*s", (gint) (end - body), body);
+            pn_info("recv sip: %.*s", (int) (end - body), body);
     }
 
     if (strncmp(body, "INVITE", strlen("INVITE")) == 0) {

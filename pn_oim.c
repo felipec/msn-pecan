@@ -555,7 +555,7 @@ process_body_receive (OimRequest *oim_request,
     gchar *cur;
     guint32 date = 0;
 
-    pn_debug("body=[%.*s]", (guint) length, body);
+    pn_debug("body=[%.*s]", (int) length, body);
 
     /** @todo find a way to parse the date in win32 */
 #ifndef G_OS_WIN32
@@ -600,7 +600,7 @@ process_body_delete (OimRequest *oim_request,
                      char *body,
                      gsize length)
 {
-    pn_debug("body=[%.*s]", (guint) length, body);
+    pn_debug("body=[%.*s]", (int) length, body);
 
     if (strstr (body, "Schema validation error"))
         pn_error ("deleting oim=[%s]: schema validation error", oim_request->message_id);
@@ -613,7 +613,7 @@ process_body_send (OimRequest *oim_request,
 {
     gchar *cur;
 
-    pn_debug("body=[%.*s]", (guint) length, body);
+    pn_debug("body=[%.*s]", (int) length, body);
 
     cur = strstr (body, "<LockKeyChallenge ");
     if (cur)
@@ -675,7 +675,7 @@ process_body_auth (OimRequest *oim_request,
 {
     gchar *cur;
 
-    pn_debug ("body=[%.*s]", (guint) length, body);
+    pn_debug ("body=[%.*s]", (int) length, body);
 
     cur = strstr (body, "<wsse:BinarySecurityToken Id=\"PPToken1\">");
     if (cur)
