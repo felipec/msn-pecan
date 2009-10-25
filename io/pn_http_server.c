@@ -328,7 +328,7 @@ http_poll (gpointer data)
 
         if (status == G_IO_STATUS_NORMAL)
         {
-            pn_log ("bytes_written=%d", bytes_written);
+            pn_log ("bytes_written=%zu", bytes_written);
             http_conn->waiting_response = TRUE;
         }
     }
@@ -728,14 +728,14 @@ read_impl (PnNode *conn,
             status = pn_stream_read (conn->stream, buf, MIN (http_conn->content_length, count), &bytes_read, &tmp_error);
 
             pn_log ("status=%d", status);
-            pn_log ("bytes_read=%d", bytes_read);
+            pn_log ("bytes_read=%zu", bytes_read);
 
             if (ret_bytes_read)
                 *ret_bytes_read = bytes_read;
 
             http_conn->content_length -= bytes_read;
 
-            pn_log ("con_len=%d,read=%d", http_conn->content_length, bytes_read);
+            pn_log ("con_len=%d,read=%zu", http_conn->content_length, bytes_read);
 
             if (http_conn->content_length == 0)
                 http_conn->parser_state = 0;
@@ -859,7 +859,7 @@ foo_write (PnNode *conn,
 
     if (status == G_IO_STATUS_NORMAL)
     {
-        pn_log ("bytes_written=%d", bytes_written);
+        pn_log ("bytes_written=%zu", bytes_written);
         http_conn->waiting_response = TRUE;
         if (http_conn->cur)
             g_object_unref (http_conn->cur);

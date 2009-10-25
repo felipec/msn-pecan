@@ -325,7 +325,7 @@ write_impl (PnNode *conn,
             if (bytes_written < count)
             {
                 /* This shouldn't happen, right? */
-                pn_error ("write check: %d < %d", bytes_written, count);
+                pn_error ("write check: %d < %zu", bytes_written, count);
             }
         }
         else
