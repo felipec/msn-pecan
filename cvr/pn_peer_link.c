@@ -640,9 +640,6 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
         peer_msg->flags = msg->msnslp_header.flags;
         peer_msg->msg = msg;
 
-        peer_msg->link = link;
-        link->slp_msgs = g_list_append(link->slp_msgs, peer_msg);
-
         if (peer_msg->session_id) {
             if (!peer_msg->call)
                 peer_msg->call = find_session_call(link, peer_msg->session_id);
@@ -669,9 +666,15 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
             peer_msg->buffer = g_try_malloc(peer_msg->size);
             if (!peer_msg->buffer) {
                 pn_error("failed to allocate buffer for peer_msg");
+                if (peer_msg->call)
+                    pn_peer_call_unref(peer_msg->call);
+                pn_peer_msg_free(peer_msg);
                 return;
             }
         }
+
+        peer_msg->link = link;
+        link->slp_msgs = g_list_append(link->slp_msgs, peer_msg);
     }
     else
         peer_msg = find_message(link,
