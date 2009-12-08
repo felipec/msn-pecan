@@ -198,6 +198,9 @@ pn_direct_conn_write(struct pn_direct_conn *direct_conn,
     {
         /* Let's write the data. */
         status = pn_stream_write (direct_conn->stream, data, len, &tmp, NULL);
+
+        if (status == G_IO_STATUS_NORMAL)
+            pn_stream_flush (direct_conn->stream, NULL);
     }
 
     if (status == G_IO_STATUS_NORMAL)
@@ -304,6 +307,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     {
         pn_error ("failed to allocate memory for read");
 
+        pn_direct_conn_destroy(direct_conn);
         return FALSE;
     }
 
@@ -375,6 +379,8 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
 
         direct_conn->stream = pn_stream_new (fd);
         channel = direct_conn->stream->channel;
+
+        g_io_channel_set_encoding (channel, NULL, NULL);
 
         pn_info ("connected: %p", channel);
         direct_conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, direct_conn);
