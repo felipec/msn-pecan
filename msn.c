@@ -906,8 +906,10 @@ login (PurpleAccount *account)
     session->user_data = account;
     msn_session_set_bool (session, "use_server_alias",
                           purple_account_get_bool (account, "use_server_alias", FALSE));
+#ifdef MSN_DIRECTCONN
     msn_session_set_bool (session, "use_direct_conn",
                           purple_account_get_bool (account, "use_direct_conn", FALSE));
+#endif
     msn_session_set_bool (session, "use_userdisplay",
                           purple_account_get_bool (account, "use_userdisplay", TRUE));
 
@@ -1844,8 +1846,10 @@ init_plugin (PurplePlugin *plugin)
         option = purple_account_option_bool_new (_("Use server-side alias"), "use_server_alias", FALSE);
         prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
 
+#ifdef MSN_DIRECTCONN
         option = purple_account_option_bool_new (_("Use direct connections"), "use_direct_conn", FALSE);
         prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);
+#endif
 
         option = purple_account_option_bool_new (_("Use user displays"), "use_userdisplay", TRUE);
         prpl_info.protocol_options = g_list_append (prpl_info.protocol_options, option);

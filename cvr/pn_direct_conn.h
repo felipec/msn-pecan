@@ -44,7 +44,7 @@ struct pn_direct_conn {
 
     int c;
     struct _PurpleProxyConnectData *connect_data;
-    PecanStream *stream;
+    PnStream *stream;
 };
 
 struct pn_direct_conn *pn_direct_conn_new(struct pn_peer_link *link);

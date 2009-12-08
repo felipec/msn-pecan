@@ -698,8 +698,8 @@ got_ok(struct pn_peer_call *call,
 
     if (strcmp(type, "application/x-msnmsgr-sessionreqbody") == 0) {
 #ifdef MSN_DIRECTCONN
-        if (call->link->session->use_direct_conn &&
-            call->type == PN_PEER_CALL_DC)
+        if (msn_session_get_bool(pn_peer_link_get_session(call->link),
+                                 "use_direct_conn"))
         {
             /* First let's try a DirectConnection. */
 
@@ -720,7 +720,7 @@ got_ok(struct pn_peer_call *call,
                                           "ICF: false\r\n");
 
             header = g_strdup_printf("INVITE MSNMSGR:%s MSNSLP/1.0",
-                                     link->remote_user);
+                                     pn_peer_link_get_passport(link));
 
             peer_msg = sip_new(call, 0, header, branch,
                                "application/x-msnmsgr-transreqbody",

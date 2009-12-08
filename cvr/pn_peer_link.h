@@ -70,4 +70,8 @@ struct pn_peer_link *msn_session_find_peer_link(struct MsnSession *session,
 struct pn_peer_link *msn_session_get_peer_link(struct MsnSession *session,
                                                const char *username);
 
+struct pn_direct_conn *pn_peer_link_get_directconn(const struct pn_peer_link *link);
+void pn_peer_link_set_directconn(struct pn_peer_link *link,
+                                 struct pn_direct_conn *direct_conn);
+
 #endif /* PN_PEERLINK_H */

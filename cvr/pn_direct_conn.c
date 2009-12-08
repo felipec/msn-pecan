@@ -23,6 +23,7 @@
 
 #include "session.h"
 #include "pn_peer_msg.h"
+#include "pn_peer_link.h"
 
 #include "io/pn_node.h"
 
@@ -50,7 +51,7 @@ pn_direct_conn_send_handshake(struct pn_direct_conn *direct_conn)
 
     link = direct_conn->link;
 
-    peer_msg = pn_peer_msg_new(link);
+    peer_msg = pn_peer_msg_new();
     peer_msg->flags = 0x100;
 
     if (direct_conn->nonce != NULL)
@@ -408,7 +409,7 @@ pn_direct_conn_connect(struct pn_direct_conn *direct_conn, const char *host, int
 
     pn_log ("begin");
 
-    session = direct_conn->link->session;
+    session = pn_peer_link_get_session(direct_conn->link);
 
 #if 0
     if (session->http_method)
@@ -417,8 +418,9 @@ pn_direct_conn_connect(struct pn_direct_conn *direct_conn, const char *host, int
     }
 #endif
 
-    direct_conn->connect_data = purple_proxy_connect(NULL, msn_session_get_account (session),
-                                                    host, port, direct_conn_connect_cb, direct_conn);
+    direct_conn->connect_data = purple_proxy_connect(NULL,
+                                                     msn_session_get_user_data(session),
+                                                     host, port, direct_conn_connect_cb, direct_conn);
 
     pn_log ("end");
 
@@ -458,10 +460,10 @@ pn_direct_conn_new(struct pn_peer_link *link)
 
     direct_conn->link = link;
 
-    if (link->direct_conn != NULL)
+    if (pn_peer_link_get_directconn(link) != NULL)
         pn_warning ("got_transresp: LEAK");
 
-    link->direct_conn = direct_conn;
+    pn_peer_link_set_directconn(link, direct_conn);
 
     pn_log ("end");
 
@@ -492,7 +494,7 @@ pn_direct_conn_destroy(struct pn_direct_conn *direct_conn)
     if (direct_conn->nonce != NULL)
         g_free(direct_conn->nonce);
 
-    direct_conn->link->direct_conn = NULL;
+    pn_peer_link_set_directconn(direct_conn->link, NULL);
 
     g_free(direct_conn);
 

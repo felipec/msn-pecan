@@ -789,3 +789,16 @@ pn_peer_link_request_object(struct pn_peer_link *link,
 
     g_free(msnobj_base64);
 }
+
+struct pn_direct_conn *
+pn_peer_link_get_directconn(const struct pn_peer_link *link)
+{
+    return link->direct_conn;
+}
+
+void
+pn_peer_link_set_directconn(struct pn_peer_link *link,
+                            struct pn_direct_conn *direct_conn)
+{
+    link->direct_conn = direct_conn;
+}
