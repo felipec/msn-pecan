@@ -472,6 +472,20 @@ msn_offline_message(const PurpleBuddy *buddy) {
     return TRUE;
 }
 
+static inline MsnSwitchBoard *
+new_chat (MsnSession *session,
+          gint id)
+{
+    MsnSwitchBoard *swboard;
+    swboard = msn_switchboard_new (session);
+    swboard->chat_id = id;
+
+    g_hash_table_insert (session->chats, GINT_TO_POINTER (id), swboard);
+    msn_switchboard_request (swboard);
+
+    return swboard;
+}
+
 static void
 initiate_chat_cb(PurpleBlistNode *node, gpointer data)
 {
@@ -487,14 +501,11 @@ initiate_chat_cb(PurpleBlistNode *node, gpointer data)
     gc = purple_account_get_connection(buddy->account);
 
     session = gc->proto_data;
+    swboard = new_chat (session, session->conv_seq++);
 
-    swboard = msn_switchboard_new(session);
-    g_hash_table_insert (session->conversations, g_strdup (buddy->name), swboard);
-    msn_switchboard_request(swboard);
     msn_switchboard_request_add_user(swboard, buddy->name);
 
     /* TODO: This might move somewhere else, after USR might be */
-    swboard->chat_id = session->conv_seq++;
     swboard->conv = serv_got_joined_chat(gc, swboard->chat_id, "MSN Chat");
 
     purple_conv_chat_add_user(PURPLE_CONV_CHAT(swboard->conv),
@@ -1503,10 +1514,7 @@ chat_invite (PurpleConnection *gc,
     /* if we have no switchboard, everyone else left the chat already */
     if (!swboard)
     {
-        swboard = msn_switchboard_new (session);
-        g_hash_table_insert (session->chats, GINT_TO_POINTER (id), swboard);
-        msn_switchboard_request (swboard);
-        swboard->chat_id = id;
+        swboard = new_chat (session, id);
         swboard->conv = purple_find_chat (gc, id);
     }
 
