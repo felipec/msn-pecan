@@ -21,6 +21,7 @@
 #include "pn_contact_priv.h"
 #include "pn_contactlist.h"
 #include "pn_contactlist_priv.h"
+#include "pn_group.h"
 #include "pn_log.h"
 #include "pn_util.h"
 
@@ -549,6 +550,19 @@ guint
 pn_contact_get_group_count (struct pn_contact *contact)
 {
     return g_hash_table_size (contact->groups);
+}
+
+gboolean
+pn_contact_is_in_group (struct pn_contact *contact,
+                        struct pn_group *group)
+{
+    const gchar *group_guid;
+    if (!group)
+        return FALSE;
+    group_guid = pn_group_get_id (group);
+    if (!group_guid)
+        return TRUE;
+    return !!g_hash_table_lookup (contact->groups, group_guid);
 }
 
 void

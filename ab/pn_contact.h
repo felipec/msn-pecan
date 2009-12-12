@@ -24,6 +24,7 @@
 
 struct pn_contact;
 struct pn_contact_list;
+struct pn_group;
 
 struct pn_buffer;
 
@@ -160,6 +161,9 @@ void pn_contact_remove_group_id (struct pn_contact *contact,
  * @return The group count.
  */
 guint pn_contact_get_group_count (struct pn_contact *contact);
+
+gboolean pn_contact_is_in_group (struct pn_contact *contact,
+                                 struct pn_group *group);
 
 /**
  * Sets the home phone number for a contact.
