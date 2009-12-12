@@ -409,6 +409,50 @@ msn_session_set_error (MsnSession *session,
     g_free (msg);
 }
 
+#ifdef HAVE_LIBPURPLE
+/* stupid libpurple's local contact list, we don't need you! */
+static void
+sync_users (MsnSession *session)
+{
+    PurpleAccount *account;
+    GSList *buddies;
+    GList *to_remove = NULL;
+
+    account = msn_session_get_user_data(session);
+
+    for (buddies = purple_find_buddies(account, NULL); buddies;
+         buddies = g_slist_delete_link(buddies, buddies))
+    {
+        PurpleBuddy *buddy = buddies->data;
+        const gchar *buddy_name = purple_buddy_get_name(buddy);
+        const gchar *group_name = purple_group_get_name(purple_buddy_get_group(buddy));
+        struct pn_contact *contact;
+        gboolean found = FALSE;
+
+        contact = pn_contactlist_find_contact(session->contactlist, buddy_name);
+
+        if (contact && contact->list_op & MSN_LIST_FL_OP) {
+            struct pn_group *group;
+
+            group = pn_contactlist_find_group_with_name(session->contactlist,
+                                                        group_name);
+
+            found = pn_contact_is_in_group(contact, group);
+        }
+
+        if (!found) {
+            pn_warning("synchronization issue; buddy %s not found in group %s: removing",
+                       purple_buddy_get_name(buddy), group_name);
+            to_remove = g_list_prepend(to_remove, buddy);
+        }
+    }
+    if (to_remove) {
+        g_list_foreach(to_remove, (GFunc) purple_blist_remove_buddy, NULL);
+        g_list_free(to_remove);
+    }
+}
+#endif /* HAVE_LIBPURPLE */
+
 void
 msn_session_finish_login (MsnSession *session)
 {
@@ -419,6 +463,10 @@ msn_session_finish_login (MsnSession *session)
         return;
 
     account = msn_session_get_user_data (session);
+
+#ifdef HAVE_LIBPURPLE
+    sync_users (session);
+#endif
 
     img = purple_buddy_icons_find_account_icon (account);
 
