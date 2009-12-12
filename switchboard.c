@@ -1847,7 +1847,6 @@ msn_switchboard_init(void)
     msn_table_add_cmd(cbs_table, NULL, "OUT", out_cmd);
 
     /* avoid unhandled command warnings */
-    msn_table_add_cmd(cbs_table, NULL, "ANS", NULL);
     msn_table_add_cmd(cbs_table, NULL, "CAL", NULL);
 
 #if 0
