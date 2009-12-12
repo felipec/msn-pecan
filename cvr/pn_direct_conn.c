@@ -286,7 +286,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     guint32 body_len;
     gsize len;
 
-    pn_debug ("source=%d", source);
+    pn_debug ("source=%d", g_io_channel_unix_get_fd (source));
 
     direct_conn = data;
 
