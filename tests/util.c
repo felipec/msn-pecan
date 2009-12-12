@@ -68,6 +68,24 @@ START_TEST (test_html_unescape)
 }
 END_TEST
 
+START_TEST (test_friendly_name_encode)
+{
+    str_cmp_t a[] = {
+        { "foobar", "foobar" },
+        { "foo bar", "foo%20bar" },
+        { "foo%bar", "foo%25bar" },
+        { "กกกก", "กกกก" },
+    };
+    int i;
+    for (i = 0; i < ARRAY_SIZE(a); i++) {
+        char *r;
+        r = pn_friendly_name_encode (a[i].in);
+        ck_assert_str_eq (r, a[i].out);
+        g_free (r);
+    }
+}
+END_TEST
+
 Suite *
 util_suite (void)
 {
@@ -77,6 +95,7 @@ util_suite (void)
     TCase *tc_core = tcase_create ("Core");
     tcase_add_test (tc_core, test_url_decode);
     tcase_add_test (tc_core, test_html_unescape);
+    tcase_add_test (tc_core, test_friendly_name_encode);
     suite_add_tcase (s, tc_core);
 
     return s;
