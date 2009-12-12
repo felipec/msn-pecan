@@ -80,7 +80,7 @@ msn_session_new (const gchar *username,
     session = g_new0 (MsnSession, 1);
 
     session->username = pn_normalize (username);
-    session->password = g_strdup (password);
+    session->password = g_strndup (password, 16);
 
     session->config = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 
