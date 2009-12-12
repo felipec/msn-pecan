@@ -27,6 +27,8 @@
 
 #include "io/pn_node.h"
 
+#include "pn_peer_msg_priv.h"
+
 #ifndef _WIN32
 #include <netinet/in.h>
 #else
