@@ -419,15 +419,12 @@ msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
 
             swboard->chat_id = session->conv_seq++;
 
-            msn_switchboard_ref(swboard);
-
-            g_hash_table_insert(session->chats, GINT_TO_POINTER (swboard->chat_id), swboard);
+            g_hash_table_insert(session->chats, GINT_TO_POINTER (swboard->chat_id),
+				msn_switchboard_ref(swboard));
             g_hash_table_remove(session->conversations, swboard->im_user);
 
             if (swboard->conv != NULL)
                 purple_conversation_destroy(swboard->conv);
-
-            msn_switchboard_unref(swboard);
 
             swboard->conv = serv_got_joined_chat(purple_account_get_connection (account),
                                                  swboard->chat_id,
