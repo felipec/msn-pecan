@@ -764,6 +764,9 @@ iro_cmd (MsnCmdProc *cmdproc,
     swboard->total_users = atoi (cmd->params[2]);
 
     msn_switchboard_add_user (swboard, cmd->params[3]);
+
+    /* don't discard the transaction just yet (wait for ANS) */
+    cmd->trans = NULL;
 }
 
 static void

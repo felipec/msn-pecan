@@ -413,7 +413,7 @@ msn_cmdproc_process_cmd (MsnCmdProc *cmdproc,
     else
         pn_warning ("unhandled command: [%s]", cmd->base);
 
-    if (trans)
+    if (cmd->trans)
         g_hash_table_remove (cmdproc->transactions, GINT_TO_POINTER (cmd->tr_id));
 
     pn_log ("end");
