@@ -454,6 +454,10 @@ msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
 
             g_free(swboard->im_user);
             swboard->im_user = NULL;
+
+            /* we should not leave chats on timeouts */
+            pn_timer_free(swboard->timer);
+            swboard->timer = NULL;
         }
     }
     else if (swboard->conv == NULL)
@@ -638,7 +642,8 @@ release_msg(MsnSwitchBoard *swboard, MsnMessage *msg)
         swboard->ack_list = g_list_append(swboard->ack_list, msg);
     }
 
-    pn_timer_start(swboard->timer, 60);
+    if (swboard->timer)
+        pn_timer_start(swboard->timer, 60);
 
     trans->payload = payload;
     trans->payload_len = payload_len;
@@ -815,7 +820,8 @@ msg_cmd_post(MsnCmdProc *cmdproc, MsnCommand *cmd, char *payload, size_t len)
     msg->remote_user = g_strdup(cmd->params[0]);
     msn_cmdproc_process_msg(cmdproc, msg);
 
-    pn_timer_start(swboard->timer, 60);
+    if (swboard->timer)
+        pn_timer_start(swboard->timer, 60);
 
     msn_message_unref(msg);
 }

@@ -480,6 +480,10 @@ new_chat (MsnSession *session,
     swboard = msn_switchboard_new (session);
     swboard->chat_id = id;
 
+    /* we should not leave chats on timeouts */
+    pn_timer_free(swboard->timer);
+    swboard->timer = NULL;
+
     g_hash_table_insert (session->chats, GINT_TO_POINTER (id), swboard);
     msn_switchboard_request (swboard);
 
