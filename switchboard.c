@@ -1152,8 +1152,13 @@ switchboard_show_ink (MsnSwitchBoard *swboard, const char *passport,
     PurpleAccount *account;
     guchar *image_data;
     size_t image_len;
+#ifndef ADIUM
+    int img_id;
+#else
     FILE *f;
-    char *file, *image_msg;
+    gchar *file;
+#endif /* ADIUM */
+    gchar *image_msg;
 
     if (!purple_str_has_prefix (data, "base64:"))
     {
@@ -1173,13 +1178,19 @@ switchboard_show_ink (MsnSwitchBoard *swboard, const char *passport,
 
         return;
     }
+#ifndef ADIUM
+    img_id = purple_imgstore_add_with_id (image_data, image_len, NULL);
 
+    image_msg = g_strdup_printf ("<img id='%d' />", img_id);
+#else
     if ((f = purple_mkstemp (&file, TRUE)))
     {
+        const gchar alt_text = _("received handwritten message");
+
         fwrite (image_data, image_len, 1, f);
         fclose (f);
 
-        image_msg = g_strdup_printf ("<img src=\"file://%s\" alt=\"Received handwritten message\" />", file);
+        image_msg = g_strdup_printf ("<img src=\"file://%s\" alt=\"(%s)\" />", file, alt_text);
 
         g_free (file);
     }
@@ -1192,6 +1203,7 @@ switchboard_show_ink (MsnSwitchBoard *swboard, const char *passport,
 
         return;
     }
+#endif /* ADIUM */
 
     if (swboard->current_users > 1 || ((swboard->conv != NULL) &&
         purple_conversation_get_type(swboard->conv) == PURPLE_CONV_TYPE_CHAT))
@@ -1199,6 +1211,9 @@ switchboard_show_ink (MsnSwitchBoard *swboard, const char *passport,
     else
         serv_got_im (gc, passport, image_msg, 0, time(NULL));
 
+#ifndef ADIUM
+    purple_imgstore_unref_by_id (img_id);
+#endif /* ADIUM */
     g_free (image_msg);
 }
 #endif /* defined(PECAN_CVR) */
