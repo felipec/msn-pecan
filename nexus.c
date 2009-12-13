@@ -161,7 +161,8 @@ got_header(MsnNexus *nexus,
 
         base  = strstr(header, "Authentication-Info: ");
 
-        g_return_if_fail(base);
+        if (!base)
+            goto parse_error;
 
         base = strstr(base, "from-PP='");
         base += strlen("from-PP='");
@@ -182,13 +183,8 @@ got_header(MsnNexus *nexus,
         char *location, *c;
 
         location = strstr(header, "Location: ");
-        if (!location) {
-            g_free(nexus->read_buf);
-            nexus->read_buf = NULL;
-            nexus->read_len = 0;
-
-            return;
-        }
+        if (!location)
+            goto parse_error;
         location = strchr(location, ' ') + 1;
 
         if ((c = strchr(location, '\r')))
@@ -208,9 +204,14 @@ got_header(MsnNexus *nexus,
         g_free(nexus->login_host);
         nexus->login_host = g_strdup(location);
 
+        g_free(nexus->read_buf);
+        nexus->read_buf = NULL;
+        nexus->read_len = 0;
+
         nexus->gsc = purple_ssl_connect(msn_session_get_user_data (session),
                                         nexus->login_host, PURPLE_SSL_DEFAULT_PORT,
                                         login_connect_cb, login_error_cb, nexus);
+        return;
     }
     else if (strstr(header, "HTTP/1.1 401 Unauthorized")) {
         const char *tmp;
@@ -237,13 +238,15 @@ got_header(MsnNexus *nexus,
 
         msn_session_set_error(session, MSN_ERROR_AUTH, error);
         g_free(error);
+        return;
     }
-    else if (strstr(header, "HTTP/1.1 503 Service Unavailable"))
+    else if (strstr(header, "HTTP/1.1 503 Service Unavailable")) {
         msn_session_set_error(session, MSN_ERROR_SERV_UNAVAILABLE, NULL);
+        return;
+    }
 
-    g_free(nexus->read_buf);
-    nexus->read_buf = NULL;
-    nexus->read_len = 0;
+parse_error:
+    msn_session_set_error(session, MSN_ERROR_AUTH, _("nexus parse error"));
 }
 
 static void
@@ -398,12 +401,8 @@ nexus_connect_written_cb(gpointer data, gint source, PurpleInputCondition cond)
     nexus->input_handler = 0;
 
     base = strstr(nexus->read_buf, "PassportURLs");
-    if (!base) {
-        g_free(nexus->read_buf);
-        nexus->read_buf = NULL;
-        nexus->read_len = 0;
-        return;
-    }
+    if (!base)
+        goto parse_error;
 
     da_login = strstr(base, "DALogin=");
     if (da_login) {
@@ -434,6 +433,12 @@ nexus_connect_written_cb(gpointer data, gint source, PurpleInputCondition cond)
     nexus->gsc = purple_ssl_connect(msn_session_get_user_data (nexus->session),
                                     nexus->login_host, PURPLE_SSL_DEFAULT_PORT,
                                     login_connect_cb, login_error_cb, nexus);
+
+    return;
+
+parse_error:
+    msn_session_set_error(nexus->session, MSN_ERROR_AUTH,
+                          _("nexus parse error"));
 }
 
 /* nexus */
