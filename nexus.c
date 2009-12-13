@@ -22,17 +22,20 @@
 #include "pn_locale.h"
 #include "pn_util.h"
 
-#include "session.h"
-#include "notification.h"
+#include <stdlib.h> /* for strtoul */
+#include <string.h> /* for strncpy, strlen, strchr */
 
+#include "notification.h" /* for msn_got_login_params */
+
+#include "session.h"
 #include "session_private.h"
 
 #include <errno.h> /* for EAGAIN */
-#include <string.h> /* for strncpy, strlen, strchr */
 
-/* libpurple stuff. */
+/* libpurple */
 #include "fix_purple_win32.h"
 #include <sslconn.h>
+#include <util.h> /* for url_encode */
 
 MsnNexus *
 msn_nexus_new(MsnSession *session)
@@ -186,9 +189,29 @@ nexus_login_written_cb(gpointer data, gint source, PurpleInputCondition cond)
     purple_ssl_close(nexus->gsc);
     nexus->gsc = NULL;
 
-    pn_log("ssl buffer: [%s]", nexus->read_buf);
+    if (strstr(nexus->read_buf, "HTTP/1.1 200 OK")) {
+        char *base, *c;
+        char *login_params;
 
-    if (strstr(nexus->read_buf, "HTTP/1.1 302")) {
+        base  = strstr(nexus->read_buf, "Authentication-Info: ");
+
+        g_return_if_fail(base);
+
+        base = strstr(base, "from-PP='");
+        base += strlen("from-PP='");
+        c = strchr(base, '\'');
+
+        login_params = g_strndup(base, c - base);
+
+        msn_got_login_params(session, login_params);
+
+        g_free(login_params);
+
+        msn_nexus_destroy(nexus);
+        session->nexus = NULL;
+        return;
+    }
+    else if (strstr(nexus->read_buf, "HTTP/1.1 302")) {
         /* Redirect. */
         char *location, *c;
 
@@ -251,41 +274,20 @@ nexus_login_written_cb(gpointer data, gint source, PurpleInputCondition cond)
     }
     else if (strstr(nexus->read_buf, "HTTP/1.1 503 Service Unavailable"))
         msn_session_set_error(session, MSN_ERROR_SERV_UNAVAILABLE, NULL);
-    else if (strstr(nexus->read_buf, "HTTP/1.1 200 OK")) {
-        char *base, *c;
-        char *login_params;
-
-        base  = strstr(nexus->read_buf, "Authentication-Info: ");
-
-        g_return_if_fail(base);
-
-        base = strstr(base, "from-PP='");
-        base += strlen("from-PP='");
-        c = strchr(base, '\'');
-
-        login_params = g_strndup(base, c - base);
-
-        msn_got_login_params(session, login_params);
-
-        g_free(login_params);
-
-        msn_nexus_destroy(nexus);
-        session->nexus = NULL;
-        return;
-    }
 
     g_free(nexus->read_buf);
     nexus->read_buf = NULL;
     nexus->read_len = 0;
 }
 
-/* this guards against missing hash entries */
-static const gchar *
-nexus_challenge_data_lookup(GHashTable *challenge_data, const char *key)
+/* this guards against missing entries */
+static inline const gchar *
+get_key(GHashTable *challenge_data,
+        const char *key)
 {
     const gchar *entry;
-
-    return (entry = g_hash_table_lookup(challenge_data, key)) ? entry : "(null)";
+    entry = g_hash_table_lookup(challenge_data, key);
+    return entry ? entry : "(null)";
 }
 
 void
@@ -294,9 +296,8 @@ login_connect_cb(gpointer data, PurpleSslConnection *gsc,
 {
     MsnNexus *nexus;
     MsnSession *session;
-    char *username, *password;
-    char *request_str, *head, *tail;
-    char *buffer = NULL;
+    const char *username, *password;
+    char *req, *head, *tail;
     guint32 ctint;
 
     nexus = data;
@@ -305,11 +306,8 @@ login_connect_cb(gpointer data, PurpleSslConnection *gsc,
     session = nexus->session;
     g_return_if_fail(session);
 
-    username =
-        g_strdup(purple_url_encode(msn_session_get_username(session)));
-
-    password =
-        g_strdup(purple_url_encode(msn_session_get_password(session)));
+    username = msn_session_get_username(session);
+    password = msn_session_get_password(session);
 
     ctint = strtoul((char *) g_hash_table_lookup(nexus->challenge_data, "ct"), NULL, 10) + 200;
 
@@ -317,37 +315,31 @@ login_connect_cb(gpointer data, PurpleSslConnection *gsc,
                            "Authorization: Passport1.4 OrgVerb=GET,OrgURL=%s,sign-in=%s",
                            nexus->login_path,
                            (char *) g_hash_table_lookup(nexus->challenge_data, "ru"),
-                           username);
+                           purple_url_encode(username));
 
     tail = g_strdup_printf("lc=%s,id=%s,tw=%s,fs=%s,ru=%s,ct=%" G_GUINT32_FORMAT ",kpp=%s,kv=%s,ver=%s,tpf=%s\r\n"
                            "User-Agent: MSMSGS\r\n"
                            "Host: %s\r\n"
                            "Connection: Keep-Alive\r\n"
                            "Cache-Control: no-cache\r\n",
-                           nexus_challenge_data_lookup(nexus->challenge_data, "lc"),
-                           nexus_challenge_data_lookup(nexus->challenge_data, "id"),
-                           nexus_challenge_data_lookup(nexus->challenge_data, "tw"),
-                           nexus_challenge_data_lookup(nexus->challenge_data, "fs"),
-                           nexus_challenge_data_lookup(nexus->challenge_data, "ru"),
+                           get_key(nexus->challenge_data, "lc"),
+                           get_key(nexus->challenge_data, "id"),
+                           get_key(nexus->challenge_data, "tw"),
+                           get_key(nexus->challenge_data, "fs"),
+                           get_key(nexus->challenge_data, "ru"),
                            ctint,
-                           nexus_challenge_data_lookup(nexus->challenge_data, "kpp"),
-                           nexus_challenge_data_lookup(nexus->challenge_data, "kv"),
-                           nexus_challenge_data_lookup(nexus->challenge_data, "ver"),
-                           nexus_challenge_data_lookup(nexus->challenge_data, "tpf"),
+                           get_key(nexus->challenge_data, "kpp"),
+                           get_key(nexus->challenge_data, "kv"),
+                           get_key(nexus->challenge_data, "ver"),
+                           get_key(nexus->challenge_data, "tpf"),
                            nexus->login_host);
 
-    buffer = g_strdup_printf("%s,pwd=XXXXXXXX,%s\r\n", head, tail);
-    request_str = g_strdup_printf("%s,pwd=%s,%s\r\n", head, password, tail);
+    req = g_strdup_printf("%s,pwd=%s,%s\r\n", head, purple_url_encode(password), tail);
 
-    pn_log("sending: [%s]", buffer);
-
-    g_free(buffer);
     g_free(head);
     g_free(tail);
-    g_free(username);
-    g_free(password);
 
-    nexus->write_buf = request_str;
+    nexus->write_buf = req;
     nexus->written_len = 0;
 
     nexus->read_len = 0;
@@ -440,13 +432,9 @@ nexus_connect_cb(gpointer data, PurpleSslConnection *gsc,
                  PurpleInputCondition cond)
 {
     MsnNexus *nexus;
-    MsnSession *session;
 
     nexus = data;
     g_return_if_fail(nexus);
-
-    session = nexus->session;
-    g_return_if_fail(session);
 
     nexus->write_buf = g_strdup("GET /rdr/pprdr.asp\r\n\r\n");
     nexus->written_len = 0;
