@@ -197,6 +197,26 @@ connect_cb (gpointer data,
 }
 
 static void
+error_cb (PurpleSslConnection *gsc,
+          PurpleSslErrorType error,
+          gpointer data)
+{
+    PnNode *conn;
+
+    pn_log ("begin");
+
+    conn = PN_NODE (data);
+
+    {
+        PnNodeClass *class;
+        class = g_type_class_peek (PN_NODE_TYPE);
+        g_signal_emit (G_OBJECT (conn), class->error_sig, 0, conn);
+    }
+
+    pn_log ("end");
+}
+
+static void
 connect_impl (PnNode *conn,
               const gchar *hostname,
               gint port)
@@ -219,7 +239,7 @@ connect_impl (PnNode *conn,
 
 #ifdef HAVE_LIBPURPLE
     ssl_conn->ssl_data = purple_ssl_connect (msn_session_get_user_data (conn->session),
-                                             hostname, port, connect_cb, NULL, ssl_conn);
+                                             hostname, port, connect_cb, error_cb, ssl_conn);
 #endif /* HAVE_LIBPURPLE */
 
     pn_log ("end");
