@@ -956,3 +956,34 @@ pn_rand_guid(void)
                            rand() % 0xAAFF + 0x1111,
                            rand() % 0xAAFF + 0x1111);
 }
+
+time_t
+pn_parse_date(const char *str)
+{
+    gchar month[3], *months[13] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+    int d, m, y, hour, min, sec, timezone;
+    struct tm time, *tmp;
+    time_t date;
+
+    sscanf (str, "%d %c%c%c %d %d:%d:%d %d", &d, &month[0], &month[1], &month[2], &y, &hour, &min, &sec, &timezone);
+
+    for (m = 0; strncmp (month, months[m], 3) != 0; m++);
+
+    timezone = timezone / 100;
+    hour -= timezone;
+
+    time.tm_sec = sec;
+    time.tm_min = min;
+    time.tm_hour = hour;
+    time.tm_mday = d;
+    time.tm_mon = m;
+    time.tm_year = y - 1900;
+
+    date = mktime (&time);
+
+    tmp = gmtime (&date);
+    timezone = (date - mktime (tmp)) / 3600;
+    time.tm_hour += timezone + time.tm_isdst;
+
+    return mktime (&time);
+}

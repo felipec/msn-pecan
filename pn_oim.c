@@ -559,37 +559,12 @@ process_body_receive (OimRequest *oim_request,
 
     cur = strstr(body, "Date: ");
     if (cur) {
-        gchar *end, month[3], *months[13] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-        int d, m, y, hour, min, sec, timezone;
-        struct tm time, *tmp;
-
+        gchar *end;
         cur = strchr (cur, ' ') + 1;
         end = strchr (cur, '\n');
         cur = g_strndup (cur, end - cur);
-
-        sscanf (cur, "%d %c%c%c %d %d:%d:%d %d", &d, &month[0], &month[1], &month[2], &y, &hour, &min, &sec, &timezone);
-
+        date = pn_parse_date(cur);
         g_free (cur);
-
-        for (m = 0; strncmp (month, months[m], 3) != 0; m++);
-
-        timezone = timezone / 100;
-        hour -= timezone;
-
-        time.tm_sec = sec;
-        time.tm_min = min;
-        time.tm_hour = hour;
-        time.tm_mday = d;
-        time.tm_mon = m;
-        time.tm_year = y - 1900;
-
-        date = mktime (&time);
-
-        tmp = gmtime (&date);
-        timezone = (date - mktime (tmp)) / 3600;
-        time.tm_hour += timezone + time.tm_isdst;
-
-        date = mktime (&time);
     }
 
     cur = strstr (body, "\r\n\r\n");
