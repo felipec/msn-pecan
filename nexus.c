@@ -52,6 +52,7 @@ msn_nexus_new(MsnSession *session)
 void
 msn_nexus_destroy(MsnNexus *nexus)
 {
+    g_signal_handler_disconnect(nexus->conn, nexus->error_handler);
     g_signal_handler_disconnect(nexus->conn, nexus->open_handler);
     pn_parser_free(nexus->parser);
 
@@ -65,6 +66,27 @@ msn_nexus_destroy(MsnNexus *nexus)
         g_hash_table_destroy(nexus->challenge_data);
 
     g_free(nexus);
+}
+
+static void
+close_cb(PnNode *conn,
+         MsnNexus *nexus)
+{
+    char *tmp;
+
+    if (conn->error) {
+        const char *reason;
+        reason = conn->error->message;
+        tmp = g_strdup_printf(_("error on nexus server: %s"), reason);
+        g_clear_error(&conn->error);
+    }
+    else {
+        tmp = g_strdup_printf(_("error on nexus server"));
+    }
+
+    msn_session_set_error(nexus->session, MSN_ERROR_AUTH, tmp);
+
+    g_free(tmp);
 }
 
 /* login */
@@ -364,6 +386,7 @@ nexus_read_cb(PnNode *conn,
 
                 nexus->conn = conn;
                 nexus->open_handler = g_signal_connect(conn, "open", G_CALLBACK(login_open_cb), nexus);
+                nexus->error_handler = g_signal_connect(conn, "error", G_CALLBACK(close_cb), nexus);
 
                 goto leave;
             }
@@ -386,6 +409,8 @@ nexus_open_cb(PnNode *conn,
 
     g_signal_handler_disconnect(conn, nexus->open_handler);
     nexus->open_handler = 0;
+    g_signal_handler_disconnect(conn, nexus->error_handler);
+    nexus->error_handler = 0;
 
     pn_node_write(conn, req, strlen(req), NULL, NULL);
 
@@ -413,4 +438,5 @@ msn_nexus_connect(MsnNexus *nexus)
 
     nexus->conn = conn;
     nexus->open_handler = g_signal_connect(conn, "open", G_CALLBACK(nexus_open_cb), nexus);
+    nexus->error_handler = g_signal_connect(conn, "error", G_CALLBACK(close_cb), nexus);
 }

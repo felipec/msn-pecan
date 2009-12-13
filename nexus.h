@@ -37,7 +37,7 @@ struct MsnNexus {
     PnParser *parser;
     guint parser_state;
     PnNode *conn;
-    gulong open_handler;
+    gulong open_handler, error_handler;
     GString *header;
 };
 
