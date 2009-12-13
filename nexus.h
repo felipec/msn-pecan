@@ -30,8 +30,7 @@ struct _PurpleSslConnection;
 
 typedef void (*_PurpleInputFunction) (gpointer, gint, guint);
 
-struct MsnNexus
-{
+struct MsnNexus {
     MsnSession *session;
 
     char *login_host;
