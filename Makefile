@@ -68,6 +68,10 @@ ifdef PLUS_SOUNDS
   override CFLAGS += -DRECEIVE_PLUS_SOUNDS
 endif
 
+ifdef GIO
+  override CFLAGS += -DUSE_GIO
+endif
+
 # extra debugging
 override CFLAGS += -DPECAN_DEBUG_SLP
 
