@@ -24,13 +24,18 @@
 #include "pn_node.h"
 #include "pn_stream.h"
 
+#if defined(USE_GIO)
+#include <gio/gio.h>
+#elif defined(HAVE_LIBPURPLE)
+struct _PurpleProxyConnectData;
+#endif
+
 typedef struct PnNodeClass PnNodeClass;
 
 #define PN_NODE_ERROR pn_node_error_quark ()
 
 /* Forward declarations */
 
-struct _PurpleProxyConnectData;
 struct MsnSesion;
 
 GQuark pn_node_error_quark (void);
@@ -59,13 +64,17 @@ struct PnNode
     gchar *hostname;
     guint port;
 
-    struct _PurpleProxyConnectData *connect_data;
     struct MsnSession *session;
     gulong open_sig_handler;
     gulong close_sig_handler;
     gulong error_sig_handler;
 
     gboolean dump_file;
+#if defined(USE_GIO)
+    GSocketConnection *socket_conn;
+#elif defined(HAVE_LIBPURPLE)
+    struct _PurpleProxyConnectData *connect_data;
+#endif
 };
 
 struct PnNodeClass
