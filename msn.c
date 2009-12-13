@@ -1589,6 +1589,29 @@ chat_send (PurpleConnection *gc,
 
     msg = msn_message_new_plain (msgtext);
     msn_message_set_attr (msg, "X-MMS-IM-Format", msgformat);
+
+#if defined(PECAN_CVR)
+#if PURPLE_VERSION_CHECK(2,5,0)
+    MsnEmoticon *smile;
+    GSList *smileys;
+    GString *emoticons = NULL;
+
+    smileys = grab_emoticons (session, message);
+    while (smileys)
+    {
+        smile = (MsnEmoticon *) smileys->data;
+        emoticons = msn_msg_emoticon_add (emoticons, smile);
+        msn_emoticon_destroy (smile);
+        smileys = g_slist_delete_link (smileys, smileys);
+    }
+
+    if (emoticons)
+    {
+        msn_send_emoticons (swboard, emoticons);
+        g_string_free (emoticons, TRUE);
+    }
+#endif /* PURPLE_VERSION_CHECK(2,5,0) */
+#endif /* defined(PECAN_CVR) */
     msn_switchboard_send_msg (swboard, msg, FALSE);
     msn_message_unref (msg);
 
