@@ -978,12 +978,13 @@ pn_parse_date(const char *str)
     time.tm_mday = d;
     time.tm_mon = m;
     time.tm_year = y - 1900;
+    time.tm_isdst = -1;
 
     date = mktime (&time);
 
     tmp = gmtime (&date);
     timezone = (date - mktime (tmp)) / 3600;
-    time.tm_hour += timezone + time.tm_isdst;
+    time.tm_hour += timezone;
 
     return mktime (&time);
 }
