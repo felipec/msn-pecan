@@ -86,6 +86,25 @@ START_TEST (test_friendly_name_encode)
 }
 END_TEST
 
+typedef struct {
+    const char *in;
+    time_t out;
+} date_cmp_t;
+
+START_TEST (test_parse_date)
+{
+    date_cmp_t a[] = {
+        { "01 Jan 1970 02:00:00 0200", 0 },
+    };
+    int i;
+    for (i = 0; i < ARRAY_SIZE(a); i++) {
+        time_t r;
+        r = pn_parse_date (a[i].in);
+        ck_assert_int_eq (r, a[i].out);
+    }
+}
+END_TEST
+
 Suite *
 util_suite (void)
 {
@@ -96,6 +115,7 @@ util_suite (void)
     tcase_add_test (tc_core, test_url_decode);
     tcase_add_test (tc_core, test_html_unescape);
     tcase_add_test (tc_core, test_friendly_name_encode);
+    tcase_add_test (tc_core, test_parse_date);
     suite_add_tcase (s, tc_core);
 
     return s;
