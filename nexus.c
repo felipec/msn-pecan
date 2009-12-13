@@ -150,6 +150,103 @@ login_error_cb(PurpleSslConnection *gsc, PurpleSslErrorType error, void *data)
 }
 
 static void
+got_header(MsnNexus *nexus,
+           const gchar *header)
+{
+    MsnSession *session = nexus->session;
+
+    if (strstr(header, "HTTP/1.1 200 OK")) {
+        char *base, *c;
+        char *login_params;
+
+        base  = strstr(header, "Authentication-Info: ");
+
+        g_return_if_fail(base);
+
+        base = strstr(base, "from-PP='");
+        base += strlen("from-PP='");
+        c = strchr(base, '\'');
+
+        login_params = g_strndup(base, c - base);
+
+        msn_got_login_params(session, login_params);
+
+        g_free(login_params);
+
+        msn_nexus_destroy(nexus);
+        session->nexus = NULL;
+        return;
+    }
+    else if (strstr(header, "HTTP/1.1 302")) {
+        /* Redirect. */
+        char *location, *c;
+
+        location = strstr(header, "Location: ");
+        if (!location) {
+            g_free(nexus->read_buf);
+            nexus->read_buf = NULL;
+            nexus->read_len = 0;
+
+            return;
+        }
+        location = strchr(location, ' ') + 1;
+
+        if ((c = strchr(location, '\r')))
+            *c = '\0';
+
+        /* Skip the http:// */
+        if ((c = strchr(location, '/')))
+            location = c + 2;
+
+        if ((c = strchr(location, '/'))) {
+            g_free(nexus->login_path);
+            nexus->login_path = g_strdup(c);
+
+            *c = '\0';
+        }
+
+        g_free(nexus->login_host);
+        nexus->login_host = g_strdup(location);
+
+        nexus->gsc = purple_ssl_connect(msn_session_get_user_data (session),
+                                        nexus->login_host, PURPLE_SSL_DEFAULT_PORT,
+                                        login_connect_cb, login_error_cb, nexus);
+    }
+    else if (strstr(header, "HTTP/1.1 401 Unauthorized")) {
+        const char *tmp;
+        gchar *error = NULL;
+
+        if ((tmp = strstr(header, "WWW-Authenticate"))) {
+            if ((tmp = strstr(tmp, "cbtxt="))) {
+                const char *c;
+                char *tmp2;
+
+                tmp += strlen("cbtxt=");
+
+                c = strchr(tmp, '\n');
+                if (!c)
+                    c = tmp + strlen(tmp);
+
+                tmp2 = g_strndup(tmp, c - tmp);
+                error = pn_url_decode(tmp2);
+                g_free(tmp2);
+                if ((tmp2 = strstr(error, " Do one of the following or try again:")) != NULL)
+                    *tmp2 = '\0';
+            }
+        }
+
+        msn_session_set_error(session, MSN_ERROR_AUTH, error);
+        g_free(error);
+    }
+    else if (strstr(header, "HTTP/1.1 503 Service Unavailable"))
+        msn_session_set_error(session, MSN_ERROR_SERV_UNAVAILABLE, NULL);
+
+    g_free(nexus->read_buf);
+    nexus->read_buf = NULL;
+    nexus->read_len = 0;
+}
+
+static void
 nexus_login_written_cb(gpointer data, gint source, PurpleInputCondition cond)
 {
     MsnNexus *nexus = data;
@@ -189,95 +286,7 @@ nexus_login_written_cb(gpointer data, gint source, PurpleInputCondition cond)
     purple_ssl_close(nexus->gsc);
     nexus->gsc = NULL;
 
-    if (strstr(nexus->read_buf, "HTTP/1.1 200 OK")) {
-        char *base, *c;
-        char *login_params;
-
-        base  = strstr(nexus->read_buf, "Authentication-Info: ");
-
-        g_return_if_fail(base);
-
-        base = strstr(base, "from-PP='");
-        base += strlen("from-PP='");
-        c = strchr(base, '\'');
-
-        login_params = g_strndup(base, c - base);
-
-        msn_got_login_params(session, login_params);
-
-        g_free(login_params);
-
-        msn_nexus_destroy(nexus);
-        session->nexus = NULL;
-        return;
-    }
-    else if (strstr(nexus->read_buf, "HTTP/1.1 302")) {
-        /* Redirect. */
-        char *location, *c;
-
-        location = strstr(nexus->read_buf, "Location: ");
-        if (!location) {
-            g_free(nexus->read_buf);
-            nexus->read_buf = NULL;
-            nexus->read_len = 0;
-
-            return;
-        }
-        location = strchr(location, ' ') + 1;
-
-        if ((c = strchr(location, '\r')))
-            *c = '\0';
-
-        /* Skip the http:// */
-        if ((c = strchr(location, '/')))
-            location = c + 2;
-
-        if ((c = strchr(location, '/'))) {
-            g_free(nexus->login_path);
-            nexus->login_path = g_strdup(c);
-
-            *c = '\0';
-        }
-
-        g_free(nexus->login_host);
-        nexus->login_host = g_strdup(location);
-
-        nexus->gsc = purple_ssl_connect(msn_session_get_user_data (session),
-                                        nexus->login_host, PURPLE_SSL_DEFAULT_PORT,
-                                        login_connect_cb, login_error_cb, nexus);
-    }
-    else if (strstr(nexus->read_buf, "HTTP/1.1 401 Unauthorized")) {
-        const char *tmp;
-        gchar *error = NULL;
-
-        if ((tmp = strstr(nexus->read_buf, "WWW-Authenticate"))) {
-            if ((tmp = strstr(tmp, "cbtxt="))) {
-                const char *c;
-                char *tmp2;
-
-                tmp += strlen("cbtxt=");
-
-                c = strchr(tmp, '\n');
-                if (!c)
-                    c = tmp + strlen(tmp);
-
-                tmp2 = g_strndup(tmp, c - tmp);
-                error = pn_url_decode(tmp2);
-                g_free(tmp2);
-                if ((tmp2 = strstr(error, " Do one of the following or try again:")) != NULL)
-                    *tmp2 = '\0';
-            }
-        }
-
-        msn_session_set_error(session, MSN_ERROR_AUTH, error);
-        g_free(error);
-    }
-    else if (strstr(nexus->read_buf, "HTTP/1.1 503 Service Unavailable"))
-        msn_session_set_error(session, MSN_ERROR_SERV_UNAVAILABLE, NULL);
-
-    g_free(nexus->read_buf);
-    nexus->read_buf = NULL;
-    nexus->read_len = 0;
+    got_header(nexus, nexus->read_buf);
 }
 
 /* this guards against missing entries */
@@ -359,8 +368,7 @@ nexus_connect_written_cb(gpointer data, gint source, PurpleInputCondition cond)
 {
     MsnNexus *nexus = data;
     int len;
-    char *da_login;
-    char *base, *c;
+    char *base, *da_login;
 
     if (nexus->input_handler == 0)
         /* TODO: Use purple_ssl_input_add()? */
@@ -390,7 +398,6 @@ nexus_connect_written_cb(gpointer data, gint source, PurpleInputCondition cond)
     nexus->input_handler = 0;
 
     base = strstr(nexus->read_buf, "PassportURLs");
-
     if (!base) {
         g_free(nexus->read_buf);
         nexus->read_buf = NULL;
@@ -398,14 +405,18 @@ nexus_connect_written_cb(gpointer data, gint source, PurpleInputCondition cond)
         return;
     }
 
-    if ((da_login = strstr(base, "DALogin="))) {
-        /* skip over "DALogin=" */
-        da_login += 8;
+    da_login = strstr(base, "DALogin=");
+    if (da_login) {
+        char *c;
 
-        if ((c = strchr(da_login, ',')))
+        da_login += 8; /* skip over "DALogin=" */
+
+        c = strchr(da_login, ',');
+        if (c)
             *c = '\0';
 
-        if ((c = strchr(da_login, '/'))) {
+        c = strchr(da_login, '/');
+        if (c) {
             nexus->login_path = g_strdup(c);
             *c = '\0';
         }
