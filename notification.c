@@ -86,10 +86,9 @@ close_cb (PnNode *conn,
     char *tmp;
 
     {
-        const char *reason = NULL;
-
         if (conn->error)
         {
+            const char *reason;
             reason = conn->error->message;
 
             pn_error ("connection error: (NS):reason=[%s]", reason);
