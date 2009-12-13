@@ -964,17 +964,16 @@ pn_parse_date(const char *str)
         "Jan", "Feb", "Mar", "Apr", "May", "Jun",
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
     int d, m, y, hour, min, sec, tz;
-    struct tm tm, *tmp;
-    time_t date;
+    struct tm tm;
 
-    sscanf (str, "%d %c%c%c %d %d:%d:%d %d",
-            &d, &month[0], &month[1], &month[2], &y, &hour, &min, &sec, &tz);
+    sscanf (str, "%d %3s %d %d:%d:%d %d",
+            &d, month, &y, &hour, &min, &sec, &tz);
 
     for (m = 0; strncmp (month, months[m], 3) != 0; m++);
 
-    tz = tz / 100;
-    hour -= tz;
+    hour -= tz / 100;
 
+    memset(&tm, 0, sizeof(tm));
     tm.tm_sec = sec;
     tm.tm_min = min;
     tm.tm_hour = hour;
@@ -983,11 +982,5 @@ pn_parse_date(const char *str)
     tm.tm_year = y - 1900;
     tm.tm_isdst = -1;
 
-    date = mktime (&tm);
-
-    tmp = gmtime (&date);
-    tz = (date - mktime (tmp)) / 3600;
-    tm.tm_hour += tz;
-
-    return mktime (&tm);
+    return mktime (&tm) - timezone;
 }
