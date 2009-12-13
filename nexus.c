@@ -255,22 +255,6 @@ nexus_login_written_cb(gpointer data, gint source, PurpleInputCondition cond)
         char *base, *c;
         char *login_params;
 
-#if 0
-        /* All your base are belong to us. */
-        base = buffer;
-
-        /* For great cookie! */
-        while ((base = strstr(base, "Set-Cookie: "))) {
-            base += strlen("Set-Cookie: ");
-
-            c = strchr(base, ';');
-
-            session->login_cookies =
-                g_list_append(session->login_cookies,
-                              g_strndup(base, c - base));
-        }
-#endif
-
         base  = strstr(nexus->read_buf, "Authentication-Info: ");
 
         g_return_if_fail(base);
