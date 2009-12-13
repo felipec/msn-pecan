@@ -106,7 +106,8 @@ nexus_write_cb(gpointer data, gint source, PurpleInputCondition cond)
     else if (len <= 0) {
         purple_input_remove(nexus->input_handler);
         nexus->input_handler = 0;
-        /* TODO: notify of the error */
+        msn_session_set_error(nexus->session, MSN_ERROR_AUTH,
+                              _("nexus stream error"));
         return;
     }
     nexus->written_len += len;
@@ -272,10 +273,8 @@ nexus_login_written_cb(gpointer data, gint source, PurpleInputCondition cond)
     else if (len < 0) {
         purple_input_remove(nexus->input_handler);
         nexus->input_handler = 0;
-        g_free(nexus->read_buf);
-        nexus->read_buf = NULL;
-        nexus->read_len = 0;
-        /* TODO: error handling */
+        msn_session_set_error(session, MSN_ERROR_AUTH,
+                              _("nexus stream error"));
         return;
     }
 
@@ -386,10 +385,8 @@ nexus_connect_written_cb(gpointer data, gint source, PurpleInputCondition cond)
     else if (len < 0) {
         purple_input_remove(nexus->input_handler);
         nexus->input_handler = 0;
-        g_free(nexus->read_buf);
-        nexus->read_buf = NULL;
-        nexus->read_len = 0;
-        /* TODO: error handling */
+        msn_session_set_error(nexus->session, MSN_ERROR_AUTH,
+                              _("nexus stream error"));
         return;
     }
 
