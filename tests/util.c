@@ -95,6 +95,7 @@ START_TEST (test_parse_date)
 {
     date_cmp_t a[] = {
         { "01 Jan 1970 02:00:00 0200", 0 },
+        { "01 Jan 1970 11:00:00 1100", 0 },
     };
     int i;
     for (i = 0; i < ARRAY_SIZE(a); i++) {

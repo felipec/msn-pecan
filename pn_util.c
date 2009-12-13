@@ -960,31 +960,34 @@ pn_rand_guid(void)
 time_t
 pn_parse_date(const char *str)
 {
-    gchar month[3], *months[13] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-    int d, m, y, hour, min, sec, timezone;
-    struct tm time, *tmp;
+    gchar month[3], *months[13] = {
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+    int d, m, y, hour, min, sec, tz;
+    struct tm tm, *tmp;
     time_t date;
 
-    sscanf (str, "%d %c%c%c %d %d:%d:%d %d", &d, &month[0], &month[1], &month[2], &y, &hour, &min, &sec, &timezone);
+    sscanf (str, "%d %c%c%c %d %d:%d:%d %d",
+            &d, &month[0], &month[1], &month[2], &y, &hour, &min, &sec, &tz);
 
     for (m = 0; strncmp (month, months[m], 3) != 0; m++);
 
-    timezone = timezone / 100;
-    hour -= timezone;
+    tz = tz / 100;
+    hour -= tz;
 
-    time.tm_sec = sec;
-    time.tm_min = min;
-    time.tm_hour = hour;
-    time.tm_mday = d;
-    time.tm_mon = m;
-    time.tm_year = y - 1900;
-    time.tm_isdst = -1;
+    tm.tm_sec = sec;
+    tm.tm_min = min;
+    tm.tm_hour = hour;
+    tm.tm_mday = d;
+    tm.tm_mon = m;
+    tm.tm_year = y - 1900;
+    tm.tm_isdst = -1;
 
-    date = mktime (&time);
+    date = mktime (&tm);
 
     tmp = gmtime (&date);
-    timezone = (date - mktime (tmp)) / 3600;
-    time.tm_hour += timezone;
+    tz = (date - mktime (tmp)) / 3600;
+    tm.tm_hour += tz;
 
-    return mktime (&time);
+    return mktime (&tm);
 }
