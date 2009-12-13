@@ -576,7 +576,8 @@ process_body_receive (OimRequest *oim_request,
         gchar *end;
         cur += 2;
         end = strstr (cur, "\r\n\r\n");
-        *end = '\0';
+        if (end)
+            *end = '\0';
         message = (gchar *) purple_base64_decode (cur, NULL);
     }
 
