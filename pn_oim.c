@@ -609,6 +609,15 @@ process_body_delete (OimRequest *oim_request,
         pn_error ("deleting oim=[%s]: schema validation error", oim_request->message_id);
 }
 
+static inline void
+handle_failure (OimRequest *oim_request)
+{
+    struct pn_contact *contact;
+    contact = pn_contactlist_find_contact (oim_request->oim_session->session->contactlist,
+                                           oim_request->passport);
+    contact->sent_oims--;
+}
+
 static void
 process_body_send (OimRequest *oim_request,
                    char *body,
@@ -637,6 +646,8 @@ process_body_send (OimRequest *oim_request,
         g_free (lockkey);
 
         oim_request->oim_session->got_lockkey = TRUE;
+
+        handle_failure (oim_request);
 
         return;
     }
@@ -668,6 +679,8 @@ process_body_send (OimRequest *oim_request,
 
         purple_conversation_write (conv, NULL, error, PURPLE_MESSAGE_ERROR, time (NULL));
         purple_conversation_write (conv, NULL, oim_request->oim_message, PURPLE_MESSAGE_RAW, time (NULL));
+
+        handle_failure (oim_request);
     }
 }
 
