@@ -68,12 +68,16 @@ pn_dp_manager_free (PnDpManager *dpm)
 
 static inline void
 queue (PnDpManager *dpm,
-       struct pn_contact *contact)
+       struct pn_contact *contact,
+       gboolean prioritize)
 {
     pn_debug ("passport=[%s],window=%u",
               contact->passport, dpm->window);
 
-    g_queue_push_tail (dpm->requests, contact);
+    if (prioritize)
+        g_queue_push_head (dpm->requests, contact);
+    else
+        g_queue_push_tail (dpm->requests, contact);
 
     if (dpm->window > 0)
         release (dpm);
@@ -133,7 +137,7 @@ dp_fail (struct pn_peer_call *call,
         if (contact->dp_failed_attempts == 5)
             return;
 
-        queue (session->dp_manager, contact);
+        queue (session->dp_manager, contact, FALSE);
     }
 }
 
@@ -271,6 +275,13 @@ pn_dp_manager_contact_set_object (struct pn_contact *contact,
                                   struct pn_msnobj *obj)
 {
     MsnSession *session;
+    gboolean prioritize;
+
+    /* If the contact didn't have a picture, prioritize it */
+    if (contact->msnobj)
+        prioritize = FALSE;
+    else
+        prioritize = TRUE;
 
     /** @todo sometimes we need to force an update, in those cases the old and
      * new object will be the same, we must not free the object, so in order to
@@ -302,7 +313,7 @@ pn_dp_manager_contact_set_object (struct pn_contact *contact,
 #ifdef HAVE_LIBPURPLE
     if (!ud_cached (msn_session_get_user_data (session), contact, obj))
     {
-        queue (session->dp_manager, contact);
+        queue (session->dp_manager, contact, prioritize);
     }
 #endif /* HAVE_LIBPURPLE */
 }
