@@ -187,7 +187,7 @@ pn_direct_conn_write(struct pn_direct_conn *direct_conn,
 
     g_return_val_if_fail(direct_conn != NULL, 0);
 
-    pn_debug ("bytes_to_write=%d", len);
+    pn_debug ("bytes_to_write=%zu", len);
 
     body_len = GUINT32_TO_LE(len);
 
@@ -205,7 +205,7 @@ pn_direct_conn_write(struct pn_direct_conn *direct_conn,
 
     if (status == G_IO_STATUS_NORMAL)
     {
-        pn_debug ("bytes_written=%d", tmp);
+        pn_debug ("bytes_written=%zu", tmp);
 
 #ifdef PECAN_DEBUG_DC_FILES
         char *str;
@@ -318,7 +318,7 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
         return FALSE;
     }
 
-    pn_debug ("bytes_read=%d", len);
+    pn_debug ("bytes_read=%zu", len);
 
     if (len > 0)
     {
