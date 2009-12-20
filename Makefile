@@ -176,7 +176,7 @@ endif
 
 all: $(plugin)
 
-version := $(shell ./get-version.sh)
+version := $(shell ./get-version)
 
 # from Lauri Leukkunen's build system
 ifdef V

@@ -1,8 +1,8 @@
 #!/bin/sh
 
-if test -f version
+if test -f .version
 then
-	cat version
+	cat .version
 else
 	git describe --tags
 fi
