@@ -61,9 +61,6 @@ pn_handle_challenge (const gchar *input,
 void msn_parse_socket(const char *str, char **ret_host, int *ret_port);
 gchar *pn_normalize (const gchar *str);
 
-#if !GLIB_CHECK_VERSION(2,12,0)
-void g_hash_table_remove_all (GHashTable *hash_table);
-#endif /* !GLIB_CHECK_VERSION(2,12,0) */
 gpointer g_hash_table_peek_first (GHashTable *hash_table);
 gboolean g_ascii_strcase_equal (gconstpointer v1, gconstpointer v2);
 guint g_ascii_strcase_hash (gconstpointer v);

@@ -75,9 +75,6 @@ endif
 # extra debugging
 override CFLAGS += -DPECAN_DEBUG_SLP
 
-# For glib < 2.6 support (libpurple maniacs)
-FALLBACK_CFLAGS := -I./fix_purple
-
 LDFLAGS := -Wl,--no-undefined
 
 plugin_dir := $(DESTDIR)/$(PURPLE_LIBDIR)/purple-2

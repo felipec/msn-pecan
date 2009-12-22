@@ -23,22 +23,6 @@ struct _PurpleConnection;
 
 #include <glib.h>
 
-#if !GLIB_CHECK_VERSION(2,16,0)
-int g_strcmp0 (const char *str1, const char *str2);
-#endif /* !GLIB_CHECK_VERSION(2,16,0) */
-
-#if !GLIB_CHECK_VERSION(2,14,0)
-static inline guint
-g_timeout_add_seconds (guint interval,
-                       GSourceFunc function,
-                       gpointer data)
-{
-    g_return_val_if_fail (function != NULL, 0);
-
-    return g_timeout_add_full (G_PRIORITY_DEFAULT, interval * 1000, function, data, NULL);
-}
-#endif /* !GLIB_CHECK_VERSION(2,14,0) */
-
 void purple_buddy_set_private_alias (struct _PurpleConnection *gc, const gchar *who, const gchar *value);
 void purple_buddy_set_public_alias (struct _PurpleConnection *gc, const gchar *who, const gchar *value);
 

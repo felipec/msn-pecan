@@ -800,16 +800,6 @@ g_hash_table_peek_first (GHashTable *hash_table)
     return g_hash_table_find (hash_table, true_predicate, NULL);
 }
 
-#if !GLIB_CHECK_VERSION(2,12,0)
-void
-g_hash_table_remove_all (GHashTable *hash_table)
-{
-    g_return_if_fail (hash_table);
-
-    g_hash_table_foreach_remove (hash_table, true_predicate, NULL);
-}
-#endif /* !GLIB_CHECK_VERSION(2,12,0) */
-
 gboolean
 g_ascii_strcase_equal (gconstpointer v1,
                        gconstpointer v2)

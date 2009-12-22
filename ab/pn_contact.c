@@ -351,11 +351,7 @@ pn_contact_set_current_media (struct pn_contact *contact,
 
     array = g_strsplit (dec, "\\0", 0);
 
-#if GLIB_CHECK_VERSION(2,6,0)
     count  = g_strv_length (array);
-#else
-    while (array[++count]);
-#endif
 
     if (count >= 4 && strcmp (array[2], "1") == 0)
     {
