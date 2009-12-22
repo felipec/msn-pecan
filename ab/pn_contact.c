@@ -33,8 +33,7 @@
 #include <stdbool.h>
 
 #ifdef HAVE_LIBPURPLE
-#include "fix_purple.h"
-
+#include "fix_purple.h" /* for purple_buddy_set_public_alias */
 #include <cipher.h>
 #include <account.h>
 #endif /* HAVE_LIBPURPLE */

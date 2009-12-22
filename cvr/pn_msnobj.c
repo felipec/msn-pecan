@@ -26,9 +26,6 @@
 #include <stdlib.h>
 
 #ifdef HAVE_LIBPURPLE
-#include "fix_purple.h"
-
-/* libpurple stuff. */
 #include <imgstore.h>
 /* for custom emoticon sending */
 #include <cipher.h>

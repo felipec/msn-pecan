@@ -20,7 +20,6 @@
 #include "session.h"
 #include "switchboard.h"
 #include "notification.h"
-#include "fix_purple.h"
 
 #include "pn_util.h"
 #include "pn_log.h"
@@ -60,6 +59,7 @@
 #include <account.h>
 #include <prefs.h>
 #include <version.h>
+#include "fix_purple.h" /* for purple_buddy_set_public_alias */
 
 static MsnTable *cbs_table;
 

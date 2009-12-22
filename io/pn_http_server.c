@@ -39,8 +39,6 @@
 #include "session.h"
 
 #ifdef HAVE_LIBPURPLE
-#include "fix_purple.h"
-
 #include <proxy.h>
 #undef connect
 #undef write

@@ -50,9 +50,6 @@
 #include <string.h>
 #include <stdlib.h> /* for atoi */
 
-/* libpurple stuff. */
-#include "fix_purple.h"
-
 struct pn_peer_msg *
 pn_peer_msg_new(void)
 {
