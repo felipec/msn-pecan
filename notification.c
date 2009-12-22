@@ -1263,6 +1263,7 @@ rng_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     const char *session_id;
     char *host;
     int port;
+    const char *id;
 
     session = cmdproc->session;
     session_id = cmd->params[0];
@@ -1270,14 +1271,28 @@ rng_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     msn_parse_socket(cmd->params[1], &host, &port);
 
     swboard = msn_switchboard_new(session);
-    g_hash_table_insert (session->conversations, g_strdup (cmd->params[4]), swboard);
-
     msn_switchboard_set_invited(swboard, TRUE);
     msn_switchboard_set_session_id(swboard, cmd->params[0]);
     msn_switchboard_set_auth_key(swboard, cmd->params[3]);
-    swboard->im_user = g_strdup(cmd->params[4]);
-    /* msn_switchboard_add_user(swboard, cmd->params[4]); */
-    pn_node_set_id(swboard->cmdproc->conn, session->conn_count++, cmd->params[4]);
+
+    if (g_hash_table_lookup (session->conversations, cmd->params[4])) {
+        swboard->chat_id = session->conv_seq++;
+
+        g_hash_table_insert (session->chats, GINT_TO_POINTER (swboard->chat_id), swboard);
+
+        /* we should not leave chats on timeouts */
+        pn_timer_free(swboard->timer);
+        swboard->timer = NULL;
+
+        id = "chat";
+    }
+    else {
+        id = swboard->im_user = g_strdup(cmd->params[4]);
+
+        g_hash_table_insert (session->conversations, g_strdup (id), swboard);
+    }
+
+    pn_node_set_id(swboard->cmdproc->conn, session->conn_count++, id);
 
     if (!msn_switchboard_connect(swboard, host, port))
         msn_switchboard_close(swboard);
