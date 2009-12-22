@@ -865,7 +865,7 @@ foo_write (PnNode *conn,
                                   "Connection: Keep-Alive\r\n"
                                   "Pragma: no-cache\r\n"
                                   "Content-Type: application/x-msn-messenger\r\n"
-                                  "Content-Length: %" G_GSIZE_FORMAT "\r\n\r\n",
+                                  "Content-Length: %zu\r\n\r\n",
                                   http_conn->gateway,
                                   params,
                                   http_conn->gateway,
