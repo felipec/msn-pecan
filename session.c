@@ -511,3 +511,38 @@ msn_session_get_bool (const MsnSession *session,
 {
     return GPOINTER_TO_INT (g_hash_table_lookup (session->config, fieldname));
 }
+
+void
+msn_session_set_prp (MsnSession *session,
+                     const char *key,
+                     const char *value)
+{
+    MsnCmdProc *cmdproc;
+
+    cmdproc = session->notification->cmdproc;
+
+    if (value) {
+        /*
+         * We should investigate if other properties also need striping. If so,
+         * then pn_friendly_name_encode should be renamed to pn_prop_encode or
+         * something like that, and g_strstrip should be handled internally.
+         */
+        gchar *tmp = g_strdup (value);
+        gchar *enc = pn_friendly_name_encode (g_strstrip (tmp));
+        g_free (tmp);
+
+        msn_cmdproc_send (cmdproc, "PRP", "%s %s", key, enc);
+        g_free (enc);
+    }
+    else {
+        msn_cmdproc_send (cmdproc, "PRP", "%s", key);
+    }
+}
+
+void
+msn_session_set_public_alias (MsnSession *session,
+                              const gchar *value)
+{
+    msn_session_set_prp (session, "MFN",
+                         value ? value : msn_session_get_username (session));
+}

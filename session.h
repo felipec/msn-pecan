@@ -202,4 +202,14 @@ gboolean
 msn_session_get_bool (const MsnSession *session,
                       const gchar *fieldname);
 
+
+void
+msn_session_set_prp (MsnSession *session,
+                     const gchar *key,
+                     const gchar *value);
+
+void
+msn_session_set_public_alias (MsnSession *session,
+                              const gchar *value);
+
 #endif /* MSN_SESSION_H */

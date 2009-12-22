@@ -174,44 +174,22 @@ msn_cmd_nudge(PurpleConversation *conv, const gchar *cmd, gchar **args, gchar **
     return PURPLE_CMD_RET_OK;
 }
 
-static void
-msn_act_id(PurpleConnection *gc, const char *entry)
-{
-    MsnSession *session;
-    session = gc->proto_data;
-    msn_set_prp(gc, "MFN", entry ? entry : msn_session_get_username (session));
-}
-
 /** Adium needs this. */
 void
 msn_set_friendly_name (PurpleConnection *gc,
                        const gchar *entry)
 {
-    msn_act_id (gc, entry);
+    msn_session_set_public_alias (gc->proto_data, entry);
 }
 
+/* TODO do we really need to check for the entry to be empty? */
 static void
 msn_set_prp(PurpleConnection *gc, const char *type, const char *entry)
 {
-    MsnCmdProc *cmdproc;
-    MsnSession *session;
+    if (entry && *entry == '\0')
+	entry = NULL;
 
-    session = gc->proto_data;
-    cmdproc = session->notification->cmdproc;
-
-    if (entry == NULL || *entry == '\0')
-    {
-        msn_cmdproc_send(cmdproc, "PRP", "%s", type);
-    }
-    else
-    {
-        gchar *tmp = g_strdup (entry);
-        gchar *value = pn_friendly_name_encode (g_strstrip (tmp));
-        g_free (tmp);
-
-        msn_cmdproc_send (cmdproc, "PRP", "%s %s", type, value);
-        g_free (value);
-    }
+    msn_session_set_prp (gc->proto_data, type, entry);
 }
 
 #ifndef PECAN_USE_PSM
@@ -310,7 +288,7 @@ msn_show_set_friendly_name(PurplePluginAction *action)
                          _("This is the name that other MSN buddies will "
                            "see you as."),
                          purple_connection_get_display_name(gc), FALSE, FALSE, NULL,
-                         _("OK"), G_CALLBACK(msn_act_id),
+                         _("OK"), G_CALLBACK(msn_set_friendly_name),
                          _("Cancel"), NULL,
                          purple_connection_get_account(gc), NULL, NULL,
                          gc);
