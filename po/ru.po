@@ -9,65 +9,74 @@ msgid ""
 msgstr ""
 "Project-Id-Version: _msn-pecan-ru\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2009-06-06 13:22+0300\n"
-"PO-Revision-Date: 2008-07-14 12:09+0000\n"
-"Last-Translator: Sergei Zivukov <Unknown>\n"
+"POT-Creation-Date: 2009-12-14 17:42+0100\n"
+"PO-Revision-Date: 2009-11-13 14:54+0000\n"
+"Last-Translator: Alexander Aen Markevitch <Unknown>\n"
 "Language-Team: <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2009-06-15 22:44+0000\n"
+"X-Launchpad-Export-Date: 2009-12-22 22:32+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: msn.c:152
+#: msn.c:154
 msgid "Nudge"
 msgstr "Подтолкнуть"
 
-#: msn.c:153
+#: msn.c:155
 #, c-format
 msgid "%s has nudged you!"
 msgstr "%s был подтолкнут Вами!"
 
-#: msn.c:154
+#: msn.c:156
 #, c-format
 msgid "Nudging %s..."
 msgstr "Подталкивание %s..."
 
-#: msn.c:304
+#: msn.c:310
 msgid "Set your friendly name."
 msgstr "Установить Ваше имя друга."
 
-#: msn.c:305
+#: msn.c:311
 msgid "This is the name that other MSN buddies will see you as."
 msgstr "Это имя другие друзья по MSN увидят как Ваше."
 
-#: msn.c:308 msn.c:329 msn.c:347 msn.c:364 msn.c:381
+#: msn.c:314 msn.c:335 msn.c:353 msn.c:370 msn.c:387
 msgid "OK"
 msgstr "ОК"
 
-#: msn.c:309 msn.c:330 msn.c:348 msn.c:365 msn.c:382 msn.c:403
+#: msn.c:315 msn.c:336 msn.c:354 msn.c:371 msn.c:388 msn.c:409
 msgid "Cancel"
 msgstr "Отмена"
 
-#: msn.c:345
+#: msn.c:330
+msgid "Set your personal message."
+msgstr "Установить персональный статус."
+
+#: msn.c:331
+msgid "This is the message that other MSN buddies will see under your name."
+msgstr ""
+"Это сообщение, которое будет видно под вашим именем другим пользователям MSN."
+
+#: msn.c:351
 msgid "Set your home phone number."
 msgstr "Установить номер Вашего домашнего телефона."
 
-#: msn.c:362
+#: msn.c:368
 msgid "Set your work phone number."
 msgstr "Установить номер Вашего рабочего телефона."
 
-#: msn.c:379
+#: msn.c:385
 msgid "Set your mobile phone number."
 msgstr "Установить номер Вашего мобильного телефона."
 
-#: msn.c:394
+#: msn.c:400
 msgid "Allow MSN Mobile pages?"
 msgstr "Разрешить Мобильные страницы MSN?"
 
-#: msn.c:395
+#: msn.c:401
 msgid ""
 "Do you want to allow or disallow people on your buddy list to send you MSN "
 "Mobile pages to your cell phone or other mobile device?"
@@ -76,162 +85,261 @@ msgstr ""
 "страницы MSN для вашего мобильного телефона или другого мобильного "
 "устройства?"
 
-#: msn.c:401
+#: msn.c:407
 msgid "Allow"
 msgstr "Разрешить"
 
-#: msn.c:402
+#: msn.c:408
 msgid "Disallow"
 msgstr "Отвергнуть"
 
-#: msn.c:461
+#: msn.c:423
+msgid "This account's email is not enabled."
+msgstr "Этот e-mail недействителен."
+
+#: msn.c:467
 msgid "Send a mobile message."
 msgstr "Отправить мобильное сообщение."
 
-#: msn.c:463
+#: msn.c:469
 msgid "Page"
 msgstr "Страница"
 
-#: msn.c:464
+#: msn.c:470
 msgid "Close"
 msgstr "Закрыть"
 
-#: msn.c:662
+#: msn.c:628
+#, c-format
+msgid "Playing %s"
+msgstr ""
+
+#: msn.c:630
+#, c-format
+msgid "Editing %s"
+msgstr ""
+
+#: msn.c:680
 msgid "Status"
 msgstr "Состояние"
 
-#: msn.c:663
+#: msn.c:681
 msgid "Idle"
 msgstr "Молчит"
 
-#: msn.c:672
+#: msn.c:691
 msgid "Personal Message"
 msgstr "Личной сообщение"
 
-#: msn.c:700
+#: msn.c:708
+msgid "Now Listening"
+msgstr ""
+
+#: msn.c:714
+msgid "Playing a game"
+msgstr ""
+
+#: msn.c:718
+msgid "Working"
+msgstr ""
+
+#: msn.c:722
 msgid "Has you"
 msgstr ""
 
-#: msn.c:701 msn.c:710 msn.c:1682
+#: msn.c:723 msn.c:727 msn.c:1724
 msgid "Yes"
 msgstr "Да"
 
-#: msn.c:701 msn.c:710 msn.c:1682
+#: msn.c:723 msn.c:727 msn.c:1724
 msgid "No"
 msgstr "Нет"
 
-#: msn.c:709
+#: msn.c:726
 msgid "Blocked"
 msgstr "Заблокировано"
 
-#: msn.c:722
+#: msn.c:738
 msgid "Message"
 msgstr "Сообщение"
 
-#: msn.c:737
+#: msn.c:753
 msgid "Be Right Back"
 msgstr ""
 
-#: msn.c:738
+#: msn.c:754
 msgid "Busy"
 msgstr "Занято"
 
-#: msn.c:739
+#: msn.c:755
 msgid "On the Phone"
 msgstr "На телефоне"
 
-#: msn.c:740
+#: msn.c:756
 msgid "Out to Lunch"
 msgstr "Ушел на обед"
 
-#: msn.c:782
+#: msn.c:774
+msgid "Song Title"
+msgstr "Название песни"
+
+#: msn.c:775
+msgid "Song Artist"
+msgstr "Исполнитель"
+
+#: msn.c:776
+msgid "Song Album"
+msgstr "Альбом"
+
+#: msn.c:777
+msgid "Game Name"
+msgstr ""
+
+#: msn.c:778
+msgid "Office App Name"
+msgstr "Офисное приложение"
+
+#: msn.c:798
 msgid "Set Friendly Name..."
 msgstr "Установить имя друга..."
 
-#: msn.c:794
+#: msn.c:803
+msgid "Set Personal Message..."
+msgstr "Установить личный статус..."
+
+#: msn.c:810
 msgid "Set Home Phone Number..."
 msgstr "Установить номер домашнего телефона..."
 
-#: msn.c:798
+#: msn.c:814
 msgid "Set Work Phone Number..."
 msgstr "Установить номер рабочего телефона..."
 
-#: msn.c:802
+#: msn.c:818
 msgid "Set Mobile Phone Number..."
 msgstr "Установить номер мобильного телефона..."
 
-#: msn.c:808
+#: msn.c:824
 msgid "Enable/Disable Mobile Devices..."
 msgstr "Включить/Отключить мобильные устройства"
 
-#: msn.c:813
+#: msn.c:829
 msgid "Allow/Disallow Mobile Pages..."
 msgstr "Разрешить/Запретить мобильные страницы"
 
-#: msn.c:823
+#: msn.c:839
 msgid "Open Hotmail Inbox"
 msgstr "Открыть входящую почту Hotmail"
 
-#: msn.c:853
+#: msn.c:869
 msgid "Send to Mobile"
 msgstr "Отправить на мобильное устройство"
 
-#: msn.c:861
+#: msn.c:877
 msgid "Initiate _Chat"
 msgstr ""
 
-#: msn.c:887
+#: msn.c:903
 msgid ""
 "SSL support is needed for MSN. Please install a supported SSL library."
 msgstr ""
 "Для MSN необходима поддержка SSL. Пожалуйста, поставьте библиотеку поддержки "
 "SSL."
 
-#: msn.c:921
+#: msn.c:938
+msgid "Connecting"
+msgstr ""
+
+#: msn.c:941
 msgid "Failed to connect to server."
 msgstr "Ошибка соединения с сервером."
 
-#: msn.c:1647
+#: msn.c:1689
 msgid "Username"
 msgstr "Имя пользователя"
 
-#: msn.c:1689
+#: msn.c:1699
+msgid "Friendly Name"
+msgstr ""
+
+#: msn.c:1715
+msgid "Home Phone"
+msgstr ""
+
+#: msn.c:1718
+msgid "Mobile Phone"
+msgstr ""
+
+#: msn.c:1721
+msgid "Work Phone"
+msgstr ""
+
+#: msn.c:1723
+msgid "Has Space"
+msgstr ""
+
+#: msn.c:1732
 msgid "Profile URL"
 msgstr "URL-профиль"
 
-#: msn.c:1815 msn.c:1816
+#: msn.c:1858 msn.c:1859
 msgid "WLM Protocol Plugin"
 msgstr "Расширение протокола WLM"
 
-#: msn.c:1842
+#: msn.c:1885
 msgid "Server"
 msgstr "Сервер"
 
-#: msn.c:1845
+#: msn.c:1888
 msgid "Port"
 msgstr "Порт"
 
-#: msn.c:1848
+#: msn.c:1891
 msgid "Use HTTP Method"
 msgstr "Использовать HTTP-метод"
 
-#: msn.c:1851
+#: msn.c:1894
 msgid "Show custom smileys"
 msgstr "Показать полные смайлики"
 
-#: msn.c:1854
+#: msn.c:1897
 msgid "Use server-side alias"
+msgstr "Использовать имя, выданное сервером"
+
+#: msn.c:1901
+msgid "Use direct connections"
+msgstr "Использовать прямое соединение"
+
+#: msn.c:1905
+msgid "Use user displays"
 msgstr ""
 
-#: msn.c:1870
+#: msn.c:1908
+msgid "Don't show Messenger Plus! tags"
+msgstr "Не показывать тэги Messenger Plus!"
+
+#: msn.c:1915
 msgid "nudge: nudge a user to get their attention"
+msgstr "будильник: разбудить пользователя, чтобы привлечь его внимание"
+
+#: nexus.c:80
+#, c-format
+msgid "error on nexus server: %s"
 msgstr ""
 
-#: nexus.c:158
-msgid "Unable to connect"
-msgstr "Отключить соединение"
+#: nexus.c:84
+msgid "error on nexus server"
+msgstr ""
 
-#: notification.c:103 notification.c:148
+#: nexus.c:185
+msgid "nexus parse error"
+msgstr ""
+
+#: nexus.c:213 nexus.c:306 nexus.c:340 nexus.c:419
+msgid "nexus stream error"
+msgstr ""
+
+#: notification.c:95 notification.c:140
 #, c-format
 msgid ""
 "Error on notification server:\n"
@@ -240,7 +348,7 @@ msgstr ""
 "Ошибка в уведомлении сервера:\n"
 "%s"
 
-#: notification.c:110
+#: notification.c:102
 msgid ""
 "Error on notification server:\n"
 "Unknown"
@@ -248,129 +356,117 @@ msgstr ""
 "Ошибка в уведомлении сервера::\n"
 "Неизвестно"
 
-#: notification.c:262
+#: notification.c:254
 #, c-format
 msgid "%s is not a valid group."
 msgstr "%s - неправильная группа."
 
-#: notification.c:267 session.c:399
+#: notification.c:259 session.c:401
 msgid "Unknown error."
 msgstr "Неизвестная ошибка."
 
-#: notification.c:270
+#: notification.c:262
 #, c-format
 msgid "%s on %s (%s)"
 msgstr "%s на %s (%s)"
 
-#: notification.c:613
+#: notification.c:593
 #, c-format
 msgid "Unable to add user on %s (%s)"
 msgstr "Отключить добавление пользователя на %s (%s)"
 
-#: notification.c:617
+#: notification.c:597
 #, c-format
 msgid "Unable to block user on %s (%s)"
 msgstr "Отключить блокировку пользователя на %s (%s)"
 
-#: notification.c:621
+#: notification.c:601
 #, c-format
 msgid "Unable to permit user on %s (%s)"
 msgstr "Отключить пропуск пользователя на %s (%s)"
 
-#: notification.c:1017
+#: notification.c:991
 msgid "Unable to rename group"
 msgstr "Отключить переименование группы"
 
-#: notification.c:1076
+#: notification.c:1050
 msgid "Unable to delete group"
 msgstr "Отключить удаление группы"
 
-#: notification.c:1592
+#: notification.c:1632
 #, c-format
 msgid ""
-"The MSN server will shut down for maintenance in %d minute. You will "
-"automatically be signed out at that time.  Please finish any conversations "
-"in progress.\n"
-"\n"
-"After the maintenance has been completed, you will be able to successfully "
-"sign in."
-msgid_plural ""
 "The MSN server will shut down for maintenance in %d minutes. You will "
 "automatically be signed out at that time.  Please finish any conversations "
 "in progress.\n"
 "\n"
 "After the maintenance has been completed, you will be able to successfully "
 "sign in."
-msgstr[0] ""
-"Обслуживание MSN-сервера будет прекращено на %d минут. Вы будете "
-"автоматически подписаны на это время.  Пожалуйста, завершите какие-либо "
-"переговоры.\n"
-"\n"
-"После того, как обслуживание будет возобновлено, Вы автоматически успешно "
-"войдете."
+msgstr ""
 
-#: session.c:369
+#: session.c:65
+#, c-format
+msgid "You are not in %s's contact list."
+msgstr "Вы не в контаки-листе %s"
+
+#: session.c:371
 msgid "Our protocol is not supported by the server."
 msgstr "Наш протокол не поддерживается сервером."
 
-#: session.c:373
+#: session.c:375
 msgid "Error parsing HTTP."
 msgstr "Ошибка HTTP-парсинга."
 
-#: session.c:377
+#: session.c:379
 msgid "You have signed on from another location."
 msgstr "Вы подписаны на другом компьютере."
 
-#: session.c:380
+#: session.c:382
 msgid ""
 "The MSN servers are temporarily unavailable. Please wait and try again."
 msgstr ""
 "MSN-сервера времено недоступны. Пожалуйста, подождите и попробуйте снова."
 
-#: session.c:385
+#: session.c:387
 msgid "The MSN servers are going down temporarily."
 msgstr "MSN-сервера времено упали."
 
-#: session.c:390
+#: session.c:392
 #, c-format
 msgid "Unable to authenticate: %s"
-msgstr ""
+msgstr "Не удается определить: %s"
 
-#: session.c:391
+#: session.c:393
 msgid "Unknown error"
 msgstr "Неизвестная ошибка"
 
-#: session.c:394
+#: session.c:396
 msgid ""
 "Your MSN buddy list is temporarily unavailable. Please wait and try again."
 msgstr ""
 "Ваш список друзей в MSN времено недоступен. Пожалуйста, подождите и "
 "попробуйте снова."
 
-#: switchboard.c:567
-msgid "Message may have not been sent because a timeout occurred:"
-msgstr "Получение списка друзей"
-
-#: switchboard.c:575
+#: switchboard.c:546
 msgid "Message could not be sent, not allowed while invisible:"
 msgstr "Сообщение не может быть отправлено, пока невидимы:"
 
-#: switchboard.c:579
+#: switchboard.c:550
 msgid "Message could not be sent because the user is offline:"
 msgstr ""
 "Сообщение не может быть отправлено, потому что пользователь не в сети:"
 
-#: switchboard.c:583
+#: switchboard.c:554
 msgid "Message could not be sent because a connection error occurred:"
 msgstr ""
 "Сообщение не может быть отправлено, потому что произошла ошибка соединения:"
 
-#: switchboard.c:587
+#: switchboard.c:558
 msgid "Message could not be sent because we are sending too quickly:"
 msgstr ""
 "Сообщение не может быть отправлено, потому что отправляем его слишком быстро:"
 
-#: switchboard.c:591
+#: switchboard.c:562
 msgid ""
 "Message could not be sent because we were unable to establish a session with "
 "the server. This is likely a server problem, try again in a few minutes:"
@@ -379,367 +475,366 @@ msgstr ""
 "ссервером. Вероятно, это проблема сервера, повторите попытку через несколько "
 "минут:"
 
-#: switchboard.c:598
+#: switchboard.c:569
 msgid ""
 "Message could not be sent because an error with the switchboard occurred:"
 msgstr ""
 
-#: switchboard.c:606
+#: switchboard.c:576
 msgid "Message may have not been sent because an unknown error occurred:"
 msgstr ""
 "Сообщение не удалось отправить, потому что произошла неизвестная ошибка:"
 
-#: pecan_error.c:37
-msgid "Unable to parse message"
-msgstr "Выключить разбор сообщения"
-
-#: pecan_error.c:40
-msgid "Syntax Error (probably a client bug)"
-msgstr "Синтаксическая ошибка (вероятно проблема клиента)"
-
-#: pecan_error.c:43
-msgid "Invalid e-mail address"
-msgstr "Неправильный адрес эл. почты"
-
-#: pecan_error.c:46
-msgid "User does not exist"
-msgstr "Пользователя не существует"
-
-#: pecan_error.c:49
-msgid "Fully qualified domain name missing"
-msgstr "Полное доменное имя неверно"
-
-#: pecan_error.c:52
-msgid "Already logged in"
-msgstr "Уже вошли"
-
-#: pecan_error.c:55
-msgid "Invalid screen name"
-msgstr "Неправильное отображаемое имя"
-
-#: pecan_error.c:58
-msgid "Invalid friendly name"
-msgstr "Неправильное имя друга"
-
-#: pecan_error.c:61
-msgid "List full"
-msgstr "Полный список"
-
-#: pecan_error.c:64
-msgid "Already there"
-msgstr "Уже существует"
-
-#: pecan_error.c:67
-msgid "Not on list"
-msgstr "Нет в списке"
-
-#: pecan_error.c:70
-msgid "User is offline"
-msgstr "Пользователь не в сети"
-
-#: pecan_error.c:73
-msgid "Already in the mode"
-msgstr "Уже в режиме"
-
-#: pecan_error.c:76
-msgid "Already in opposite list"
-msgstr "Уже в оппозиционном списке"
-
-#: pecan_error.c:79
-msgid "Too many groups"
-msgstr "Слишком много групп"
-
-#: pecan_error.c:82
-msgid "Invalid group"
-msgstr "Неправильная группа"
-
-#: pecan_error.c:85
-msgid "User not in group"
-msgstr "Пользователь не в группе"
-
-#: pecan_error.c:88
-msgid "Group name too long"
-msgstr "Имя группы слишком длинное"
-
-#: pecan_error.c:91
-msgid "Cannot remove group zero"
-msgstr "Не удалось удалить нулевую группу"
-
-#: pecan_error.c:94
-msgid "Tried to add a user to a group that doesn't exist"
-msgstr "Попытка добавить пользователя в группу, которая не существует"
-
-#: pecan_error.c:97
-msgid "Switchboard failed"
-msgstr ""
-
-#: pecan_error.c:100
-msgid "Notify transfer failed"
-msgstr "Ошибка уведомления о передаче"
-
-#: pecan_error.c:103
-msgid "Required fields missing"
-msgstr "Ошибка заполнения обязательных полей"
-
-#: pecan_error.c:106
-msgid "Too many hits to a FND"
-msgstr "Слишком много обращений к FND"
-
-#: pecan_error.c:109
-msgid "Not logged in"
-msgstr "Не вошли"
-
-#: pecan_error.c:112
-msgid "Service temporarily unavailable"
-msgstr "Служба времено не доступна"
-
-#: pecan_error.c:115
-msgid "Database server error"
-msgstr "Ошибка сервера базы данных"
-
-#: pecan_error.c:118
-msgid "Command disabled"
-msgstr "Команда отключена"
-
-#: pecan_error.c:121
-msgid "File operation error"
-msgstr "Ошибка операции с файлом"
-
-#: pecan_error.c:124
-msgid "Memory allocation error"
-msgstr "Ошибка распределения памяти"
-
-#: pecan_error.c:127
-msgid "Wrong CHL value sent to server"
-msgstr "Направильное значение CHL отправлено на сервер"
-
-#: pecan_error.c:130
-msgid "Server busy"
-msgstr "Сервер занят"
-
-#: pecan_error.c:133 pecan_error.c:145 pecan_error.c:195
-msgid "Server unavailable"
-msgstr "Сервер недоступен"
-
-#: pecan_error.c:136
-msgid "Peer notification server down"
-msgstr ""
-
-#: pecan_error.c:139
-msgid "Database connect error"
-msgstr "Ошибка соединения с базой данных"
-
-#: pecan_error.c:142
-msgid "Server is going down (abandon ship)"
-msgstr "Сервер упал"
-
-#: pecan_error.c:148
-msgid "Error creating connection"
-msgstr "Ошибка создания соединения"
-
-#: pecan_error.c:151
-msgid "CVR parameters are either unknown or not allowed"
-msgstr "Параметры CVR не известны или не разрешенные"
-
-#: pecan_error.c:154
-msgid "Unable to write"
-msgstr "Запись отключена"
-
-#: pecan_error.c:157
-msgid "Session overload"
-msgstr "Сессия перезагружена"
-
-#: pecan_error.c:160
-msgid "User is too active"
-msgstr "Пользователь слишком активен"
-
-#: pecan_error.c:163
-msgid "Too many sessions"
-msgstr "Слишком много сессий"
-
-#: pecan_error.c:166
-msgid "Passport not verified"
-msgstr "Пароль не подтвержден"
-
-#: pecan_error.c:169
-msgid "Bad friend file"
-msgstr "Плохой файл друга"
-
-#: pecan_error.c:172
-msgid "Not expected"
-msgstr "Не ожидается"
-
-#: pecan_error.c:175
-msgid "Friendly name changes too rapidly"
-msgstr "Имя друга изменяется слишком быстро"
-
-#: pecan_error.c:183
-msgid "Server too busy"
-msgstr "Сервер слишком занят"
-
-#: pecan_error.c:187
-msgid "Authentication failed"
-msgstr "Ошибка авторизации"
-
-#: pecan_error.c:190
-msgid "Not allowed when hiding"
-msgstr "Не разрешается, когда скрыт"
-
-#: pecan_error.c:198
-msgid "Not accepting new users"
-msgstr "Нет приема новых пользователей"
-
-#: pecan_error.c:201
-msgid "Kids Passport without parental consent"
-msgstr "Детский паспорт без согласия родителей"
-
-#: pecan_error.c:204
-msgid "Passport account not yet verified"
-msgstr "Пароль учетной записи еще не подтвержден"
-
-#: pecan_error.c:207
-msgid "Bad ticket"
-msgstr "Плохой билет"
-
-#: ab/pecan_contactlist.c:278
+#: switchboard.c:984
 #, c-format
-msgid "%s has added you to his or her buddy list."
-msgstr "%s добавлен в Ваш или его список друзей."
-
-#: ab/pecan_contactlist.c:345
-#, c-format
-msgid "%s has removed you from his or her buddy list."
-msgstr "%s удален из Вашего или его списка друзей."
-
-#: ab/pecan_contactlist.c:850
-#, c-format
-msgid "Can't add to \"%s\"; it's a virtual group"
-msgstr "Не удалось добавить в \"%s\"; это виртуальная группа"
-
-#: msn.c:324
-msgid "Set your personal message."
+msgid ""
+"sent you a Messenger Plus! sound. Click <a href='audio://%s'>here</a> to "
+"play it."
 msgstr ""
 
-#: msn.c:325
-msgid "This is the message that other MSN buddies will see under your name."
-msgstr ""
-
-#: msn.c:417
-msgid "This account's email is not enabled."
-msgstr ""
-
-#: msn.c:620
-#, c-format
-msgid "Playing %s"
-msgstr ""
-
-#: msn.c:624
-#, c-format
-msgid "Editing %s"
-msgstr ""
-
-#: msn.c:687
-msgid "Now Listening"
-msgstr ""
-
-#: msn.c:692
-msgid "Playing a game"
-msgstr ""
-
-#: msn.c:696
-msgid "Working"
-msgstr ""
-
-#: msn.c:758
-msgid "Song Title"
-msgstr ""
-
-#: msn.c:759
-msgid "Song Artist"
-msgstr ""
-
-#: msn.c:760
-msgid "Song Album"
-msgstr ""
-
-#: msn.c:761
-msgid "Game Name"
-msgstr ""
-
-#: msn.c:762
-msgid "Office App Name"
-msgstr ""
-
-#: msn.c:787
-msgid "Set Personal Message..."
-msgstr ""
-
-#: msn.c:918
-msgid "Connecting"
-msgstr ""
-
-#: msn.c:1657
-msgid "Friendly Name"
-msgstr ""
-
-#: msn.c:1673
-msgid "Home Phone"
-msgstr ""
-
-#: msn.c:1676
-msgid "Mobile Phone"
-msgstr ""
-
-#: msn.c:1679
-msgid "Work Phone"
-msgstr ""
-
-#: msn.c:1681
-msgid "Has Space"
-msgstr ""
-
-#: msn.c:1857
-msgid "Use direct connections"
-msgstr ""
-
-#: msn.c:1860
-msgid "Use user displays"
-msgstr ""
-
-#: msn.c:1863
-msgid "Don't show Messenger Plus! tags"
-msgstr ""
-
-#: session.c:67
-#, c-format
-msgid "You are not in %s's contact list."
-msgstr ""
-
-#: switchboard.c:1076
+#: switchboard.c:986
 #, c-format
 msgid ""
 "sent you a Messenger Plus! sound. Click <a href='file://%s'>here</a> to play "
 "it."
 msgstr ""
+"послал вам звук Messenger Plus!. Пройдите по <a href='file://%s'>ссылке</a>, "
+"чтобы прослушать его."
 
-#: switchboard.c:1087
+#: switchboard.c:989
+#, c-format
+msgid ""
+"sent you a Messenger Plus! sound. Copy the following link in your web "
+"browser to play it: file://%s"
+msgstr ""
+
+#: switchboard.c:1001
 msgid ""
 "sent you a Messenger Plus! sound, but it cannot be played due to an error "
 "happened while storing the file."
 msgstr ""
+"послал вам звук Messenger Plus!, но он не может быть воспроизведен из-за "
+"ошибки, произошедшей при сохранении файла."
 
-#: switchboard.c:1334
+#: switchboard.c:1188
+msgid "received handwritten message"
+msgstr ""
+
+#: switchboard.c:1201
+msgid ""
+"sent you an handwritten message, but it cannot be displayed due to an error "
+"happened while storing the file."
+msgstr ""
+
+#: switchboard.c:1263
 #, c-format
 msgid "sent you a voice clip. Click <a href='file://%s'>here</a> to play it."
 msgstr ""
 
-#: switchboard.c:1341
+#: switchboard.c:1265
+#, c-format
 msgid ""
-"sent you a voice clip, but it cannot be played due to an error happened "
-"while storing the file."
+"sent you a voice clip. Copy the following link in your web browser to play "
+"it: file://%s"
 msgstr ""
 
-#: pecan_error.c:210
+#: switchboard.c:1277
+msgid ""
+"sent you a voice clip, but it cannot be played dueto an error happened while "
+"storing the file."
+msgstr ""
+
+#: switchboard.c:1360 switchboard.c:1367
+#, c-format
+msgid ""
+"<a href=\"file://%s\">Click here to view the wink in your web browser</a>"
+msgstr ""
+
+#: switchboard.c:1398
+#, c-format
+msgid ""
+"sent a wink:\n"
+"%s\n"
+"%s"
+msgstr ""
+
+#: switchboard.c:1400
+#, c-format
+msgid ""
+"sent a wink.\n"
+"%s"
+msgstr ""
+
+#: switchboard.c:1416
+msgid "sent a wink, but it could not be displayed."
+msgstr ""
+
+#: switchboard.c:1637
+msgid " sent you a voice chat invite, which is not yet supported."
+msgstr ""
+
+#: pn_error.c:34
+msgid "Unable to parse message"
+msgstr "Выключить разбор сообщения"
+
+#: pn_error.c:37
+msgid "Syntax Error (probably a client bug)"
+msgstr "Синтаксическая ошибка (вероятно проблема клиента)"
+
+#: pn_error.c:40
+msgid "Invalid e-mail address"
+msgstr "Неправильный адрес эл. почты"
+
+#: pn_error.c:43
+msgid "User does not exist"
+msgstr "Пользователя не существует"
+
+#: pn_error.c:46
+msgid "Fully qualified domain name missing"
+msgstr "Полное доменное имя неверно"
+
+#: pn_error.c:49
+msgid "Already logged in"
+msgstr "Уже вошли"
+
+#: pn_error.c:52
+msgid "Invalid screen name"
+msgstr "Неправильное отображаемое имя"
+
+#: pn_error.c:55
+msgid "Invalid friendly name"
+msgstr "Неправильное имя друга"
+
+#: pn_error.c:58
+msgid "List full"
+msgstr "Полный список"
+
+#: pn_error.c:61
+msgid "Already there"
+msgstr "Уже существует"
+
+#: pn_error.c:64
+msgid "Not on list"
+msgstr "Нет в списке"
+
+#: pn_error.c:67
+msgid "User is offline"
+msgstr "Пользователь не в сети"
+
+#: pn_error.c:70
+msgid "Already in the mode"
+msgstr "Уже в режиме"
+
+#: pn_error.c:73
+msgid "Already in opposite list"
+msgstr "Уже в оппозиционном списке"
+
+#: pn_error.c:76
+msgid "Too many groups"
+msgstr "Слишком много групп"
+
+#: pn_error.c:79
+msgid "Invalid group"
+msgstr "Неправильная группа"
+
+#: pn_error.c:82
+msgid "User not in group"
+msgstr "Пользователь не в группе"
+
+#: pn_error.c:85
+msgid "Group name too long"
+msgstr "Имя группы слишком длинное"
+
+#: pn_error.c:88
+msgid "Cannot remove group zero"
+msgstr "Не удалось удалить нулевую группу"
+
+#: pn_error.c:91
+msgid "Tried to add a user to a group that doesn't exist"
+msgstr "Попытка добавить пользователя в группу, которая не существует"
+
+#: pn_error.c:94
+msgid "Switchboard failed"
+msgstr ""
+
+#: pn_error.c:97
+msgid "Notify transfer failed"
+msgstr "Ошибка уведомления о передаче"
+
+#: pn_error.c:100
+msgid "Required fields missing"
+msgstr "Ошибка заполнения обязательных полей"
+
+#: pn_error.c:103
+msgid "Too many hits to a FND"
+msgstr "Слишком много обращений к FND"
+
+#: pn_error.c:106
+msgid "Not logged in"
+msgstr "Не вошли"
+
+#: pn_error.c:109
+msgid "Service temporarily unavailable"
+msgstr "Служба времено не доступна"
+
+#: pn_error.c:112
+msgid "Database server error"
+msgstr "Ошибка сервера базы данных"
+
+#: pn_error.c:115
+msgid "Command disabled"
+msgstr "Команда отключена"
+
+#: pn_error.c:118
+msgid "File operation error"
+msgstr "Ошибка операции с файлом"
+
+#: pn_error.c:121
+msgid "Memory allocation error"
+msgstr "Ошибка распределения памяти"
+
+#: pn_error.c:124
+msgid "Wrong CHL value sent to server"
+msgstr "Направильное значение CHL отправлено на сервер"
+
+#: pn_error.c:127
+msgid "Server busy"
+msgstr "Сервер занят"
+
+#: pn_error.c:130 pn_error.c:142 pn_error.c:192
+msgid "Server unavailable"
+msgstr "Сервер недоступен"
+
+#: pn_error.c:133
+msgid "Peer notification server down"
+msgstr ""
+
+#: pn_error.c:136
+msgid "Database connect error"
+msgstr "Ошибка соединения с базой данных"
+
+#: pn_error.c:139
+msgid "Server is going down (abandon ship)"
+msgstr "Сервер упал"
+
+#: pn_error.c:145
+msgid "Error creating connection"
+msgstr "Ошибка создания соединения"
+
+#: pn_error.c:148
+msgid "CVR parameters are either unknown or not allowed"
+msgstr "Параметры CVR не известны или не разрешенные"
+
+#: pn_error.c:151
+msgid "Unable to write"
+msgstr "Запись отключена"
+
+#: pn_error.c:154
+msgid "Session overload"
+msgstr "Сессия перезагружена"
+
+#: pn_error.c:157
+msgid "User is too active"
+msgstr "Пользователь слишком активен"
+
+#: pn_error.c:160
+msgid "Too many sessions"
+msgstr "Слишком много сессий"
+
+#: pn_error.c:163
+msgid "Passport not verified"
+msgstr "Пароль не подтвержден"
+
+#: pn_error.c:166
+msgid "Bad friend file"
+msgstr "Плохой файл друга"
+
+#: pn_error.c:169
+msgid "Not expected"
+msgstr "Не ожидается"
+
+#: pn_error.c:172
+msgid "Friendly name changes too rapidly"
+msgstr "Имя друга изменяется слишком быстро"
+
+#: pn_error.c:180
+msgid "Server too busy"
+msgstr "Сервер слишком занят"
+
+#: pn_error.c:184
+msgid "Authentication failed"
+msgstr "Ошибка авторизации"
+
+#: pn_error.c:187
+msgid "Not allowed when hiding"
+msgstr "Не разрешается, когда скрыт"
+
+#: pn_error.c:195
+msgid "Not accepting new users"
+msgstr "Нет приема новых пользователей"
+
+#: pn_error.c:198
+msgid "Kids Passport without parental consent"
+msgstr "Детский паспорт без согласия родителей"
+
+#: pn_error.c:201
+msgid "Passport account not yet verified"
+msgstr "Пароль учетной записи еще не подтвержден"
+
+#: pn_error.c:204
+msgid "Bad ticket"
+msgstr "Плохой билет"
+
+#: pn_error.c:207
 #, c-format
 msgid "Unknown Error Code %u"
 msgstr ""
+
+#: pn_oim.c:662
+msgid ""
+"The following message wasn't sent due to an authentication error. Please "
+"logout and login again before sending a new message."
+msgstr ""
+
+#: pn_oim.c:665
+msgid ""
+"The following message wasn't sent because the system is unavailable. This "
+"normally happens when the user is blocked or does not exist."
+msgstr ""
+
+#: pn_oim.c:668
+msgid ""
+"The following message wasn't sent because you've sent messages too quickly. "
+"Please wait about 10 seconds before sending again the message."
+msgstr ""
+
+#: pn_oim.c:671
+msgid "The following message wasn't sent because it's too large."
+msgstr ""
+
+#: ab/pn_contactlist.c:812
+#, c-format
+msgid "Can't add to \"%s\"; it's a virtual group"
+msgstr "Не удалось добавить в \"%s\"; это виртуальная группа"
+
+#: cvr/pn_peer_msg.c:498
+msgid "requests to view your webcam, but this request is not yet supported."
+msgstr ""
+
+#: cvr/pn_peer_msg.c:503
+msgid "has sent you a webcam invite, which is not yet supported."
+msgstr ""
+
+#~ msgid "Unable to connect"
+#~ msgstr "Отключить соединение"
+
+#~ msgid "Message may have not been sent because a timeout occurred:"
+#~ msgstr "Получение списка друзей"
+
+#, c-format
+#~ msgid "%s has added you to his or her buddy list."
+#~ msgstr "%s добавлен в Ваш или его список друзей."
+
+#, c-format
+#~ msgid "%s has removed you from his or her buddy list."
+#~ msgstr "%s удален из Вашего или его списка друзей."
