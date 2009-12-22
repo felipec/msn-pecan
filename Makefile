@@ -205,11 +205,7 @@ $(plugin): LIBS := $(plugin_libs)
 	$(P)DYLIB
 	$(Q)$(CC) $(LDFLAGS) -dynamiclib -o $@ $^ $(LIBS)
 
-%.dll::
-	$(P)SHLIB
-	$(Q)$(CC) $(LDFLAGS) -shared -o $@ $^ $(LIBS)
-
-%.so::
+%.so %.dll::
 	$(P)SHLIB
 	$(Q)$(CC) $(LDFLAGS) -shared -o $@ $^ $(LIBS)
 
