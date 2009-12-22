@@ -179,6 +179,12 @@ void
 msn_set_friendly_name (PurpleConnection *gc,
                        const gchar *entry)
 {
+    /*
+     * The server doesn't seem to store the friendly name anymore, so let's do
+     * that ourselves.
+     */
+    purple_account_set_string (gc->account, "friendly_name", entry);
+
     msn_session_set_public_alias (gc->proto_data, entry);
 }
 

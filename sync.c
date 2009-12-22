@@ -103,9 +103,22 @@ prp_cmd (MsnCmdProc *cmdproc,
         {
             PurpleAccount *account;
             PurpleConnection *connection;
+            const gchar* friendly_name;
             account = msn_session_get_user_data (session);
             connection = purple_account_get_connection (account);
-            purple_connection_set_display_name (connection, tmp);
+
+            friendly_name = purple_account_get_string (account, "friendly_name", NULL);
+
+            /*
+             * The server doesn't seem to store the friendly name anymore,
+             * store it in account opts.
+             */
+            if (friendly_name)
+                msn_session_set_public_alias (session, friendly_name);
+            else
+                purple_account_set_string (account, "friendly_name", tmp);
+
+            purple_connection_set_display_name (connection, friendly_name);
         }
         g_free (tmp);
     }
