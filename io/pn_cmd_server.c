@@ -25,10 +25,6 @@
 
 #include <string.h>
 
-#ifdef HAVE_LIBPURPLE
-#include "fix_purple_win32.h"
-#endif /* HAVE_LIBPURPLE */
-
 struct PnCmdServer
 {
     PnNode parent;

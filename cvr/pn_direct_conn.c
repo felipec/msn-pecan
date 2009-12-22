@@ -36,7 +36,6 @@
 #endif
 
 /* libpurple stuff. */
-#include "fix_purple_win32.h"
 #include <proxy.h>
 
 /**************************************************************************

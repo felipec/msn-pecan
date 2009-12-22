@@ -23,8 +23,6 @@
 #include "session.h" /* for libpurple account */
 
 #ifdef HAVE_LIBPURPLE
-/* libpurple stuff. */
-#include "fix_purple_win32.h"
 #include <proxy.h>
 #undef connect
 #undef write

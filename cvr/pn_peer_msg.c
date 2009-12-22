@@ -39,8 +39,6 @@
 #endif /* MSN_DIRECTCONN */
 
 #ifdef HAVE_LIBPURPLE
-/* libpurple stuff. */
-#include "fix_purple_win32.h"
 #include <account.h>
 #include <version.h>
 #if PURPLE_VERSION_CHECK(2,5,0)

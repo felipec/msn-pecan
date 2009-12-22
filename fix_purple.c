@@ -21,7 +21,6 @@
 #include <string.h> /* for strcmp. */
 
 /* libpurple stuff. */
-#include "fix_purple_win32.h"
 #include <connection.h>
 
 #if !GLIB_CHECK_VERSION(2,16,0)

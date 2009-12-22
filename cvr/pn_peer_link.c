@@ -42,7 +42,6 @@
 #include <string.h>
 
 /* libpurple stuff. */
-#include "fix_purple_win32.h"
 #include <ft.h>
 
 struct pn_peer_link {

@@ -34,8 +34,6 @@
 #include "pn_log.h"
 
 #ifdef HAVE_LIBPURPLE
-/* libpurple stuff. */
-#include "fix_purple_win32.h"
 #include <util.h> /* for base64_dec */
 #include <conversation.h> /* for conversation_new */
 #endif /* HAVE_LIBPURPLE */

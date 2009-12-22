@@ -32,8 +32,6 @@
 #include <string.h>
 
 #ifdef HAVE_LIBPURPLE
-/* libpurple stuff. */
-#include "fix_purple_win32.h"
 #include "fix_purple.h"
 #include <account.h>
 #endif /* HAVE_LIBPURPLE */

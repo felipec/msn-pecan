@@ -46,7 +46,6 @@
 #endif /* defined(PECAN_CVR) */
 
 /* libpurple stuff. */
-#include "fix_purple_win32.h"
 #include <debug.h>
 #include <privacy.h>
 #include <request.h>
