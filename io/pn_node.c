@@ -25,10 +25,6 @@
 
 #ifdef HAVE_LIBPURPLE
 #include <proxy.h>
-#undef connect
-#undef write
-#undef read
-#undef close
 #endif /* HAVE_LIBPURPLE */
 
 void pn_node_error (PnNode *conn);

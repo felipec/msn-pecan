@@ -24,10 +24,6 @@
 
 #ifdef HAVE_LIBPURPLE
 #include <proxy.h>
-#undef connect
-#undef write
-#undef read
-#undef close
 #endif /* HAVE_LIBPURPLE */
 
 #include <errno.h>
