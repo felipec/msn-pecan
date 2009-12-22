@@ -23,24 +23,6 @@ struct _PurpleConnection;
 
 #include <glib.h>
 
-#if !GLIB_CHECK_VERSION(2,3,1)
-
-#if GLIB_SIZEOF_LONG == 8
-#define G_GSIZE_FORMAT "lu"
-#else
-#define G_GSIZE_FORMAT "u"
-#endif
-
-#endif /* !GLIB_CHECK_VERSION(2,3,1) */
-
-#ifndef G_GNUC_NULL_TERMINATED
-#	if     __GNUC__ >= 4
-#		define G_GNUC_NULL_TERMINATED __attribute__((__sentinel__))
-#	else
-#		define G_GNUC_NULL_TERMINATED
-#	endif
-#endif
-
 #if !GLIB_CHECK_VERSION(2,16,0)
 int g_strcmp0 (const char *str1, const char *str2);
 #endif /* !GLIB_CHECK_VERSION(2,16,0) */
