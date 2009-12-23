@@ -183,6 +183,7 @@ QUIET_CC    = $(Q:@=@echo '   CC         '$@;)
 QUIET_LINK  = $(Q:@=@echo '   LINK       '$@;)
 QUIET_CLEAN = $(Q:@=@echo '   CLEAN      '$@;)
 QUIET_MO    = $(Q:@=@echo '   MSGFMT     '$@;)
+QUIET_WR    = $(Q:@=@echo '   WINDRES    '$@;)
 
 plugin_libs := $(PURPLE_LIBS) $(GIO_LIBS)
 
@@ -211,7 +212,7 @@ $(plugin): LIBS := $(plugin_libs)
 	$(QUIET_CC)$(CC) $(CFLAGS) -MMD -o $@ -c $<
 
 %.res:: %.rc
-	$(WINDRES) $< -O coff -o $@
+	$(QUIET_WR)$(WINDRES) $< -O coff -o $@
 
 clean:
 	$(QUIET_CLEAN)$(RM) $(plugin) $(objects) $(deps) `find -name '*.mo'`
