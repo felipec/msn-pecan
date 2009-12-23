@@ -557,7 +557,7 @@ process_body_receive (OimRequest *oim_request,
 {
     gchar *message = NULL;
     gchar *cur;
-    time_t date;
+    time_t date = 0;
 
     pn_debug("body=[%.*s]", (int) length, body);
 
