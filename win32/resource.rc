@@ -8,13 +8,13 @@ BLOCK "StringFileInfo"
 {
 	BLOCK "040904B0" // U.S. English, Unicode
 	{
-		VALUE "CompanyName", "msn-pecan Developers\0"
+		VALUE "CompanyName", "msn-pecan developers\0"
 		VALUE "FileDescription",  "Alternative MSN protocol plugin for libpurple\0"
 		VALUE "ProductName", "msn-pecan\0"
 		VALUE "FileVersion", "0.0.19\0"
 		VALUE "ProductVersion", "0.0.19\0"
 		VALUE "InternalName", "msn-pecan\0"
-		VALUE "OriginalFilename", "msn-pecan.dll\0"
+		VALUE "OriginalFilename", "libmsn-pecan.dll\0"
 		VALUE "Comments", "http://msn-pecan.googlecode.com/\0"
 	}
 }
