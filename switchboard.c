@@ -408,22 +408,31 @@ msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
             purple_conversation_get_type(swboard->conv) != PURPLE_CONV_TYPE_CHAT)
         {
             GList *l;
-            MsnSession *session;
 
 #ifdef PECAN_DEBUG_CHAT
             pn_info ("switching to chat");
 #endif
 
-            session = swboard->session;
+            /* the switchboard is handled as a conversation, make it a chat */
+            if (!swboard->chat_id) {
+                MsnSession *session = swboard->session;
 
-            swboard->chat_id = session->conv_seq++;
+                swboard->chat_id = session->conv_seq++;
 
-            g_hash_table_insert(session->chats, GINT_TO_POINTER (swboard->chat_id),
-				msn_switchboard_ref(swboard));
-            g_hash_table_remove(session->conversations, swboard->im_user);
+                g_hash_table_insert(session->chats, GINT_TO_POINTER(swboard->chat_id),
+                                    msn_switchboard_ref(swboard));
+                g_hash_table_remove(session->conversations, swboard->im_user);
 
-            if (swboard->conv != NULL)
-                purple_conversation_destroy(swboard->conv);
+                g_free(swboard->im_user);
+                swboard->im_user = NULL;
+
+                /* we should not leave chats on timeouts */
+                pn_timer_free(swboard->timer);
+                swboard->timer = NULL;
+
+                if (swboard->conv)
+                    purple_conversation_destroy(swboard->conv);
+            }
 
             swboard->conv = serv_got_joined_chat(purple_account_get_connection (account),
                                                  swboard->chat_id,
@@ -450,13 +459,6 @@ msn_switchboard_add_user(MsnSwitchBoard *swboard, const char *user)
             purple_conv_chat_add_user(PURPLE_CONV_CHAT(swboard->conv),
                                       purple_account_get_username(account),
                                       NULL, PURPLE_CBFLAGS_NONE, TRUE);
-
-            g_free(swboard->im_user);
-            swboard->im_user = NULL;
-
-            /* we should not leave chats on timeouts */
-            pn_timer_free(swboard->timer);
-            swboard->timer = NULL;
         }
     }
     else if (swboard->conv == NULL)
