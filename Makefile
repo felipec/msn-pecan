@@ -209,7 +209,7 @@ $(plugin): LIBS := $(plugin_libs)
 
 %.a::
 	$(P)ARCHIVE
-	$(Q)(AR) rcs $@ $^
+	$(Q)$(AR) rcs $@ $^
 
 %.o:: %.c
 	$(P)CC
