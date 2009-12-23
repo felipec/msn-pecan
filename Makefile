@@ -176,14 +176,11 @@ all: $(plugin)
 
 version := $(shell ./get-version)
 
-# from Lauri Leukkunen's build system
-ifdef V
-  Q = 
-  P = @printf "" # <- space before hash is important!!!
-else
-  P = @printf "[%s] $@\n" # <- space before hash is important!!!
-  Q = @
-endif
+# pretty print
+V = @
+Q = $(V:y=)
+QUIET_CC    = $(Q:@=@echo '   CC         '$@;)
+QUIET_LINK  = $(Q:@=@echo '   LINK       '$@;)
 
 plugin_libs := $(PURPLE_LIBS) $(GIO_LIBS)
 
@@ -200,20 +197,16 @@ $(plugin): CFLAGS := $(CFLAGS) $(PURPLE_CFLAGS) $(GIO_CFLAGS) $(FALLBACK_CFLAGS)
 $(plugin): LIBS := $(plugin_libs)
 
 %.dylib::
-	$(P)DYLIB
-	$(Q)$(CC) $(LDFLAGS) -dynamiclib -o $@ $^ $(LIBS)
+	$(QUIET_LINK)$(CC) $(LDFLAGS) -dynamiclib -o $@ $^ $(LIBS)
 
 %.so %.dll::
-	$(P)SHLIB
-	$(Q)$(CC) $(LDFLAGS) -shared -o $@ $^ $(LIBS)
+	$(QUIET_LINK)$(CC) $(LDFLAGS) -shared -o $@ $^ $(LIBS)
 
 %.a::
-	$(P)ARCHIVE
-	$(Q)$(AR) rcs $@ $^
+	$(QUIET_LINK)$(AR) rcs $@ $^
 
 %.o:: %.c
-	$(P)CC
-	$(Q)$(CC) $(CFLAGS) -MMD -o $@ -c $<
+	$(QUIET_CC)$(CC) $(CFLAGS) -MMD -o $@ -c $<
 
 %.res:: %.rc
 	$(WINDRES) $< -O coff -o $@
