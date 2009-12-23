@@ -10,6 +10,7 @@ PURPLE_CFLAGS := $(shell pkg-config --cflags purple)
 PURPLE_LIBS := $(shell pkg-config --libs purple)
 PURPLE_LIBDIR := $(shell pkg-config --variable=libdir purple)
 PURPLE_DATADIR := $(shell pkg-config --variable=datadir purple)
+PURPLE_PLUGINDIR := $(PURPLE_LIBDIR)/purple-2
 
 GIO_CFLAGS := $(shell pkg-config --cflags gio-2.0)
 GIO_LIBS := $(shell pkg-config --libs gio-2.0)
@@ -77,9 +78,6 @@ endif
 override CFLAGS += -DPECAN_DEBUG_SLP
 
 LDFLAGS := -Wl,--no-undefined
-
-plugin_dir := $(DESTDIR)/$(PURPLE_LIBDIR)/purple-2
-data_dir := $(DESTDIR)/$(PURPLE_DATADIR)
 
 objects := msn.o \
 	   nexus.o \
@@ -185,6 +183,8 @@ QUIET_CLEAN = $(Q:@=@echo '   CLEAN      '$@;)
 QUIET_MO    = $(Q:@=@echo '   MSGFMT     '$@;)
 QUIET_WR    = $(Q:@=@echo '   WINDRES    '$@;)
 
+D = $(DESTDIR)
+
 plugin_libs := $(PURPLE_LIBS) $(GIO_LIBS)
 
 ifdef LIBSIREN
@@ -198,6 +198,9 @@ endif
 $(plugin): $(objects)
 $(plugin): CFLAGS := $(CFLAGS) $(PURPLE_CFLAGS) $(GIO_CFLAGS) $(FALLBACK_CFLAGS) -D VERSION='"$(version)"'
 $(plugin): LIBS := $(plugin_libs)
+
+messages.pot: $(sources)
+	$(XGETTEXT) -kmc --keyword=_ --keyword=N_ -o $@ $(sources)
 
 %.dylib::
 	$(QUIET_LINK)$(CC) $(LDFLAGS) -dynamiclib -o $@ $^ $(LIBS)
@@ -217,41 +220,36 @@ $(plugin): LIBS := $(plugin_libs)
 clean:
 	$(QUIET_CLEAN)$(RM) $(plugin) $(objects) $(deps) `find -name '*.mo'`
 
-po:
-	mkdir -p $@
-
-$(PO_TEMPLATE): $(sources) | po
-	$(XGETTEXT) -kmc --keyword=_ --keyword=N_ -o $@ $(sources)
-
-dist:
-	git archive --format=tar --prefix=msn-pecan-$(version)/ HEAD > /tmp/msn-pecan-$(version).tar
-	mkdir -p msn-pecan-$(version)
-	git-changelog > msn-pecan-$(version)/ChangeLog
-	chmod 664 msn-pecan-$(version)/ChangeLog
-	tar --append -f /tmp/msn-pecan-$(version).tar --owner root --group root msn-pecan-$(version)/ChangeLog
-	echo $(version) > msn-pecan-$(version)/version
-	chmod 664 msn-pecan-$(version)/version
-	tar --append -f /tmp/msn-pecan-$(version).tar --owner root --group root msn-pecan-$(version)/version
-	rm -r msn-pecan-$(version)
-	bzip2 /tmp/msn-pecan-$(version).tar
-
-install: $(plugin)
-	mkdir -p $(plugin_dir)
-	install $(plugin) $(plugin_dir)
-	# chcon -t textrel_shlib_t $(plugin_dir)/$(plugin) # for selinux
-
-uninstall:
-	rm -f $(plugin_dir)/$(plugin)
-	for x in $(CATALOGS); do \
-	rm -f $(data_dir)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
-	done
-
 %.mo:: %.po
 	$(QUIET_MO)$(MSGFMT) -c -o $@ $<
 
+dist: base := msn-pecan-$(version)
+dist:
+	git archive --format=tar --prefix=$(base)/ HEAD > /tmp/$(base).tar
+	mkdir -p $(base)
+	git-changelog > $(base)/ChangeLog
+	chmod 664 $(base)/ChangeLog
+	tar --append -f /tmp/$(base).tar --owner root --group root $(base)/ChangeLog
+	echo $(version) > $(base)/version
+	chmod 664 $(base)/version
+	tar --append -f /tmp/$(base).tar --owner root --group root $(base)/version
+	rm -r $(base)
+	bzip2 /tmp/$(base).tar
+
+install: $(plugin)
+	mkdir -p $(D)/$(PURPLE_PLUGINDIR)
+	install $(plugin) $(D)/$(PURPLE_PLUGINDIR)
+	# chcon -t textrel_shlib_t $(D)/$(PURPLE_PLUGINDIR)/$(plugin) # for selinux
+
+uninstall:
+	rm -f $(D)/$(PURPLE_PLUGINDIR)/$(plugin)
+	for x in $(CATALOGS); do \
+	rm -f $(D)/$(PURPLE_DATADIR)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
+	done
+
 install_locales: $(foreach e,$(CATALOGS),po/$(e).mo)
 	for x in $(CATALOGS); do \
-	install -D po/$$x.mo $(data_dir)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
+	install -D po/$$x.mo $(D)/$(PURPLE_DATADIR)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
 	done
 
 -include $(deps)
