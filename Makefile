@@ -182,6 +182,7 @@ Q = $(V:y=)
 QUIET_CC    = $(Q:@=@echo '   CC         '$@;)
 QUIET_LINK  = $(Q:@=@echo '   LINK       '$@;)
 QUIET_CLEAN = $(Q:@=@echo '   CLEAN      '$@;)
+QUIET_MO    = $(Q:@=@echo '   MSGFMT     '$@;)
 
 plugin_libs := $(PURPLE_LIBS) $(GIO_LIBS)
 
@@ -245,7 +246,7 @@ uninstall:
 	done
 
 %.mo:: %.po
-	$(MSGFMT) -c -o $@ $<
+	$(QUIET_MO)$(MSGFMT) -c -o $@ $<
 
 install_locales: $(foreach e,$(CATALOGS),po/$(e).mo)
 	for x in $(CATALOGS); do \
