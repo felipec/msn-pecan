@@ -20,6 +20,7 @@ LIBSIREN := y
 LIBMSPACK := y
 PLUS_SOUNDS := y
 DEBUG := y
+DIRECTCONN := y
 
 CFLAGS := -O2
 
