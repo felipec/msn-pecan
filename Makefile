@@ -181,6 +181,7 @@ V = @
 Q = $(V:y=)
 QUIET_CC    = $(Q:@=@echo '   CC         '$@;)
 QUIET_LINK  = $(Q:@=@echo '   LINK       '$@;)
+QUIET_CLEAN = $(Q:@=@echo '   CLEAN      '$@;)
 
 plugin_libs := $(PURPLE_LIBS) $(GIO_LIBS)
 
@@ -212,8 +213,7 @@ $(plugin): LIBS := $(plugin_libs)
 	$(WINDRES) $< -O coff -o $@
 
 clean:
-	find -name '*.mo' | xargs rm -f
-	rm -f $(plugin) $(objects) $(deps)
+	$(QUIET_CLEAN)$(RM) $(plugin) $(objects) $(deps) `find -name '*.mo'`
 
 po:
 	mkdir -p $@
