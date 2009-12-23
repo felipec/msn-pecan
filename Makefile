@@ -230,9 +230,9 @@ dist:
 	git-changelog > $(base)/ChangeLog
 	chmod 664 $(base)/ChangeLog
 	tar --append -f /tmp/$(base).tar --owner root --group root $(base)/ChangeLog
-	echo $(version) > $(base)/version
-	chmod 664 $(base)/version
-	tar --append -f /tmp/$(base).tar --owner root --group root $(base)/version
+	echo $(version) > $(base)/.version
+	chmod 664 $(base)/.version
+	tar --append -f /tmp/$(base).tar --owner root --group root $(base)/.version
 	rm -r $(base)
 	bzip2 /tmp/$(base).tar
 
