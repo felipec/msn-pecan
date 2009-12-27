@@ -659,7 +659,7 @@ got_invite(struct pn_peer_call *call,
         g_free(nonce);
     }
 #ifdef MSN_DIRECTCONN
-    else if (!strcmp(type, "application/x-msnmsgr-transrespbody") == 0) {
+    else if (strcmp(type, "application/x-msnmsgr-transrespbody") == 0) {
         char *ip_addrs;
         char *temp;
         char *nonce;
