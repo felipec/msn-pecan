@@ -73,7 +73,7 @@ open_cb (PnNode *conn,
 
     session = conn->session;
 
-    pn_cmd_server_send (PN_CMD_SERVER (conn), "VER", "MSNP12 CVR0");
+    pn_cmd_server_send (PN_CMD_SERVER (conn), "VER", "MSNP12");
 
     pn_log ("end");
 }
