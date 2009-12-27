@@ -65,13 +65,9 @@ static void
 open_cb (PnNode *conn,
          MsnNotification *notification)
 {
-    MsnSession *session;
-
     g_return_if_fail (conn != NULL);
 
     pn_log ("begin");
-
-    session = conn->session;
 
     pn_cmd_server_send (PN_CMD_SERVER (conn), "VER", "MSNP12");
 

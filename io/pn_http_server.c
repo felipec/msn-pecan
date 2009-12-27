@@ -454,8 +454,6 @@ connect_impl (PnNode *conn,
 
     http_conn = PN_HTTP_SERVER (conn);
 
-    g_return_if_fail (conn->session);
-
     if (!conn->stream)
     {
         port = 80;

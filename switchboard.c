@@ -78,7 +78,7 @@ open_cb (PnNode *conn,
 
     g_return_if_fail (conn != NULL);
 
-    session = conn->session;
+    session = swboard->session;
     cmdproc = g_object_get_data(G_OBJECT(conn), "cmdproc");
 
     {
