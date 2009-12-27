@@ -120,6 +120,7 @@ endif
 
 ifdef DIRECTCONN
   objects += cvr/pn_direct_conn.o
+  objects += io/pn_dc_conn.o
   override CFLAGS += -DMSN_DIRECTCONN
 endif
 
