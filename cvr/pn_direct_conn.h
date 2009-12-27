@@ -51,4 +51,6 @@ void pn_direct_conn_send_msg(struct pn_direct_conn *direct_conn, MsnMessage *msg
 void pn_direct_conn_destroy(struct pn_direct_conn *direct_conn);
 void pn_direct_conn_send_handshake(struct pn_direct_conn *direct_conn);
 
+void pn_direct_conn_process_chunk(struct pn_direct_conn *direct_conn, gchar *buf, gsize bytes_read);
+
 #endif /* PN_DIRECT_CONN_H */

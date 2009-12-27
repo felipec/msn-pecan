@@ -82,6 +82,17 @@ pn_direct_conn_send_msg(struct pn_direct_conn *direct_conn, MsnMessage *msg)
     pn_node_write(direct_conn->conn, body, body_len, NULL, NULL);
 }
 
+void
+pn_direct_conn_process_chunk(struct pn_direct_conn *direct_conn,
+                             gchar *buf,
+                             gsize bytes_read)
+{
+    MsnMessage *msg;
+    msg = msn_message_new_msnslp();
+    msn_message_parse_slp_body(msg, buf, bytes_read);
+    pn_peer_link_process_msg(direct_conn->link, msg, 1, direct_conn);
+}
+
 static void
 open_cb(PnNode *conn,
         gpointer data)
