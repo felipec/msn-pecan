@@ -29,6 +29,8 @@
 
 #include "pn_peer_msg_priv.h"
 
+#include "io/pn_dc_conn.h"
+
 void
 pn_direct_conn_send_handshake(struct pn_direct_conn *direct_conn)
 {
@@ -75,12 +77,35 @@ pn_direct_conn_send_msg(struct pn_direct_conn *direct_conn, MsnMessage *msg)
     size_t body_len;
 
     body = msn_message_gen_slp_body(msg, &body_len);
+
+    pn_node_write(direct_conn->conn, body, body_len, NULL, NULL);
+}
+
+static void
+open_cb(PnNode *conn,
+        gpointer data)
+{
+    struct pn_direct_conn *direct_conn = data;
+
+    g_signal_handler_disconnect(conn, direct_conn->open_handler);
+    direct_conn->open_handler = 0;
+
+    /* send foo */
+    pn_node_write(conn, "foo\0", 4, NULL, NULL);
+
+    /* Send Handshake */
+    pn_direct_conn_send_handshake(direct_conn);
 }
 
 gboolean
 pn_direct_conn_connect(struct pn_direct_conn *direct_conn, const char *host, int port)
 {
     pn_log ("begin");
+
+    direct_conn->open_handler = g_signal_connect(direct_conn->conn, "open", G_CALLBACK(open_cb), direct_conn);
+
+    pn_node_connect(direct_conn->conn, host, port);
+
     pn_log ("end");
 
     return TRUE;
@@ -96,6 +121,7 @@ pn_direct_conn_new(struct pn_peer_link *link)
     direct_conn = g_new0(struct pn_direct_conn, 1);
 
     direct_conn->link = link;
+    direct_conn->conn = PN_NODE(pn_dc_conn_new("dc", PN_NODE_NULL));
 
     if (pn_peer_link_get_directconn(link))
         pn_warning ("got_transresp: LEAK");
@@ -111,6 +137,11 @@ void
 pn_direct_conn_destroy(struct pn_direct_conn *direct_conn)
 {
     pn_log ("begin");
+
+    if (direct_conn->open_handler)
+        g_signal_handler_disconnect (direct_conn->conn, direct_conn->open_handler);
+
+    pn_dc_conn_free(PN_DC_CONN(direct_conn->conn));
 
     g_free(direct_conn->nonce);
 

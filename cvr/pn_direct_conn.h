@@ -39,6 +39,9 @@ struct pn_direct_conn {
     gboolean connected;
 
     int port;
+
+    struct PnNode *conn;
+    gulong open_handler;
 };
 
 struct pn_direct_conn *pn_direct_conn_new(struct pn_peer_link *link);
