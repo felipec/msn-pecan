@@ -23,6 +23,8 @@
 #include <string.h> /* for memcpy */
 #include <stdint.h>
 
+#include "cvr/pn_direct_conn.h" /* for pn_direct_conn_process_chunk */
+
 struct PnDcConn {
     PnNode parent;
 
@@ -61,6 +63,15 @@ pn_dc_conn_free(PnDcConn *conn)
 }
 
 /* PnNode stuff. */
+
+static void
+parse_impl(PnNode *conn,
+           gchar *buf,
+           gsize bytes_read)
+{
+    pn_direct_conn_process_chunk(g_object_get_data(G_OBJECT(conn), "dc"),
+                                 buf, bytes_read);
+}
 
 static GIOStatus
 write_impl(PnNode *conn,
@@ -201,6 +212,7 @@ class_init(gpointer g_class,
 
     conn_class->write = &write_impl;
     conn_class->read = &read_impl;
+    conn_class->parse = &parse_impl;
 
     gobject_class->finalize = finalize;
 

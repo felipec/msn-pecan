@@ -136,6 +136,8 @@ pn_direct_conn_new(struct pn_peer_link *link)
     direct_conn->conn = PN_NODE(pn_dc_conn_new("dc", PN_NODE_NULL));
     direct_conn->conn->session = pn_peer_link_get_session(link);
 
+    g_object_set_data(G_OBJECT(direct_conn->conn), "dc", direct_conn);
+
     if (pn_peer_link_get_directconn(link))
         pn_warning ("got_transresp: LEAK");
 
