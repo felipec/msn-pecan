@@ -54,6 +54,43 @@ pn_dc_conn_free(PnDcConn *conn)
 
 /* PnNode stuff. */
 
+static GIOStatus
+write_impl(PnNode *conn,
+           const gchar *buf,
+           gsize count,
+           gsize *ret_bytes_written,
+           GError **error)
+{
+    GIOStatus status = G_IO_STATUS_NORMAL;
+    PnDcConn *dc_conn;
+    guint32 body_len;
+    gsize bytes_written = 0;
+
+    pn_debug("name=%s", conn->name);
+
+    dc_conn = PN_DC_CONN(conn);
+
+    body_len = GUINT32_TO_LE(count);
+
+    /* write the length of the data */
+    status = pn_stream_write_full(conn->stream,
+                                  (gchar *) &body_len, sizeof(body_len),
+                                  &bytes_written, NULL);
+
+    if (status == G_IO_STATUS_NORMAL) {
+        /* write the actual data */
+        status = pn_stream_write_full(conn->stream, buf, count, &bytes_written, NULL);
+
+        if (status == G_IO_STATUS_NORMAL)
+            pn_stream_flush(conn->stream, NULL);
+    }
+
+    if (ret_bytes_written)
+        *ret_bytes_written = bytes_written;
+
+    return status;
+}
+
 /* GObject stuff. */
 
 static void
@@ -68,6 +105,8 @@ class_init(gpointer g_class,
 {
     PnNodeClass *conn_class = PN_NODE_CLASS(g_class);
     GObjectClass *gobject_class = G_OBJECT_CLASS(g_class);
+
+    conn_class->write = &write_impl;
 
     gobject_class->finalize = finalize;
 
