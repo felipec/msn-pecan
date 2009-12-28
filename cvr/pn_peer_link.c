@@ -175,18 +175,21 @@ void
 pn_peer_link_add_call(struct pn_peer_link *link,
                       struct pn_peer_call *call)
 {
-    MsnSwitchBoard *swboard;
+    if (!link->direct_conn) {
+        MsnSwitchBoard *swboard;
 
-    swboard = msn_session_get_swboard(link->session, link->remote_user);
+        swboard = msn_session_get_swboard(link->session, link->remote_user);
 
-    if (!swboard) {
-        pn_error("couldn't get swboard");
-        return;
+        if (!swboard) {
+            pn_error("couldn't get swboard");
+            return;
+        }
+
+        swboard->calls = g_list_prepend(swboard->calls, call);
+
+        call->swboard = swboard;
     }
 
-    swboard->calls = g_list_prepend(swboard->calls, call);
-
-    call->swboard = swboard;
     call->session_id = link->slp_session_id++;
 
     link->slp_calls = g_list_append(link->slp_calls, call);
