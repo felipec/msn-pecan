@@ -42,7 +42,6 @@ struct pn_direct_conn {
 
     int port;
 
-    int c;
     struct _PurpleProxyConnectData *connect_data;
     PnStream *stream;
 };
@@ -50,11 +49,7 @@ struct pn_direct_conn {
 struct pn_direct_conn *pn_direct_conn_new(struct pn_peer_link *link);
 gboolean pn_direct_conn_connect(struct pn_direct_conn *direct_conn,
                                 const char *host, int port);
-#if 0
-void pn_direct_conn_listen(struct pn_direct_conn *direct_conn);
-#endif
 void pn_direct_conn_send_msg(struct pn_direct_conn *direct_conn, MsnMessage *msg);
-void pn_direct_conn_parse_nonce(struct pn_direct_conn *direct_conn, const char *nonce);
 void pn_direct_conn_destroy(struct pn_direct_conn *direct_conn);
 void pn_direct_conn_send_handshake(struct pn_direct_conn *direct_conn);
 

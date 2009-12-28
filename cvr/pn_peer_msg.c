@@ -253,7 +253,6 @@ got_transresp(struct pn_peer_call *call,
 
     direct_conn->initial_call = call;
 
-    /* pn_direct_conn_parse_nonce(direct_conn, nonce); */
     direct_conn->nonce = g_strdup(nonce);
 
     ip_addrs = g_strsplit(ips_str, " ", -1);
@@ -621,10 +620,9 @@ got_invite(struct pn_peer_call *call,
 
             direct_conn = pn_direct_conn_new(link);
 
-            /* pn_direct_conn_parse_nonce(direct_conn, nonce); */
             direct_conn->nonce = g_strdup(nonce);
 
-            pn_direct_conn_listen(direct_conn);
+            /* TODO: listen */
 
             port = direct_conn->port;
 

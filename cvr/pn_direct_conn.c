@@ -38,25 +38,18 @@
 /* libpurple stuff. */
 #include <proxy.h>
 
-/**************************************************************************
- * Directconn Specific
- **************************************************************************/
-
 void
 pn_direct_conn_send_handshake(struct pn_direct_conn *direct_conn)
 {
     struct pn_peer_link *link;
     struct pn_peer_msg *peer_msg;
 
-    g_return_if_fail(direct_conn != NULL);
-
     link = direct_conn->link;
 
     peer_msg = pn_peer_msg_new();
     peer_msg->flags = 0x100;
 
-    if (direct_conn->nonce != NULL)
-    {
+    if (direct_conn->nonce) {
         guint32 t1;
         guint16 t2;
         guint16 t3;
@@ -83,98 +76,6 @@ pn_direct_conn_send_handshake(struct pn_direct_conn *direct_conn)
 
     direct_conn->ack_sent = TRUE;
 }
-
-/**************************************************************************
- * Connection Functions
- **************************************************************************/
-
-#if 0
-static int
-create_listener(int port)
-{
-    int fd;
-    int flags;
-    const int on = 1;
-
-#if 0
-    struct addrinfo hints;
-    struct addrinfo *c, *res;
-    char port_str[5];
-
-    snprintf(port_str, sizeof(port_str), "%d", port);
-
-    memset(&hints, 0, sizeof(hints));
-
-    hints.ai_flags = AI_PASSIVE;
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-
-    if (getaddrinfo(NULL, port_str, &hints, &res) != 0)
-    {
-        purple_debug_error("msn", "Could not get address info: %s.\n",
-                           port_str);
-        return -1;
-    }
-
-    for (c = res; c != NULL; c = c->ai_next)
-    {
-        fd = socket(c->ai_family, c->ai_socktype, c->ai_protocol);
-
-        if (fd < 0)
-            continue;
-
-        setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
-
-        if (bind(fd, c->ai_addr, c->ai_addrlen) == 0)
-            break;
-
-        close(fd);
-    }
-
-    if (c == NULL)
-    {
-        purple_debug_error("msn", "Could not find socket: %s.\n", port_str);
-        return -1;
-    }
-
-    freeaddrinfo(res);
-#else
-    struct sockaddr_in sockin;
-
-    fd = socket(AF_INET, SOCK_STREAM, 0);
-
-    if (fd < 0)
-        return -1;
-
-    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on)) != 0)
-    {
-        close(fd);
-        return -1;
-    }
-
-    memset(&sockin, 0, sizeof(struct sockaddr_in));
-    sockin.sin_family = AF_INET;
-    sockin.sin_port = htons(port);
-
-    if (bind(fd, (struct sockaddr *)&sockin, sizeof(struct sockaddr_in)) != 0)
-    {
-        close(fd);
-        return -1;
-    }
-#endif
-
-    if (listen (fd, 4) != 0)
-    {
-        close (fd);
-        return -1;
-    }
-
-    flags = fcntl(fd, F_GETFL);
-    fcntl(fd, F_SETFL, flags | O_NONBLOCK);
-
-    return fd;
-}
-#endif
 
 static GIOStatus
 pn_direct_conn_write(struct pn_direct_conn *direct_conn,
@@ -205,20 +106,6 @@ pn_direct_conn_write(struct pn_direct_conn *direct_conn,
     if (status == G_IO_STATUS_NORMAL)
     {
         pn_debug ("bytes_written=%zu", tmp);
-
-#ifdef PECAN_DEBUG_DC_FILES
-        char *str;
-        str = g_strdup_printf("%s/msntest/%s/w%.4d.bin", g_get_home_dir(), "dc", direct_conn->c);
-
-        FILE *tf = g_fopen(str, "w");
-        fwrite(&body_len, 1, sizeof(body_len), tf);
-        fwrite(data, 1, len, tf);
-        fclose(tf);
-
-        g_free(str);
-
-        direct_conn->c++;
-#endif
     }
     else
     {
@@ -228,35 +115,6 @@ pn_direct_conn_write(struct pn_direct_conn *direct_conn,
 
     return status;
 }
-
-#if 0
-void
-pn_direct_conn_parse_nonce(struct pn_direct_conn *direct_conn, const char *nonce)
-{
-    guint32 t1;
-    guint16 t2;
-    guint16 t3;
-    guint16 t4;
-    guint64 t5;
-
-    g_return_if_fail(direct_conn != NULL);
-    g_return_if_fail(nonce      != NULL);
-
-    sscanf (nonce, "%08X-%04hX-%04hX-%04hX-%012llX", &t1, &t2, &t3, &t4, &t5);
-
-    t1 = GUINT32_TO_LE(t1);
-    t2 = GUINT16_TO_LE(t2);
-    t3 = GUINT16_TO_LE(t3);
-    t4 = GUINT16_TO_BE(t4);
-    t5 = GUINT64_TO_BE(t5);
-
-    direct_conn->slpheader = g_new0(MsnSlpHeader, 1);
-
-    direct_conn->slpheader->ack_id     = t1;
-    direct_conn->slpheader->ack_sub_id = t2 | (t3 << 16);
-    direct_conn->slpheader->ack_size   = t4 | t5;
-}
-#endif
 
 void
 pn_direct_conn_send_msg(struct pn_direct_conn *direct_conn, MsnMessage *msg)
@@ -323,21 +181,6 @@ read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
     {
         MsnMessage *msg;
 
-#ifdef PECAN_DEBUG_DC_FILES
-        {
-            char *str;
-            str = g_strdup_printf("%s/msntest/%s/r%04d.bin", g_get_home_dir(), "dc", direct_conn->c);
-
-            FILE *tf = g_fopen(str, "w");
-            fwrite(body, 1, len, tf);
-            fclose(tf);
-
-            g_free(str);
-        }
-#endif
-
-        direct_conn->c++;
-
         msg = msn_message_new_msnslp();
         msn_message_parse_slp_body(msg, body, body_len);
 
@@ -358,16 +201,7 @@ connect_cb(gpointer data, gint source, const gchar *error_message)
     direct_conn = data;
     direct_conn->connect_data = NULL;
 
-    if (TRUE)
-    {
-        fd = source;
-    }
-    else
-    {
-        struct sockaddr_in client_addr;
-        socklen_t client;
-        fd = accept (source, (struct sockaddr *)&client_addr, &client);
-    }
+    fd = source;
 
     if (fd > 0)
     {
@@ -410,20 +244,9 @@ pn_direct_conn_connect(struct pn_direct_conn *direct_conn, const char *host, int
 {
     MsnSession *session;
 
-    g_return_val_if_fail(direct_conn != NULL, FALSE);
-    g_return_val_if_fail(host       != NULL, TRUE);
-    g_return_val_if_fail(port        > 0,    FALSE);
-
     pn_log ("begin");
 
     session = pn_peer_link_get_session(direct_conn->link);
-
-#if 0
-    if (session->http_method)
-    {
-        direct_conn->http_data->gateway_host = g_strdup(host);
-    }
-#endif
 
     direct_conn->connect_data = purple_proxy_connect(NULL,
                                                      msn_session_get_user_data(session),
@@ -433,28 +256,6 @@ pn_direct_conn_connect(struct pn_direct_conn *direct_conn, const char *host, int
 
     return (direct_conn->connect_data != NULL);
 }
-
-#if 0
-void
-pn_direct_conn_listen(struct pn_direct_conn *direct_conn)
-{
-    int port;
-    int fd;
-
-    port = 7000;
-
-    for (fd = -1; fd < 0;)
-        fd = create_listener(++port);
-
-    direct_conn->fd = fd;
-
-    direct_conn->inpa = purple_input_add(fd, PURPLE_INPUT_READ, connect_cb,
-                                         direct_conn);
-
-    direct_conn->port = port;
-    direct_conn->c = 0;
-}
-#endif
 
 struct pn_direct_conn*
 pn_direct_conn_new(struct pn_peer_link *link)
@@ -467,7 +268,7 @@ pn_direct_conn_new(struct pn_peer_link *link)
 
     direct_conn->link = link;
 
-    if (pn_peer_link_get_directconn(link) != NULL)
+    if (pn_peer_link_get_directconn(link))
         pn_warning ("got_transresp: LEAK");
 
     pn_peer_link_set_directconn(link, direct_conn);
@@ -498,8 +299,7 @@ pn_direct_conn_destroy(struct pn_direct_conn *direct_conn)
         direct_conn->read_watch = 0;
     }
 
-    if (direct_conn->nonce != NULL)
-        g_free(direct_conn->nonce);
+    g_free(direct_conn->nonce);
 
     pn_peer_link_set_directconn(direct_conn->link, NULL);
 
