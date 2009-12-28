@@ -686,12 +686,6 @@ class_init (gpointer g_class,
                                           G_TYPE_NONE, 0);
 }
 
-static void
-instance_init (GTypeInstance *instance,
-               gpointer g_class)
-{
-}
-
 GType
 pn_node_get_type (void)
 {
@@ -705,7 +699,6 @@ pn_node_get_type (void)
         type_info->class_size = sizeof (PnNodeClass);
         type_info->class_init = class_init;
         type_info->instance_size = sizeof (PnNode);
-        type_info->instance_init = instance_init;
 
         type = g_type_register_static (G_TYPE_OBJECT, "PnNodeType", type_info, 0);
 
