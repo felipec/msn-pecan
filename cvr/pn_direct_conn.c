@@ -30,6 +30,7 @@
 #include "pn_peer_msg_priv.h"
 
 #include "io/pn_dc_conn.h"
+#include "io/pn_node_private.h"
 
 void
 pn_direct_conn_send_handshake(struct pn_direct_conn *direct_conn)
@@ -122,6 +123,7 @@ pn_direct_conn_new(struct pn_peer_link *link)
 
     direct_conn->link = link;
     direct_conn->conn = PN_NODE(pn_dc_conn_new("dc", PN_NODE_NULL));
+    direct_conn->conn->session = pn_peer_link_get_session(link);
 
     if (pn_peer_link_get_directconn(link))
         pn_warning ("got_transresp: LEAK");
