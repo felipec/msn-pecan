@@ -26,7 +26,6 @@ struct pn_peer_link;
 #include "io/pn_stream.h"
 
 struct PnNode;
-struct _PurpleProxyConnectData;
 
 struct pn_direct_conn {
     struct pn_peer_link *link;
@@ -37,13 +36,9 @@ struct pn_direct_conn {
 
     char *nonce;
 
-    guint read_watch;
     gboolean connected;
 
     int port;
-
-    struct _PurpleProxyConnectData *connect_data;
-    PnStream *stream;
 };
 
 struct pn_direct_conn *pn_direct_conn_new(struct pn_peer_link *link);

@@ -29,15 +29,6 @@
 
 #include "pn_peer_msg_priv.h"
 
-#ifndef _WIN32
-#include <netinet/in.h>
-#else
-#include <win32dep.h>
-#endif
-
-/* libpurple stuff. */
-#include <proxy.h>
-
 void
 pn_direct_conn_send_handshake(struct pn_direct_conn *direct_conn)
 {
@@ -77,45 +68,6 @@ pn_direct_conn_send_handshake(struct pn_direct_conn *direct_conn)
     direct_conn->ack_sent = TRUE;
 }
 
-static GIOStatus
-pn_direct_conn_write(struct pn_direct_conn *direct_conn,
-                     const char *data, size_t len)
-{
-    guint32 body_len;
-    GIOStatus status = G_IO_STATUS_NORMAL;
-    gsize tmp;
-
-    g_return_val_if_fail(direct_conn != NULL, 0);
-
-    pn_debug ("bytes_to_write=%zu", len);
-
-    body_len = GUINT32_TO_LE(len);
-
-    /* Let's write the length of the data. */
-    status = pn_stream_write (direct_conn->stream, (gchar *) &body_len, sizeof(body_len), &tmp, NULL);
-
-    if (status == G_IO_STATUS_NORMAL)
-    {
-        /* Let's write the data. */
-        status = pn_stream_write (direct_conn->stream, data, len, &tmp, NULL);
-
-        if (status == G_IO_STATUS_NORMAL)
-            pn_stream_flush (direct_conn->stream, NULL);
-    }
-
-    if (status == G_IO_STATUS_NORMAL)
-    {
-        pn_debug ("bytes_written=%zu", tmp);
-    }
-    else
-    {
-        /* pn_node_error(direct_conn->conn); */
-        pn_direct_conn_destroy(direct_conn);
-    }
-
-    return status;
-}
-
 void
 pn_direct_conn_send_msg(struct pn_direct_conn *direct_conn, MsnMessage *msg)
 {
@@ -123,138 +75,15 @@ pn_direct_conn_send_msg(struct pn_direct_conn *direct_conn, MsnMessage *msg)
     size_t body_len;
 
     body = msn_message_gen_slp_body(msg, &body_len);
-
-    pn_direct_conn_write(direct_conn, body, body_len);
-}
-
-static void
-pn_direct_conn_process_msg(struct pn_direct_conn *direct_conn, MsnMessage *msg)
-{
-    pn_debug ("process_msg");
-
-    pn_peer_link_process_msg(direct_conn->link, msg, 1, direct_conn);
-}
-
-static gboolean
-read_cb(GIOChannel *source, GIOCondition condition, gpointer data)
-{
-    struct pn_direct_conn* direct_conn;
-    gchar *body;
-    guint32 body_len;
-    gsize len;
-
-    pn_debug ("source=%d", g_io_channel_unix_get_fd (source));
-
-    direct_conn = data;
-
-    /* Let's read the length of the data. */
-    if (pn_stream_read_full (direct_conn->stream, (gchar *) &body_len, sizeof(body_len), &len, NULL) != G_IO_STATUS_NORMAL)
-    {
-        pn_direct_conn_destroy(direct_conn);
-        return FALSE;
-    }
-
-    body_len = GUINT32_FROM_LE(body_len);
-
-    pn_debug ("body_len=%d", body_len);
-
-    body = g_try_malloc(body_len);
-
-    if (!body)
-    {
-        pn_error ("failed to allocate memory for read");
-
-        pn_direct_conn_destroy(direct_conn);
-        return FALSE;
-    }
-
-    /* Let's read the data. */
-    if (pn_stream_read_full (direct_conn->stream, body, body_len, &len, NULL) != G_IO_STATUS_NORMAL)
-    {
-        pn_direct_conn_destroy(direct_conn);
-        return FALSE;
-    }
-
-    pn_debug ("bytes_read=%zu", len);
-
-    if (len > 0)
-    {
-        MsnMessage *msg;
-
-        msg = msn_message_new_msnslp();
-        msn_message_parse_slp_body(msg, body, body_len);
-
-        pn_direct_conn_process_msg(direct_conn, msg);
-    }
-
-    return TRUE;
-}
-
-static void
-connect_cb(gpointer data, gint source, const gchar *error_message)
-{
-    struct pn_direct_conn* direct_conn;
-    int fd;
-
-    pn_debug ("source=%d", source);
-
-    direct_conn = data;
-    direct_conn->connect_data = NULL;
-
-    fd = source;
-
-    if (fd > 0)
-    {
-        GIOChannel *channel;
-
-        /* direct_conn->conn = pn_node_new (channel); */
-        direct_conn->connected = TRUE;
-
-        direct_conn->stream = pn_stream_new (fd);
-        channel = direct_conn->stream->channel;
-
-        g_io_channel_set_encoding (channel, NULL, NULL);
-
-        pn_info ("connected: %p", channel);
-        direct_conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, direct_conn);
-
-        /* Send foo. */
-        pn_direct_conn_write(direct_conn, "foo\0", 4);
-
-        /* Send Handshake */
-        pn_direct_conn_send_handshake(direct_conn);
-    }
-    else
-    {
-        pn_error ("bad input");
-    }
-}
-
-static void
-direct_conn_connect_cb(gpointer data, gint source, const gchar *error_message)
-{
-    if (error_message)
-        pn_error ("error establishing direct connection: %s", error_message);
-
-    connect_cb(data, source, error_message);
 }
 
 gboolean
 pn_direct_conn_connect(struct pn_direct_conn *direct_conn, const char *host, int port)
 {
-    MsnSession *session;
-
     pn_log ("begin");
-
-    session = pn_peer_link_get_session(direct_conn->link);
-
-    direct_conn->connect_data = purple_proxy_connect(NULL,
-                                                     msn_session_get_user_data(session),
-                                                     host, port, direct_conn_connect_cb, direct_conn);
-
     pn_log ("end");
 
-    return (direct_conn->connect_data != NULL);
+    return TRUE;
 }
 
 struct pn_direct_conn*
@@ -282,22 +111,6 @@ void
 pn_direct_conn_destroy(struct pn_direct_conn *direct_conn)
 {
     pn_log ("begin");
-
-    if (direct_conn->stream)
-    {
-        pn_info ("stream shutdown: %p", direct_conn->stream);
-        pn_stream_free (direct_conn->stream);
-        direct_conn->stream = NULL;
-    }
-
-    if (direct_conn->connect_data != NULL)
-        purple_proxy_connect_cancel(direct_conn->connect_data);
-
-    if (direct_conn->read_watch)
-    {
-        g_source_remove (direct_conn->read_watch);
-        direct_conn->read_watch = 0;
-    }
 
     g_free(direct_conn->nonce);
 
