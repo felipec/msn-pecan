@@ -70,6 +70,14 @@
 #define PLUGIN_ID "prpl-msn_pecan"
 #endif
 
+#ifndef STATIC_PECAN
+#define PURPLE_MODULE_EXPORT G_MODULE_EXPORT
+#define PURPLE_MODULE_NAME(module, x) x
+#else
+#define PURPLE_MODULE_EXPORT
+#define PURPLE_MODULE_NAME(module, x) module ## _ ## x
+#endif
+
 typedef struct
 {
     PurpleConnection *gc;
@@ -86,9 +94,8 @@ typedef struct
 } MsnEmoticon;
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
 
-/* exports */
-void msn_set_friendly_name (PurpleConnection *gc, const gchar *entry);
-
+void PURPLE_MODULE_NAME(msn_pecan, set_alias) (PurpleConnection *gc,
+                                               const gchar *value);
 static void msn_set_prp(PurpleConnection *gc, const char *type, const char *entry);
 
 static gboolean
@@ -174,10 +181,9 @@ msn_cmd_nudge(PurpleConversation *conv, const gchar *cmd, gchar **args, gchar **
     return PURPLE_CMD_RET_OK;
 }
 
-/** Adium needs this. */
-void
-msn_set_friendly_name (PurpleConnection *gc,
-                       const gchar *entry)
+static void
+set_friendly_name (PurpleConnection *gc,
+                   const gchar *entry)
 {
     /*
      * The server doesn't seem to store the friendly name anymore, so let's do
@@ -186,6 +192,13 @@ msn_set_friendly_name (PurpleConnection *gc,
     purple_account_set_string (gc->account, "friendly_name", entry);
 
     msn_session_set_public_alias (gc->proto_data, entry);
+}
+
+PURPLE_MODULE_EXPORT void
+PURPLE_MODULE_NAME(msn_pecan, set_alias) (PurpleConnection *gc,
+                                          const gchar *value)
+{
+    set_friendly_name (gc, value);
 }
 
 /* TODO do we really need to check for the entry to be empty? */
@@ -294,7 +307,7 @@ msn_show_set_friendly_name(PurplePluginAction *action)
                          _("This is the name that other MSN buddies will "
                            "see you as."),
                          purple_connection_get_display_name(gc), FALSE, FALSE, NULL,
-                         _("OK"), G_CALLBACK(msn_set_friendly_name),
+                         _("OK"), G_CALLBACK(set_friendly_name),
                          _("Cancel"), NULL,
                          purple_connection_get_account(gc), NULL, NULL,
                          gc);
