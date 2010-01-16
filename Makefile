@@ -161,7 +161,7 @@ endif
 
 ifdef STATIC
   SHLIBEXT := a
-  override CFLAGS += -DPURPLE_STATIC_PRPL
+  override CFLAGS += -DSTATIC_PECAN
 else
 ifneq ($(PLATFORM),mingw32)
   override CFLAGS += -fPIC
