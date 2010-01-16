@@ -113,7 +113,9 @@ pn_contact_update (struct pn_contact *contact)
             pidgin_status = NULL; break;
     }
 
-    purple_prpl_got_user_status (account, contact->passport, pidgin_status, NULL);
+    purple_prpl_got_user_status (account, contact->passport, pidgin_status,
+                                 "message", pn_contact_get_personal_message(contact),
+                                 NULL);
 
     if (contact->media.title && contact->status != PN_STATUS_OFFLINE) {
         if (contact->media.type == CURRENT_MEDIA_MUSIC) {
