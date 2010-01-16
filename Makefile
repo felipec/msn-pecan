@@ -160,14 +160,15 @@ endif
 endif
 
 ifdef STATIC
-  plugin := libmsn-pecan.a
+  SHLIBEXT := a
   override CFLAGS += -DPURPLE_STATIC_PRPL
 else
-  plugin := libmsn-pecan.$(SHLIBEXT)
 ifneq ($(PLATFORM),mingw32)
   override CFLAGS += -fPIC
 endif
 endif
+
+plugin := libmsn-pecan.$(SHLIBEXT)
 
 .PHONY: clean
 
