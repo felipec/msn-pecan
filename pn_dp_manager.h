@@ -28,6 +28,6 @@ typedef struct PnDpManager PnDpManager;
 
 PnDpManager *pn_dp_manager_new (MsnSession *session);
 void pn_dp_manager_free (PnDpManager *dpm);
-void pn_dp_manager_contact_set_object (struct pn_contact *contact, struct pn_msnobj *obj);
+void pn_dp_manager_contact_set_object (struct pn_contact *contact, gboolean prioritize);
 
 #endif /* PN_DP_MANAGER_H */

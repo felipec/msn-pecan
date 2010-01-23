@@ -592,10 +592,24 @@ void
 pn_contact_set_object (struct pn_contact *contact,
                        struct pn_msnobj *obj)
 {
+    struct pn_msnobj *old_obj;
+    gboolean prioritize;
+
     pn_info("set object for '%s' = '%s'",
-            contact->passport, pn_msnobj_get_sha1(obj));
+            contact->passport,
+            obj ? pn_msnobj_get_sha1(obj) : NULL);
+
+    old_obj = contact->msnobj;
+    contact->msnobj = obj;
+
+    /* If the contact didn't have a picture, prioritize it */
+    prioritize = old_obj ? FALSE : TRUE;
+
     /** @todo make this a hook. */
-    pn_dp_manager_contact_set_object (contact, obj);
+    pn_dp_manager_contact_set_object (contact, prioritize);
+
+    if (old_obj)
+        pn_msnobj_free (old_obj);
 }
 #endif /* defined(PECAN_CVR) */
 
@@ -614,12 +628,9 @@ void
 pn_contact_update_object (struct pn_contact *contact)
 {
     if (contact->msnobj) {
-        struct pn_msnobj *obj;
-        obj = contact->msnobj;
-        contact->msnobj = NULL; /* force update */
         pn_info("update object for '%s'", contact->passport);
         /** @todo make this a hook. */
-        pn_dp_manager_contact_set_object (contact, obj);
+        pn_dp_manager_contact_set_object (contact, TRUE);
     }
 }
 #endif /* defined(PECAN_CVR) */

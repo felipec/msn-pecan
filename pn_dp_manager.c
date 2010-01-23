@@ -271,18 +271,10 @@ ud_cached (PurpleAccount *account,
 
 void
 pn_dp_manager_contact_set_object (struct pn_contact *contact,
-                                  struct pn_msnobj *obj)
+                                  gboolean prioritize)
 {
     MsnSession *session;
-    gboolean prioritize;
-
-    /* If the contact didn't have a picture, prioritize it */
-    prioritize = contact->msnobj ? FALSE : TRUE;
-
-    if (contact->msnobj)
-        pn_msnobj_free (contact->msnobj);
-
-    contact->msnobj = obj;
+    struct pn_msnobj *obj = pn_contact_get_object(contact);
 
     if (!(contact->list_op & MSN_LIST_FL_OP))
         return;
