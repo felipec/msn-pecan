@@ -592,6 +592,8 @@ void
 pn_contact_set_object (struct pn_contact *contact,
                        struct pn_msnobj *obj)
 {
+    pn_info("set object for '%s' = '%s'",
+            contact->passport, pn_msnobj_get_sha1(obj));
     /** @todo make this a hook. */
     pn_dp_manager_contact_set_object (contact, obj);
 }
@@ -615,6 +617,7 @@ pn_contact_update_object (struct pn_contact *contact)
         struct pn_msnobj *obj;
         obj = contact->msnobj;
         contact->msnobj = NULL; /* force update */
+        pn_info("update object for '%s'", contact->passport);
         /** @todo make this a hook. */
         pn_dp_manager_contact_set_object (contact, obj);
     }
