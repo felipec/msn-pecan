@@ -277,10 +277,7 @@ pn_dp_manager_contact_set_object (struct pn_contact *contact,
     gboolean prioritize;
 
     /* If the contact didn't have a picture, prioritize it */
-    if (contact->msnobj)
-        prioritize = FALSE;
-    else
-        prioritize = TRUE;
+    prioritize = contact->msnobj ? FALSE : TRUE;
 
     if (contact->msnobj)
         pn_msnobj_free (contact->msnobj);
