@@ -241,6 +241,19 @@ pn_msnobj_get_sha1(const struct pn_msnobj *obj)
     return (obj->sha1c) ? obj->sha1c : obj->sha1d;
 }
 
+gboolean
+pn_msnobj_equal(const struct pn_msnobj *a,
+                const struct pn_msnobj *b)
+{
+    if (!a || !b)
+        return FALSE;
+
+    if (a->sha1c)
+        return g_strcmp0 (a->sha1c, b->sha1c) == 0;
+    else
+        return g_strcmp0 (a->sha1d, b->sha1d) == 0;
+}
+
 void
 pn_msnobj_set_image(struct pn_msnobj *obj,
                     struct pn_buffer *buffer)

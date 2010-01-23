@@ -107,6 +107,9 @@ const gchar *pn_msnobj_get_location(const struct pn_msnobj *obj);
  */
 const gchar *pn_msnobj_get_sha1(const struct pn_msnobj *obj);
 
+gboolean pn_msnobj_equal(const struct pn_msnobj *a,
+                         const struct pn_msnobj *b);
+
 /**
  * Associates an image with an msnobj.
  *
