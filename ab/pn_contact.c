@@ -593,20 +593,26 @@ pn_contact_set_object (struct pn_contact *contact,
                        struct pn_msnobj *obj)
 {
     struct pn_msnobj *old_obj;
-    gboolean prioritize;
 
     pn_info("set object for '%s' = '%s'",
             contact->passport,
             obj ? pn_msnobj_get_sha1(obj) : NULL);
 
+    if (contact->msnobj == obj)
+        return;
+
     old_obj = contact->msnobj;
     contact->msnobj = obj;
 
-    /* If the contact didn't have a picture, prioritize it */
-    prioritize = old_obj ? FALSE : TRUE;
+    if (!pn_msnobj_equal(old_obj, obj)) {
+        gboolean prioritize;
 
-    /** @todo make this a hook. */
-    pn_dp_manager_contact_set_object (contact, prioritize);
+        /* If the contact didn't have a picture, prioritize it */
+        prioritize = old_obj ? FALSE : TRUE;
+
+        /** @todo make this a hook. */
+        pn_dp_manager_contact_set_object (contact, prioritize);
+    }
 
     if (old_obj)
         pn_msnobj_free (old_obj);
