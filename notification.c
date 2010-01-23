@@ -807,12 +807,7 @@ contact_update (struct pn_contact *contact,
         return;
 
 #if defined(PECAN_CVR)
-    {
-        struct pn_msnobj *obj;
-        obj = pn_contact_get_object (contact);
-        if (obj)
-            pn_contact_set_object (contact, obj);
-    }
+    pn_contact_update_object (contact);
 #endif /* defined(PECAN_CVR) */
 }
 

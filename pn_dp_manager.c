@@ -282,13 +282,6 @@ pn_dp_manager_contact_set_object (struct pn_contact *contact,
     else
         prioritize = TRUE;
 
-    /** @todo sometimes we need to force an update, in those cases the old and
-     * new object will be the same, we must not free the object, so in order to
-     * do that properly we need to implement msnobj ref/unref. */
-    /* For now just assume there was no obj set. */
-    if (contact->msnobj == obj)
-        contact->msnobj = NULL;
-
     if (contact->msnobj)
         pn_msnobj_free (contact->msnobj);
 

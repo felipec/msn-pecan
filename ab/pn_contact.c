@@ -607,6 +607,20 @@ pn_contact_set_client_caps (struct pn_contact *contact,
     contact->clientcaps = info;
 }
 
+#if defined(PECAN_CVR)
+void
+pn_contact_update_object (struct pn_contact *contact)
+{
+    if (contact->msnobj) {
+        struct pn_msnobj *obj;
+        obj = contact->msnobj;
+        contact->msnobj = NULL; /* force update */
+        /** @todo make this a hook. */
+        pn_dp_manager_contact_set_object (contact, obj);
+    }
+}
+#endif /* defined(PECAN_CVR) */
+
 const gchar *
 pn_contact_get_passport (const struct pn_contact *contact)
 {

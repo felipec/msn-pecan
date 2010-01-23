@@ -212,6 +212,10 @@ void pn_contact_set_object (struct pn_contact *contact,
 void pn_contact_set_client_caps (struct pn_contact *contact,
                                  GHashTable *info);
 
+#if defined(PECAN_CVR)
+void pn_contact_update_object (struct pn_contact *contact);
+#endif /* defined(PECAN_CVR) */
+
 /**
  * Returns the passport account for a contact.
  *
