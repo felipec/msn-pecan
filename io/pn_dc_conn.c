@@ -100,20 +100,20 @@ write_impl(PnNode *conn,
     body_len = GUINT32_TO_LE(count);
 
     /* write the length of the data */
-    status = pn_stream_write_full(conn->stream,
-                                  (gchar *) &body_len, sizeof(body_len),
-                                  &bytes_written, NULL);
+    status = pn_stream_write(conn->stream,
+                             (gchar *) &body_len, sizeof(body_len),
+                             &bytes_written, NULL);
 
     if (status != G_IO_STATUS_NORMAL)
         goto leave;
 
     /* write the actual data */
-    status = pn_stream_write_full(conn->stream, buf, count, &bytes_written, NULL);
+    status = pn_stream_write(conn->stream, buf, count, &bytes_written, NULL);
 
     if (status != G_IO_STATUS_NORMAL)
         goto leave;
 
-    pn_stream_flush(conn->stream, NULL);
+    status = pn_stream_flush(conn->stream, NULL);
 
 leave:
 
