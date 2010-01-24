@@ -52,8 +52,10 @@ msn_nexus_new(MsnSession *session)
 void
 msn_nexus_destroy(MsnNexus *nexus)
 {
-    g_signal_handler_disconnect(nexus->conn, nexus->error_handler);
-    g_signal_handler_disconnect(nexus->conn, nexus->open_handler);
+    if (nexus->error_handler)
+        g_signal_handler_disconnect(nexus->conn, nexus->error_handler);
+    if (nexus->open_handler)
+        g_signal_handler_disconnect(nexus->conn, nexus->open_handler);
     pn_parser_free(nexus->parser);
 
     if (nexus->header)
