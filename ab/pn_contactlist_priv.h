@@ -29,7 +29,7 @@ struct MsnSesion;
 typedef struct
 {
     gchar *who;
-    gchar *old_group_guid;
+    gchar *old_group_name;
 } MsnMoveBuddy;
 
 struct pn_contact_list {

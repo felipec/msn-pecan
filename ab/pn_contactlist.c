@@ -179,7 +179,7 @@ get_store_name (struct pn_contact *contact)
 static void
 request_add_group (struct pn_contact_list *contactlist,
                    const gchar *who,
-                   const gchar *old_group_guid,
+                   const gchar *old_group_name,
                    const gchar *new_group_name)
 {
 #ifdef HAVE_LIBPURPLE
@@ -192,8 +192,8 @@ request_add_group (struct pn_contact_list *contactlist,
 
     data->who = g_strdup (who);
 
-    if (old_group_guid)
-        data->old_group_guid = g_strdup (old_group_guid);
+    if (old_group_name)
+        data->old_group_name = g_strdup (old_group_name);
 
     trans = msn_transaction_new (cmdproc, "ADG", "%s %d",
                                  purple_url_encode (new_group_name),
@@ -688,7 +688,7 @@ pn_contactlist_move_buddy (struct pn_contact_list *contactlist,
 
     if (!new_group)
     {
-        request_add_group (contactlist, who, old_group_guid, new_group_name);
+        request_add_group (contactlist, who, old_group_name, new_group_name);
         return;
     }
 
