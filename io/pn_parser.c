@@ -76,6 +76,8 @@ pn_parser_read_line (PnParser *parser,
         if (status != G_IO_STATUS_NORMAL)
             goto leave;
 
+        buf[bytes_read] = '\0';
+
         /* append buf to rx_buf */
         parser->rx_buf = g_realloc (parser->rx_buf, bytes_read + parser->rx_len + 1);
         memcpy (parser->rx_buf + parser->rx_len, buf, bytes_read + 1);
@@ -115,7 +117,7 @@ pn_parser_read_line (PnParser *parser,
 
         if (parser->rx_len > 0)
         {
-            parser->rx_buf = g_memdup (next, parser->rx_len);
+            parser->rx_buf = g_memdup (next, parser->rx_len + 1);
             parser->need_more = FALSE;
         }
         else
