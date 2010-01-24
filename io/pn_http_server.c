@@ -34,12 +34,13 @@
 
 #include <glib.h>
 #include <string.h>
+#include <stdlib.h> /* for atoi */
 
 #include "pn_util.h"
 #include "session.h"
 
 #ifdef HAVE_LIBPURPLE
-#include <proxy.h>
+#include <proxy.h> /* for purple_proxy_info_get_* */
 #endif /* HAVE_LIBPURPLE */
 
 struct PnHttpServer
@@ -220,7 +221,9 @@ pn_http_server_free (PnHttpServer *http_conn)
     pn_log ("end");
 }
 
+#ifdef HAVE_LIBPURPLE
 /* get proxy auth info and set up proxy auth header */
+/* TODO find a way to do this without libpurple */
 static inline char *
 get_auth(PnNode *conn)
 {
@@ -249,6 +252,7 @@ get_auth(PnNode *conn)
 
     return auth;
 }
+#endif /* HAVE_LIBPURPLE */
 
 static gboolean
 http_poll (gpointer data)
@@ -287,7 +291,9 @@ http_poll (gpointer data)
         return TRUE;
     }
 
+#ifdef HAVE_LIBPURPLE
     auth = get_auth(conn);
+#endif /* HAVE_LIBPURPLE */
 
     params = g_strdup_printf ("Action=poll&SessionID=%s",
                               (gchar *) http_conn->cur->foo_data);
@@ -848,7 +854,9 @@ foo_write (PnNode *conn,
                                       prev->hostname);
         }
 
+#ifdef HAVE_LIBPURPLE
         auth = get_auth(conn);
+#endif /* HAVE_LIBPURPLE */
 
         /** @todo investigate why this returns NULL sometimes. */
         header = g_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"

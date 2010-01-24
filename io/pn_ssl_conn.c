@@ -23,7 +23,7 @@
 #include "session.h" /* for libpurple account */
 
 #ifdef HAVE_LIBPURPLE
-#include <proxy.h>
+#include <sslconn.h>
 #endif /* HAVE_LIBPURPLE */
 
 #include <errno.h>
