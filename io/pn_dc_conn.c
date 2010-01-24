@@ -96,13 +96,18 @@ write_impl(PnNode *conn,
                                   (gchar *) &body_len, sizeof(body_len),
                                   &bytes_written, NULL);
 
-    if (status == G_IO_STATUS_NORMAL) {
-        /* write the actual data */
-        status = pn_stream_write_full(conn->stream, buf, count, &bytes_written, NULL);
+    if (status != G_IO_STATUS_NORMAL)
+        goto leave;
 
-        if (status == G_IO_STATUS_NORMAL)
-            pn_stream_flush(conn->stream, NULL);
-    }
+    /* write the actual data */
+    status = pn_stream_write_full(conn->stream, buf, count, &bytes_written, NULL);
+
+    if (status != G_IO_STATUS_NORMAL)
+        goto leave;
+
+    pn_stream_flush(conn->stream, NULL);
+
+leave:
 
     if (ret_bytes_written)
         *ret_bytes_written = bytes_written;
