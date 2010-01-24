@@ -177,13 +177,13 @@ all: $(plugin)
 version := $(shell ./get-version)
 
 # pretty print
-V = @
-Q = $(V:y=)
-QUIET_CC    = $(Q:@=@echo '   CC         '$@;)
-QUIET_LINK  = $(Q:@=@echo '   LINK       '$@;)
-QUIET_CLEAN = $(Q:@=@echo '   CLEAN      '$@;)
-QUIET_MO    = $(Q:@=@echo '   MSGFMT     '$@;)
-QUIET_WR    = $(Q:@=@echo '   WINDRES    '$@;)
+ifndef V
+QUIET_CC    = @echo '   CC         '$@;
+QUIET_LINK  = @echo '   LINK       '$@;
+QUIET_CLEAN = @echo '   CLEAN      '$@;
+QUIET_MO    = @echo '   MSGFMT     '$@;
+QUIET_WR    = @echo '   WINDRES    '$@;
+endif
 
 D = $(DESTDIR)
 
