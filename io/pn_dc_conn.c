@@ -73,6 +73,14 @@ parse_impl(PnNode *conn,
                                  buf, bytes_read);
 }
 
+static void
+channel_setup_impl (PnNode *conn,
+                    GIOChannel *channel)
+{
+    g_io_channel_set_encoding(channel, NULL, NULL);
+    g_io_channel_set_buffered(channel, TRUE);
+}
+
 static GIOStatus
 write_impl(PnNode *conn,
            const gchar *buf,
@@ -218,6 +226,7 @@ class_init(gpointer g_class,
     conn_class->write = &write_impl;
     conn_class->read = &read_impl;
     conn_class->parse = &parse_impl;
+    conn_class->channel_setup = &channel_setup_impl;
 
     gobject_class->finalize = finalize;
 
