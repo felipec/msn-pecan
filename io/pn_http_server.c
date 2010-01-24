@@ -232,6 +232,10 @@ get_auth(PnNode *conn)
     if (!gpi)
         return NULL;
 
+    if (purple_proxy_info_get_type(gpi) != PURPLE_PROXY_HTTP &&
+        purple_proxy_info_get_type(gpi) != PURPLE_PROXY_USE_ENVVAR)
+        return NULL;
+
     username = purple_proxy_info_get_username(gpi);
     password = purple_proxy_info_get_password(gpi);
     if (!username && !password)
