@@ -641,13 +641,14 @@ adg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         MsnMoveBuddy *data = cmd->trans->data;
 
         pn_contactlist_add_buddy(contactlist, data->who, MSN_LIST_FL, group_name);
-        g_free(data->who);
 
         if (data->old_group_name != NULL)
         {
             pn_contactlist_rem_buddy(contactlist, data->who, MSN_LIST_FL, data->old_group_name);
             g_free(data->old_group_name);
         }
+
+        g_free(data->who);
         g_free (data);
     }
 
