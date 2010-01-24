@@ -681,6 +681,9 @@ pn_contactlist_move_buddy (struct pn_contact_list *contactlist,
     struct pn_group *new_group;
     const gchar *old_group_guid;
 
+    pn_debug ("who=[%s],old_group_name=[%s],new_group_name=[%s]",
+              who, old_group_name, new_group_name);
+
     old_group = pn_contactlist_find_group_with_name (contactlist, old_group_name);
     new_group = pn_contactlist_find_group_with_name (contactlist, new_group_name);
 
