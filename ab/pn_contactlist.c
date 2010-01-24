@@ -689,6 +689,8 @@ pn_contactlist_move_buddy (struct pn_contact_list *contactlist,
 
     old_group_guid = pn_group_get_id (old_group);
 
+    /** @todo handle the situation where more than one buddy are being moved at
+     * the same time. */
     if (!new_group)
     {
         request_add_group (contactlist, who, old_group_name, new_group_name);
