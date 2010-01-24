@@ -315,8 +315,7 @@ connect_cb(GObject *source,
         conn->stream = pn_stream_new(g_socket_get_fd(socket));
         channel = conn->stream->channel;
 
-        g_io_channel_set_encoding(channel, NULL, NULL);
-        g_io_channel_set_buffered(channel, FALSE);
+        PN_NODE_GET_CLASS (conn)->channel_setup (conn, channel);
 
         pn_info("connected: conn=%p,channel=%p", conn, channel);
         conn->read_watch = g_io_add_watch(channel, G_IO_IN, read_cb, conn);
@@ -361,8 +360,7 @@ connect_cb (gpointer data,
         conn->stream = pn_stream_new (source);
         channel = conn->stream->channel;
 
-        g_io_channel_set_encoding (channel, NULL, NULL);
-        g_io_channel_set_buffered (channel, FALSE);
+        PN_NODE_GET_CLASS (conn)->channel_setup (conn, channel);
 
         conn->open = TRUE;
 
@@ -612,6 +610,14 @@ parse_impl (PnNode *conn,
     pn_debug ("name=%s", conn->name);
 }
 
+static void
+channel_setup_impl (PnNode *conn,
+                    GIOChannel *channel)
+{
+    g_io_channel_set_encoding(channel, NULL, NULL);
+    g_io_channel_set_buffered(channel, FALSE);
+}
+
 /* GObject stuff. */
 
 static void
@@ -664,6 +670,7 @@ class_init (gpointer g_class,
     conn_class->write = &write_impl;
     conn_class->read = &read_impl;
     conn_class->parse = &parse_impl;
+    conn_class->channel_setup = &channel_setup_impl;
 
     gobject_class->dispose = dispose;
     gobject_class->finalize = finalize;

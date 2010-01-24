@@ -91,6 +91,7 @@ struct PnNodeClass
     void (*connect) (PnNode *conn, const gchar *hostname, gint port);
     void (*close) (PnNode *conn);
     void (*parse) (PnNode *conn, gchar *buf, gsize bytes_read);
+    void (*channel_setup) (PnNode *conn, GIOChannel *channel);
 };
 
 #endif /* PN_NODE_PRIVATE_H */
