@@ -706,9 +706,9 @@ got_ok(struct pn_peer_call *call,
 
             branch = pn_rand_guid();
 
-            new_content = g_strdup_printf("Bridges: TRUDPv1 TCPv1\r\n"
+            new_content = g_strdup_printf("Bridges: TCPv1 SBBridge\r\n"
                                           "NetID: 0\r\n"
-                                          "Conn-Type: Direct-Connect\r\n"
+                                          "Conn-Type: IP-Restrict-NAT\r\n"
                                           "UPnPNat: false\r\n"
                                           "ICF: false\r\n");
 
