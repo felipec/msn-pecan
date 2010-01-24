@@ -102,6 +102,9 @@ open_cb(PnNode *conn,
     g_signal_handler_disconnect(conn, direct_conn->open_handler);
     direct_conn->open_handler = 0;
 
+    if (!conn->open)
+        return;
+
     /* send foo */
     pn_node_write(conn, "foo\0", 4, NULL, NULL);
 
