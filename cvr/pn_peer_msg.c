@@ -247,7 +247,15 @@ got_transresp(struct pn_peer_call *call,
     struct pn_direct_conn *direct_conn;
     char *ips_str = NULL;
     char *nonce = NULL;
+    char *listening = NULL;
     int port;
+
+    listening = get_token(content, "Listening: ", "\r\n");
+    if (strcmp(listening, "true") != 0) {
+        /* nevermind, let's get it started */
+        pn_peer_call_session_init(call);
+        goto leave;
+    }
 
     nonce = get_token(content, "Nonce: {", "}\r\n");
 
@@ -280,6 +288,7 @@ got_transresp(struct pn_peer_call *call,
 leave:
     g_free(nonce);
     g_free(ips_str);
+    g_free(listening);
 }
 #endif /* MSN_DIRECTCONN */
 
@@ -738,18 +747,6 @@ got_ok(struct pn_peer_call *call,
     }
 #ifdef MSN_DIRECTCONN
     else if (strcmp(type, "application/x-msnmsgr-transrespbody") == 0) {
-        {
-            char *listening;
-            listening = get_token(content, "Listening: ", "\r\n");
-            if (strcmp(listening, "false") == 0) {
-                /** @todo I'm not sure if this is OK. */
-                pn_peer_call_session_init(call);
-                g_free(listening);
-                return;
-            }
-            g_free(listening);
-        }
-
         got_transresp(call, content);
     }
 #endif /* MSN_DIRECTCONN */
