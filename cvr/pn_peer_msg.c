@@ -289,6 +289,7 @@ got_transresp(struct pn_peer_call *call,
     char *listening = NULL;
     char *nonce = NULL;
     GList *list, *c;
+    GList *internal, *external;
 
     listening = get_token(content, "Listening: ", "\r\n");
     if (strcmp(listening, "true") != 0) {
@@ -299,13 +300,16 @@ got_transresp(struct pn_peer_call *call,
 
     nonce = get_token(content, "Nonce: {", "}\r\n");
 
-    list = get_addresses(content, "Internal");
+    internal = get_addresses(content, "Internal");
+    external = get_addresses(content, "External");
 
-    if (!list) {
+    if (!internal && !external) {
         /* nevermind, let's get it started */
         pn_peer_call_session_init(call);
         goto leave;
     }
+
+    list = g_list_concat(internal, external);
 
     direct_conn = pn_direct_conn_new(call->link);
     direct_conn->initial_call = call;
