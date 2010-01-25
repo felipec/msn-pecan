@@ -744,13 +744,7 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
             case 0x100:
                 {
                     struct pn_direct_conn *direct_conn = link->direct_conn;
-
                     direct_conn->ack_recv = TRUE;
-
-                    if (!direct_conn->ack_sent) {
-                        pn_warning("bad ACK");
-                        pn_direct_conn_send_handshake(direct_conn);
-                    }
                     break;
                 }
 #endif /* MSN_DIRECTCONN */
