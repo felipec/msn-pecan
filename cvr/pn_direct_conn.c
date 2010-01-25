@@ -272,3 +272,10 @@ pn_direct_conn_destroy(struct pn_direct_conn *direct_conn)
 
     pn_log ("end");
 }
+
+void
+pn_direct_conn_add_addr(struct pn_direct_conn *direct_conn,
+                        const char *addr)
+{
+    g_queue_push_tail(direct_conn->addrs, g_strdup(addr));
+}
