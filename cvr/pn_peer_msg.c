@@ -240,15 +240,55 @@ get_token(const char *str,
 }
 
 #ifdef MSN_DIRECTCONN
+static GList *
+get_addresses(const char *content,
+              const char *type)
+{
+    char *ips_str = NULL;
+    GList *addrs = NULL;
+    int port;
+    char *token;
+
+    token = g_strdup_printf("IPv4%s-Addrs: ", type);
+    ips_str = get_token(content, token, "\r\n");
+    g_free(token);
+
+    if (!ips_str)
+        goto leave;
+
+    char *temp;
+    token = g_strdup_printf("IPv4%s-Port: ", type);
+    temp = get_token(content, token, "\r\n");
+    g_free(token);
+    port = temp ? atoi(temp) : -1;
+    g_free(temp);
+
+    if (port <= 0)
+        goto leave;
+
+    char **ip_addrs, **c;
+    ip_addrs = g_strsplit(ips_str, " ", -1);
+    for (c = ip_addrs; *c; c++) {
+        char *addr;
+        addr = g_strdup_printf("%s:%i", *c, port);
+        addrs = g_list_prepend(addrs, addr);
+    }
+    g_strfreev(ip_addrs);
+
+leave:
+    g_free(ips_str);
+
+    return addrs;
+}
+
 static void
 got_transresp(struct pn_peer_call *call,
               const char *content)
 {
     struct pn_direct_conn *direct_conn;
-    char *ips_str = NULL;
-    char *nonce = NULL;
     char *listening = NULL;
-    int port;
+    char *nonce = NULL;
+    GList *list, *c;
 
     listening = get_token(content, "Listening: ", "\r\n");
     if (strcmp(listening, "true") != 0) {
@@ -259,35 +299,39 @@ got_transresp(struct pn_peer_call *call,
 
     nonce = get_token(content, "Nonce: {", "}\r\n");
 
-    ips_str = get_token(content, "IPv4Internal-Addrs: ", "\r\n");
+    list = get_addresses(content, "Internal");
 
-    if (!ips_str)
+    if (!list) {
+        /* nevermind, let's get it started */
+        pn_peer_call_session_init(call);
         goto leave;
-
-    char *temp;
-    temp = get_token(content, "IPv4Internal-Port: ", "\r\n");
-    port = temp ? atoi(temp) : -1;
-    g_free(temp);
-
-    if (port > 0)
-        goto leave;
+    }
 
     direct_conn = pn_direct_conn_new(call->link);
     direct_conn->initial_call = call;
     direct_conn->nonce = g_strdup(nonce);
 
-    char **ip_addrs, **c;
-    ip_addrs = g_strsplit(ips_str, " ", -1);
-    for (c = ip_addrs; *c; c++) {
-        pn_info("ip_addr = %s", *c);
-        if (pn_direct_conn_connect(direct_conn, *c, port))
+    for (c = list; c; c = c->next) {
+        char *host;
+        int port;
+
+        pn_test("adding host = %s", (char *) c->data);
+        msn_parse_socket(c->data, &host, &port);
+
+        if (pn_direct_conn_connect(direct_conn, host, port)) {
+            g_free(host);
             break;
+        }
+        g_free(host);
     }
-    g_strfreev(ip_addrs);
+
+    for (c = list; c; c = c->next)
+        g_free(c->data);
+
+    g_list_free(list);
 
 leave:
     g_free(nonce);
-    g_free(ips_str);
     g_free(listening);
 }
 #endif /* MSN_DIRECTCONN */
