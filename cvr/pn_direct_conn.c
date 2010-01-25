@@ -133,9 +133,6 @@ pn_direct_conn_send_handshake(struct pn_direct_conn *direct_conn)
         peer_msg->ack_size   = t4 | t5;
     }
 
-    g_free(direct_conn->nonce);
-    direct_conn->nonce = NULL;
-
     pn_peer_link_send_msg(link, peer_msg);
 
     direct_conn->ack_sent = TRUE;
@@ -161,6 +158,9 @@ got_nonce(struct pn_direct_conn *direct_conn,
 
     pn_peer_call_session_init(direct_conn->initial_call);
     direct_conn->initial_call = NULL;
+
+    g_free(direct_conn->nonce);
+    direct_conn->nonce = NULL;
 
     msn_message_unref(msg);
 }
