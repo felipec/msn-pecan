@@ -576,6 +576,8 @@ process_peer_msg(struct pn_peer_link *link,
             {
                 struct pn_direct_conn *direct_conn = link->direct_conn;
 
+                direct_conn->ack_recv = TRUE;
+
                 call = direct_conn->initial_call;
                 direct_conn->initial_call = NULL;
 
@@ -745,14 +747,6 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
                 send_ack(link, peer_msg);
                 pn_peer_link_unleash(link);
                 break;
-#ifdef MSN_DIRECTCONN
-            case 0x100:
-                {
-                    struct pn_direct_conn *direct_conn = link->direct_conn;
-                    direct_conn->ack_recv = TRUE;
-                    break;
-                }
-#endif /* MSN_DIRECTCONN */
             default:
                 break;
         }
