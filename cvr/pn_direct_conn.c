@@ -32,6 +32,28 @@
 #include "io/pn_dc_conn.h"
 #include "io/pn_node_private.h"
 
+static void
+foo_cb(struct pn_direct_conn *direct_conn,
+       void *data)
+{
+    pn_direct_conn_send_handshake(direct_conn);
+}
+
+static void
+async_write(struct pn_direct_conn *direct_conn,
+            void (*done_cb) (struct pn_direct_conn *direct_conn, void *data),
+            void *user_data,
+            const gchar *buf,
+            gsize count,
+            gsize *ret_bytes_written,
+            GError **error)
+{
+    pn_node_write(direct_conn->conn, buf, count, ret_bytes_written, error);
+
+    if (done_cb)
+        done_cb(direct_conn, user_data);
+}
+
 void
 pn_direct_conn_send_handshake(struct pn_direct_conn *direct_conn)
 {
@@ -79,7 +101,7 @@ pn_direct_conn_send_msg(struct pn_direct_conn *direct_conn, MsnMessage *msg)
 
     body = msn_message_gen_slp_body(msg, &body_len);
 
-    pn_node_write(direct_conn->conn, body, body_len, NULL, NULL);
+    async_write(direct_conn, NULL, NULL, body, body_len, NULL, NULL);
 }
 
 void
@@ -106,10 +128,8 @@ open_cb(PnNode *conn,
         return;
 
     /* send foo */
-    pn_node_write(conn, "foo\0", 4, NULL, NULL);
-
-    /* Send Handshake */
-    pn_direct_conn_send_handshake(direct_conn);
+    async_write(direct_conn, foo_cb, NULL,
+                "foo\0", 4, NULL, NULL);
 }
 
 gboolean
