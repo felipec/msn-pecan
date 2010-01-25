@@ -573,12 +573,17 @@ process_peer_msg(struct pn_peer_link *link,
             break;
 #ifdef MSN_DIRECTCONN
         case 0x100:
-            call = link->direct_conn->initial_call;
+            {
+                struct pn_direct_conn *direct_conn = link->direct_conn;
 
-            if (!call)
-                break;
+                call = direct_conn->initial_call;
+                direct_conn->initial_call = NULL;
 
-            pn_peer_call_session_init(call);
+                if (!call)
+                    break;
+
+                pn_peer_call_session_init(call);
+            }
 #endif /* MSN_DIRECTCONN */
         default:
             pn_debug("slp_process_msg: unprocessed SLP message with flags 0x%08lx",
