@@ -316,23 +316,15 @@ got_transresp(struct pn_peer_call *call,
     direct_conn->nonce = g_strdup(nonce);
 
     for (c = list; c; c = c->next) {
-        char *host;
-        int port;
-
         pn_test("adding host = %s", (char *) c->data);
-        msn_parse_socket(c->data, &host, &port);
-
-        if (pn_direct_conn_connect(direct_conn, host, port)) {
-            g_free(host);
-            break;
-        }
-        g_free(host);
+        pn_direct_conn_add_addr(direct_conn, c->data);
+        g_free(c->data);
     }
 
-    for (c = list; c; c = c->next)
-        g_free(c->data);
-
     g_list_free(list);
+
+    /* let's get it on! */
+    pn_direct_conn_start(direct_conn);
 
 leave:
     g_free(nonce);
