@@ -53,6 +53,8 @@ struct pn_direct_conn {
 
     MsnMessage *last_msg;
     int status;
+
+    GQueue *addrs;
 };
 
 struct pn_direct_conn *pn_direct_conn_new(struct pn_peer_link *link);

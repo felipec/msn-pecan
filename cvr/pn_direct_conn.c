@@ -239,6 +239,8 @@ pn_direct_conn_new(struct pn_peer_link *link)
 
     pn_peer_link_set_directconn(link, direct_conn);
 
+    direct_conn->addrs = g_queue_new();
+
     pn_log ("end");
 
     return direct_conn;
@@ -248,6 +250,8 @@ void
 pn_direct_conn_destroy(struct pn_direct_conn *direct_conn)
 {
     pn_log ("begin");
+
+    g_queue_free(direct_conn->addrs);
 
     if (direct_conn->last_msg)
         msn_message_unref(direct_conn->last_msg);
