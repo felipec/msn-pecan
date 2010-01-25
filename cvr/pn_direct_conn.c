@@ -35,6 +35,8 @@
 
 #include "cmd/msg_private.h"
 
+#include "pn_util.h" /* for msn_parse_socket */
+
 static void
 foo_cb(struct pn_direct_conn *direct_conn,
        void *data)
@@ -278,4 +280,21 @@ pn_direct_conn_add_addr(struct pn_direct_conn *direct_conn,
                         const char *addr)
 {
     g_queue_push_tail(direct_conn->addrs, g_strdup(addr));
+}
+
+void
+pn_direct_conn_start(struct pn_direct_conn *direct_conn)
+{
+    char *addr;
+    char *host;
+    int port;
+
+    addr = g_queue_pop_head(direct_conn->addrs);
+    if (!addr)
+        return;
+
+    msn_parse_socket(addr, &host, &port);
+    pn_direct_conn_connect(direct_conn, host, port);
+    g_free(host);
+    g_free(addr);
 }
