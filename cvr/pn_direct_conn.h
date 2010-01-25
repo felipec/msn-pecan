@@ -50,6 +50,8 @@ struct pn_direct_conn {
     GIOStatus last_flush;
     pn_io_cb_t io_cb;
     void *io_cb_data;
+
+    MsnMessage *last_msg;
 };
 
 struct pn_direct_conn *pn_direct_conn_new(struct pn_peer_link *link);

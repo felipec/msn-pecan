@@ -32,11 +32,30 @@
 #include "io/pn_dc_conn.h"
 #include "io/pn_node_private.h"
 
+#include "cmd/msg_private.h"
+
 static void
 foo_cb(struct pn_direct_conn *direct_conn,
        void *data)
 {
     pn_direct_conn_send_handshake(direct_conn);
+}
+
+static void
+msg_cb(struct pn_direct_conn *direct_conn,
+       void *data)
+{
+    MsnMessage *msg = data;
+
+    g_return_if_fail(msg);
+
+    direct_conn->last_msg = NULL;
+
+    if (msg->ack_cb)
+        msg->ack_cb(msg, msg->ack_data);
+    msg->nak_cb = NULL;
+
+    msn_message_unref(msg);
 }
 
 static gboolean
@@ -128,7 +147,8 @@ pn_direct_conn_send_msg(struct pn_direct_conn *direct_conn, MsnMessage *msg)
 
     body = msn_message_gen_slp_body(msg, &body_len);
 
-    async_write(direct_conn, NULL, NULL, body, body_len, NULL, NULL);
+    direct_conn->last_msg = msn_message_ref(msg);
+    async_write(direct_conn, msg_cb, msg, body, body_len, NULL, NULL);
 }
 
 void
@@ -202,6 +222,9 @@ void
 pn_direct_conn_destroy(struct pn_direct_conn *direct_conn)
 {
     pn_log ("begin");
+
+    if (direct_conn->last_msg)
+        msn_message_unref(direct_conn->last_msg);
 
     if (direct_conn->open_handler)
         g_signal_handler_disconnect (direct_conn->conn, direct_conn->open_handler);
