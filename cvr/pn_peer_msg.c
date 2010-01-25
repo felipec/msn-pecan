@@ -241,53 +241,43 @@ get_token(const char *str,
 
 #ifdef MSN_DIRECTCONN
 static void
-old_got_transresp(struct pn_peer_call *call,
-                  const char *nonce,
-                  const char *ips_str,
-                  int port)
+got_transresp(struct pn_peer_call *call,
+              const char *content)
 {
     struct pn_direct_conn *direct_conn;
-    char **ip_addrs, **c;
+    char *ips_str = NULL;
+    char *nonce = NULL;
+    int port;
+
+    nonce = get_token(content, "Nonce: {", "}\r\n");
+
+    ips_str = get_token(content, "IPv4Internal-Addrs: ", "\r\n");
+
+    if (!ips_str)
+        goto leave;
+
+    char *temp;
+    temp = get_token(content, "IPv4Internal-Port: ", "\r\n");
+    port = temp ? atoi(temp) : -1;
+    g_free(temp);
+
+    if (port > 0)
+        goto leave;
 
     direct_conn = pn_direct_conn_new(call->link);
-
     direct_conn->initial_call = call;
-
     direct_conn->nonce = g_strdup(nonce);
 
+    char **ip_addrs, **c;
     ip_addrs = g_strsplit(ips_str, " ", -1);
-
     for (c = ip_addrs; *c; c++) {
         pn_info("ip_addr = %s", *c);
         if (pn_direct_conn_connect(direct_conn, *c, port))
             break;
     }
-
     g_strfreev(ip_addrs);
-}
 
-static void
-got_transresp(struct pn_peer_call *call,
-              const char *content)
-{
-    char *ips_str;
-    char *temp;
-    char *nonce;
-    int port;
-
-    nonce = get_token(content, "Nonce: {", "}\r\n");
-    ips_str = get_token(content, "IPv4Internal-Addrs: ", "\r\n");
-
-    temp = get_token(content, "IPv4Internal-Port: ", "\r\n");
-    port = temp ? atoi(temp) : -1;
-    g_free(temp);
-
-    if (!ips_str)
-        return;
-
-    if (port > 0)
-        old_got_transresp(call, nonce, ips_str, port);
-
+leave:
     g_free(nonce);
     g_free(ips_str);
 }
