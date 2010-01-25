@@ -237,6 +237,31 @@ msn_session_connect (MsnSession *session,
     return FALSE;
 }
 
+static void
+check_pending(gpointer key,
+              gpointer value,
+              gpointer user_data)
+{
+    GList **list = user_data;
+    MsnSwitchBoard *swboard = value;
+    if (swboard->to_close)
+        *list = g_list_prepend(*list, swboard);
+}
+
+static void
+close_pending_sbs(MsnSession *session)
+{
+    GList *pending = NULL, *c;
+    g_hash_table_foreach(session->conversations, check_pending, &pending);
+    for (c = pending; c; c = c->next) {
+        MsnSwitchBoard *swboard = c->data;
+        pn_info("closing pending sb: %p", swboard);
+        msn_switchboard_close(swboard);
+        msn_switchboard_unref(swboard);
+    }
+    g_list_free(pending);
+}
+
 void
 msn_session_disconnect (MsnSession *session)
 {
@@ -244,6 +269,8 @@ msn_session_disconnect (MsnSession *session)
     g_return_if_fail (session->connected);
 
     session->connected = FALSE;
+
+    close_pending_sbs (session);
 
     g_hash_table_remove_all (session->conversations);
     g_hash_table_remove_all (session->chats);
