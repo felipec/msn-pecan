@@ -52,6 +52,7 @@ struct pn_direct_conn {
     void *io_cb_data;
 
     MsnMessage *last_msg;
+    int status;
 };
 
 struct pn_direct_conn *pn_direct_conn_new(struct pn_peer_link *link);

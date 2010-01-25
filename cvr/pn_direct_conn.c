@@ -24,6 +24,7 @@
 #include "session.h"
 #include "pn_peer_msg.h"
 #include "pn_peer_link.h"
+#include "pn_peer_call.h"
 
 #include "io/pn_node.h"
 
@@ -38,6 +39,7 @@ static void
 foo_cb(struct pn_direct_conn *direct_conn,
        void *data)
 {
+    direct_conn->status = 1;
     pn_direct_conn_send_handshake(direct_conn);
 }
 
@@ -151,6 +153,18 @@ pn_direct_conn_send_msg(struct pn_direct_conn *direct_conn, MsnMessage *msg)
     async_write(direct_conn, msg_cb, msg, body, body_len, NULL, NULL);
 }
 
+static void
+got_nonce(struct pn_direct_conn *direct_conn,
+          MsnMessage *msg)
+{
+    direct_conn->ack_recv = TRUE;
+
+    pn_peer_call_session_init(direct_conn->initial_call);
+    direct_conn->initial_call = NULL;
+
+    msn_message_unref(msg);
+}
+
 void
 pn_direct_conn_process_chunk(struct pn_direct_conn *direct_conn,
                              gchar *buf,
@@ -159,6 +173,13 @@ pn_direct_conn_process_chunk(struct pn_direct_conn *direct_conn,
     MsnMessage *msg;
     msg = msn_message_new_msnslp();
     msn_message_parse_slp_body(msg, buf, bytes_read);
+
+    if (direct_conn->status == 1) {
+        direct_conn->status = 2;
+        got_nonce(direct_conn, msg);
+        return;
+    }
+
     pn_peer_link_process_msg(direct_conn->link, msg, 1, direct_conn);
 }
 
