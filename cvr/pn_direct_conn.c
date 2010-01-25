@@ -39,18 +39,45 @@ foo_cb(struct pn_direct_conn *direct_conn,
     pn_direct_conn_send_handshake(direct_conn);
 }
 
+static gboolean
+write_cb (GIOChannel *source,
+          GIOCondition condition,
+          gpointer data)
+{
+    struct pn_direct_conn *direct_conn = data;
+
+    if (direct_conn->last_flush == G_IO_STATUS_AGAIN) {
+        direct_conn->last_flush = pn_stream_flush(direct_conn->conn->stream, NULL);
+        return TRUE;
+    }
+
+    direct_conn->write_watch = 0;
+
+    if (direct_conn->io_cb)
+        direct_conn->io_cb(direct_conn, direct_conn->io_cb_data);
+
+    return FALSE;
+}
+
 static void
 async_write(struct pn_direct_conn *direct_conn,
-            void (*done_cb) (struct pn_direct_conn *direct_conn, void *data),
+            pn_io_cb_t done_cb,
             void *user_data,
             const gchar *buf,
             gsize count,
             gsize *ret_bytes_written,
             GError **error)
 {
-    pn_node_write(direct_conn->conn, buf, count, ret_bytes_written, error);
+    direct_conn->last_flush = pn_node_write(direct_conn->conn,
+                                            buf, count, ret_bytes_written, error);
 
-    if (done_cb)
+    if (direct_conn->last_flush == G_IO_STATUS_AGAIN) {
+        direct_conn->io_cb = done_cb;
+        direct_conn->io_cb_data = user_data;
+        direct_conn->write_watch = g_io_add_watch(direct_conn->conn->stream->channel,
+                                                  G_IO_OUT, write_cb, direct_conn);
+    }
+    else if (done_cb)
         done_cb(direct_conn, user_data);
 }
 
@@ -178,6 +205,9 @@ pn_direct_conn_destroy(struct pn_direct_conn *direct_conn)
 
     if (direct_conn->open_handler)
         g_signal_handler_disconnect (direct_conn->conn, direct_conn->open_handler);
+
+    if (direct_conn->write_watch)
+        g_source_remove (direct_conn->write_watch);
 
     pn_dc_conn_free(PN_DC_CONN(direct_conn->conn));
 

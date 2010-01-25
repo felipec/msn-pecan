@@ -26,6 +26,9 @@ struct pn_peer_link;
 #include "io/pn_stream.h"
 
 struct PnNode;
+struct pn_direct_conn;
+
+typedef void (*pn_io_cb_t) (struct pn_direct_conn *direct_conn, void *data);
 
 struct pn_direct_conn {
     struct pn_peer_link *link;
@@ -42,6 +45,11 @@ struct pn_direct_conn {
 
     struct PnNode *conn;
     gulong open_handler;
+
+    guint write_watch;
+    GIOStatus last_flush;
+    pn_io_cb_t io_cb;
+    void *io_cb_data;
 };
 
 struct pn_direct_conn *pn_direct_conn_new(struct pn_peer_link *link);
