@@ -199,8 +199,18 @@ open_cb(PnNode *conn,
     g_signal_handler_disconnect(conn, direct_conn->open_handler);
     direct_conn->open_handler = 0;
 
-    if (!conn->open)
+    if (!conn->open) {
+        if (g_queue_is_empty(direct_conn->addrs)) {
+            pn_warning("no more addresses to try");
+            pn_direct_conn_destroy(direct_conn);
+            pn_peer_call_session_init(direct_conn->initial_call);
+            return;
+        }
+
+        /* try next one */
+        pn_direct_conn_start(direct_conn);
         return;
+    }
 
     /* send foo */
     async_write(direct_conn, foo_cb, NULL,
