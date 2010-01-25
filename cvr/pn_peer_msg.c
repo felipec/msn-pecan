@@ -241,10 +241,10 @@ get_token(const char *str,
 
 #ifdef MSN_DIRECTCONN
 static void
-got_transresp(struct pn_peer_call *call,
-              const char *nonce,
-              const char *ips_str,
-              int port)
+old_got_transresp(struct pn_peer_call *call,
+                  const char *nonce,
+                  const char *ips_str,
+                  int port)
 {
     struct pn_direct_conn *direct_conn;
     char **ip_addrs, **c;
@@ -264,6 +264,32 @@ got_transresp(struct pn_peer_call *call,
     }
 
     g_strfreev(ip_addrs);
+}
+
+static void
+got_transresp(struct pn_peer_call *call,
+              const char *content)
+{
+    char *ips_str;
+    char *temp;
+    char *nonce;
+    int port;
+
+    nonce = get_token(content, "Nonce: {", "}\r\n");
+    ips_str = get_token(content, "IPv4Internal-Addrs: ", "\r\n");
+
+    temp = get_token(content, "IPv4Internal-Port: ", "\r\n");
+    port = temp ? atoi(temp) : -1;
+    g_free(temp);
+
+    if (!ips_str)
+        return;
+
+    if (port > 0)
+        old_got_transresp(call, nonce, ips_str, port);
+
+    g_free(nonce);
+    g_free(ips_str);
 }
 #endif /* MSN_DIRECTCONN */
 
@@ -657,28 +683,8 @@ got_invite(struct pn_peer_call *call,
         g_free(nonce);
     }
 #ifdef MSN_DIRECTCONN
-    else if (strcmp(type, "application/x-msnmsgr-transrespbody") == 0) {
-        char *ip_addrs;
-        char *temp;
-        char *nonce;
-        int port;
-
-        nonce = get_token(content, "Nonce: {", "}\r\n");
-        ip_addrs = get_token(content, "IPv4Internal-Addrs: ", "\r\n");
-
-        temp = get_token(content, "IPv4Internal-Port: ", "\r\n");
-        port = temp ? atoi(temp) : -1;
-        g_free(temp);
-
-        if (!ip_addrs)
-            return;
-
-        if (port > 0)
-            got_transresp(call, nonce, ip_addrs, port);
-
-        g_free(nonce);
-        g_free(ip_addrs);
-    }
+    else if (strcmp(type, "application/x-msnmsgr-transrespbody") == 0)
+        got_transresp(call, content);
 #endif /* MSN_DIRECTCONN */
 }
 
@@ -742,11 +748,6 @@ got_ok(struct pn_peer_call *call,
     }
 #ifdef MSN_DIRECTCONN
     else if (strcmp(type, "application/x-msnmsgr-transrespbody") == 0) {
-        char *ip_addrs;
-        char *temp;
-        char *nonce;
-        int port;
-
         {
             char *listening;
             listening = get_token(content, "Listening: ", "\r\n");
@@ -759,21 +760,7 @@ got_ok(struct pn_peer_call *call,
             g_free(listening);
         }
 
-        nonce = get_token(content, "Nonce: {", "}\r\n");
-        ip_addrs = get_token(content, "IPv4Internal-Addrs: ", "\r\n");
-
-        temp = get_token(content, "IPv4Internal-Port: ", "\r\n");
-        port = temp ? atoi(temp) : -1;
-        g_free(temp);
-
-        if (!ip_addrs)
-            return;
-
-        if (port > 0)
-            got_transresp(call, nonce, ip_addrs, port);
-
-        g_free(nonce);
-        g_free(ip_addrs);
+        got_transresp(call, content);
     }
 #endif /* MSN_DIRECTCONN */
 }
