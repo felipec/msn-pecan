@@ -146,6 +146,11 @@ pn_direct_conn_send_msg(struct pn_direct_conn *direct_conn, MsnMessage *msg)
 
     body = msn_message_gen_slp_body(msg, &body_len);
 
+    if (direct_conn->status == 1) {
+        async_write(direct_conn, NULL, NULL, body, body_len, NULL, NULL);
+        return;
+    }
+
     direct_conn->last_msg = msn_message_ref(msg);
     async_write(direct_conn, msg_cb, msg, body, body_len, NULL, NULL);
 }
