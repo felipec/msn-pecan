@@ -49,24 +49,24 @@ Var "PidginDir"
 ShowInstDetails show
 ShowUnInstDetails show
 
-Section "MainSection" SEC01
+Section "Install"
     ;Check for pidgin installation
     Call GetPidginInstPath
 
     SetOverwrite try
-	copy:
+	start:
 		ClearErrors
 		Delete "$PidginDir\plugins\libmsn-pecan.dll"
-		IfErrors dllbusy
+		IfErrors busy
 		SetOutPath "$PidginDir\plugins"
 		File "/oname=libmsn-pecan.dll" "libmsn-pecan-${PRODUCT_VERSION}.dll"
-		Goto after_copy
-	dllbusy:
+		Goto after
+	busy:
 		MessageBox MB_RETRYCANCEL "libmsn-pecan.dll is busy. Please close Pidgin (including tray icon) and try again" IDCANCEL cancel
-		Goto copy
+		Goto start
 	cancel:
 		Abort "Installation of msn-pecan aborted"
-	after_copy:
+	after:
 
 SectionEnd
 
