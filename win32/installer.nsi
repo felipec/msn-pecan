@@ -67,6 +67,24 @@ Section "Install"
 	cancel:
 		Abort "Installation of msn-pecan aborted"
 	after:
+		WriteUninstaller "$PidginDir\msn-pecan-uninstall.exe"
+
+SectionEnd
+
+Section "Uninstall"
+    SetOverwrite try
+	start:
+		ClearErrors
+		Delete "$INSTDIR\plugins\libmsn-pecan.dll"
+		IfErrors busy
+		Goto after
+	busy:
+		MessageBox MB_RETRYCANCEL "libmsn-pecan.dll is busy. Please close Pidgin (including tray icon) and try again" IDCANCEL cancel
+		Goto start
+	cancel:
+		Abort "Uninstallation of msn-pecan aborted"
+	after:
+		Delete "$INSTDIR\msn-pecan-uninstall.exe"
 
 SectionEnd
 
