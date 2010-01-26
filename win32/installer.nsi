@@ -69,6 +69,12 @@ Section "Install"
 		Abort "Installation of msn-pecan aborted"
 	after:
 		WriteUninstaller "$PidginDir\msn-pecan-uninstall.exe"
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\msn-pecan" \
+				 "DisplayName" "MSN (pecan) protocol plug-in"
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\msn-pecan" \
+				 "UninstallString" "$\"$PidginDir\msn-pecan-uninstall.exe$\""
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\msn-pecan" \
+				 "QuietUninstallString" "$\"$PidginDir\msn-pecan-uninstall.exe$\" /S"
 
 SectionEnd
 
@@ -86,6 +92,7 @@ Section "Uninstall"
 		Abort "Uninstallation of msn-pecan aborted"
 	after:
 		Delete "$INSTDIR\msn-pecan-uninstall.exe"
+		DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\msn-pecan"
 
 SectionEnd
 
