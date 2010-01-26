@@ -34,7 +34,8 @@ SetCompressor lzma
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
-;!insertmacro MUI_UNPAGE_INSTFILES
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
 
 ; Language files
 !insertmacro MUI_LANGUAGE "English"
