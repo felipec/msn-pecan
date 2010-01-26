@@ -59,7 +59,7 @@ Section "Install"
 		Delete "$PidginDir\plugins\libmsn-pecan.dll"
 		IfErrors busy
 		SetOutPath "$PidginDir\plugins"
-		File "/oname=libmsn-pecan.dll" "libmsn-pecan-${PRODUCT_VERSION}.dll"
+		File "libmsn-pecan.dll"
 		Goto after
 	busy:
 		MessageBox MB_RETRYCANCEL "libmsn-pecan.dll is busy. Please close Pidgin (including tray icon) and try again" IDCANCEL cancel
