@@ -249,7 +249,9 @@ uninstall:
 	rm -f $(D)/$(PURPLE_DATADIR)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
 	done
 
-install_locales: $(foreach e,$(CATALOGS),po/$(e).mo)
+locales: $(foreach e,$(CATALOGS),po/$(e).mo)
+
+install_locales: locales
 	for x in $(CATALOGS); do \
 	install -D po/$$x.mo $(D)/$(PURPLE_DATADIR)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
 	done
