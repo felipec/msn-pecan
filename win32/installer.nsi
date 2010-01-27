@@ -45,8 +45,6 @@ SetCompressor lzma
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
 
-Var "PidginDir"
-
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -57,9 +55,9 @@ Section "Install"
     SetOverwrite try
 	start:
 		ClearErrors
-		Delete "$PidginDir\plugins\libmsn-pecan.dll"
+		Delete "$INSTDIR\plugins\libmsn-pecan.dll"
 		IfErrors busy
-		SetOutPath "$PidginDir\plugins"
+		SetOutPath "$INSTDIR\plugins"
 		File "libmsn-pecan.dll"
 		Goto after
 	busy:
@@ -68,13 +66,13 @@ Section "Install"
 	cancel:
 		Abort "Installation of msn-pecan aborted"
 	after:
-		WriteUninstaller "$PidginDir\msn-pecan-uninstall.exe"
+		WriteUninstaller "$INSTDIR\msn-pecan-uninstall.exe"
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\msn-pecan" \
 				 "DisplayName" "MSN (pecan) protocol plug-in"
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\msn-pecan" \
-				 "UninstallString" "$\"$PidginDir\msn-pecan-uninstall.exe$\""
+				 "UninstallString" "$\"$INSTDIR\msn-pecan-uninstall.exe$\""
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\msn-pecan" \
-				 "QuietUninstallString" "$\"$PidginDir\msn-pecan-uninstall.exe$\" /S"
+				 "QuietUninstallString" "$\"$INSTDIR\msn-pecan-uninstall.exe$\" /S"
 
 SectionEnd
 
@@ -105,9 +103,9 @@ Function GetPidginInstPath
 		MessageBox MB_OK|MB_ICONINFORMATION "Failed to find Pidgin installation."
 		Abort "Failed to find Pidgin installation. Please install Pidgin first."
   cont:
-	StrCpy $PidginDir $0
+	StrCpy $INSTDIR $0
 FunctionEnd
 
 Function RunPidgin
-	ExecShell "" "$PidginDir\pidgin.exe"
+	ExecShell "" "$INSTDIR\pidgin.exe"
 FunctionEnd
