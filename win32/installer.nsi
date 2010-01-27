@@ -22,7 +22,7 @@ SetCompressor lzma
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
 ; License page
-!insertmacro MUI_PAGE_LICENSE "COPYING"
+!insertmacro MUI_PAGE_LICENSE "libmsn-pecan/COPYING"
 ; Directory page
 !define MUI_PAGE_CUSTOMFUNCTION_PRE dir_pre
 !insertmacro MUI_PAGE_DIRECTORY
@@ -75,8 +75,8 @@ Section "Install"
 		ClearErrors
 		Delete "$INSTDIR\plugins\libmsn-pecan.dll"
 		IfErrors busy
-		SetOutPath "$INSTDIR\plugins"
-		File "libmsn-pecan.dll"
+		SetOutPath "$INSTDIR"
+		File /r libmsn-pecan\*.*
 		Goto after
 	busy:
 		MessageBox MB_RETRYCANCEL "libmsn-pecan.dll is busy. Please close Pidgin (including tray icon) and try again" IDCANCEL cancel
@@ -107,6 +107,25 @@ Section "Uninstall"
 	cancel:
 		Abort "Uninstallation of msn-pecan aborted"
 	after:
+		Delete "$INSTDIR\locale\ar\LC_MESSAGES\libmsn-pecan.mo"
+		Delete "$INSTDIR\locale\da\LC_MESSAGES\libmsn-pecan.mo"
+		Delete "$INSTDIR\locale\de\LC_MESSAGES\libmsn-pecan.mo"
+		Delete "$INSTDIR\locale\eo\LC_MESSAGES\libmsn-pecan.mo"
+		Delete "$INSTDIR\locale\es\LC_MESSAGES\libmsn-pecan.mo"
+		Delete "$INSTDIR\locale\fi\LC_MESSAGES\libmsn-pecan.mo"
+		Delete "$INSTDIR\locale\fr\LC_MESSAGES\libmsn-pecan.mo"
+		Delete "$INSTDIR\locale\tr\LC_MESSAGES\libmsn-pecan.mo"
+		Delete "$INSTDIR\locale\hu\LC_MESSAGES\libmsn-pecan.mo"
+		Delete "$INSTDIR\locale\it\LC_MESSAGES\libmsn-pecan.mo"
+		Delete "$INSTDIR\locale\nb\LC_MESSAGES\libmsn-pecan.mo"
+		Delete "$INSTDIR\locale\nl\LC_MESSAGES\libmsn-pecan.mo"
+		Delete "$INSTDIR\locale\pt_BR\LC_MESSAGES\libmsn-pecan.mo"
+		Delete "$INSTDIR\locale\pt\LC_MESSAGES\libmsn-pecan.mo"
+		Delete "$INSTDIR\locale\sr\LC_MESSAGES\libmsn-pecan.mo"
+		Delete "$INSTDIR\locale\sv\LC_MESSAGES\libmsn-pecan.mo"
+		Delete "$INSTDIR\locale\tr\LC_MESSAGES\libmsn-pecan.mo"
+		Delete "$INSTDIR\locale\zh_CN\LC_MESSAGES\libmsn-pecan.mo"
+		Delete "$INSTDIR\locale\zh_TW\LC_MESSAGES\libmsn-pecan.mo"
 		Delete "$INSTDIR\msn-pecan-uninstall.exe"
 		DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\msn-pecan"
 
