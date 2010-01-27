@@ -202,7 +202,7 @@ $(plugin): CFLAGS := $(CFLAGS) $(PURPLE_CFLAGS) $(GIO_CFLAGS) $(FALLBACK_CFLAGS)
 $(plugin): LIBS := $(plugin_libs)
 
 messages.pot: $(sources)
-	$(XGETTEXT) -kmc --keyword=_ --keyword=N_ -o $@ $(sources)
+	$(XGETTEXT) -m -c --keyword --keyword=_ --keyword=N_ -o $@ $<
 
 %.dylib::
 	$(QUIET_LINK)$(CC) $(LDFLAGS) -dynamiclib -o $@ $^ $(LIBS)
