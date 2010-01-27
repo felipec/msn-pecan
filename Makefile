@@ -253,6 +253,7 @@ locales: $(foreach e,$(CATALOGS),po/$(e).mo)
 
 install_locales: locales
 	for x in $(CATALOGS); do \
+	mkdir -p $(D)/$(PURPLE_DATADIR)/locale/$$x/LC_MESSAGES/; \
 	install -D po/$$x.mo $(D)/$(PURPLE_DATADIR)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
 	done
 
