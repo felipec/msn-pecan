@@ -24,6 +24,9 @@ SetCompressor lzma
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !insertmacro MUI_PAGE_LICENSE "COPYING"
+; Directory page
+!define MUI_PAGE_CUSTOMFUNCTION_PRE dir_pre
+!insertmacro MUI_PAGE_DIRECTORY
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
@@ -44,13 +47,29 @@ SetCompressor lzma
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
+InstallDir "$PROGRAMFILES\pidgin"
 
 ShowInstDetails show
 ShowUnInstDetails show
 
+Function dir_pre
+    readregstr $0 HKLM "Software\pidgin" ""
+    iffileexists "$0\pidgin.exe" found
+    readregstr $0 HKCU "Software\pidgin" ""
+    iffileexists "$0\pidgin.exe" found
+    goto done
+found:
+    strcpy $INSTDIR $0
+    abort
+done:
+Functionend
+
+
 Section "Install"
-    ;Check for pidgin installation
-    Call GetPidginInstPath
+    iffileexists "$INSTDIR\pidgin.exe" cont
+    messagebox MB_OK|MB_ICONINFORMATION "Failed to find Pidgin installation."
+    abort "Failed to find Pidgin installation. Please install Pidgin first."
+    cont:
 
     SetOverwrite try
 	start:
@@ -93,18 +112,6 @@ Section "Uninstall"
 		DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\msn-pecan"
 
 SectionEnd
-
-Function GetPidginInstPath
-  Push $0
-  ReadRegStr $0 HKLM "Software\pidgin" ""
-	IfFileExists "$0\pidgin.exe" cont
-	ReadRegStr $0 HKCU "Software\pidgin" ""
-	IfFileExists "$0\pidgin.exe" cont
-		MessageBox MB_OK|MB_ICONINFORMATION "Failed to find Pidgin installation."
-		Abort "Failed to find Pidgin installation. Please install Pidgin first."
-  cont:
-	StrCpy $INSTDIR $0
-FunctionEnd
 
 Function RunPidgin
 	ExecShell "" "$INSTDIR\pidgin.exe"
