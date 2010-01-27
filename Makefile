@@ -249,6 +249,11 @@ uninstall:
 	rm -f $(D)/$(PURPLE_DATADIR)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
 	done
 
+update_locales: messages.pot
+	for x in $(CATALOGS); do \
+	msgmerge -N -U --backup=off po/$$x.po $<; \
+	done
+
 locales: $(foreach e,$(CATALOGS),po/$(e).mo)
 
 install_locales: locales
