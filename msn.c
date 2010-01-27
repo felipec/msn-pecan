@@ -1872,9 +1872,18 @@ static PurplePluginInfo info =
     NULL
 };
 
+#if defined(G_OS_WIN32) && defined(ENABLE_NLS)
+const char *wpurple_locale_dir(void);
+#endif
+
 static void
 init_plugin (PurplePlugin *plugin)
 {
+#if defined(G_OS_WIN32) && defined(ENABLE_NLS)
+    bindtextdomain("libmsn-pecan", wpurple_locale_dir());
+    bind_textdomain_codeset("libmsn-pecan", "UTF-8");
+#endif
+
     {
         PurpleAccountOption *option;
 
