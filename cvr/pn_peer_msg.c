@@ -316,7 +316,6 @@ got_transresp(struct pn_peer_call *call,
     direct_conn->nonce = g_strdup(nonce);
 
     for (c = list; c; c = c->next) {
-        pn_test("adding host = %s", (char *) c->data);
         pn_direct_conn_add_addr(direct_conn, c->data);
         g_free(c->data);
     }
