@@ -1756,7 +1756,7 @@ static PurplePluginProtocolInfo prpl_info =
     OPT_PROTO_MAIL_CHECK,
     NULL, /* user_splits */
     NULL, /* protocol_options */
-    {"png", 0, 0, 96, 96, 0, PURPLE_ICON_SCALE_SEND}, /* icon_spec */
+    {"png,gif", 0, 0, 96, 96, 0, PURPLE_ICON_SCALE_SEND}, /* icon_spec */
     list_icon, /* list_icon */
     list_emblems, /* list_emblems */
     status_text, /* status_text */
