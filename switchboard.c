@@ -1577,6 +1577,21 @@ emoticon_msg(MsnCmdProc *cmdproc,
             swboard = cmdproc->data;
             conv = swboard->conv;
 
+            if (msn_session_find_swboard (session, pn_peer_link_get_passport (link)) != swboard)
+            {
+                if (msn_session_find_swboard (session, pn_peer_link_get_passport (link)))
+                {
+                    /*
+                     * Apparently we're using a different switchboard now or
+                     * something?  I don't know if this is normal, but it
+                     * definitely happens.  So make sure the old switchboard
+                     * doesn't still have a reference to us.
+                     */
+                    g_hash_table_remove (session->conversations, pn_peer_link_get_passport (link));
+                }
+                g_hash_table_insert (session->conversations, g_strdup (pn_peer_link_get_passport (link)), swboard);
+            }
+
             /* If the conversation doesn't exist then this is a custom smiley
              * used in the first message in a MSN conversation: we need to create
              * the conversation now, otherwise the custom smiley won't be shown.
