@@ -384,11 +384,11 @@ nexus_read_cb(PnNode *conn,
                 nexus->parser = pn_parser_new(conn);
                 pn_ssl_conn_set_read_cb(ssl_conn, login_read_cb, nexus);
 
-                pn_node_connect(conn, nexus->login_host, 443);
-
                 nexus->conn = conn;
                 nexus->open_handler = g_signal_connect(conn, "open", G_CALLBACK(login_open_cb), nexus);
                 nexus->error_handler = g_signal_connect(conn, "error", G_CALLBACK(close_cb), nexus);
+
+                pn_node_connect(conn, nexus->login_host, 443);
 
                 goto leave;
             }
@@ -436,9 +436,9 @@ msn_nexus_connect(MsnNexus *nexus)
     nexus->parser = pn_parser_new(conn);
     pn_ssl_conn_set_read_cb(ssl_conn, nexus_read_cb, nexus);
 
-    pn_node_connect(conn, "nexus.passport.com", 443);
-
     nexus->conn = conn;
     nexus->open_handler = g_signal_connect(conn, "open", G_CALLBACK(nexus_open_cb), nexus);
     nexus->error_handler = g_signal_connect(conn, "error", G_CALLBACK(close_cb), nexus);
+
+    pn_node_connect(conn, "nexus.passport.com", 443);
 }
