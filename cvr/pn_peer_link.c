@@ -61,7 +61,10 @@ struct pn_peer_link {
     unsigned int ref_count;
 };
 
-static void send_msg_part(struct pn_peer_link *link, struct pn_peer_msg *peer_msg);
+static void
+send_msg_part(struct pn_peer_link *link,
+              struct pn_peer_msg *peer_msg,
+              MsnMessage *msg);
 
 struct pn_peer_link *
 pn_peer_link_new(MsnSession *session,
@@ -256,14 +259,15 @@ find_session_call(struct pn_peer_link *link,
 
 static inline void
 send_msg(struct pn_peer_link *link,
-         struct pn_peer_msg *peer_msg)
+         struct pn_peer_msg *peer_msg,
+         MsnMessage *msg)
 {
     MsnSwitchBoard *swboard;
     if (peer_msg->call)
         swboard = peer_msg->call->swboard;
     else
         swboard = peer_msg->swboard;
-    msn_switchboard_send_msg(swboard, peer_msg->msg, TRUE);
+    msn_switchboard_send_msg(swboard, msg, TRUE);
 }
 
 /* We have received the message ack */
@@ -284,7 +288,7 @@ msg_ack(MsnMessage *msg,
     peer_msg->offset += msg->msnslp_header.length;
 
     if (peer_msg->offset < real_size)
-        send_msg_part(peer_msg->link, peer_msg);
+        send_msg_part(peer_msg->link, peer_msg, msg);
     else {
         /* The whole message has been sent */
         if (peer_msg->flags == 0x20 ||
@@ -314,15 +318,11 @@ msg_nak(MsnMessage *msg,
 
 static void
 send_msg_part(struct pn_peer_link *link,
-              struct pn_peer_msg *peer_msg)
+              struct pn_peer_msg *peer_msg,
+              MsnMessage *msg)
 {
-    MsnMessage *msg;
     guint64 real_size;
     size_t len = 0;
-
-    /** @todo maybe we will want to create a new msg for this peer_msg instead of
-     * reusing the same one all the time. */
-    msg = peer_msg->msg;
 
     real_size = (peer_msg->flags == 0x2) ? 0 : peer_msg->size;
 
@@ -357,9 +357,9 @@ send_msg_part(struct pn_peer_link *link,
         (peer_msg->flags == 0x100 || link->direct_conn->ack_recv))
         pn_direct_conn_send_msg(link->direct_conn, msg);
     else
-        send_msg(link, peer_msg);
+        send_msg(link, peer_msg, msg);
 #else
-    send_msg(link, peer_msg);
+    send_msg(link, peer_msg, msg);
 #endif /* MSN_DIRECTCONN */
 
     if (peer_msg->call) {
@@ -385,7 +385,7 @@ release_peer_msg(struct pn_peer_link *link,
     peer_msg->link = link;
     link->slp_msgs = g_list_append(link->slp_msgs, peer_msg);
 
-    peer_msg->msg = msg = msn_message_new_msnslp();
+    msg = msn_message_new_msnslp();
 
     switch (peer_msg->flags) {
         case 0x0:
@@ -431,7 +431,7 @@ release_peer_msg(struct pn_peer_link *link,
     msg->nak_cb = msg_nak;
     msg->ack_data = peer_msg;
 
-    send_msg_part(link, peer_msg);
+    send_msg_part(link, peer_msg, msg);
 
     msn_message_unref(msg);
 }
@@ -630,7 +630,6 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
         peer_msg->ack_id = msg->msnslp_header.ack_id;
         peer_msg->size = msg->msnslp_header.total_size;
         peer_msg->flags = msg->msnslp_header.flags;
-        peer_msg->msg = msg;
 
         if (peer_msg->session_id) {
             if (!peer_msg->call)

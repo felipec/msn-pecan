@@ -54,8 +54,6 @@ struct pn_peer_msg {
     guint64 offset;
     guint64 size;
 
-    struct MsnMessage *msg; /**< The temporary real message that will be sent. */
-
 #ifdef PECAN_DEBUG_SLP
     const gchar *info;
     gboolean text_body;
