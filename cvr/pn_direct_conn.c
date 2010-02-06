@@ -266,6 +266,11 @@ pn_direct_conn_destroy(struct pn_direct_conn *direct_conn)
 {
     pn_log ("begin");
 
+    {
+        char *addr;
+        while ((addr = g_queue_pop_head(direct_conn->addrs)))
+            g_free(addr);
+    }
     g_queue_free(direct_conn->addrs);
 
     if (direct_conn->last_msg)

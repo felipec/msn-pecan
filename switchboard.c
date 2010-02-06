@@ -267,6 +267,8 @@ msn_switchboard_free (MsnSwitchBoard *swboard)
     for (l = swboard->users; l; l = l->next)
         g_free(l->data);
 
+    g_list_free(swboard->users);
+
     if (swboard->cmdproc)
         swboard->cmdproc->data = NULL;
 

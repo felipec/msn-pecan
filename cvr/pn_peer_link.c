@@ -108,6 +108,8 @@ pn_peer_link_free(struct pn_peer_link *link)
         pn_direct_conn_destroy(link->direct_conn);
 #endif /* MSN_DIRECTCONN */
 
+    g_queue_free(link->slp_msg_queue);
+
     g_free(link->local_user);
     g_free(link->remote_user);
 
