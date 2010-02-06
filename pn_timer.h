@@ -45,7 +45,8 @@ pn_timer_free(struct pn_timer *timer)
 {
     if (!timer)
         return;
-    g_source_remove(timer->id);
+    if (timer->id)
+        g_source_remove(timer->id);
     g_free(timer);
 }
 
