@@ -1542,7 +1542,6 @@ chat_leave (PurpleConnection *gc,
     if (!swboard)
         return;
 
-    g_hash_table_remove (session->chats, GINT_TO_POINTER (id));
     swboard->conv = NULL;
 }
 
@@ -1643,8 +1642,6 @@ convo_closed (PurpleConnection *gc,
         return;
 
     swboard->conv = NULL;
-
-    g_hash_table_remove (session->conversations, who);
 }
 
 static void
