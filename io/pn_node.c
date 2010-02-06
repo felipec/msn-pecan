@@ -412,6 +412,8 @@ connect_impl (PnNode *conn,
 
     if (conn->next)
     {
+        conn->status = PN_NODE_STATUS_CONNECTING;
+
         conn->next->prev = conn;
         pn_node_connect (conn->next, hostname, port);
         conn->next->prev = NULL;
@@ -420,6 +422,8 @@ connect_impl (PnNode *conn,
     {
         if (conn->stream)
             pn_node_close (conn);
+
+        conn->status = PN_NODE_STATUS_CONNECTING;
 
 #if defined(USE_GIO)
         GSocketClient *client;

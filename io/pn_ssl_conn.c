@@ -231,6 +231,8 @@ connect_impl (PnNode *conn,
 
     pn_node_close (conn);
 
+    conn->status = PN_NODE_STATUS_CONNECTING;
+
 #ifdef HAVE_LIBPURPLE
     ssl_conn->ssl_data = purple_ssl_connect (msn_session_get_user_data (conn->session),
                                              hostname, port, connect_cb, error_cb, ssl_conn);
