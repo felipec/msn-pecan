@@ -144,7 +144,6 @@ endif
 sources := $(objects:.o=.c)
 deps := $(objects:.o=.d)
 
-PO_TEMPLATE := po/messages.pot
 CATALOGS := ar da de eo es fi fr tr hu it nb nl pt_BR pt sr sv tr zh_CN zh_TW
 
 ifeq ($(PLATFORM),darwin)
@@ -202,7 +201,7 @@ $(plugin): CFLAGS := $(CFLAGS) $(PURPLE_CFLAGS) $(GIO_CFLAGS) $(FALLBACK_CFLAGS)
 $(plugin): LIBS := $(plugin_libs)
 
 messages.pot: $(sources)
-	$(XGETTEXT) -m -c --keyword --keyword=_ --keyword=N_ -o $@ $<
+	$(XGETTEXT) -m -c --keyword --keyword=_ --keyword=N_ -o $@ $^
 
 %.dylib::
 	$(QUIET_LINK)$(CC) $(LDFLAGS) -dynamiclib -o $@ $^ $(LIBS)
