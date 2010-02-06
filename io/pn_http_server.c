@@ -46,7 +46,6 @@
 struct PnHttpServer
 {
     PnNode parent;
-    gboolean dispose_has_run;
 
     guint parser_state;
     gboolean waiting_response;
