@@ -201,6 +201,9 @@ msn_notification_new(MsnSession *session)
 void
 msn_notification_destroy(MsnNotification *notification)
 {
+    if (!notification)
+        return;
+
     if (notification->cmdproc)
         notification->cmdproc->data = NULL;
 

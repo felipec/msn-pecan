@@ -142,8 +142,7 @@ msn_session_destroy (MsnSession *session)
     g_hash_table_destroy (session->links);
 #endif /* defined(PECAN_CVR) */
 
-    if (session->notification)
-        msn_notification_destroy (session->notification);
+    msn_notification_destroy (session->notification);
 
     pn_dp_manager_free (session->dp_manager);
 
