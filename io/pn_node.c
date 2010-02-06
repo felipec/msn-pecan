@@ -420,8 +420,7 @@ connect_impl (PnNode *conn,
     }
     else
     {
-        if (conn->stream)
-            pn_node_close (conn);
+        pn_node_close (conn);
 
         conn->status = PN_NODE_STATUS_CONNECTING;
 
@@ -656,8 +655,7 @@ finalize (GObject *obj)
 {
     PnNode *conn = PN_NODE (obj);
 
-    if (conn->stream)
-        pn_node_close (conn);
+    pn_node_close (conn);
 
     g_free (conn->name);
     parent_class->finalize (obj);
