@@ -400,37 +400,15 @@ read_impl (PnNode *conn,
 /* GObject stuff. */
 
 static void
-dispose (GObject *obj)
-{
-    PnNode *conn = PN_NODE (obj);
-
-    pn_log ("begin");
-
-    G_OBJECT_CLASS (parent_class)->dispose (obj);
-
-    pn_log ("end");
-}
-
-static void
-finalize (GObject *obj)
-{
-    G_OBJECT_CLASS (parent_class)->finalize (obj);
-}
-
-static void
 class_init (gpointer g_class,
             gpointer class_data)
 {
     PnNodeClass *conn_class = PN_NODE_CLASS (g_class);
-    GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
 
     conn_class->connect = &connect_impl;
     conn_class->close = &close_impl;
     conn_class->write = &write_impl;
     conn_class->read = &read_impl;
-
-    gobject_class->dispose = dispose;
-    gobject_class->finalize = finalize;
 
     parent_class = g_type_class_peek_parent (g_class);
 }
