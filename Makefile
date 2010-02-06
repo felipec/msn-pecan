@@ -25,14 +25,6 @@ DIRECTCONN := y
 
 CFLAGS := -O2
 
-ifdef DEBUG
-  CFLAGS += -ggdb
-endif
-
-ifdef DEVEL
-  CFLAGS += -DPECAN_DEVEL
-endif
-
 EXTRA_WARNINGS := -Wall -Wextra -Wformat-nonliteral -Wcast-align -Wpointer-arith \
 	-Wbad-function-cast -Wmissing-prototypes -Wstrict-prototypes \
 	-Wmissing-declarations -Winline -Wundef -Wnested-externs -Wcast-qual \
@@ -44,6 +36,14 @@ OTHER_WARNINGS := -D_FORTIFY_SOURCE=2 -fstack-protector -g3 -Wdisabled-optimizat
 	-Wendif-labels -Wformat=2 -Wstack-protector -Wswitch
 
 CFLAGS += -Wall # $(EXTRA_WARNINGS)
+
+ifdef DEBUG
+  override CFLAGS += -ggdb
+endif
+
+ifdef DEVEL
+  override CFLAGS += -DPECAN_DEVEL
+endif
 
 override CFLAGS += -D_XOPEN_SOURCE
 override CFLAGS += -I. -DENABLE_NLS -DHAVE_LIBPURPLE -DPURPLE_DEBUG
