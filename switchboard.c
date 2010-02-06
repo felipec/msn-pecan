@@ -796,12 +796,6 @@ joi_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     if (!msn_session_get_bool (session, "use_http_method"))
         send_clientcaps(swboard);
-
-    if (swboard->to_close)
-    {
-        msn_switchboard_close(swboard);
-        msn_switchboard_unref(swboard);
-    }
 }
 
 static void
@@ -1820,32 +1814,15 @@ msn_switchboard_close(MsnSwitchBoard *swboard)
     /* Don't let a write error destroy the switchboard before we do. */
     msn_switchboard_ref(swboard);
 
+    if (swboard->error == MSN_SB_ERROR_NONE)
+        msn_cmdproc_send_quick(swboard->cmdproc, "OUT", NULL, NULL);
+
     if (swboard->chat_id)
         g_hash_table_remove (swboard->session->chats, GINT_TO_POINTER (swboard->chat_id));
     else
         g_hash_table_remove (swboard->session->conversations, swboard->im_user);
 
-    if (swboard->error != MSN_SB_ERROR_NONE)
-    {
-        msn_switchboard_unref(swboard);
-    }
-    else if (g_queue_is_empty(swboard->msg_queue) ||
-             !swboard->session->connected)
-    {
-        MsnCmdProc *cmdproc;
-
-        cmdproc = swboard->cmdproc;
-
-        msn_cmdproc_send_quick(cmdproc, "OUT", NULL, NULL);
-
-        msn_switchboard_unref(swboard);
-    }
-    else
-    {
-        /* Messages are still pending */
-        /* Destroy the switchboard when they are sent. */
-        swboard->to_close = TRUE;
-    }
+    msn_switchboard_unref(swboard);
 }
 
 /**************************************************************************

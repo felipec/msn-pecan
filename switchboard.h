@@ -75,8 +75,6 @@ struct MsnSwitchBoard
     gboolean ready;			/**< A flag that states if this switchboard is
                                           ready to be used. */
     gboolean closed; /**< The switchboard has been closed. */
-    gboolean to_close; /**< The switchboard should be closed after sending the
-                         queued messages. */
 
     int current_users;
     int total_users;
