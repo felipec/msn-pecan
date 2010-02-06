@@ -317,6 +317,8 @@ connect_cb(GObject *source,
 
         PN_NODE_GET_CLASS (conn)->channel_setup (conn, channel);
 
+        conn->status = PN_NODE_STATUS_OPEN;
+
         pn_info("connected: conn=%p,channel=%p", conn, channel);
         conn->read_watch = g_io_add_watch(channel, G_IO_IN, read_cb, conn);
 #if 0
