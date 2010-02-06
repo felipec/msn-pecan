@@ -406,15 +406,6 @@ dispose (GObject *obj)
 
     pn_log ("begin");
 
-    if (!conn->dispose_has_run)
-    {
-        conn->dispose_has_run = TRUE;
-
-        pn_node_close (conn);
-
-        g_free (conn->name);
-    }
-
     G_OBJECT_CLASS (parent_class)->dispose (obj);
 
     pn_log ("end");
