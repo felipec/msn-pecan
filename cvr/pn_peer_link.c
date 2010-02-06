@@ -297,7 +297,6 @@ msg_ack(MsnMessage *msg,
     }
 
 leave:
-    peer_msg->msgs = g_list_remove(peer_msg->msgs, msg);
     pn_peer_msg_unref(peer_msg);
 }
 
@@ -310,7 +309,6 @@ msg_nak(MsnMessage *msg,
 
     peer_msg = data;
 
-    peer_msg->msgs = g_list_remove(peer_msg->msgs, msg);
     pn_peer_msg_unref(peer_msg);
 }
 
@@ -352,7 +350,6 @@ send_msg_part(struct pn_peer_link *link,
 #endif
 
     pn_peer_msg_ref(peer_msg);
-    peer_msg->msgs = g_list_append(peer_msg->msgs, msg);
 
 #ifdef MSN_DIRECTCONN
     /* The hand-shake message has 0x100 flags. */
