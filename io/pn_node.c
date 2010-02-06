@@ -464,11 +464,6 @@ close_impl (PnNode *conn)
         goto leave;
     }
 
-    if (!conn->stream)
-    {
-        pn_error ("not connected: conn=%p", conn);
-    }
-
 #if defined(USE_GIO)
     g_object_unref(conn->socket_conn);
 #elif defined(HAVE_LIBPURPLE)
@@ -490,6 +485,8 @@ close_impl (PnNode *conn)
         pn_stream_free (conn->stream);
         conn->stream = NULL;
     }
+    else
+        pn_error ("not connected: conn=%p", conn);
 
 leave:
     conn->status = PN_NODE_STATUS_CLOSED;

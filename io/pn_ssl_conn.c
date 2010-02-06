@@ -262,11 +262,6 @@ close_impl (PnNode *conn)
     g_free (conn->hostname);
     conn->hostname = NULL;
 
-    if (!ssl_conn->ssl_data)
-    {
-        pn_warning ("not connected: conn=%p", conn);
-    }
-
 #ifdef HAVE_LIBPURPLE
     if (ssl_conn->ssl_data)
     {
@@ -274,6 +269,8 @@ close_impl (PnNode *conn)
         purple_ssl_close (ssl_conn->ssl_data);
         ssl_conn->ssl_data = NULL;
     }
+    else
+        pn_error ("not connected: conn=%p", conn);
 #endif /* HAVE_LIBPURPLE */
 
     conn->status = PN_NODE_STATUS_CLOSED;
