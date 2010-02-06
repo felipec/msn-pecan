@@ -29,7 +29,7 @@
 
 void pn_node_error (PnNode *conn);
 
-static GObjectClass *parent_class = NULL;
+static GObjectClass *parent_class;
 
 GQuark
 pn_node_error_quark (void)
@@ -646,7 +646,7 @@ dispose (GObject *obj)
         g_free (conn->name);
     }
 
-    G_OBJECT_CLASS (parent_class)->dispose (obj);
+    parent_class->dispose (obj);
 
     pn_log ("end");
 }
@@ -654,7 +654,7 @@ dispose (GObject *obj)
 static void
 finalize (GObject *obj)
 {
-    G_OBJECT_CLASS (parent_class)->finalize (obj);
+    parent_class->finalize (obj);
 }
 
 static void

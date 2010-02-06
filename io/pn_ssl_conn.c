@@ -42,7 +42,7 @@ struct PnSslConnClass
     PnNodeClass parent_class;
 };
 
-static GObjectClass *parent_class = NULL;
+static GObjectClass *parent_class;
 
 static void
 read_cb (gpointer data,

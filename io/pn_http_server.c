@@ -67,7 +67,7 @@ struct PnHttpServerClass
     PnNodeClass parent_class;
 };
 
-static PnNodeClass *parent_class = NULL;
+static PnNodeClass *parent_class;
 
 typedef struct
 {
@@ -535,7 +535,7 @@ close_impl (PnNode *conn)
     g_hash_table_remove_all (http_conn->childs);
 #endif
 
-    PN_NODE_CLASS (parent_class)->close (conn);
+    parent_class->close (conn);
 
     pn_log ("end");
 }

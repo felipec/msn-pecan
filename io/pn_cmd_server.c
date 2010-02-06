@@ -41,7 +41,7 @@ struct PnCmdServerClass
     PnNodeClass parent_class;
 };
 
-static PnNodeClass *parent_class = NULL;
+static PnNodeClass *parent_class;
 
 PnCmdServer *
 pn_cmd_server_new (PnNodeType type)
@@ -178,7 +178,7 @@ close_impl (PnNode *conn)
     if (cmd_conn->cmdproc)
         msn_cmdproc_flush (cmd_conn->cmdproc);
 
-    PN_NODE_CLASS (parent_class)->close (conn);
+    parent_class->close (conn);
 
     pn_log ("end");
 }

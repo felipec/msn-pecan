@@ -38,7 +38,7 @@ struct PnDcConnClass {
     PnNodeClass parent_class;
 };
 
-static GObjectClass *parent_class = NULL;
+static GObjectClass *parent_class;
 
 PnDcConn *
 pn_dc_conn_new(gchar *name,
@@ -205,7 +205,7 @@ finalize(GObject *obj)
 {
     PnDcConn *dc_conn = PN_DC_CONN(obj);
     g_free(dc_conn->rx_buf);
-    G_OBJECT_CLASS(parent_class)->finalize(obj);
+    parent_class->finalize(obj);
 }
 
 static void
