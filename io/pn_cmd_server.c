@@ -275,26 +275,10 @@ read_impl (PnNode *conn)
 /* GObject stuff. */
 
 static void
-dispose (GObject *obj)
-{
-    PnCmdServer *cmd_conn = PN_CMD_SERVER (obj);
-
-    pn_log ("begin");
-
-    if (cmd_conn->cmdproc)
-    {
-        msn_cmdproc_destroy (cmd_conn->cmdproc);
-        cmd_conn->cmdproc = NULL;
-    }
-
-    G_OBJECT_CLASS (parent_class)->dispose (obj);
-
-    pn_log ("end");
-}
-
-static void
 finalize (GObject *obj)
 {
+    PnCmdServer *cmd_conn = PN_CMD_SERVER (obj);
+    msn_cmdproc_destroy (cmd_conn->cmdproc);
     G_OBJECT_CLASS (parent_class)->finalize (obj);
 }
 
@@ -308,7 +292,6 @@ class_init (gpointer g_class,
     conn_class->parse = &parse_impl;
     conn_class->close = &close_impl;
 
-    gobject_class->dispose = dispose;
     gobject_class->finalize = finalize;
 
     parent_class = g_type_class_peek_parent (g_class);

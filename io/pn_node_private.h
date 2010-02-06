@@ -44,7 +44,6 @@ struct PnNode
 {
     GObject parent;
     gboolean open;
-    gboolean dispose_has_run;
 
     GError *error; /**< The current IO error .*/
     guint read_watch; /** < The source id of the read watch. */

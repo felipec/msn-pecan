@@ -983,32 +983,15 @@ write_impl (PnNode *conn,
 /* GObject stuff. */
 
 static void
-dispose (GObject *obj)
+finalize (GObject *obj)
 {
     PnHttpServer *http_conn = PN_HTTP_SERVER (obj);
 
-    pn_log ("begin");
-
     g_free (http_conn->old_buffer);
-    http_conn->old_buffer = NULL;
-
     g_free (http_conn->gateway);
-    http_conn->gateway = NULL;
-
     g_queue_free (http_conn->write_queue);
-    http_conn->write_queue = NULL;
-
     g_hash_table_destroy (http_conn->childs);
-    http_conn->childs = NULL;
 
-    G_OBJECT_CLASS (parent_class)->dispose (obj);
-
-    pn_log ("end");
-}
-
-static void
-finalize (GObject *obj)
-{
     G_OBJECT_CLASS (parent_class)->finalize (obj);
 }
 
@@ -1024,7 +1007,6 @@ class_init (gpointer g_class,
     conn_class->write = &write_impl;
     conn_class->read = &read_impl;
 
-    gobject_class->dispose = dispose;
     gobject_class->finalize = finalize;
 
     parent_class = g_type_class_peek_parent (g_class);

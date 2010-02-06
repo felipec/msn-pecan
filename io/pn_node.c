@@ -636,16 +636,6 @@ dispose (GObject *obj)
         conn->next = NULL;
     }
 
-    if (!conn->dispose_has_run)
-    {
-        conn->dispose_has_run = TRUE;
-
-        if (conn->stream)
-            pn_node_close (conn);
-
-        g_free (conn->name);
-    }
-
     parent_class->dispose (obj);
 
     pn_log ("end");
@@ -654,6 +644,12 @@ dispose (GObject *obj)
 static void
 finalize (GObject *obj)
 {
+    PnNode *conn = PN_NODE (obj);
+
+    if (conn->stream)
+        pn_node_close (conn);
+
+    g_free (conn->name);
     parent_class->finalize (obj);
 }
 
