@@ -948,7 +948,7 @@ pn_rand_guid(void)
 time_t
 pn_parse_date(const char *str)
 {
-    gchar month[3], *months[13] = {
+    gchar month[4], *months[13] = {
         "Jan", "Feb", "Mar", "Apr", "May", "Jun",
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
     int d, m, y, hour, min, sec, tz;
