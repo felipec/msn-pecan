@@ -166,7 +166,7 @@ connect_cb (gpointer data,
 
     if (gsc->fd >= 0)
     {
-        conn->open = TRUE;
+        conn->status = PN_NODE_STATUS_OPEN;
 
         pn_info ("connected: conn=%p", conn);
         purple_ssl_input_add (gsc, read_cb, conn);
@@ -268,6 +268,8 @@ close_impl (PnNode *conn)
         ssl_conn->ssl_data = NULL;
     }
 #endif /* HAVE_LIBPURPLE */
+
+    conn->status = PN_NODE_STATUS_CLOSED;
 
     pn_log ("end");
 }

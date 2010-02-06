@@ -40,10 +40,16 @@ struct MsnSesion;
 
 GQuark pn_node_error_quark (void);
 
+enum pn_node_status {
+    PN_NODE_STATUS_CLOSED,
+    PN_NODE_STATUS_CONNECTING,
+    PN_NODE_STATUS_OPEN,
+};
+
 struct PnNode
 {
     GObject parent;
-    gboolean open;
+    enum pn_node_status status;
 
     GError *error; /**< The current IO error .*/
     guint read_watch; /** < The source id of the read watch. */

@@ -114,7 +114,7 @@ open_cb (PnNode *next,
 
     pn_log ("begin");
 
-    conn->open = TRUE;
+    conn->status = PN_NODE_STATUS_OPEN;
 
     {
         PnNodeClass *class;
@@ -362,7 +362,7 @@ connect_cb (gpointer data,
 
         PN_NODE_GET_CLASS (conn)->channel_setup (conn, channel);
 
-        conn->open = TRUE;
+        conn->status = PN_NODE_STATUS_OPEN;
 
         pn_info ("connected: conn=%p,channel=%p", conn, channel);
         conn->read_watch = g_io_add_watch (channel, G_IO_IN, read_cb, conn);
@@ -443,7 +443,7 @@ close_impl (PnNode *conn)
     pn_info ("closing '%s'", conn->name);
     pn_debug ("conn=%p,name=%s", conn, conn->name);
 
-    conn->open = FALSE;
+    conn->status = PN_NODE_STATUS_CLOSED;
 
     g_free (conn->hostname);
     conn->hostname = NULL;
@@ -481,6 +481,8 @@ close_impl (PnNode *conn)
     }
 
 leave:
+    conn->status = PN_NODE_STATUS_CLOSED;
+
     pn_log ("end");
 }
 

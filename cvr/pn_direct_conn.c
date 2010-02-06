@@ -202,7 +202,7 @@ open_cb(PnNode *conn,
     g_signal_handler_disconnect(conn, direct_conn->open_handler);
     direct_conn->open_handler = 0;
 
-    if (!conn->open) {
+    if (!conn->status == PN_NODE_STATUS_OPEN) {
         if (g_queue_is_empty(direct_conn->addrs)) {
             pn_warning("no more addresses to try");
             pn_direct_conn_destroy(direct_conn);
