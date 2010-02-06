@@ -486,7 +486,6 @@ connect_impl (PnNode *conn,
         conn->connect_data = purple_proxy_connect (NULL, msn_session_get_user_data (conn->session),
                                                    hostname, port, connect_cb, conn);
 #endif
-        return;
     }
     else
     {

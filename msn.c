@@ -1533,7 +1533,6 @@ chat_leave (PurpleConnection *gc,
 {
     MsnSession *session;
     MsnSwitchBoard *swboard;
-    PurpleConversation *conv;
 
     session = gc->proto_data;
 
@@ -1542,8 +1541,6 @@ chat_leave (PurpleConnection *gc,
     /* if swboard is NULL we were the only person left anyway */
     if (!swboard)
         return;
-
-    conv = swboard->conv;
 
     g_hash_table_remove (session->chats, GINT_TO_POINTER (id));
     swboard->conv = NULL;

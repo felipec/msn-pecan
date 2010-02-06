@@ -168,7 +168,7 @@ connect_cb (gpointer data,
     {
         conn->open = TRUE;
 
-        pn_info ("connected: conn=%p,ssl_conn=%p", conn, ssl_conn);
+        pn_info ("connected: conn=%p", conn);
         purple_ssl_input_add (gsc, read_cb, conn);
     }
     else
@@ -261,14 +261,6 @@ close_impl (PnNode *conn)
     }
 
 #ifdef HAVE_LIBPURPLE
-#if 0
-    if (ssl_conn->read_watch)
-    {
-        purple_input_remove (ssl_conn->read_watch);
-        ssl_conn->read_watch = 0;
-    }
-#endif
-
     if (ssl_conn->ssl_data)
     {
         pn_info ("ssl shutdown: %p", ssl_conn->ssl_data);
