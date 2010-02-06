@@ -197,7 +197,7 @@ pn_node_free (PnNode *conn)
 {
     g_return_if_fail (conn != NULL);
     pn_log ("begin");
-    g_object_unref (G_OBJECT (conn));
+    g_object_unref (conn);
     pn_log ("end");
 }
 

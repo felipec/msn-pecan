@@ -100,7 +100,7 @@ process_queue (PnHttpServer *http_conn,
                    queue_data->body_len,
                    NULL,
                    error);
-        g_object_unref (G_OBJECT (queue_data->conn));
+        g_object_unref (queue_data->conn);
         g_free (queue_data->body);
         g_free (queue_data);
     }
@@ -217,7 +217,7 @@ void
 pn_http_server_free (PnHttpServer *http_conn)
 {
     pn_log ("begin");
-    g_object_unref (G_OBJECT (http_conn));
+    g_object_unref (http_conn);
     pn_log ("end");
 }
 
@@ -524,7 +524,7 @@ close_impl (PnNode *conn)
         HttpQueueData *queue_data;
         while ((queue_data = g_queue_pop_head (http_conn->write_queue)))
         {
-            g_object_unref (G_OBJECT (queue_data->conn));
+            g_object_unref (queue_data->conn);
             g_free (queue_data->body);
             g_free (queue_data);
         }
@@ -745,7 +745,7 @@ read_impl (PnNode *conn,
                         pn_node_close (child);
                         g_hash_table_remove (http_conn->childs, session_id);
 
-                        g_object_unref (G_OBJECT (http_conn->cur));
+                        g_object_unref (http_conn->cur);
                         g_free (http_conn->gateway);
                         g_free (http_conn->last_session_id);
                         if ((foo = PN_NODE (g_hash_table_peek_first (http_conn->childs))))

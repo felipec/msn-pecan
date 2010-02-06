@@ -134,7 +134,7 @@ pn_ssl_conn_free (PnSslConn *conn)
     g_return_if_fail (conn);
 
     pn_log ("begin");
-    g_object_unref (G_OBJECT (conn));
+    g_object_unref (conn);
     pn_log ("end");
 }
 

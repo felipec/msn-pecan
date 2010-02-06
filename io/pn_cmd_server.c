@@ -66,7 +66,7 @@ void
 pn_cmd_server_free (PnCmdServer *conn)
 {
     pn_log ("begin");
-    g_object_unref (G_OBJECT (conn));
+    g_object_unref (conn);
     pn_log ("end");
 }
 

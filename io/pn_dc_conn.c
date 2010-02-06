@@ -59,7 +59,7 @@ pn_dc_conn_new(gchar *name,
 void
 pn_dc_conn_free(PnDcConn *conn)
 {
-    g_object_unref(G_OBJECT(conn));
+    g_object_unref(conn);
 }
 
 /* PnNode stuff. */
