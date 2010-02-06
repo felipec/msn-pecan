@@ -166,6 +166,11 @@ close_impl (PnNode *conn)
 {
     PnCmdServer *cmd_conn;
 
+    if (conn->status == PN_NODE_STATUS_CLOSED) {
+        pn_log ("already closed: %p", conn);
+        return;
+    }
+
     pn_log ("begin");
 
     cmd_conn = PN_CMD_SERVER (conn);

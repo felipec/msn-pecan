@@ -248,6 +248,11 @@ close_impl (PnNode *conn)
 
     g_return_if_fail (conn);
 
+    if (conn->status == PN_NODE_STATUS_CLOSED) {
+        pn_log ("already closed: %p", conn);
+        return;
+    }
+
     pn_log ("begin");
 
     ssl_conn = PN_SSL_CONN (conn);

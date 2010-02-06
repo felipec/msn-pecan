@@ -507,6 +507,11 @@ close_impl (PnNode *conn)
 {
     PnHttpServer *http_conn;
 
+    if (conn->status == PN_NODE_STATUS_CLOSED) {
+        pn_log ("already closed: %p", conn);
+        return;
+    }
+
     pn_log ("begin");
 
     http_conn = PN_HTTP_SERVER (conn);
