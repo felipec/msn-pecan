@@ -59,7 +59,6 @@ pn_peer_call_new(struct pn_peer_link *link)
 
     call->link = link;
 
-    pn_peer_link_ref(link);
     pn_peer_link_add_call(link, call);
 
     /* The official client seems to timeout calls after 5 minutes */
@@ -93,7 +92,6 @@ pn_peer_call_free(struct pn_peer_call *call)
         call->end_cb(call, session);
 
     pn_peer_link_remove_call(call->link, call);
-    pn_peer_link_unref(call->link);
 
     if (call->xfer)
         purple_xfer_unref(call->xfer);
