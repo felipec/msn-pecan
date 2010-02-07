@@ -629,6 +629,65 @@ pn_sip_send_bye(struct pn_peer_call *call,
 }
 
 static void
+got_transreq(struct pn_peer_call *call,
+             const char *content,
+             const char *branch)
+{
+    const gchar *listening;
+    gchar *new_content, *nonce;
+
+    if (FALSE) {
+#if 0
+        struct pn_direct_conn *direct_conn;
+        /* const char *ip_addr; */
+        char *ip_port;
+        int port;
+
+        /* ip_addr = purple_prefs_get_string("/purple/ft/public_ip"); */
+        ip_port = "5190";
+        listening = "true";
+        nonce = pn_rand_guid();
+
+        direct_conn = pn_direct_conn_new(link);
+
+        direct_conn->nonce = g_strdup(nonce);
+
+        /* TODO: listen */
+
+        port = direct_conn->port;
+
+        new_content = g_strdup_printf("Bridge: TCPv1\r\n"
+                                      "Listening: %s\r\n"
+                                      "Nonce: {%s}\r\n"
+                                      "Ipv4Internal-Addrs: 192.168.0.82\r\n"
+                                      "Ipv4Internal-Port: %d\r\n"
+                                      "\r\n",
+                                      listening,
+                                      nonce,
+                                      port);
+#endif
+    }
+    else {
+        listening = "false";
+        nonce = g_strdup("00000000-0000-0000-0000-000000000000");
+
+        new_content = g_strdup_printf("Bridge: TCPv1\r\n"
+                                      "Listening: %s\r\n"
+                                      "Nonce: {%s}\r\n"
+                                      "\r\n",
+                                      listening,
+                                      nonce);
+    }
+
+    pn_sip_send_ok(call, branch,
+                   "application/x-msnmsgr-transrespbody",
+                   new_content);
+
+    g_free(new_content);
+    g_free(nonce);
+}
+
+static void
 got_invite(struct pn_peer_call *call,
            const char *branch,
            const char *type,
@@ -664,62 +723,8 @@ got_invite(struct pn_peer_call *call,
         g_free(context);
         g_free(euf_guid);
     }
-    else if (strcmp(type, "application/x-msnmsgr-transreqbody") == 0) {
-        /* A direct connection? */
-
-        const gchar *listening;
-        gchar *new_content, *nonce;
-
-        if (FALSE) {
-#if 0
-            struct pn_direct_conn *direct_conn;
-            /* const char *ip_addr; */
-            char *ip_port;
-            int port;
-
-            /* ip_addr = purple_prefs_get_string("/purple/ft/public_ip"); */
-            ip_port = "5190";
-            listening = "true";
-            nonce = pn_rand_guid();
-
-            direct_conn = pn_direct_conn_new(link);
-
-            direct_conn->nonce = g_strdup(nonce);
-
-            /* TODO: listen */
-
-            port = direct_conn->port;
-
-            new_content = g_strdup_printf("Bridge: TCPv1\r\n"
-                                          "Listening: %s\r\n"
-                                          "Nonce: {%s}\r\n"
-                                          "Ipv4Internal-Addrs: 192.168.0.82\r\n"
-                                          "Ipv4Internal-Port: %d\r\n"
-                                          "\r\n",
-                                          listening,
-                                          nonce,
-                                          port);
-#endif
-        }
-        else {
-            listening = "false";
-            nonce = g_strdup("00000000-0000-0000-0000-000000000000");
-
-            new_content = g_strdup_printf("Bridge: TCPv1\r\n"
-                                          "Listening: %s\r\n"
-                                          "Nonce: {%s}\r\n"
-                                          "\r\n",
-                                          listening,
-                                          nonce);
-        }
-
-        pn_sip_send_ok(call, branch,
-                       "application/x-msnmsgr-transrespbody",
-                       new_content);
-
-        g_free(new_content);
-        g_free(nonce);
-    }
+    else if (strcmp(type, "application/x-msnmsgr-transreqbody") == 0)
+        got_transreq(call, content, branch);
 #ifdef MSN_DIRECTCONN
     else if (strcmp(type, "application/x-msnmsgr-transrespbody") == 0)
         got_transresp(call, content);
