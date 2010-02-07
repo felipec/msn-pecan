@@ -383,7 +383,6 @@ release_peer_msg(struct pn_peer_link *link,
     MsnMessage *msg;
 
     peer_msg->link = link;
-    link->slp_msgs = g_list_append(link->slp_msgs, peer_msg);
 
     msg = msn_message_new_msnslp();
 
@@ -434,6 +433,7 @@ release_peer_msg(struct pn_peer_link *link,
     send_msg_part(link, peer_msg, msg);
 
     msn_message_unref(msg);
+    pn_peer_msg_unref(peer_msg);
 }
 
 void
