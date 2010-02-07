@@ -574,8 +574,8 @@ process_peer_msg(struct pn_peer_link *link,
             pn_peer_call_unref(call);
             break;
         default:
-            pn_debug("slp_process_msg: unprocessed SLP message with flags 0x%08lx",
-                     peer_msg->flags);
+            pn_info("slp_process_msg: unprocessed SLP message with flags 0x%08lx",
+                    peer_msg->flags);
     }
 }
 
