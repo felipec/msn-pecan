@@ -710,12 +710,16 @@ void
 msn_message_show_readable(MsnMessage *msg, const char *info,
                           gboolean text_body)
 {
+#if defined(PN_DEBUG)
     GString *str;
     size_t body_len;
     const char *body;
     GList *l;
 
     g_return_if_fail(msg != NULL);
+
+    if (PECAN_LOG_LEVEL < PN_LOG_LEVEL_DEBUG)
+        return;
 
     str = g_string_new(NULL);
 
@@ -803,4 +807,5 @@ msn_message_show_readable(MsnMessage *msg, const char *info,
     pn_debug ("info=[%s],str=[%s]", info, str->str);
 
     g_string_free(str, TRUE);
+#endif /* PN_DEBUG */
 }
