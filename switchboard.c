@@ -1659,10 +1659,11 @@ ans_usr_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
     pn_warning ("command=[%s],error=%i",
                 trans->command, error);
 
-    params = g_strsplit(trans->params, " ", 0);
-    passport = params[0];
     swboard = trans->data;
     g_return_if_fail (swboard);
+
+    params = g_strsplit(trans->params, " ", 0);
+    passport = params[0];
 
     swboard_error_helper(swboard, reason, passport);
 
