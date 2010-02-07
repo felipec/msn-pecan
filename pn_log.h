@@ -49,6 +49,12 @@ enum PecanLogLevel
     PN_LOG_LEVEL_TEST,
 };
 
+#ifdef PECAN_DEVEL
+#define PECAN_LOG_LEVEL PN_LOG_LEVEL_LOG
+#else
+#define PECAN_LOG_LEVEL PN_LOG_LEVEL_INFO
+#endif
+
 typedef enum PecanLogLevel PecanLogLevel;
 
 void pn_base_log_helper (PecanLogLevel level,

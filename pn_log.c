@@ -34,12 +34,6 @@
 #include <debug.h>
 #endif /* PURPLE_DEBUG */
 
-#ifdef PECAN_DEVEL
-#define PECAN_LOG_LEVEL PN_LOG_LEVEL_LOG
-#else
-#define PECAN_LOG_LEVEL PN_LOG_LEVEL_INFO
-#endif
-
 static inline const gchar *
 log_level_to_string (PecanLogLevel level)
 {
