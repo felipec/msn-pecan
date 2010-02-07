@@ -510,18 +510,16 @@ swboard_error_helper(MsnSwitchBoard *swboard, int reason, const char *passport)
 }
 
 static void
-cal_error_helper(MsnTransaction *trans, int reason)
+cal_error_helper(MsnSwitchBoard *swboard, MsnTransaction *trans, int reason)
 {
-    MsnSwitchBoard *swboard;
     const char *passport;
     char **params;
+
+    g_return_if_fail (swboard);
 
     params = g_strsplit(trans->params, " ", 0);
 
     passport = params[0];
-
-    swboard = trans->data;
-    g_return_if_fail (swboard);
 
     pn_warning ("failed: command=[%s],reason=%i",
                 trans->command, reason);
@@ -1707,7 +1705,7 @@ cal_error(MsnCmdProc *cmdproc, MsnTransaction *trans, int error)
 
     pn_warning ("command=[%s],error=%i",  trans->command, error);
 
-    cal_error_helper(trans, reason);
+    cal_error_helper(cmdproc->data, trans, reason);
 }
 
 void
