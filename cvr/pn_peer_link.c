@@ -549,7 +549,10 @@ process_peer_msg(struct pn_peer_link *link,
                 else
                 {
                     body_str = g_strndup ((const char *) body, body_len);
-                    pn_sip_recv (link, body_str);
+                    if (!pn_sip_recv (link, body_str)) {
+                        pn_warning("'%s' sent a bogus message: [%s]:%li",
+                                   pn_peer_link_get_passport(link), body_str, peer_msg->flags);
+                    }
                 }
                 g_free(body_str);
                 break;

@@ -812,10 +812,8 @@ pn_sip_recv(struct pn_peer_link *link,
 {
     struct pn_peer_call *call;
 
-    if (!body) {
-        pn_warning("received bogus message");
+    if (!body)
         return FALSE;
-    }
 
     /* show first line */
     {
