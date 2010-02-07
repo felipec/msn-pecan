@@ -205,10 +205,8 @@ login_read_cb(PnNode *conn,
 
         status = pn_parser_read_line(nexus->parser, &str, NULL, &terminator_pos, NULL);
 
-        if (status == G_IO_STATUS_AGAIN) {
-            g_object_unref(conn);
-            return;
-        }
+        if (status == G_IO_STATUS_AGAIN)
+            goto leave;
 
         if (status != G_IO_STATUS_NORMAL) {
             msn_session_set_error(nexus->session, MSN_ERROR_AUTH,
@@ -339,7 +337,7 @@ nexus_read_cb(PnNode *conn,
         if (status != G_IO_STATUS_NORMAL) {
             msn_session_set_error(nexus->session, MSN_ERROR_AUTH,
                                   _("nexus stream error"));
-            goto leave;
+            return;
         }
 
         if (str) {
