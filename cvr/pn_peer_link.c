@@ -280,8 +280,10 @@ msg_ack(MsnMessage *msg,
 
     peer_msg = data;
 
-    if (!peer_msg->link)
+    if (!peer_msg->link) {
+        pn_warning("msg with no link?");
         goto leave;
+    }
 
     real_size = (peer_msg->flags == 0x2) ? 0 : peer_msg->size;
 
