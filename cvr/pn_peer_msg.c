@@ -291,6 +291,10 @@ got_transresp(struct pn_peer_call *call,
     GList *list, *c;
     GList *internal, *external;
 
+    if (!msn_session_get_bool(pn_peer_link_get_session(call->link),
+                             "use_direct_conn"))
+        return;
+
     listening = get_token(content, "Listening: ", "\r\n");
     if (strcmp(listening, "true") != 0) {
         /* nevermind, let's get it started */
@@ -635,6 +639,12 @@ got_transreq(struct pn_peer_call *call,
 {
     const gchar *listening;
     gchar *new_content, *nonce;
+
+    /** @todo check actual type */
+
+    if (!msn_session_get_bool(pn_peer_link_get_session(call->link),
+                             "use_direct_conn"))
+        return;
 
     if (FALSE) {
 #if 0
