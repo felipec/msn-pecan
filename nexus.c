@@ -236,7 +236,6 @@ login_read_cb(PnNode *conn,
     }
 
 leave:
-    pn_node_close(conn);
     g_object_unref(conn);
 }
 
