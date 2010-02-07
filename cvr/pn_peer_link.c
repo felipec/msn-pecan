@@ -92,6 +92,32 @@ pn_peer_link_new(MsnSession *session,
     return link;
 }
 
+static void
+remove_lingering(struct pn_peer_link *link)
+{
+    GList *l;
+
+    /* remove extra calls */
+    for (l = link->slp_calls; l; ) {
+        struct pn_peer_call *call = l->data;
+        l = l->next;
+
+        pn_info("remove lingering call: %p", call);
+        pn_peer_call_unref(call);
+    }
+    g_list_free(link->slp_calls);
+
+    /* remove extra slp_msgs */
+    for (l = link->slp_msgs; l; ) {
+        struct pn_peer_msg *peer_msg = l->data;
+        l = l->next;
+
+        pn_info("removing lingering slpmsg: %p", peer_msg);
+        pn_peer_msg_unref(peer_msg);
+    }
+    g_list_free(link->slp_msgs);
+}
+
 void
 pn_peer_link_free(struct pn_peer_link *link)
 {
@@ -105,6 +131,8 @@ pn_peer_link_free(struct pn_peer_link *link)
 #endif
 
     session = link->session;
+
+    remove_lingering(link);
 
 #ifdef MSN_DIRECTCONN
     if (link->direct_conn)
