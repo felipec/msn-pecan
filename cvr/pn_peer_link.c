@@ -736,9 +736,17 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
                 break;
         }
 
+        link->slp_msgs = g_list_remove(link->slp_msgs, peer_msg);
+        pn_peer_msg_unref(peer_msg);
+
         if (call)
             pn_peer_call_unref(call);
 
+        pn_peer_msg_unref(peer_msg);
+    }
+    else if (peer_msg->flags == 0x2) {
+        /* this is an ACK, lets just get rid of it */
+        link->slp_msgs = g_list_remove(link->slp_msgs, peer_msg);
         pn_peer_msg_unref(peer_msg);
     }
 }
