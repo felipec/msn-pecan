@@ -806,7 +806,7 @@ got_ok(struct pn_peer_call *call,
 #endif /* MSN_DIRECTCONN */
 }
 
-void
+gboolean
 pn_sip_recv(struct pn_peer_link *link,
             const char *body)
 {
@@ -814,7 +814,7 @@ pn_sip_recv(struct pn_peer_link *link,
 
     if (!body) {
         pn_warning("received bogus message");
-        return;
+        return FALSE;
     }
 
     /* show first line */
@@ -858,6 +858,8 @@ pn_sip_recv(struct pn_peer_link *link,
         g_free(branch);
         g_free(content_type);
         g_free(content);
+
+        return TRUE;
     }
     else if (strncmp(body, "MSNSLP/1.0 ", strlen("MSNSLP/1.0 ")) == 0) {
         char *content;
@@ -870,7 +872,7 @@ pn_sip_recv(struct pn_peer_link *link,
         call = pn_peer_link_find_slp_call(link, call_id);
         g_free(call_id);
 
-        g_return_if_fail(call);
+        g_return_val_if_fail(call, FALSE);
 
         if (strncmp(status, "200 OK", 6) != 0) {
             /* It's not valid. Kill this off. */
@@ -893,7 +895,7 @@ pn_sip_recv(struct pn_peer_link *link,
             pn_warning("received non-OK result: %s", temp);
 
             pn_peer_call_unref(call);
-            return;
+            return TRUE;
         }
 
         content_type = get_token(body, "Content-Type: ", "\r\n");
@@ -904,6 +906,8 @@ pn_sip_recv(struct pn_peer_link *link,
 
         g_free(content_type);
         g_free(content);
+
+        return TRUE;
     }
     else if (strncmp(body, "BYE", strlen("BYE")) == 0) {
         char *call_id;
@@ -914,6 +918,9 @@ pn_sip_recv(struct pn_peer_link *link,
 
         if (call)
             pn_peer_call_unref(call);
-        return;
+
+        return TRUE;
     }
+
+    return FALSE;
 }

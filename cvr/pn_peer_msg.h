@@ -20,6 +20,8 @@
 #ifndef PN_PEER_MSG_H
 #define PN_PEER_MSG_H
 
+#include <glib.h>
+
 struct pn_peer_call;
 struct pn_peer_link;
 
@@ -33,8 +35,8 @@ struct MsnMessage;
 void pn_peer_msg_show(struct MsnMessage *msg);
 #endif
 
-void pn_sip_recv(struct pn_peer_link *link,
-                 const char *body);
+gboolean pn_sip_recv(struct pn_peer_link *link,
+                     const char *body);
 
 void pn_sip_send_invite(struct pn_peer_call *call,
                         const char *euf_guid,
