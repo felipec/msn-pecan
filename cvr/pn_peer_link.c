@@ -712,8 +712,6 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
     {
         struct pn_peer_call *call = peer_msg->call;
 
-        pn_peer_msg_ref(peer_msg);
-
         if (!call)
             peer_msg->swboard = user_data;
 
@@ -743,8 +741,6 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
 
         if (call)
             pn_peer_call_unref(call);
-
-        pn_peer_msg_unref(peer_msg);
     }
     else if (peer_msg->flags == 0x2) {
         /* this is an ACK, lets just get rid of it */
