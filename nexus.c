@@ -56,6 +56,7 @@ msn_nexus_destroy(MsnNexus *nexus)
         g_signal_handler_disconnect(nexus->conn, nexus->error_handler);
     if (nexus->open_handler)
         g_signal_handler_disconnect(nexus->conn, nexus->open_handler);
+    g_object_unref(nexus->conn);
     pn_parser_free(nexus->parser);
 
     if (nexus->header)
@@ -226,6 +227,7 @@ login_read_cb(PnNode *conn,
                 nexus->header = NULL;
                 got_header(nexus, tmp);
                 g_free(tmp);
+                g_free(str);
                 break;
             }
 
@@ -378,6 +380,13 @@ nexus_read_cb(PnNode *conn,
                 conn = PN_NODE(ssl_conn);
                 conn->session = nexus->session;
 
+                if (nexus->error_handler)
+                    g_signal_handler_disconnect(nexus->conn, nexus->error_handler);
+                if (nexus->open_handler)
+                    g_signal_handler_disconnect(nexus->conn, nexus->open_handler);
+                g_object_unref(nexus->conn);
+                pn_parser_free(nexus->parser);
+
                 nexus->parser = pn_parser_new(conn);
                 pn_ssl_conn_set_read_cb(ssl_conn, login_read_cb, nexus);
 
@@ -387,13 +396,10 @@ nexus_read_cb(PnNode *conn,
 
                 pn_node_connect(conn, nexus->login_host, 443);
 
-                goto leave;
+                return;
             }
         }
     }
-
-leave:
-    pn_node_close(conn);
 }
 
 static void
