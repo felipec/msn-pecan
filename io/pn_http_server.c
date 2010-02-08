@@ -290,13 +290,13 @@ http_poll (gpointer data)
 
     header = g_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
                               "Accept: */*\r\n"
-                              "Accept-Language: en-us\r\n"
                               "User-Agent: MSMSGS\r\n"
                               "Host: %s\r\n"
-                              "Proxy-Connection: Keep-Alive\r\n"
                               "%s" /* Proxy auth */
+                              "Proxy-Connection: Keep-Alive\r\n"
                               "Connection: Keep-Alive\r\n"
                               "Pragma: no-cache\r\n"
+                              "Cache-Control: no-cache\r\n"
                               "Content-Type: application/x-msn-messenger\r\n"
                               "Content-Length: 0\r\n\r\n",
                               http_conn->gateway,
@@ -867,13 +867,13 @@ foo_write (PnNode *conn,
         /** @todo investigate why this returns NULL sometimes. */
         header = g_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
                                   "Accept: */*\r\n"
-                                  "Accept-Language: en-us\r\n"
                                   "User-Agent: MSMSGS\r\n"
                                   "Host: %s\r\n"
-                                  "Proxy-Connection: Keep-Alive\r\n"
                                   "%s" /* Proxy auth */
+                                  "Proxy-Connection: Keep-Alive\r\n"
                                   "Connection: Keep-Alive\r\n"
                                   "Pragma: no-cache\r\n"
+                                  "Cache-Control: no-cache\r\n"
                                   "Content-Type: application/x-msn-messenger\r\n"
                                   "Content-Length: %zu\r\n\r\n",
                                   http_conn->gateway,
