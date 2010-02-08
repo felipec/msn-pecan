@@ -322,6 +322,7 @@ http_poll (gpointer data)
         {
             pn_log ("bytes_written=%zu", bytes_written);
             http_conn->waiting_response = TRUE;
+            pn_timer_stop (http_conn->timer);
         }
     }
 
@@ -929,6 +930,7 @@ foo_write (PnNode *conn,
     {
         pn_log ("bytes_written=%zu", bytes_written);
         http_conn->waiting_response = TRUE;
+        pn_timer_stop (http_conn->timer);
         if (http_conn->cur)
             g_object_unref (http_conn->cur);
         http_conn->cur = prev;
