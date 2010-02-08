@@ -168,15 +168,6 @@ read_cb (GIOChannel *source,
             }
         }
 
-        if (conn->status == PN_NODE_STATUS_OPEN)
-        {
-            http_conn->waiting_response = FALSE;
-
-            pn_timer_restart (http_conn->timer);
-
-            process_queue (http_conn, &conn->error);
-        }
-
         if (conn->error)
         {
             pn_node_error (conn);
@@ -805,8 +796,12 @@ read_impl (PnNode *conn,
 
             pn_log ("con_len=%d,read=%zu", http_conn->content_length, bytes_read);
 
-            if (http_conn->content_length == 0)
+            if (http_conn->content_length == 0) {
                 http_conn->parser_state = 0;
+                http_conn->waiting_response = FALSE;
+                pn_timer_restart (http_conn->timer);
+                process_queue (http_conn, &conn->error);
+            }
         }
 
 leave:
