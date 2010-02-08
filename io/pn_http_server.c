@@ -786,6 +786,9 @@ read_impl (PnNode *conn,
 
             status = pn_stream_read (conn->stream, buf, MIN (http_conn->content_length, count), &bytes_read, &tmp_error);
 
+            if (status == G_IO_STATUS_AGAIN)
+                return status;
+
             pn_log ("status=%d", status);
             pn_log ("bytes_read=%zu", bytes_read);
 
