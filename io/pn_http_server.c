@@ -312,18 +312,17 @@ http_poll (gpointer data)
 
     status = pn_stream_write_full (conn->stream, header, strlen (header), &bytes_written, &tmp_error);
 
+    g_free (header);
+
+    http_conn->waiting_response = TRUE;
+    pn_timer_stop (http_conn->timer);
+
     if (status == G_IO_STATUS_NORMAL)
     {
         status = pn_stream_flush (conn->stream, &tmp_error);
 
-        g_free (header);
-
         if (status == G_IO_STATUS_NORMAL)
-        {
             pn_log ("bytes_written=%zu", bytes_written);
-            http_conn->waiting_response = TRUE;
-            pn_timer_stop (http_conn->timer);
-        }
     }
 
     if (status != G_IO_STATUS_NORMAL)
@@ -923,23 +922,21 @@ foo_write (PnNode *conn,
     }
 #endif
 
+    http_conn->waiting_response = TRUE;
+    pn_timer_stop (http_conn->timer);
+
+    if (http_conn->cur)
+        g_object_unref (http_conn->cur);
+    http_conn->cur = prev;
+    g_object_ref (G_OBJECT (http_conn->cur));
+
     if (status == G_IO_STATUS_NORMAL)
         status = pn_stream_flush (conn->stream, &tmp_error);
 
     if (status == G_IO_STATUS_NORMAL)
-    {
         pn_log ("bytes_written=%zu", bytes_written);
-        http_conn->waiting_response = TRUE;
-        pn_timer_stop (http_conn->timer);
-        if (http_conn->cur)
-            g_object_unref (http_conn->cur);
-        http_conn->cur = prev;
-        g_object_ref (G_OBJECT (http_conn->cur));
-    }
     else
-    {
         pn_error ("not normal");
-    }
 
     if (ret_bytes_written)
         *ret_bytes_written = bytes_written;
