@@ -65,7 +65,8 @@ pn_timer_start(struct pn_timer *timer,
 static inline void
 pn_timer_restart(struct pn_timer *timer)
 {
-    g_source_remove(timer->id);
+    if (timer->id)
+        g_source_remove(timer->id);
     timer->id = g_timeout_add_seconds(timer->interval,
                                       timer->function,
                                       timer->data);
@@ -74,6 +75,13 @@ pn_timer_restart(struct pn_timer *timer)
 static inline void
 pn_timer_cancel(struct pn_timer *timer)
 {
+    timer->id = 0;
+}
+
+static inline void
+pn_timer_stop(struct pn_timer *timer)
+{
+    g_source_remove(timer->id);
     timer->id = 0;
 }
 
