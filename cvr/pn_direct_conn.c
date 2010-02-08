@@ -71,7 +71,8 @@ write_cb (GIOChannel *source,
 
     if (direct_conn->last_flush == G_IO_STATUS_AGAIN) {
         direct_conn->last_flush = pn_stream_flush(direct_conn->conn->stream, NULL);
-        return TRUE;
+        if (direct_conn->last_flush == G_IO_STATUS_AGAIN)
+            return TRUE;
     }
 
     direct_conn->write_watch = 0;
