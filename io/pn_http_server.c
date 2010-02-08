@@ -319,7 +319,10 @@ http_poll (gpointer data)
 
     if (status == G_IO_STATUS_NORMAL)
     {
-        status = pn_stream_flush (conn->stream, &tmp_error);
+        do {
+            pn_log ("flush");
+            status = pn_stream_flush (conn->stream, &tmp_error);
+        } while (status == G_IO_STATUS_AGAIN);
 
         if (status == G_IO_STATUS_NORMAL)
             pn_log ("bytes_written=%zu", bytes_written);
@@ -930,8 +933,12 @@ foo_write (PnNode *conn,
     http_conn->cur = prev;
     g_object_ref (G_OBJECT (http_conn->cur));
 
-    if (status == G_IO_STATUS_NORMAL)
-        status = pn_stream_flush (conn->stream, &tmp_error);
+    if (status == G_IO_STATUS_NORMAL) {
+        do {
+            pn_log ("flush");
+            status = pn_stream_flush (conn->stream, &tmp_error);
+        } while (status == G_IO_STATUS_AGAIN);
+    }
 
     if (status == G_IO_STATUS_NORMAL)
         pn_log ("bytes_written=%zu", bytes_written);
