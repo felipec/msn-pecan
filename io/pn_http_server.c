@@ -59,6 +59,9 @@ struct PnHttpServer
     GHashTable *childs;
     PnNode *cur;
     gchar *old_buffer;
+
+    guint write_watch;
+    GIOStatus last_flush;
 };
 
 struct PnHttpServerClass
@@ -245,6 +248,24 @@ get_auth(PnNode *conn)
 #endif /* HAVE_LIBPURPLE */
 
 static gboolean
+write_cb (GIOChannel *source,
+          GIOCondition condition,
+          gpointer data)
+{
+    PnHttpServer *http_conn = data;
+
+    if (http_conn->last_flush == G_IO_STATUS_AGAIN) {
+        http_conn->last_flush = pn_stream_flush(PN_NODE(http_conn)->stream, NULL);
+        if (http_conn->last_flush == G_IO_STATUS_AGAIN)
+            return TRUE;
+    }
+
+    http_conn->write_watch = 0;
+
+    return FALSE;
+}
+
+static gboolean
 http_poll (gpointer data)
 {
     PnNode *conn;
@@ -319,10 +340,15 @@ http_poll (gpointer data)
 
     if (status == G_IO_STATUS_NORMAL)
     {
-        do {
-            pn_log ("flush");
-            status = pn_stream_flush (conn->stream, &tmp_error);
-        } while (status == G_IO_STATUS_AGAIN);
+        status = pn_stream_flush (conn->stream, &tmp_error);
+
+        if (status == G_IO_STATUS_AGAIN) {
+            http_conn->last_flush = status;
+            http_conn->write_watch = g_io_add_watch(conn->stream->channel,
+                                                    G_IO_OUT, write_cb, http_conn);
+            /* fake status */
+            status = G_IO_STATUS_NORMAL;
+        }
 
         if (status == G_IO_STATUS_NORMAL)
             pn_log ("bytes_written=%zu", bytes_written);
@@ -512,6 +538,11 @@ close_impl (PnNode *conn)
 
     pn_timer_free(http_conn->timer);
     http_conn->timer = NULL;
+
+    if (http_conn->write_watch) {
+        g_source_remove (http_conn->write_watch);
+        http_conn->write_watch = 0;
+    }
 
     g_free (http_conn->last_session_id);
     http_conn->last_session_id = NULL;
@@ -934,10 +965,15 @@ foo_write (PnNode *conn,
     g_object_ref (G_OBJECT (http_conn->cur));
 
     if (status == G_IO_STATUS_NORMAL) {
-        do {
-            pn_log ("flush");
-            status = pn_stream_flush (conn->stream, &tmp_error);
-        } while (status == G_IO_STATUS_AGAIN);
+        status = pn_stream_flush (conn->stream, &tmp_error);
+
+        if (status == G_IO_STATUS_AGAIN) {
+            http_conn->last_flush = status;
+            http_conn->write_watch = g_io_add_watch(conn->stream->channel,
+                                                    G_IO_OUT, write_cb, http_conn);
+            /* fake status */
+            status = G_IO_STATUS_NORMAL;
+        }
     }
 
     if (status == G_IO_STATUS_NORMAL)
