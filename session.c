@@ -41,6 +41,9 @@
 
 /* libpurple stuff. */
 #include <account.h>
+#ifdef INTERNAL_MAINLOOP
+#include <eventloop.h>
+#endif
 
 static void
 conversation_created_cb (PurpleConversation *conv, gpointer data)
@@ -69,6 +72,15 @@ conversation_created_cb (PurpleConversation *conv, gpointer data)
     }
 }
 
+#ifdef INTERNAL_MAINLOOP
+static inline gboolean
+g_main_context_iteration_timer ()
+{
+    g_main_context_iteration (NULL, FALSE);
+    return TRUE;
+}
+#endif
+
 MsnSession *
 msn_session_new (const gchar *username,
                  const gchar *password,
@@ -80,6 +92,11 @@ msn_session_new (const gchar *username,
 
     session->username = pn_normalize (username);
     session->password = g_strndup (password, 16);
+
+#ifdef INTERNAL_MAINLOOP
+    session->g_main_loop = g_main_loop_new  (NULL, FALSE);
+    session->g_main_loop_timer = purple_timeout_add (1000, g_main_context_iteration_timer, NULL);
+#endif
 
     session->config = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 
@@ -176,6 +193,11 @@ msn_session_destroy (MsnSession *session)
 
     g_free (session->username);
     g_free (session->password);
+
+#ifdef INTERNAL_MAINLOOP
+    purple_timeout_remove (session->g_main_loop_timer);
+    g_main_loop_unref (session->g_main_loop);
+#endif
 
     g_free (session);
 }

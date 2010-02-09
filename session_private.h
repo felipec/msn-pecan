@@ -44,6 +44,11 @@ struct MsnSession
     gchar *username;
     gchar *password;
 
+#ifdef INTERNAL_MAINLOOP
+    GMainLoop *g_main_loop;
+    guint g_main_loop_timer;
+#endif
+
     void *user_data;
     struct pn_contact *user; /**< Store contact information. */
 
