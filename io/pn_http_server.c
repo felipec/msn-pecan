@@ -616,13 +616,22 @@ read_impl (PnNode *conn,
             if (status == G_IO_STATUS_AGAIN)
                 return status;
 
+            if (status != G_IO_STATUS_NORMAL) {
+                tmp_error = g_error_new_literal (PN_NODE_ERROR, PN_NODE_ERROR_READ,
+                                                 "Read error");
+                goto leave;
+            }
+
 #ifdef PECAN_DEBUG_HTTP
             pn_debug ("str=[%s]", str);
 #endif
 
+            if (!str)
+                return G_IO_STATUS_AGAIN;
+
             tokens = g_strsplit (str, " ", 3);
 
-            if (!(tokens[0] &&
+            if (!(tokens && tokens[0] &&
                   ((strcmp (tokens[0], "HTTP/1.1") == 0) ||
                    (strcmp (tokens[0], "HTTP/1.0") == 0))))
             {
