@@ -627,7 +627,7 @@ read_impl (PnNode *conn,
                    (strcmp (tokens[0], "HTTP/1.0") == 0))))
             {
                 pn_debug ("error reading: parse error");
-                tmp_error = g_error_new_literal (PN_NODE_ERROR, PN_NODE_ERROR_OPEN,
+                tmp_error = g_error_new_literal (PN_NODE_ERROR, PN_NODE_ERROR_READ,
                                                  "Parse error");
                 goto leave;
             }
@@ -635,7 +635,7 @@ read_impl (PnNode *conn,
             if (!(tokens[1]))
             {
                 pn_debug ("error reading: parse error");
-                tmp_error = g_error_new_literal (PN_NODE_ERROR, PN_NODE_ERROR_OPEN,
+                tmp_error = g_error_new_literal (PN_NODE_ERROR, PN_NODE_ERROR_READ,
                                                  "Parse error");
                 goto leave;
             }
@@ -645,7 +645,7 @@ read_impl (PnNode *conn,
             if (code != 200 && code != 100)
             {
                 pn_debug ("error reading: %d %s", code, tokens[2]);
-                tmp_error = g_error_new (PN_NODE_ERROR, PN_NODE_ERROR_OPEN,
+                tmp_error = g_error_new (PN_NODE_ERROR, PN_NODE_ERROR_READ,
                                          "%s",  tokens[2]);
                 goto leave;
             }
@@ -691,7 +691,7 @@ read_impl (PnNode *conn,
                 if (!(tokens[0] && tokens[1]))
                 {
                     pn_debug ("error reading: parse error");
-                    tmp_error = g_error_new_literal (PN_NODE_ERROR, PN_NODE_ERROR_OPEN,
+                    tmp_error = g_error_new_literal (PN_NODE_ERROR, PN_NODE_ERROR_READ,
                                                      "Parse error");
                     goto leave;
                 }
