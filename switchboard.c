@@ -505,7 +505,6 @@ swboard_error_helper(MsnSwitchBoard *swboard, int reason, const char *passport)
     {
         swboard->error = reason;
         msn_switchboard_close(swboard);
-        msn_switchboard_unref(swboard);
     }
 }
 
