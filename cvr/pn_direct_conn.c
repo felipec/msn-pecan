@@ -41,7 +41,7 @@ static void
 foo_cb(struct pn_direct_conn *direct_conn,
        void *data)
 {
-    direct_conn->status = 1;
+    direct_conn->status = PN_DIRECT_CONN_STATUS_CONNECTING;
     pn_direct_conn_send_handshake(direct_conn);
 }
 
@@ -149,7 +149,7 @@ pn_direct_conn_send_msg(struct pn_direct_conn *direct_conn, MsnMessage *msg)
 
     body = msn_message_gen_slp_body(msg, &body_len);
 
-    if (direct_conn->status == 1) {
+    if (direct_conn->status == PN_DIRECT_CONN_STATUS_CONNECTING) {
         async_write(direct_conn, NULL, NULL, body, body_len, NULL, NULL);
         goto leave;
     }
@@ -185,8 +185,8 @@ pn_direct_conn_process_chunk(struct pn_direct_conn *direct_conn,
     msg = msn_message_new_msnslp();
     msn_message_parse_slp_body(msg, buf, bytes_read);
 
-    if (direct_conn->status == 1) {
-        direct_conn->status = 2;
+    if (direct_conn->status == PN_DIRECT_CONN_STATUS_CONNECTING) {
+        direct_conn->status = PN_DIRECT_CONN_STATUS_OPEN;
         got_nonce(direct_conn, msg);
         return;
     }

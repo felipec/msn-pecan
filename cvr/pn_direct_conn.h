@@ -30,6 +30,12 @@ struct pn_direct_conn;
 
 typedef void (*pn_io_cb_t) (struct pn_direct_conn *direct_conn, void *data);
 
+enum pn_direct_conn_status {
+    PN_DIRECT_CONN_STATUS_UNKNOWN,
+    PN_DIRECT_CONN_STATUS_CONNECTING,
+    PN_DIRECT_CONN_STATUS_OPEN,
+};
+
 struct pn_direct_conn {
     struct pn_peer_link *link;
     struct pn_peer_call *initial_call;
@@ -52,7 +58,7 @@ struct pn_direct_conn {
     void *io_cb_data;
 
     MsnMessage *last_msg;
-    int status;
+    enum pn_direct_conn_status status;
 
     GQueue *addrs;
 };
