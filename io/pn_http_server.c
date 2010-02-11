@@ -842,6 +842,9 @@ read_impl (PnNode *conn,
 
             pn_log ("con_len=%d,read=%zu", http_conn->content_length, bytes_read);
 
+            if (conn->status == PN_NODE_STATUS_CLOSED)
+                goto leave;
+
             if (http_conn->content_length == 0) {
                 http_conn->parser_state = 0;
                 http_conn->waiting_response = FALSE;
