@@ -36,6 +36,8 @@
 /* libpurple */
 #include <util.h> /* for url_encode */
 
+static void login_open_cb(PnNode *conn, gpointer data);
+
 MsnNexus *
 msn_nexus_new(MsnSession *session)
 {
@@ -149,6 +151,8 @@ got_header(MsnNexus *nexus,
         g_free(nexus->login_host);
         nexus->login_host = g_strdup(location);
 
+        pn_info("reconnecting to '%s'", nexus->login_host);
+        nexus->open_handler = g_signal_connect(nexus->conn, "open", G_CALLBACK(login_open_cb), nexus);
         pn_node_connect(nexus->conn, nexus->login_host, 443);
         return;
     }
