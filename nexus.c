@@ -152,6 +152,9 @@ got_header(MsnNexus *nexus,
         nexus->login_host = g_strdup(location);
 
         pn_info("reconnecting to '%s'", nexus->login_host);
+        pn_parser_reset(nexus->parser);
+        nexus->parser_state = 0;
+
         nexus->open_handler = g_signal_connect(nexus->conn, "open", G_CALLBACK(login_open_cb), nexus);
         pn_node_connect(nexus->conn, nexus->login_host, 443);
         return;
@@ -390,6 +393,7 @@ nexus_read_cb(PnNode *conn,
                     g_signal_handler_disconnect(nexus->conn, nexus->open_handler);
                 g_object_unref(nexus->conn);
                 pn_parser_free(nexus->parser);
+                nexus->parser_state = 0;
 
                 nexus->parser = pn_parser_new(conn);
                 pn_ssl_conn_set_read_cb(ssl_conn, login_read_cb, nexus);
