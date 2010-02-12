@@ -225,11 +225,11 @@ connect_impl (PnNode *conn,
     pn_debug ("conn=%p,name=%s", conn, conn->name);
     pn_debug ("hostname=%s,port=%d", hostname, port);
 
+    pn_node_close (conn);
+
     g_free (conn->hostname);
     conn->hostname = g_strdup (hostname);
     conn->port = port;
-
-    pn_node_close (conn);
 
     conn->status = PN_NODE_STATUS_CONNECTING;
 
