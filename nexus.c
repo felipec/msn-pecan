@@ -373,6 +373,12 @@ nexus_read_cb(PnNode *conn,
                     }
 
                     nexus->login_host = g_strdup(da_login);
+
+#if 0
+                    /* test reconnection */
+                    g_free(nexus->login_host);
+                    nexus->login_host = g_strdup("msnia.login.live.com");
+#endif
                 }
             }
 
