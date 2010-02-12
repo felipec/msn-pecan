@@ -25,6 +25,7 @@ typedef struct PnParser PnParser;
 
 PnParser *pn_parser_new (PnNode *node);
 void pn_parser_free (PnParser *parser);
+void pn_parser_reset (PnParser *parser);
 GIOStatus pn_parser_read_line (PnParser *parser,
                                gchar **str_return,
                                gsize *length,

@@ -52,6 +52,14 @@ pn_parser_free (PnParser *parser)
     g_free (parser);
 }
 
+void
+pn_parser_reset (PnParser *parser)
+{
+    g_free (parser->rx_buf);
+    parser->rx_buf = NULL;
+    parser->need_more = TRUE;
+}
+
 GIOStatus
 pn_parser_read_line (PnParser *parser,
                      gchar **str_return,
