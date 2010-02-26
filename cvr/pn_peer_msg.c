@@ -502,9 +502,11 @@ got_sessionreq(struct pn_peer_call *call,
             loc = g_path_get_basename(pn_msnobj_get_location(obj));
             path = g_build_filename(purple_smileys_get_storing_dir(), loc, NULL);
             img = purple_imgstore_new_from_file(path);
-            image = pn_buffer_new_memdup((const gpointer) purple_imgstore_get_data(img),
-                                         purple_imgstore_get_size(img));
-            purple_imgstore_unref(img);
+            if (img) {
+                image = pn_buffer_new_memdup((const gpointer) purple_imgstore_get_data(img),
+                                             purple_imgstore_get_size(img));
+                purple_imgstore_unref(img);
+            }
             g_free(loc);
             g_free(path);
         }
