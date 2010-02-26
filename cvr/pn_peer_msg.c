@@ -498,12 +498,14 @@ got_sessionreq(struct pn_peer_call *call,
 #if PURPLE_VERSION_CHECK(2,5,0)
         else if (type == PN_MSNOBJ_EMOTICON) {
             PurpleStoredImage *img;
-            char *path;
-            path = g_build_filename(purple_smileys_get_storing_dir(), pn_msnobj_get_location(obj), NULL);
+            char *path, *loc;
+            loc = g_path_get_basename(pn_msnobj_get_location(obj));
+            path = g_build_filename(purple_smileys_get_storing_dir(), loc, NULL);
             img = purple_imgstore_new_from_file(path);
             image = pn_buffer_new_memdup((const gpointer) purple_imgstore_get_data(img),
                                          purple_imgstore_get_size(img));
             purple_imgstore_unref(img);
+            g_free(loc);
             g_free(path);
         }
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
