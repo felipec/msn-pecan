@@ -7,72 +7,72 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msn-pecan\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2009-12-14 17:42+0100\n"
-"PO-Revision-Date: 2009-09-26 16:11+0000\n"
-"Last-Translator: Elias Julkunen <elias.julkunen@gmail.com>\n"
+"POT-Creation-Date: 2010-02-06 02:03+0200\n"
+"PO-Revision-Date: 2010-01-11 20:58+0000\n"
+"Last-Translator: Sami Olmari <jaarli@mbnet.fi>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2009-12-22 22:32+0000\n"
+"X-Launchpad-Export-Date: 2010-02-27 00:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: msn.c:154
+#: msn.c:160
 msgid "Nudge"
 msgstr "Heräte"
 
-#: msn.c:155
+#: msn.c:161
 #, c-format
 msgid "%s has nudged you!"
 msgstr "%s on lähettäny herätteen"
 
-#: msn.c:156
+#: msn.c:162
 #, c-format
 msgid "Nudging %s..."
 msgstr "Herätetään tuttavaa %s"
 
-#: msn.c:310
+#: msn.c:306
 msgid "Set your friendly name."
 msgstr "Aseta näyttönimi"
 
-#: msn.c:311
+#: msn.c:307
 msgid "This is the name that other MSN buddies will see you as."
 msgstr "Tämä on nimi jona MSN-tuttavasi sinut näkevät."
 
-#: msn.c:314 msn.c:335 msn.c:353 msn.c:370 msn.c:387
+#: msn.c:310 msn.c:331 msn.c:349 msn.c:366 msn.c:383
 msgid "OK"
 msgstr "OK"
 
-#: msn.c:315 msn.c:336 msn.c:354 msn.c:371 msn.c:388 msn.c:409
+#: msn.c:311 msn.c:332 msn.c:350 msn.c:367 msn.c:384 msn.c:405
 msgid "Cancel"
 msgstr "Peruuta"
 
-#: msn.c:330
+#: msn.c:326
 msgid "Set your personal message."
 msgstr "Aseta henkilökohtainen viesti."
 
-#: msn.c:331
+#: msn.c:327
 msgid "This is the message that other MSN buddies will see under your name."
 msgstr "Tämä on viesti, jonka MSN-tuttavasi näkevät nimesi alla."
 
-#: msn.c:351
+#: msn.c:347
 msgid "Set your home phone number."
 msgstr "Aseta kotipuhelinnumerosi"
 
-#: msn.c:368
+#: msn.c:364
 msgid "Set your work phone number."
 msgstr "Aseta työpuhelinnumerosi"
 
-#: msn.c:385
+#: msn.c:381
 msgid "Set your mobile phone number."
 msgstr "Aseta matkapuhelinnumerosi"
 
-#: msn.c:400
+#: msn.c:396
 msgid "Allow MSN Mobile pages?"
 msgstr "Salli MSN-mobiilihaut"
 
-#: msn.c:401
+#: msn.c:397
 msgid ""
 "Do you want to allow or disallow people on your buddy list to send you MSN "
 "Mobile pages to your cell phone or other mobile device?"
@@ -80,259 +80,269 @@ msgstr ""
 "Haluatko sallia tai estää henkilöitä tuttavissasi lähettämästä MSN- "
 "mobiilihakuja matkapuhelimeesi tai muuhun mobiililaitteeseen?"
 
-#: msn.c:407
+#: msn.c:403
 msgid "Allow"
 msgstr "Salli"
 
-#: msn.c:408
+#: msn.c:404
 msgid "Disallow"
 msgstr "Estä"
 
-#: msn.c:423
+#: msn.c:419
 msgid "This account's email is not enabled."
 msgstr "Tämän tilin sähköpostia ei käytetä."
 
-#: msn.c:467
+#: msn.c:463
 msgid "Send a mobile message."
 msgstr "Lähetä mobiiliviestinä"
 
-#: msn.c:469
+#: msn.c:465
 msgid "Page"
 msgstr "Sivu"
 
-#: msn.c:470
+#: msn.c:466
 msgid "Close"
 msgstr "Sulje"
 
-#: msn.c:628
+#: msn.c:624
 #, c-format
 msgid "Playing %s"
 msgstr "Soitetaan %s"
 
-#: msn.c:630
+#: msn.c:626
 #, c-format
 msgid "Editing %s"
 msgstr "Muokataan %s"
 
-#: msn.c:680
+#: msn.c:676
 msgid "Status"
 msgstr "Tila"
 
-#: msn.c:681
+#: msn.c:677
 msgid "Idle"
 msgstr "Jouten"
 
-#: msn.c:691
+#: msn.c:687
 msgid "Personal Message"
 msgstr "Henkilökohtainen viesti"
 
-#: msn.c:708
+#: msn.c:704
 msgid "Now Listening"
 msgstr "Nyt soi"
 
-#: msn.c:714
+#: msn.c:710
 msgid "Playing a game"
 msgstr "Pelaamassa peliä"
 
-#: msn.c:718
+#: msn.c:714
 msgid "Working"
 msgstr "Työskentelemässä"
 
-#: msn.c:722
+#: msn.c:718
 msgid "Has you"
 msgstr "Olet hänen listallaan"
 
-#: msn.c:723 msn.c:727 msn.c:1724
+#: msn.c:719 msn.c:723 msn.c:1720
 msgid "Yes"
 msgstr "Kyllä"
 
-#: msn.c:723 msn.c:727 msn.c:1724
+#: msn.c:719 msn.c:723 msn.c:1720
 msgid "No"
 msgstr "Ei"
 
-#: msn.c:726
+#: msn.c:722
 msgid "Blocked"
 msgstr "Estetty"
 
-#: msn.c:738
+#: msn.c:734
 msgid "Message"
 msgstr "Viesti"
 
-#: msn.c:753
+#: msn.c:749
 msgid "Be Right Back"
 msgstr "Palaan pian"
 
-#: msn.c:754
+#: msn.c:750
 msgid "Busy"
 msgstr "Varattu"
 
-#: msn.c:755
+#: msn.c:751
 msgid "On the Phone"
 msgstr "Puhelimessa"
 
-#: msn.c:756
+#: msn.c:752
 msgid "Out to Lunch"
 msgstr "Lounaalla"
 
-#: msn.c:774
+#: msn.c:770
 msgid "Song Title"
 msgstr "Kappaleen nimi"
 
-#: msn.c:775
+#: msn.c:771
 msgid "Song Artist"
 msgstr "Kappaleen esittäjä"
 
-#: msn.c:776
+#: msn.c:772
 msgid "Song Album"
 msgstr "Kappaleen albumi"
 
-#: msn.c:777
+#: msn.c:773
 msgid "Game Name"
 msgstr "Pelin nimi"
 
-#: msn.c:778
+#: msn.c:774
 msgid "Office App Name"
 msgstr "Toimistosovelluksen nimi"
 
-#: msn.c:798
+#: msn.c:794
 msgid "Set Friendly Name..."
 msgstr "Aseta näyttönimi..."
 
-#: msn.c:803
+#: msn.c:799
 msgid "Set Personal Message..."
 msgstr "Aseta henkilökohtainen viesti..."
 
-#: msn.c:810
+#: msn.c:806
 msgid "Set Home Phone Number..."
 msgstr "Aseta kotipuhelinnumero..."
 
-#: msn.c:814
+#: msn.c:810
 msgid "Set Work Phone Number..."
 msgstr "Aseta työpuhelinnumero..."
 
-#: msn.c:818
+#: msn.c:814
 msgid "Set Mobile Phone Number..."
 msgstr "Aseta matkapuhelinnumero..."
 
-#: msn.c:824
+#: msn.c:820
 msgid "Enable/Disable Mobile Devices..."
 msgstr "Salli/Estä mobiililaitteet"
 
-#: msn.c:829
+#: msn.c:825
 msgid "Allow/Disallow Mobile Pages..."
 msgstr "Salli/Estä mobiilihaut..."
 
-#: msn.c:839
+#: msn.c:835
 msgid "Open Hotmail Inbox"
 msgstr "Avaa Hotmailin saapuneet-kansio"
 
-#: msn.c:869
+#. * @todo why is there a special way to do this?
+#: msn.c:865
 msgid "Send to Mobile"
 msgstr "Lähetä mobiililaitteeseen"
 
-#: msn.c:877
+#: msn.c:873
 msgid "Initiate _Chat"
 msgstr "Aloita _ryhmäkeskustelu"
 
-#: msn.c:903
+#: msn.c:899
 msgid ""
 "SSL support is needed for MSN. Please install a supported SSL library."
 msgstr "MSN vaatii SSL-tuen. Asenna tuettu SSL-kirjasto."
 
-#: msn.c:938
+#: msn.c:934
 msgid "Connecting"
 msgstr "Yhdistetään"
 
-#: msn.c:941
+#: msn.c:937
 msgid "Failed to connect to server."
 msgstr "Palvelimeen ei saatu yhteyttä."
 
-#: msn.c:1689
+#: msn.c:1685
 msgid "Username"
 msgstr "Käyttäjänimi:"
 
-#: msn.c:1699
+#: msn.c:1695
 msgid "Friendly Name"
 msgstr "Tuttavanimi"
 
-#: msn.c:1715
+#: msn.c:1711
 msgid "Home Phone"
 msgstr "Kotipuhelin"
 
-#: msn.c:1718
+#: msn.c:1714
 msgid "Mobile Phone"
 msgstr "Matkapuhelin"
 
-#: msn.c:1721
+#: msn.c:1717
 msgid "Work Phone"
 msgstr "Työpuhelin"
 
-#: msn.c:1723
+#: msn.c:1719
 msgid "Has Space"
 msgstr ""
 
-#: msn.c:1732
+#: msn.c:1728
 msgid "Profile URL"
 msgstr "Profiilin URL"
 
-#: msn.c:1858 msn.c:1859
+#. *< type
+#. *< ui_requirement
+#. *< flags
+#. *< dependencies
+#. *< priority
+#. *< id
+#. *< name
+#. *< version
+#. *< summary
+#: msn.c:1854 msn.c:1855
 msgid "WLM Protocol Plugin"
 msgstr "WLM protokollaliitännäinen"
 
-#: msn.c:1885
+#: msn.c:1890
 msgid "Server"
 msgstr "Palvelin"
 
-#: msn.c:1888
+#: msn.c:1893
 msgid "Port"
 msgstr "Portti"
 
-#: msn.c:1891
+#: msn.c:1896
 msgid "Use HTTP Method"
 msgstr "Käytä HTTP-yhteystapaa"
 
-#: msn.c:1894
+#: msn.c:1899
 msgid "Show custom smileys"
 msgstr "Näytä omat hymiöt"
 
-#: msn.c:1897
+#: msn.c:1902
 msgid "Use server-side alias"
 msgstr "Käytä palvelinpuolen lempinimeä"
 
-#: msn.c:1901
+#: msn.c:1906
 msgid "Use direct connections"
 msgstr "Käyä suoria yhteyksiä"
 
-#: msn.c:1905
+#: msn.c:1910
 msgid "Use user displays"
 msgstr "Käytä käyttäjänäkymiä"
 
-#: msn.c:1908
+#: msn.c:1913
 msgid "Don't show Messenger Plus! tags"
 msgstr "Älä näytä Messenger Plus! -tageja"
 
-#: msn.c:1915
+#: msn.c:1920
 msgid "nudge: nudge a user to get their attention"
 msgstr "Heräte: Herätä tuttava"
 
-#: nexus.c:80
+#: nexus.c:82
 #, c-format
 msgid "error on nexus server: %s"
-msgstr ""
+msgstr "virhe nexus-palvelimella: %s"
 
-#: nexus.c:84
+#: nexus.c:86
 msgid "error on nexus server"
-msgstr ""
+msgstr "virhe nexus-palvelimella"
 
-#: nexus.c:185
+#: nexus.c:187
 msgid "nexus parse error"
 msgstr ""
 
-#: nexus.c:213 nexus.c:306 nexus.c:340 nexus.c:419
+#: nexus.c:215 nexus.c:308 nexus.c:342 nexus.c:421
 msgid "nexus stream error"
-msgstr ""
+msgstr "nexus stream-virhe"
 
-#: notification.c:95 notification.c:140
+#: notification.c:90 notification.c:135
 #, c-format
 msgid ""
 "Error on notification server:\n"
@@ -341,7 +351,7 @@ msgstr ""
 "Virhe ilmoituspalvelimella:\n"
 "%s"
 
-#: notification.c:102
+#: notification.c:97
 msgid ""
 "Error on notification server:\n"
 "Unknown"
@@ -349,44 +359,44 @@ msgstr ""
 "Virhe ilmoituspalvelimella:\n"
 "Tuntematon virhe"
 
-#: notification.c:254
+#: notification.c:249
 #, c-format
 msgid "%s is not a valid group."
 msgstr "%s ei ole kelvollinen ryhmä."
 
-#: notification.c:259 session.c:401
+#: notification.c:254 session.c:427
 msgid "Unknown error."
 msgstr "Tuntematon virhe."
 
-#: notification.c:262
+#: notification.c:257
 #, c-format
 msgid "%s on %s (%s)"
 msgstr "%s tilillä %s (%s)"
 
-#: notification.c:593
+#: notification.c:588
 #, c-format
 msgid "Unable to add user on %s (%s)"
 msgstr "Ei voitu lisätä käyttäjää %s (%s)"
 
-#: notification.c:597
+#: notification.c:592
 #, c-format
 msgid "Unable to block user on %s (%s)"
 msgstr "Ei voitu estää käyttäjää %s (%s)"
 
-#: notification.c:601
+#: notification.c:596
 #, c-format
 msgid "Unable to permit user on %s (%s)"
 msgstr "Ei voida sallia käyttäjää %s (%s)"
 
-#: notification.c:991
+#: notification.c:982
 msgid "Unable to rename group"
 msgstr "Ryhmän uudelleen nimeäminen epäonnistui"
 
-#: notification.c:1050
+#: notification.c:1041
 msgid "Unable to delete group"
 msgstr "Ei voitu postaa ryhmää"
 
-#: notification.c:1632
+#: notification.c:1638
 #, c-format
 msgid ""
 "The MSN server will shut down for maintenance in %d minutes. You will "
@@ -396,67 +406,70 @@ msgid ""
 "After the maintenance has been completed, you will be able to successfully "
 "sign in."
 msgstr ""
+"MSN palvelin suljetaan huollon vuoksi %d minuutin kuluessa. Sinut kirjataan "
+"ulos automaatisesti. Ole hyvä ja lopeta käynnissä olevat keskustelut.\n"
+"Kun huolto on suoritettu loppuun, pääset kirjautumaan sisään normaalisti."
 
-#: session.c:65
+#: session.c:64
 #, c-format
 msgid "You are not in %s's contact list."
 msgstr "Et ole käyttäjän %s tuttavalistalla."
 
-#: session.c:371
+#: session.c:397
 msgid "Our protocol is not supported by the server."
 msgstr "Palvelin ei tue yhteyskäytäntöä."
 
-#: session.c:375
+#: session.c:401
 msgid "Error parsing HTTP."
 msgstr "Virhe jäsennettäessä HTTP:tä."
 
-#: session.c:379
+#: session.c:405
 msgid "You have signed on from another location."
 msgstr "Olet kirjautunut sisään toisesta paikasta."
 
-#: session.c:382
+#: session.c:408
 msgid ""
 "The MSN servers are temporarily unavailable. Please wait and try again."
 msgstr ""
 "MSN-palvelimet ovat väliaikaisesti tavoittamattomissa. Odota ja yritä "
 "uudelleen."
 
-#: session.c:387
+#: session.c:413
 msgid "The MSN servers are going down temporarily."
 msgstr "MSN-palvelimet ajetaan alas väliaikaisesti."
 
-#: session.c:392
+#: session.c:418
 #, c-format
 msgid "Unable to authenticate: %s"
 msgstr "Ei voida tunnistautua: %s"
 
-#: session.c:393
+#: session.c:419
 msgid "Unknown error"
 msgstr "Tuntematon virhe"
 
-#: session.c:396
+#: session.c:422
 msgid ""
 "Your MSN buddy list is temporarily unavailable. Please wait and try again."
 msgstr ""
 "MSN-tuttavalista on väliaikaisesti pois käytöstä. Yritä myöhemmin uudelleen."
 
-#: switchboard.c:546
+#: switchboard.c:547
 msgid "Message could not be sent, not allowed while invisible:"
 msgstr "Viestien lähetys ei ole sallittu näkymättömänä:"
 
-#: switchboard.c:550
+#: switchboard.c:551
 msgid "Message could not be sent because the user is offline:"
 msgstr "Viestiä ei voitu lähettää koska käyttäjä on poissa linjoilta:"
 
-#: switchboard.c:554
+#: switchboard.c:555
 msgid "Message could not be sent because a connection error occurred:"
 msgstr "Viestiä ei voitu lähettää yhteysvirheen vuoksi:"
 
-#: switchboard.c:558
+#: switchboard.c:559
 msgid "Message could not be sent because we are sending too quickly:"
 msgstr "Viestiä ei voitu lähettää koska viestejä lähetetään liian nopeasti:"
 
-#: switchboard.c:562
+#: switchboard.c:563
 msgid ""
 "Message could not be sent because we were unable to establish a session with "
 "the server. This is likely a server problem, try again in a few minutes:"
@@ -465,25 +478,27 @@ msgstr ""
 "muodostaa. Tämä on luultavasti ongelma palvelimella, yritä uudelleen "
 "muutaman minuutin päästä:"
 
-#: switchboard.c:569
+#: switchboard.c:570
 msgid ""
 "Message could not be sent because an error with the switchboard occurred:"
 msgstr ""
 "Viestiä ei voitu lähettää kytkentäpalvelimen kanssa tapahtuneen virheen "
 "vuoksi:"
 
-#: switchboard.c:576
+#: switchboard.c:577
 msgid "Message may have not been sent because an unknown error occurred:"
 msgstr "Viestiä ei voitu lähettää tuntemattoman virheen vuoksi:"
 
-#: switchboard.c:984
+#: switchboard.c:985
 #, c-format
 msgid ""
 "sent you a Messenger Plus! sound. Click <a href='audio://%s'>here</a> to "
 "play it."
 msgstr ""
+"lähetti sinulle Messenger Plus! äänen. Klikkaa <a href='audio://%s'>here</a> "
+"toistaaksesi sen."
 
-#: switchboard.c:986
+#: switchboard.c:987
 #, c-format
 msgid ""
 "sent you a Messenger Plus! sound. Click <a href='file://%s'>here</a> to play "
@@ -492,14 +507,16 @@ msgstr ""
 "lähetti sinulle Messenger Plus! -äänen. Napsauta <a "
 "href='file://%s'>tästä</a> soittaaksesi sen."
 
-#: switchboard.c:989
+#: switchboard.c:990
 #, c-format
 msgid ""
 "sent you a Messenger Plus! sound. Copy the following link in your web "
 "browser to play it: file://%s"
 msgstr ""
+"lähetti sinulle Messenger Plus! äänen. Kopioi seuraava linkki internet-"
+"selaimeesi toistaaksesi sen: file://%s"
 
-#: switchboard.c:1001
+#: switchboard.c:1002
 msgid ""
 "sent you a Messenger Plus! sound, but it cannot be played due to an error "
 "happened while storing the file."
@@ -507,43 +524,45 @@ msgstr ""
 "lähetti sinulle Messenger Plus! -äänen, mutta sitä ei voitu soittaa, koska "
 "tapahtui virhe sen säilyttämisessä."
 
-#: switchboard.c:1188
+#: switchboard.c:1189
 msgid "received handwritten message"
-msgstr ""
+msgstr "vastaanotettu käsinkirjoitettu viesti"
 
-#: switchboard.c:1201
+#: switchboard.c:1202
 msgid ""
 "sent you an handwritten message, but it cannot be displayed due to an error "
 "happened while storing the file."
 msgstr ""
+"lähetti sinulle käsinkirjoitetun viestin, mutta sitä ei voi näyttää "
+"tiedostontallennuksessa tapahtuneen virheen vuoksi."
 
-#: switchboard.c:1263
+#: switchboard.c:1264
 #, c-format
 msgid "sent you a voice clip. Click <a href='file://%s'>here</a> to play it."
 msgstr ""
 "lähetti sinulle Messenger Plus! -äänileikkeen. Napsauta <a "
 "href='file://%s'>tästä</a> soittaaksesi sen."
 
-#: switchboard.c:1265
+#: switchboard.c:1266
 #, c-format
 msgid ""
 "sent you a voice clip. Copy the following link in your web browser to play "
 "it: file://%s"
 msgstr ""
 
-#: switchboard.c:1277
+#: switchboard.c:1278
 msgid ""
 "sent you a voice clip, but it cannot be played dueto an error happened while "
 "storing the file."
 msgstr ""
 
-#: switchboard.c:1360 switchboard.c:1367
+#: switchboard.c:1361 switchboard.c:1368
 #, c-format
 msgid ""
 "<a href=\"file://%s\">Click here to view the wink in your web browser</a>"
 msgstr ""
 
-#: switchboard.c:1398
+#: switchboard.c:1399
 #, c-format
 msgid ""
 "sent a wink:\n"
@@ -551,18 +570,18 @@ msgid ""
 "%s"
 msgstr ""
 
-#: switchboard.c:1400
+#: switchboard.c:1401
 #, c-format
 msgid ""
 "sent a wink.\n"
 "%s"
 msgstr ""
 
-#: switchboard.c:1416
+#: switchboard.c:1417
 msgid "sent a wink, but it could not be displayed."
 msgstr ""
 
-#: switchboard.c:1637
+#: switchboard.c:1638
 msgid " sent you a voice chat invite, which is not yet supported."
 msgstr ""
 
@@ -783,38 +802,38 @@ msgstr ""
 msgid "Unknown Error Code %u"
 msgstr "Tuntematon virhekoodi %u"
 
-#: pn_oim.c:662
+#: pn_oim.c:659
 msgid ""
 "The following message wasn't sent due to an authentication error. Please "
 "logout and login again before sending a new message."
 msgstr ""
 
-#: pn_oim.c:665
+#: pn_oim.c:662
 msgid ""
 "The following message wasn't sent because the system is unavailable. This "
 "normally happens when the user is blocked or does not exist."
 msgstr ""
 
-#: pn_oim.c:668
+#: pn_oim.c:665
 msgid ""
 "The following message wasn't sent because you've sent messages too quickly. "
 "Please wait about 10 seconds before sending again the message."
 msgstr ""
 
-#: pn_oim.c:671
+#: pn_oim.c:668
 msgid "The following message wasn't sent because it's too large."
 msgstr ""
 
-#: ab/pn_contactlist.c:812
+#: ab/pn_contactlist.c:815
 #, c-format
 msgid "Can't add to \"%s\"; it's a virtual group"
 msgstr ""
 
-#: cvr/pn_peer_msg.c:498
+#: cvr/pn_peer_msg.c:557
 msgid "requests to view your webcam, but this request is not yet supported."
 msgstr ""
 
-#: cvr/pn_peer_msg.c:503
+#: cvr/pn_peer_msg.c:562
 msgid "has sent you a webcam invite, which is not yet supported."
 msgstr ""
 
