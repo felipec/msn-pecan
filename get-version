@@ -2,7 +2,10 @@
 
 if test -f .version
 then
-	cat .version
+	v=`cat .version`
 else
-	git describe --tags
+	v=`git describe --tags`
 fi
+
+# remove initial 'v'
+echo "$v" | sed 's/^v//'
