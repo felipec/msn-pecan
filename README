@@ -1,31 +1,34 @@
-This is an alternative implementation of the MSN protocol plug-in for
-libpurple.
+msn-pecan is a "fork" of libpurple's MSN plug-in with a different development
+process, clear priorities, and plan forward. It's more fair to call libpurple's
+stock msn protocol the fork, and msn-pecan the trunk, as the main development
+has moved.
 
-It's based on the code from 2.2.2 but slowly becoming a completely different
-code.
-
-Compared to Pidgin's official MSN plug-in:
+Compared to libpurple's stock plug-in:
 
  * Faster log-in
+ * Fewer crashes
  * Fewer connection issues
- * Experimental direct connection support (fast file transfers)
- * Server-side storage for display names (private alias)
- * Support for handwritten messages (read-only)
- * Support for voice clips (receive-only)
+ * Support for direct file transfers
+ * Support for winks (animoticons) (view-only) (Pidgin)
  * Support for Plus! sounds (receive-only)
  * Option to hide Plus! tags
 
-Other features:
+Other features (which the stock plug-in also has):
 
+ * No timeout issues
+ * Server-side storage for display names (private alias)
  * Support for personal status messages
- * Support for offline messaging (read-only)
+ * Support for offline messaging
  * Send custom emoticons (Pidgin >= 2.5)
+ * Support for handwritten messages (read-only)
+ * Support for voice clips (receive-only)
 
 Future plans:
 
- * Complete direct connection (fast file-transfers)
- * MSNP15 support
- * Complete GObjectification
+ * MSNP18 support
 
 For questions, comments or patches contact:
 http://groups.google.com/group/msn-pecan
+
+More information in the home page:
+http://code.google.com/p/msn-pecan/
