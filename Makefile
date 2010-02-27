@@ -238,8 +238,7 @@ dist:
 	bzip2 /tmp/$(base).tar
 
 install: $(plugin)
-	mkdir -p $(D)/$(PURPLE_PLUGINDIR)
-	install $(plugin) $(D)/$(PURPLE_PLUGINDIR)
+	install -D $(plugin) $(D)/$(PURPLE_PLUGINDIR)/$(plugin)
 	# chcon -t textrel_shlib_t $(D)/$(PURPLE_PLUGINDIR)/$(plugin) # for selinux
 
 uninstall:
@@ -257,8 +256,7 @@ locales: $(foreach e,$(CATALOGS),po/$(e).mo)
 
 install_locales: locales
 	for x in $(CATALOGS); do \
-	mkdir -p $(D)/$(PURPLE_DATADIR)/locale/$$x/LC_MESSAGES/; \
-	install -D po/$$x.mo $(D)/$(PURPLE_DATADIR)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
+	install -m 644 -D po/$$x.mo $(D)/$(PURPLE_DATADIR)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
 	done
 
 win32-check:
