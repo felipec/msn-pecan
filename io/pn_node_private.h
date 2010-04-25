@@ -23,6 +23,7 @@
 
 #include "pn_node.h"
 #include "pn_stream.h"
+#include "pn_global.h"
 
 #if defined(USE_GIO)
 #include <gio/gio.h>
@@ -77,6 +78,7 @@ struct PnNode
     gboolean dump_file;
 #if defined(USE_GIO)
     GSocketConnection *socket_conn;
+    guint8 input_buffer[PN_BUF_LEN + 1];
 #elif defined(HAVE_LIBPURPLE)
     struct _PurpleProxyConnectData *connect_data;
 #endif

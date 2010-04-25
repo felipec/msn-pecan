@@ -54,6 +54,45 @@ status_to_str (GIOStatus status)
     return id;
 }
 
+#if defined(USE_GIO)
+static void
+read_cb (GObject *source,
+         GAsyncResult *result,
+         gpointer user_data)
+{
+    PnNode *conn;
+    gssize size;
+    GError *error = NULL;
+
+    conn = PN_NODE(user_data);
+    size = g_input_stream_read_finish (G_INPUT_STREAM (source),
+                                       result, &error);
+
+    conn = PN_NODE(user_data);
+
+    if (G_UNLIKELY (size == 0))
+        error = g_error_new_literal(PN_NODE_ERROR, PN_NODE_ERROR_OPEN,
+                                    "End of stream");
+
+    if (error)
+        goto nok;
+
+    pn_node_parse (conn, (char *) conn->input_buffer, size);
+
+    if (conn->status == PN_NODE_STATUS_OPEN)
+        g_input_stream_read_async (G_INPUT_STREAM (source), conn->input_buffer, PN_BUF_LEN,
+                                   G_PRIORITY_DEFAULT, NULL, read_cb, conn);
+    else
+        g_object_unref (conn);
+
+    return;
+
+nok:
+    conn->error = error;
+    pn_node_error (conn);
+    g_object_unref (conn);
+}
+#else
 static gboolean
 read_cb (GIOChannel *source,
          GIOCondition condition,
@@ -103,6 +142,7 @@ read_cb (GIOChannel *source,
 
     return TRUE;
 }
+#endif
 
 static void
 open_cb (PnNode *next,
@@ -307,23 +347,19 @@ connect_cb(GObject *source,
     g_object_ref(conn);
 
     if (socket_conn) {
-        GIOChannel *channel;
         GSocket *socket;
+        GInputStream *input;
 
         conn->socket_conn = socket_conn;
         socket = g_socket_connection_get_socket(socket_conn);
-        conn->stream = pn_stream_new(g_socket_get_fd(socket));
-        channel = conn->stream->channel;
-
-        PN_NODE_GET_CLASS (conn)->channel_setup (conn, channel);
 
         conn->status = PN_NODE_STATUS_OPEN;
 
-        pn_info("connected: conn=%p,channel=%p", conn, channel);
-        conn->read_watch = g_io_add_watch(channel, G_IO_IN, read_cb, conn);
-#if 0
-        g_io_add_watch (channel, G_IO_ERR | G_IO_HUP | G_IO_NVAL, close_cb, conn);
-#endif
+        input = g_io_stream_get_input_stream (G_IO_STREAM (conn->socket_conn));
+        g_object_ref (conn);
+        g_input_stream_read_async (input, conn->input_buffer, PN_BUF_LEN,
+                                   G_PRIORITY_DEFAULT, NULL,
+                                   read_cb, conn);
     }
     else {
         conn->error = g_error_new_literal(PN_NODE_ERROR, PN_NODE_ERROR_OPEN,
@@ -468,18 +504,19 @@ close_impl (PnNode *conn)
         g_object_unref(conn->socket_conn);
         conn->socket_conn = NULL;
     }
-#elif defined(HAVE_LIBPURPLE)
+#else
+#if defined(HAVE_LIBPURPLE)
     if (conn->connect_data) {
         purple_proxy_connect_cancel (conn->connect_data);
         conn->connect_data = NULL;
     }
 #endif
-
     if (conn->read_watch)
     {
         g_source_remove (conn->read_watch);
         conn->read_watch = 0;
     }
+#endif
 
     if (conn->stream)
     {
@@ -532,6 +569,11 @@ write_impl (PnNode *conn,
         GError *tmp_error = NULL;
         gsize bytes_written = 0;
 
+#if defined(USE_GIO)
+        GOutputStream *output = g_io_stream_get_output_stream (G_IO_STREAM (conn->socket_conn));
+
+        g_output_stream_write_all (output, buf, count, &bytes_written, NULL, &tmp_error);
+#else
         pn_debug ("stream=%p", conn->stream);
 
         status = pn_stream_write_full (conn->stream, buf, count, &bytes_written, &tmp_error);
@@ -552,6 +594,7 @@ write_impl (PnNode *conn,
             pn_warning ("not normal: status=%d (%s)",
                         status, status_to_str (status));
         }
+#endif
 
         if (ret_bytes_written)
             *ret_bytes_written = bytes_written;
