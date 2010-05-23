@@ -968,7 +968,7 @@ pn_parse_date(const char *str)
     tm.tm_mday = d;
     tm.tm_mon = m;
     tm.tm_year = y - 1900;
-    tm.tm_isdst = -1;
+    tm.tm_isdst = 0;
 
     return mktime (&tm) - timezone;
 }
