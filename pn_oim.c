@@ -502,6 +502,9 @@ open_cb (PnNode *conn,
 
     pn_log ("begin");
 
+    g_signal_handler_disconnect (conn, oim_request->open_sig_handler);
+    oim_request->open_sig_handler = 0;
+
     if (oim_request->type == PN_RECEIVE_OIM)
         send_receive_request (conn, oim_request);
     else if (oim_request->type == PN_DELETE_OIM)
@@ -510,9 +513,6 @@ open_cb (PnNode *conn,
         send_send_request (conn, oim_request);
     else
         send_auth_request (conn, oim_request);
-
-    g_signal_handler_disconnect (conn, oim_request->open_sig_handler);
-    oim_request->open_sig_handler = 0;
 
     pn_log ("end");
 }
@@ -698,7 +698,7 @@ parse_expiration_time (const char *str)
     tm.tm_min = min;
     tm.tm_hour = hour;
     tm.tm_mday = d;
-    tm.tm_mon = m-1;
+    tm.tm_mon = m - 1;
     tm.tm_year = y - 1900;
     tm.tm_isdst = -1;
 
@@ -736,12 +736,14 @@ process_body_auth (OimRequest *oim_request,
     if (cur)
     {
         gchar *end, *expires;
+        time_t t;
 
         cur = strstr (cur, "<wsu:Expires>") + 13;
         end = strchr (cur, '<');
         expires = g_strndup (cur, end - cur);
 
-        oim_request->oim_session->expiration_time.messenger_msn_com = parse_expiration_time (expires);
+        t = parse_expiration_time (expires);
+        oim_request->oim_session->expiration_time.messenger_msn_com = t;
 
         g_free (expires);
     }
@@ -763,12 +765,14 @@ process_body_auth (OimRequest *oim_request,
     if (cur)
     {
         gchar *end, *expires;
+        time_t t;
 
         cur = strstr (cur, "<wsu:Expires>") + 13;
         end = strchr (cur, '<');
         expires = g_strndup (cur, end - cur);
 
-        oim_request->oim_session->expiration_time.messengersecure_live_com = parse_expiration_time (expires);
+        t = parse_expiration_time (expires);
+        oim_request->oim_session->expiration_time.messengersecure_live_com = t;
 
         g_free (expires);
     }
@@ -855,26 +859,23 @@ oim_process_requests (PecanOimSession *oim_session)
     if (oim_request->type != PN_SSO_AUTH_OIM)
     {
         time_t current_time = time (NULL);
+        gboolean need_auth = FALSE;
 
         if (oim_request->type == PN_RECEIVE_OIM || oim_request->type == PN_DELETE_OIM)
         {
             if (current_time >= oim_session->expiration_time.messenger_msn_com)
-            {
-                g_queue_push_head (oim_session->request_queue,
-                                   oim_request_new (oim_session, NULL, NULL, NULL, PN_SSO_AUTH_OIM));
-
-                oim_request = g_queue_peek_head (oim_session->request_queue);
-            }
+                need_auth = TRUE;
         }
         else if (oim_request->type == PN_SEND_OIM)
         {
             if (current_time >= oim_session->expiration_time.messengersecure_live_com)
-            {
-                g_queue_push_head (oim_session->request_queue,
-                                   oim_request_new (oim_session, NULL, NULL, NULL, PN_SSO_AUTH_OIM));
+                need_auth = TRUE;
+        }
 
-                oim_request = g_queue_peek_head (oim_session->request_queue);
-            }
+        if (need_auth)
+        {
+            oim_request = oim_request_new (oim_session, NULL, NULL, NULL, PN_SSO_AUTH_OIM);
+            g_queue_push_head (oim_session->request_queue, oim_request);
         }
     }
 
