@@ -94,8 +94,11 @@ typedef struct
 } MsnEmoticon;
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
 
+#if !PURPLE_VERSION_CHECK(2,7,0)
 void PURPLE_MODULE_NAME(msn_pecan, set_alias) (PurpleConnection *gc,
                                                const gchar *value);
+#endif
+
 static void msn_set_prp(PurpleConnection *gc, const char *type, const char *entry);
 
 static gboolean
@@ -194,12 +197,25 @@ set_friendly_name (PurpleConnection *gc,
     msn_session_set_public_alias (gc->proto_data, entry);
 }
 
+#if PURPLE_VERSION_CHECK(2,7,0)
+static void
+set_alias(PurpleConnection *pc, const char *alias,
+          PurpleSetPublicAliasSuccessCallback success_cb,
+          PurpleSetPublicAliasFailureCallback failure_cb)
+{
+    PurpleAccount *account;
+    account = purple_connection_get_account(pc);
+    set_friendly_name(pc, alias);
+    success_cb(account, alias);
+}
+#else
 PURPLE_MODULE_EXPORT void
 PURPLE_MODULE_NAME(msn_pecan, set_alias) (PurpleConnection *gc,
                                           const gchar *value)
 {
     set_friendly_name (gc, value);
 }
+#endif
 
 /* TODO do we really need to check for the entry to be empty? */
 static void
@@ -1826,9 +1842,15 @@ static PurplePluginProtocolInfo prpl_info =
     msn_attention_types, /* attention_types */
 #if PURPLE_VERSION_CHECK(2,5,0)
     sizeof (PurplePluginProtocolInfo), /* struct_size */
+    NULL, /* get_account_text_table */
+    NULL, /* initiate_media */
+    NULL, /* get_media_caps */
+#if PURPLE_VERSION_CHECK(2,7,0)
+    NULL, /* get_moods */
+    set_alias, /* set_public_alias */
+    NULL, /* get_public_alias */
+#endif
 #endif /* PURPLE_VERSION_CHECK(2,5,0) */
-    /* padding */
-    NULL
 };
 
 static PurplePluginInfo info =
