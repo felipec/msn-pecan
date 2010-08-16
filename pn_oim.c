@@ -738,14 +738,19 @@ process_body_auth (OimRequest *oim_request,
         gchar *end, *expires;
         time_t t;
 
-        cur = strstr (cur, "<wsu:Expires>") + 13;
-        end = strchr (cur, '<');
-        expires = g_strndup (cur, end - cur);
+        cur = strstr (cur, "<wsu:Expires>");
+        if (cur) {
+            cur += 13;
+            end = strchr (cur, '<');
+            if (end) {
+                expires = g_strndup (cur, end - cur);
 
-        t = parse_expiration_time (expires);
-        oim_request->oim_session->expiration_time.messenger_msn_com = t;
+                t = parse_expiration_time (expires);
+                oim_request->oim_session->expiration_time.messenger_msn_com = t;
 
-        g_free (expires);
+                g_free (expires);
+            }
+        }
     }
 
     cur = strstr (body, "<wsse:BinarySecurityToken Id=\"Compact2\">");
@@ -767,14 +772,19 @@ process_body_auth (OimRequest *oim_request,
         gchar *end, *expires;
         time_t t;
 
-        cur = strstr (cur, "<wsu:Expires>") + 13;
-        end = strchr (cur, '<');
-        expires = g_strndup (cur, end - cur);
+        cur = strstr (cur, "<wsu:Expires>");
+        if (cur) {
+            cur += 13;
+            end = strchr (cur, '<');
+            if (end) {
+                expires = g_strndup (cur, end - cur);
 
-        t = parse_expiration_time (expires);
-        oim_request->oim_session->expiration_time.messengersecure_live_com = t;
+                t = parse_expiration_time (expires);
+                oim_request->oim_session->expiration_time.messengersecure_live_com = t;
 
-        g_free (expires);
+                g_free (expires);
+            }
+        }
     }
 }
 
