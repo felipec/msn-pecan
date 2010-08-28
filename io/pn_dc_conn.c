@@ -236,7 +236,7 @@ class_init(gpointer g_class,
 GType
 pn_dc_conn_get_type(void)
 {
-    static volatile gsize type = 0;
+    static gsize type;
 
     if (g_once_init_enter(&type)) {
         GType tmp_type;
