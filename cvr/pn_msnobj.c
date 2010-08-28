@@ -157,7 +157,7 @@ pn_msnobj_new_from_image(struct pn_buffer *image,
     obj->size = image->len;
 
     /* Compute the SHA1C field. */
-    buf = g_strdup_printf("Creator%sSize%zuType%dLocation%sFriendly%sSHA1D%s",
+    buf = g_strdup_printf("Creator%sSize%" G_GSIZE_FORMAT "Type%dLocation%sFriendly%sSHA1D%s",
                           obj->creator,
                           obj->size,
                           obj->type,
@@ -207,7 +207,7 @@ pn_msnobj_to_string(const struct pn_msnobj *obj)
 
     sha1c = obj->sha1c;
 
-    str = g_strdup_printf("<msnobj Creator=\"%s\" Size=\"%zu\" Type=\"%d\" "
+    str = g_strdup_printf("<msnobj Creator=\"%s\" Size=\"%" G_GSIZE_FORMAT "\" Type=\"%d\" "
                           "Location=\"%s\" Friendly=\"%s\" SHA1D=\"%s\""
                           "%s%s%s/>",
                           obj->creator,

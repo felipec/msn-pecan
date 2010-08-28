@@ -711,7 +711,7 @@ pn_peer_link_process_msg(struct pn_peer_link *link,
         len = fwrite(data, 1, len, peer_msg->fp);
     else if (peer_msg->size && peer_msg->buffer) {
         if (len > peer_msg->size || offset > (peer_msg->size - len)) {
-            pn_warning("oversized peer_msg: %zu", len);
+            pn_warning("oversized peer_msg: %" G_GSIZE_FORMAT, len);
             link->slp_msgs = g_list_remove(link->slp_msgs, peer_msg);
             pn_peer_msg_unref(peer_msg);
             return;

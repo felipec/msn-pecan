@@ -174,7 +174,7 @@ send_receive_request (PnNode *conn,
                               "Accept: */*\r\n"
                               "SOAPAction: \"http://www.hotmail.msn.com/ws/2004/09/oim/rsi/GetMessage\"\r\n"
                               "Content-Type: text/xml; charset=utf-8\r\n"
-                              "Content-Length: %zu\r\n"
+                              "Content-Length: %" G_GSIZE_FORMAT "\r\n"
                               "User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)\r\n"
                               "Host: %s\r\n"
                               "Connection: Keep-Alive\r\n"
@@ -194,7 +194,7 @@ send_receive_request (PnNode *conn,
     {
         gsize len;
         pn_node_write (conn, header, strlen (header), &len, NULL);
-        pn_debug ("write_len=%zu", len);
+        pn_debug ("write_len=%" G_GSIZE_FORMAT, len);
     }
 
     g_free (header);
@@ -239,7 +239,7 @@ send_delete_request (PnNode *conn,
                               "Accept: */*\r\n"
                               "SOAPAction: \"http://www.hotmail.msn.com/ws/2004/09/oim/rsi/DeleteMessages\"\r\n"
                               "Content-Type: text/xml; charset=utf-8\r\n"
-                              "Content-Length: %zu\r\n"
+                              "Content-Length: %" G_GSIZE_FORMAT "\r\n"
                               "User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)\r\n"
                               "Host: %s\r\n"
                               "Connection: Keep-Alive\r\n"
@@ -257,7 +257,7 @@ send_delete_request (PnNode *conn,
     {
         gsize len;
         pn_node_write (conn, header, strlen (header), &len, NULL);
-        pn_debug ("write_len=%zu", len);
+        pn_debug ("write_len=%" G_GSIZE_FORMAT, len);
     }
 
     g_free (header);
@@ -359,7 +359,7 @@ send_send_request (PnNode *conn,
                               "Accept: */*\r\n"
                               "SOAPAction: \"http://messenger.live.com/ws/2006/09/oim/Store2\"\r\n"
                               "Content-Type: text/xml; charset=utf-8\r\n"
-                              "Content-Length: %zu\r\n"
+                              "Content-Length: %" G_GSIZE_FORMAT "\r\n"
                               "User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)\r\n"
                               "Host: %s\r\n"
                               "Connection: Keep-Alive\r\n"
@@ -377,7 +377,7 @@ send_send_request (PnNode *conn,
     {
         gsize len;
         pn_node_write (conn, header, strlen (header), &len, NULL);
-        pn_debug ("write_len=%zu", len);
+        pn_debug ("write_len=%" G_GSIZE_FORMAT, len);
     }
 
     g_free (header);
@@ -454,7 +454,7 @@ send_auth_request (PnNode *conn,
     header = g_strdup_printf ("POST /RST.srf HTTP/1.1\r\n"
                               "Accept: */*\r\n"
                               "Content-Type: text/xml; charset=utf-8\r\n"
-                              "Content-Length: %zu\r\n"
+                              "Content-Length: %" G_GSIZE_FORMAT "\r\n"
                               "User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)\r\n"
                               "Host: %s\r\n"
                               "Connection: Keep-Alive\r\n"
@@ -472,7 +472,7 @@ send_auth_request (PnNode *conn,
     {
         gsize len;
         pn_node_write (conn, header, strlen (header), &len, NULL);
-        pn_debug ("write_len=%zu", len);
+        pn_debug ("write_len=%" G_GSIZE_FORMAT, len);
     }
 
     g_free (header);

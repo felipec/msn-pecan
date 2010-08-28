@@ -339,7 +339,7 @@ write_impl (PnNode *conn,
             if (bytes_written < (int) count)
             {
                 /* This shouldn't happen, right? */
-                pn_error ("write check: %d < %zu", bytes_written, count);
+                pn_error ("write check: %d < %" G_GSIZE_FORMAT, bytes_written, count);
             }
         }
         else

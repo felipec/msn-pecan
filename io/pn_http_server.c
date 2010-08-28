@@ -351,7 +351,7 @@ http_poll (gpointer data)
         }
 
         if (status == G_IO_STATUS_NORMAL)
-            pn_log ("bytes_written=%zu", bytes_written);
+            pn_log ("bytes_written=%" G_GSIZE_FORMAT, bytes_written);
     }
 
     if (status != G_IO_STATUS_NORMAL)
@@ -840,14 +840,14 @@ read_impl (PnNode *conn,
                 return status;
 
             pn_log ("status=%d", status);
-            pn_log ("bytes_read=%zu", bytes_read);
+            pn_log ("bytes_read=%" G_GSIZE_FORMAT, bytes_read);
 
             if (ret_bytes_read)
                 *ret_bytes_read = bytes_read;
 
             http_conn->content_length -= bytes_read;
 
-            pn_log ("con_len=%d,read=%zu", http_conn->content_length, bytes_read);
+            pn_log ("con_len=%d,read=%" G_GSIZE_FORMAT, http_conn->content_length, bytes_read);
 
             if (conn->status == PN_NODE_STATUS_CLOSED)
                 goto leave;
@@ -927,7 +927,7 @@ foo_write (PnNode *conn,
                                   "Pragma: no-cache\r\n"
                                   "Cache-Control: no-cache\r\n"
                                   "Content-Type: application/x-msn-messenger\r\n"
-                                  "Content-Length: %zu\r\n\r\n",
+                                  "Content-Length: %" G_GSIZE_FORMAT "\r\n\r\n",
                                   http_conn->gateway,
                                   params,
                                   http_conn->gateway,
@@ -997,7 +997,7 @@ foo_write (PnNode *conn,
     }
 
     if (status == G_IO_STATUS_NORMAL)
-        pn_log ("bytes_written=%zu", bytes_written);
+        pn_log ("bytes_written=%" G_GSIZE_FORMAT, bytes_written);
     else
         pn_error ("not normal");
 

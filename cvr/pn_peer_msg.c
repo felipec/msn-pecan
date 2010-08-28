@@ -177,7 +177,7 @@ sip_new(struct pn_peer_call *call,
                            "Call-ID: {%s}\r\n"
                            "Max-Forwards: 0\r\n"
                            "Content-Type: %s\r\n"
-                           "Content-Length: %zu\r\n"
+                           "Content-Length: %" G_GSIZE_FORMAT "\r\n"
                            "\r\n",
                            header,
                            pn_peer_link_get_passport(link),
