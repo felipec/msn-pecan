@@ -48,7 +48,6 @@
 static void
 conversation_created_cb (PurpleConversation *conv, gpointer data)
 {
-    gchar *str;
     const gchar *tmp_user, *friendly_name;
     MsnSession *session = data;
     struct pn_contact *contact;
@@ -61,15 +60,6 @@ conversation_created_cb (PurpleConversation *conv, gpointer data)
         friendly_name = tmp_user;
     if (!friendly_name)
         friendly_name = tmp_user;
-
-    if (contact && !(contact->list_op & (1 << MSN_LIST_RL)))
-    {
-        str = g_strdup_printf (_("You are not in %s's contact list."), friendly_name);
-
-        purple_conversation_write (conv, NULL, str, PURPLE_MESSAGE_SYSTEM | PURPLE_MESSAGE_NOTIFY, time (NULL));
-
-        g_free (str);
-    }
 }
 
 #ifdef INTERNAL_MAINLOOP

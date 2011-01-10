@@ -730,9 +730,6 @@ tooltip_text (PurpleBuddy *buddy,
                 purple_notify_user_info_add_pair (user_info, _("Working"), user->media.title);
             }
         }
-
-        purple_notify_user_info_add_pair (user_info, _("Has you"),
-                                          ((user->list_op & (1 << MSN_LIST_RL)) ? _("Yes") : _("No")));
     }
 
     purple_notify_user_info_add_pair (user_info, _("Blocked"),
