@@ -204,6 +204,8 @@ msn_notification_destroy(MsnNotification *notification)
     if (!notification)
         return;
 
+    pn_timer_free(notification->alive_timer);
+
     if (notification->cmdproc)
         notification->cmdproc->data = NULL;
 
@@ -295,12 +297,21 @@ cvr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 }
 
 static gboolean
-timeout (gpointer data)
+timeout (void *data)
 {
-    MsnCmdProc *cmdproc = data;
+    MsnNotification *ns = data;
+    MsnCmdProc *cmdproc = ns->cmdproc;
+    pn_timer_start(ns->alive_timer, 60);
     pn_timer_cancel(cmdproc->timer);
     msn_cmdproc_send_quick(cmdproc, "PNG", NULL, NULL);
 
+    return FALSE;
+}
+
+static gboolean
+alive_timeout (void *data)
+{
+    msn_session_set_error (data, MSN_ERROR_SERVCONN, "Timed out");
     return FALSE;
 }
 
@@ -319,8 +330,11 @@ usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     {
         /* OK */
         msn_cmdproc_send(cmdproc, "SYN", "%s %s", "0", "0");
-        if (!msn_session_get_bool (session, "use_http_method"))
-            msn_cmdproc_set_timeout(cmdproc, 30, timeout, cmdproc);
+        if (!msn_session_get_bool (session, "use_http_method")) {
+            MsnNotification *ns = cmdproc->data;
+            ns->alive_timer = pn_timer_new (alive_timeout, session);
+            msn_cmdproc_set_timeout(cmdproc, 30, timeout, ns);
+        }
     }
     else if (!g_ascii_strcasecmp(cmd->params[1], "TWN"))
     {
@@ -667,6 +681,8 @@ leave:
 static void
 qng_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
+    MsnNotification *ns = cmdproc->data;
+    pn_timer_stop(ns->alive_timer);
     pn_timer_start(cmdproc->timer, atoi(cmd->params[0]));
 }
 

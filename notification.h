@@ -29,6 +29,7 @@ typedef struct MsnNotification MsnNotification;
 
 struct MsnSession;
 struct MsnCmdProc;
+struct pn_timer;
 
 struct MsnNotification
 {
@@ -42,6 +43,7 @@ struct MsnNotification
     gulong error_handler;
 
     gboolean closed;
+    struct pn_timer *alive_timer;
 };
 
 void msn_notification_end (void);
