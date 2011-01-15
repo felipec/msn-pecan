@@ -507,6 +507,18 @@ new_chat (MsnSession *session,
     return swboard;
 }
 
+const char *get_my_alias(MsnSession *session)
+{
+    const char *alias;
+    PurpleAccount *account = msn_session_get_user_data(session);
+    alias = purple_account_get_alias(account);
+    if (!alias)
+        alias = purple_connection_get_display_name(account->gc);
+    if (!alias)
+        alias = msn_session_get_username(session);
+    return alias;
+}
+
 static void
 initiate_chat_cb(PurpleBlistNode *node, gpointer data)
 {
@@ -530,7 +542,7 @@ initiate_chat_cb(PurpleBlistNode *node, gpointer data)
     swboard->conv = serv_got_joined_chat(gc, swboard->chat_id, "MSN Chat");
 
     purple_conv_chat_add_user(PURPLE_CONV_CHAT(swboard->conv),
-                              msn_session_get_username(session), NULL, PURPLE_CBFLAGS_NONE, TRUE);
+                              get_my_alias(session), NULL, PURPLE_CBFLAGS_NONE, TRUE);
 }
 
 #if defined(PECAN_CVR)
