@@ -144,6 +144,11 @@ lsg_cmd (MsnCmdProc *cmdproc,
     name = pn_url_decode (cmd->params[0]);
     group_guid = cmd->params[1];
 
+    if (strcmp(name, MSN_NULL_GROUP_NAME) == 0) {
+        pn_error("Invalid group name, ignoring");
+        goto leave;
+    }
+
     pn_group_new (session->contactlist, name, group_guid);
 
     if (!purple_find_group (name))
@@ -151,8 +156,6 @@ lsg_cmd (MsnCmdProc *cmdproc,
         PurpleGroup *g = purple_group_new (name);
         purple_blist_add_group (g, NULL);
     }
-
-    g_free (name);
 
     /* Group of ungroupped buddies */
     if (!group_guid)
@@ -166,8 +169,9 @@ lsg_cmd (MsnCmdProc *cmdproc,
             msn_sync_destroy (session->sync);
             session->sync = NULL;
         }
-        return;
     }
+leave:
+    g_free (name);
 }
 
 static void

@@ -634,6 +634,11 @@ adg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 
     group_name = pn_url_decode(cmd->params[1]);
 
+    if (strcmp(group_name, MSN_NULL_GROUP_NAME) == 0) {
+        pn_error("Invalid group name, ignoring");
+        goto leave;
+    }
+
     pn_group_new(session->contactlist, group_name, group_guid);
 
     /* There is a user that must me moved to this group */
@@ -655,6 +660,7 @@ adg_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
         g_free (data);
     }
 
+leave:
     g_free (group_name);
 }
 

@@ -466,8 +466,17 @@ pn_contact_add_group_id (struct pn_contact *contact,
                          const gchar *group_guid)
 {
     const gchar *passport;
+    struct pn_contact_list *contactlist;
+    const gchar *group_name;
 
     passport = pn_contact_get_passport (contact);
+    contactlist = contact->contactlist;
+    group_name = pn_contactlist_find_group_name (contactlist, group_guid);
+
+    if (!group_name) {
+        pn_warning("Ignoring, null group?");
+        return;
+    }
 
     pn_debug ("passport=[%s],group_guid=[%s]", passport, group_guid);
 
@@ -478,14 +487,10 @@ pn_contact_add_group_id (struct pn_contact *contact,
 
 #ifdef HAVE_LIBPURPLE
     {
-        struct pn_contact_list *contactlist;
         PurpleAccount *account;
         PurpleBuddy *b = NULL;
         PurpleGroup *g = NULL;
-        const gchar *group_name;
 
-        contactlist = contact->contactlist;
-        group_name = pn_contactlist_find_group_name (contactlist, group_guid);
         account = msn_session_get_user_data (contactlist->session);
 
         /* If this contact is in the no-group, remove him, since now he is in a

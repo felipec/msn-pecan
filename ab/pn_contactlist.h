@@ -20,6 +20,8 @@
 #ifndef PN_CONTACTLIST_H
 #define PN_CONTACTLIST_H
 
+#define MSN_NULL_GROUP_NAME "Non-Grouped"
+
 struct pn_contact_list;
 struct pn_contact;
 struct pn_group;

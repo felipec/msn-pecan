@@ -36,8 +36,6 @@
 
 #include <string.h>
 
-#define MSN_NULL_GROUP_NAME "Non-Grouped"
-
 #ifdef HAVE_LIBPURPLE
 #include <privacy.h>
 #endif /* HAVE_LIBPURPLE */
