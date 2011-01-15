@@ -41,6 +41,7 @@
 
 /* libpurple stuff. */
 #include <account.h>
+#include <version.h>
 #ifdef INTERNAL_MAINLOOP
 #include <eventloop.h>
 #endif
@@ -360,6 +361,26 @@ msn_session_warning (MsnSession *session,
     va_end (args);
 }
 
+
+#if PURPLE_VERSION_CHECK(2,3,0)
+static PurpleConnectionError msn_error_to_purple_reason(MsnErrorType error)
+{
+    switch (error) {
+        case MSN_ERROR_SERVCONN:
+        case MSN_ERROR_HTTP_MALFORMED:
+            return PURPLE_CONNECTION_ERROR_NETWORK_ERROR;
+        case MSN_ERROR_UNSUPPORTED_PROTOCOL:
+            return PURPLE_CONNECTION_ERROR_AUTHENTICATION_IMPOSSIBLE;
+        case MSN_ERROR_SIGN_OTHER:
+            return PURPLE_CONNECTION_ERROR_NAME_IN_USE;
+        case MSN_ERROR_AUTH:
+            return PURPLE_CONNECTION_ERROR_AUTHENTICATION_FAILED;
+        default:
+            return PURPLE_CONNECTION_ERROR_OTHER_ERROR;
+    }
+}
+#endif
+
 void
 msn_session_set_error (MsnSession *session,
                        MsnErrorType error,
@@ -385,7 +406,6 @@ msn_session_set_error (MsnSession *session,
             msg = g_strdup (_("Error parsing HTTP."));
             break;
         case MSN_ERROR_SIGN_OTHER:
-            connection->wants_to_die = TRUE;
             msg = g_strdup (_("You have signed on from another location."));
             break;
         case MSN_ERROR_SERV_UNAVAILABLE:
@@ -398,7 +418,6 @@ msn_session_set_error (MsnSession *session,
                               "temporarily."));
             break;
         case MSN_ERROR_AUTH:
-            connection->wants_to_die = TRUE;
             msg = g_strdup_printf (_("Unable to authenticate: %s"),
                                    info ? info : _("Unknown error"));
             break;
@@ -414,7 +433,12 @@ msn_session_set_error (MsnSession *session,
 
     msn_session_disconnect (session);
 
+#if PURPLE_VERSION_CHECK(2,3,0)
+    purple_connection_error_reason (connection,
+            msn_error_to_purple_reason(error), msg);
+#else
     purple_connection_error (connection, msg);
+#endif
 
     g_free (msg);
 }

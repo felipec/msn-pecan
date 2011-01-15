@@ -919,10 +919,16 @@ login (PurpleAccount *account)
 
     if (!purple_ssl_is_supported ())
     {
-        gc->wants_to_die = TRUE;
+#if PURPLE_VERSION_CHECK(2,3,0)
+        purple_connection_error_reason (gc,
+                PURPLE_CONNECTION_ERROR_NO_SSL_SUPPORT,
+                _("SSL support is needed for MSN. Please install a supported "
+                    "SSL library."));
+#else
         purple_connection_error (gc,
-                                 _("SSL support is needed for MSN. Please install a supported "
-                                   "SSL library."));
+                _("SSL support is needed for MSN. Please install a supported "
+                    "SSL library."));
+#endif
         return;
     }
 
