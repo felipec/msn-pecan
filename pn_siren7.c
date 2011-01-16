@@ -24,6 +24,7 @@
  */
 
 #include <stdio.h>
+#include "pn_siren7.h"
 #include "ext/libsiren/siren7.h"
 
 #define RIFF_ID 0x46464952
