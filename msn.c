@@ -1479,9 +1479,7 @@ rem_permit (PurpleConnection *gc,
     user = pn_contactlist_find_contact (contactlist, who);
 
     pn_contactlist_rem_buddy (contactlist, who, MSN_LIST_AL, NULL);
-
-    if (user && user->list_op & MSN_LIST_RL_OP)
-        pn_contactlist_add_buddy (contactlist, who, MSN_LIST_BL, NULL);
+    pn_contactlist_add_buddy (contactlist, who, MSN_LIST_BL, NULL);
 }
 
 static void
@@ -1504,9 +1502,7 @@ rem_deny (PurpleConnection *gc,
     user = pn_contactlist_find_contact (contactlist, who);
 
     pn_contactlist_rem_buddy (contactlist, who, MSN_LIST_BL, NULL);
-
-    if (user && user->list_op & MSN_LIST_RL_OP)
-        pn_contactlist_add_buddy (contactlist, who, MSN_LIST_AL, NULL);
+    pn_contactlist_add_buddy (contactlist, who, MSN_LIST_AL, NULL);
 }
 
 static void

@@ -378,7 +378,7 @@ msn_got_lst_contact (MsnSession *session,
     }
 
     /* Somebody wants to be our friend :) */
-    if (list_op & (MSN_LIST_RL_OP | MSN_LIST_PL_OP))
+    if (list_op & MSN_LIST_PL_OP)
     {
         /* Users must be either allowed or blocked, right? */
         if (!(list_op & (MSN_LIST_AL_OP | MSN_LIST_BL_OP)))
