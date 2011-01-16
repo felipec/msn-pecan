@@ -360,7 +360,7 @@ struct mspack_system {
    * @see open()
    */
   void (*message)(struct mspack_file *file,
-		  char *format,
+		  const char *format,
 		  ...);
 
   /**

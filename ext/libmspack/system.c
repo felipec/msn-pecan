@@ -12,6 +12,7 @@
 #endif
 
 #include "mspack.h"
+#include "system.h"
 
 #ifndef LARGEFILE_SUPPORT
 const char *largefile_msg = "library not compiled to support large files.";
@@ -178,7 +179,7 @@ static off_t msp_tell(struct mspack_file *file) {
 #endif
 }
 
-static void msp_msg(struct mspack_file *file, char *format, ...) {
+static void msp_msg(struct mspack_file *file, const char *format, ...) {
   va_list ap;
   if (file) fprintf(stderr, "%s: ", ((struct mspack_file_p *) file)->name);
   va_start(ap, format);
