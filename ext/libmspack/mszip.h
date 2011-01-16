@@ -16,7 +16,6 @@
 /* MSZIP (deflate) compression / (inflate) decompression definitions */
 
 #define MSZIP_FRAME_SIZE          (32768) /* size of LZ history window */
-#define MSZIP_MAX_HUFFBITS        (16)    /* maximum huffman code length */
 #define MSZIP_LITERAL_MAXSYMBOLS  (288)   /* literal/length huffman tree */
 #define MSZIP_LITERAL_TABLEBITS   (9)
 #define MSZIP_DISTANCE_MAXSYMBOLS (32)    /* distance huffman tree */
@@ -51,7 +50,7 @@ struct mszipd_stream {
   int error, repair_mode, bytes_output;
 
   /* I/O buffering */
-  unsigned char *inbuf, *i_ptr, *i_end, *o_ptr, *o_end;
+  unsigned char *inbuf, *i_ptr, *i_end, *o_ptr, *o_end, input_end;
   unsigned int bit_buffer, bits_left, inbuf_size;
 
 

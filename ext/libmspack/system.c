@@ -13,12 +13,19 @@
 
 #include "mspack.h"
 
+#ifndef LARGEFILE_SUPPORT
+const char *largefile_msg = "library not compiled to support large files.";
+#endif
+
+
 int mspack_version(int entity) {
   switch (entity) {
   case MSPACK_VER_LIBRARY:
   case MSPACK_VER_SYSTEM:
   case MSPACK_VER_MSCABD:
   case MSPACK_VER_MSCHMD:
+  case MSPACK_VER_MSSZDDD:
+  case MSPACK_VER_MSKWAJD:
     return 1;
   case MSPACK_VER_MSCABC:
   case MSPACK_VER_MSCHMC:
@@ -26,9 +33,7 @@ int mspack_version(int entity) {
   case MSPACK_VER_MSLITC:
   case MSPACK_VER_MSHLPD:
   case MSPACK_VER_MSHLPC:
-  case MSPACK_VER_MSSZDDD:
   case MSPACK_VER_MSSZDDC:
-  case MSPACK_VER_MSKWAJD:
   case MSPACK_VER_MSKWAJC:
     return 0;
   }
@@ -130,7 +135,7 @@ static void msp_close(struct mspack_file *file) {
 
 static int msp_read(struct mspack_file *file, void *buffer, int bytes) {
   struct mspack_file_p *this = (struct mspack_file_p *) file;
-  if (this) {
+  if (this && buffer && bytes >= 0) {
     size_t count = fread(buffer, 1, (size_t) bytes, this->fh);
     if (!ferror(this->fh)) return (int) count;
   }
@@ -139,7 +144,7 @@ static int msp_read(struct mspack_file *file, void *buffer, int bytes) {
 
 static int msp_write(struct mspack_file *file, void *buffer, int bytes) {
   struct mspack_file_p *this = (struct mspack_file_p *) file;
-  if (this) {
+  if (this && buffer && bytes >= 0) {
     size_t count = fwrite(buffer, 1, (size_t) bytes, this->fh);
     if (!ferror(this->fh)) return (int) count;
   }

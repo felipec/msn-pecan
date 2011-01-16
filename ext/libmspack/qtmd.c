@@ -23,79 +23,17 @@
 #include "system.h"
 #include "qtm.h"
 
-/* Quantum decompressor bitstream reading macros
- *
- * STORE_BITS        stores bitstream state in qtmd_stream structure
- * RESTORE_BITS      restores bitstream state from qtmd_stream structure
- * READ_BITS(var,n)  takes N bits from the buffer and puts them in var
- * FILL_BUFFER       if there is room for another 16 bits, reads another
- *                   16 bits from the input stream.
- * PEEK_BITS(n)      extracts without removing N bits from the bit buffer
- * REMOVE_BITS(n)    removes N bits from the bit buffer
- *
- * These bit access routines work by using the area beyond the MSB and the
- * LSB as a free source of zeroes. This avoids having to mask any bits.
- * So we have to know the bit width of the bitbuffer variable.
- */
-
-#ifdef HAVE_LIMITS_H
-# include <limits.h>
-#endif
-#ifndef CHAR_BIT
-# define CHAR_BIT (8)
-#endif
-#define BITBUF_WIDTH (sizeof(unsigned int) * CHAR_BIT)
-
-#define STORE_BITS do {                                                 \
-  qtm->i_ptr      = i_ptr;                                              \
-  qtm->i_end      = i_end;                                              \
-  qtm->bit_buffer = bit_buffer;                                         \
-  qtm->bits_left  = bits_left;                                          \
+/* import bit-reading macros and code */
+#define BITS_TYPE struct qtmd_stream
+#define BITS_VAR qtm
+#define BITS_ORDER_MSB
+#define READ_BYTES do {			\
+    unsigned char b0, b1;		\
+    READ_IF_NEEDED; b0 = *i_ptr++;	\
+    READ_IF_NEEDED; b1 = *i_ptr++;	\
+    INJECT_BITS((b0 << 8) | b1, 16);	\
 } while (0)
-
-#define RESTORE_BITS do {                                               \
-  i_ptr      = qtm->i_ptr;                                              \
-  i_end      = qtm->i_end;                                              \
-  bit_buffer = qtm->bit_buffer;                                         \
-  bits_left  = qtm->bits_left;                                          \
-} while (0)
-
-/* adds 16 bits to bit buffer, if there's space for the new bits */
-#define FILL_BUFFER do {                                                \
-  if (bits_left <= (BITBUF_WIDTH - 16)) {                               \
-    if (i_ptr >= i_end) {                                               \
-      if (qtmd_read_input(qtm)) return qtm->error;                      \
-      i_ptr = qtm->i_ptr;                                               \
-      i_end = qtm->i_end;                                               \
-    }                                                                   \
-    bit_buffer |= ((i_ptr[0] << 8) | i_ptr[1])                          \
-                  << (BITBUF_WIDTH - 16 - bits_left);                   \
-    bits_left  += 16;                                                   \
-    i_ptr      += 2;                                                    \
-  }                                                                     \
-} while (0)
-
-#define PEEK_BITS(n)   (bit_buffer >> (BITBUF_WIDTH - (n)))
-#define REMOVE_BITS(n) ((bit_buffer <<= (n)), (bits_left -= (n)))
-
-#define READ_BITS(val, bits) do {                                       \
-  (val) = 0;                                                            \
-  for (bits_needed = (bits); bits_needed > 0; bits_needed -= bit_run) { \
-    FILL_BUFFER;                                                        \
-    bit_run = (bits_left < bits_needed) ? bits_left : bits_needed;      \
-    (val) = ((val) << bit_run) | PEEK_BITS(bit_run);                    \
-    REMOVE_BITS(bit_run);                                               \
-  }                                                                     \
-} while (0)
-
-static int qtmd_read_input(struct qtmd_stream *qtm) {
-  int read = qtm->sys->read(qtm->input, &qtm->inbuf[0], (int)qtm->inbuf_size);
-  if (read < 0) return qtm->error = MSPACK_ERR_READ;
-
-  qtm->i_ptr = &qtm->inbuf[0];
-  qtm->i_end = &qtm->inbuf[read];
-  return MSPACK_ERR_OK;
-}
+#include "readbits.h"
 
 /* Quantum static data tables:
  *
@@ -110,26 +48,38 @@ static int qtmd_read_input(struct qtmd_stream *qtm) {
  * length_base[] and length_extra[] are equivalent in function, but are
  * used for encoding selector 6 (variable length match) match lengths,
  * instead of match offsets.
+ *
+ * They are generated with the following code:
+ *   unsigned int i, offset;
+ *   for (i = 0, offset = 0; i < 42; i++) {
+ *     position_base[i] = offset;
+ *     extra_bits[i] = ((i < 2) ? 0 : (i - 2)) >> 1;
+ *     offset += 1 << extra_bits[i];
+ *   }
+ *   for (i = 0, offset = 0; i < 26; i++) {
+ *     length_base[i] = offset;
+ *     length_extra[i] = (i < 2 ? 0 : i - 2) >> 2;
+ *     offset += 1 << length_extra[i];
+ *   }
+ *   length_base[26] = 254; length_extra[26] = 0;
  */
-static unsigned int  position_base[42];
-static unsigned char extra_bits[42], length_base[27], length_extra[27];
-
-static void qtmd_static_init() {
-  unsigned int i, offset;
-
-  for (i = 0, offset = 0; i < 42; i++) {
-    position_base[i] = offset;
-    extra_bits[i] = ((i < 2) ? 0 : (i - 2)) >> 1;
-    offset += 1 << extra_bits[i];
-  }
-
-  for (i = 0, offset = 0; i < 26; i++) {
-    length_base[i] = offset;
-    length_extra[i] = (i < 2 ? 0 : i - 2) >> 2;
-    offset += 1 << length_extra[i];
-  }
-  length_base[26] = 254; length_extra[26] = 0;
-}
+static const unsigned int position_base[42] = {
+  0, 1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192, 256, 384, 512, 768,
+  1024, 1536, 2048, 3072, 4096, 6144, 8192, 12288, 16384, 24576, 32768, 49152,
+  65536, 98304, 131072, 196608, 262144, 393216, 524288, 786432, 1048576, 1572864
+};
+static const unsigned char extra_bits[42] = {
+  0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10,
+  11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 19, 19
+};
+static const unsigned char length_base[27] = {
+  0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 14, 18, 22, 26,
+  30, 38, 46, 54, 62, 78, 94, 110, 126, 158, 190, 222, 254
+};
+static const unsigned char length_extra[27] = {
+  0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
+  3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0
+};
 
 
 /* Arithmetic decoder:
@@ -165,7 +115,7 @@ static void qtmd_static_init() {
       else break;                                                       \
     }                                                                   \
     L <<= 1; H = (H << 1) | 1;                                          \
-    FILL_BUFFER;                                                        \
+    ENSURE_BITS(1);							\
     C  = (C << 1) | PEEK_BITS(1);                                       \
     REMOVE_BITS(1);                                                     \
   }                                                                     \
@@ -250,9 +200,6 @@ struct qtmd_stream *qtmd_init(struct mspack_system *system,
   input_buffer_size = (input_buffer_size + 1) & -2;
   if (input_buffer_size < 2) return NULL;
 
-  /* initialise static data */
-  qtmd_static_init();
-
   /* allocate decompression state */
   if (!(qtm = system->alloc(system, sizeof(struct qtmd_stream)))) {
     return NULL;
@@ -281,6 +228,7 @@ struct qtmd_stream *qtmd_init(struct mspack_system *system,
 
   qtm->i_ptr = qtm->i_end = &qtm->inbuf[0];
   qtm->o_ptr = qtm->o_end = &qtm->window[0];
+  qtm->input_end = 0;
   qtm->bits_left = 0;
   qtm->bit_buffer = 0;
 
@@ -312,7 +260,6 @@ int qtmd_decompress(struct qtmd_stream *qtm, off_t out_bytes) {
 
   register unsigned int bit_buffer;
   register unsigned char bits_left;
-  unsigned char bits_needed, bit_run;
 
   /* easy answers */
   if (!qtm || (out_bytes < 0)) return MSPACK_ERR_ARGS;
@@ -374,25 +321,25 @@ int qtmd_decompress(struct qtmd_stream *qtm, off_t out_bytes) {
 	switch (selector) {
 	case 4: /* selector 4 = fixed length match (3 bytes) */
 	  GET_SYMBOL(qtm->model4, sym);
-	  READ_BITS(extra, extra_bits[sym]);
+	  READ_MANY_BITS(extra, extra_bits[sym]);
 	  match_offset = position_base[sym] + extra + 1;
 	  match_length = 3;
 	  break;
 
 	case 5: /* selector 5 = fixed length match (4 bytes) */
 	  GET_SYMBOL(qtm->model5, sym);
-	  READ_BITS(extra, extra_bits[sym]);
+	  READ_MANY_BITS(extra, extra_bits[sym]);
 	  match_offset = position_base[sym] + extra + 1;
 	  match_length = 4;
 	  break;
 
 	case 6: /* selector 6 = variable length match */
 	  GET_SYMBOL(qtm->model6len, sym);
-	  READ_BITS(extra, length_extra[sym]);
+	  READ_MANY_BITS(extra, length_extra[sym]);
 	  match_length = length_base[sym] + extra + 5;
 
 	  GET_SYMBOL(qtm->model6, sym);
-	  READ_BITS(extra, extra_bits[sym]);
+	  READ_MANY_BITS(extra, extra_bits[sym]);
 	  match_offset = position_base[sym] + extra + 1;
 	  break;
 
@@ -416,6 +363,16 @@ int qtmd_decompress(struct qtmd_stream *qtm, off_t out_bytes) {
 
 	  /* flush currently stored data */
 	  i = (&window[qtm->window_size] - qtm->o_ptr);
+
+	  /* this should not happen, but if it does then this code
+	   * can't handle the situation (can't flush up to the end of
+	   * the window, but can't break out either because we haven't
+	   * finished writing the match). bail out in this case */
+	  if (i > out_bytes) {
+	    D(("during window-wrap match; %d bytes to flush but only need %d",
+	       i, (int) out_bytes))
+	    return qtm->error = MSPACK_ERR_DECRUNCH;
+	  }
 	  if (qtm->sys->write(qtm->output, qtm->o_ptr, i) != i) {
 	    return qtm->error = MSPACK_ERR_WRITE;
 	  }
@@ -462,13 +419,15 @@ int qtmd_decompress(struct qtmd_stream *qtm, off_t out_bytes) {
 
     qtm->o_end = &window[window_posn];
 
-    /* another frame completed? */
-    if (frame_todo <= 0) {
-      if (frame_todo < 0) {
-	D(("overshot frame alignment"))
-	return qtm->error = MSPACK_ERR_DECRUNCH;
-      }
+   /* if we subtracted too much from frame_todo, it will
+    * wrap around past zero and go above its max value */
+   if (frame_todo > QTM_FRAME_SIZE) {
+     D(("overshot frame alignment"))
+     return qtm->error = MSPACK_ERR_DECRUNCH;
+   }
 
+    /* another frame completed? */
+    if (frame_todo == 0) {
       /* re-align input */
       if (bits_left & 7) REMOVE_BITS(bits_left & 7);
 
@@ -486,6 +445,8 @@ int qtmd_decompress(struct qtmd_stream *qtm, off_t out_bytes) {
     if (window_posn == qtm->window_size) {
       /* flush all currently stored data */
       i = (qtm->o_end - qtm->o_ptr);
+      /* break out if we have more than enough to finish this request */
+      if (i >= out_bytes) break;
       if (qtm->sys->write(qtm->output, qtm->o_ptr, i) != i) {
 	return qtm->error = MSPACK_ERR_WRITE;
       }

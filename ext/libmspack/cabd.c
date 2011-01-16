@@ -15,30 +15,15 @@
  * and usually the last folder of each cabinet extends into the next
  * cabinet.
  *
- * For a complete description of the format, get the official Microsoft
- * CAB SDK. It can be found at the following URL:
- *
- *   http://msdn.microsoft.com/library/en-us/dncabsdk/html/cabdl.asp
- *
- * It is a self-extracting ZIP file, which can be extracted with the unzip
- * command.
+ * For a complete description of the format, see the MSDN site:
+ *   http://msdn.microsoft.com/en-us/library/cc483132.aspx
  */
 
 /* CAB decompression implementation */
 
 #include "system.h"
 #include "cab.h"
-
-#ifndef _FILE_OFFSET_BITS
-#define _FILE_OFFSET_BITS 32
-#endif
-#if (_FILE_OFFSET_BITS < 64)
-static char *largefile_msg =
-  "library not compiled to support large files.";
-#define LD "ld"
-#else
-#define LD "lld"
-#endif
+#include "assert.h"
 
 /* Notes on compliance with cabinet specification:
  *
@@ -637,7 +622,7 @@ static int cabd_find(struct mscab_decompressor_p *this, unsigned char *buf,
   off_t caboff, offset, foffset, cablen, length;
   struct mspack_system *sys = this->system;
   unsigned char *p, *pend, state = 0;
-  unsigned int cablen_u32 = 0, foffset_u32 = 0;
+  unsigned int cablen_u32, foffset_u32;
   int false_cabs = 0;
 
   /* search through the full file length */
@@ -658,7 +643,7 @@ static int cabd_find(struct mscab_decompressor_p *this, unsigned char *buf,
     if ((offset == 0) && (EndGetI32(&buf[0]) == 0x28635349)) {
       sys->message(fh, "WARNING; found InstallShield header. "
 		   "This is probably an InstallShield file. "
-		   "Use UNSHIELD (http://synce.sf.net) to unpack it.");
+		   "Use UNSHIELD from www.synce.org to unpack it.");
     }
 
     /* read through the entire buffer. */
@@ -703,7 +688,7 @@ static int cabd_find(struct mscab_decompressor_p *this, unsigned char *buf,
 	/* if off_t is only 32-bits signed, there will be overflow problems
 	 * with cabinets reaching past the 2GB barrier (or just claiming to)
 	 */
-#if _FILE_OFFSET_BITS < 64
+#ifndef LARGEFILE_SUPPORT
 	if (cablen_u32 & ~0x7FFFFFFF) {
 	  sys->message(fh, largefile_msg);
 	  cablen_u32 = 0x7FFFFFFF;
@@ -1033,6 +1018,9 @@ static int cabd_extract(struct mscab_decompressor *base,
     this->d->offset = 0;
     this->d->block  = 0;
     this->d->i_ptr = this->d->i_end = &this->d->input[0];
+
+    /* read_error lasts for the lifetime of a decompressor */
+    this->read_error = MSPACK_ERR_OK;
   }
 
   /* open file for output */
@@ -1048,20 +1036,20 @@ static int cabd_extract(struct mscab_decompressor *base,
     int error;
     /* get to correct offset.
      * - use NULL fh to say 'no writing' to cabd_sys_write()
-     * - MSPACK_ERR_READ returncode indicates error in cabd_sys_read(),
-     *   the real error will already be stored in this->error
+     * - if cabd_sys_read() has an error, it will set this->read_error
+     *   and pass back MSPACK_ERR_READ
      */
     this->d->outfh = NULL;
     if ((bytes = file->offset - this->d->offset)) {
       error = this->d->decompress(this->d->state, bytes);
-      if (error != MSPACK_ERR_READ) this->error = error;
+      this->error = (error == MSPACK_ERR_READ) ? this->read_error : error;
     }
 
     /* if getting to the correct offset was error free, unpack file */
     if (!this->error) {
       this->d->outfh = fh;
       error = this->d->decompress(this->d->state, (off_t) file->length);
-      if (error != MSPACK_ERR_READ) this->error = error;
+      this->error = (error == MSPACK_ERR_READ) ? this->read_error : error;
     }
   }
 
@@ -1086,9 +1074,7 @@ static int cabd_init_decomp(struct mscab_decompressor_p *this, unsigned int ct)
 {
   struct mspack_file *fh = (struct mspack_file *) this;
 
-  if (!this || !this->d) {
-    return this->error = MSPACK_ERR_ARGS;
-  }
+  assert(this && this->d);
 
   /* free any existing decompressor */
   cabd_free_decomp(this);
@@ -1175,13 +1161,13 @@ static int cabd_sys_read(struct mspack_file *file, void *buffer, int bytes) {
 
       /* check if we're out of input blocks, advance block counter */
       if (this->d->block++ >= this->d->folder->base.num_blocks) {
-	this->error = MSPACK_ERR_DATAFORMAT;
+	this->read_error = MSPACK_ERR_DATAFORMAT;
 	break;
       }
 
       /* read a block */
-      this->error = cabd_sys_read_block(sys, this->d, &outlen, ignore_cksum);
-      if (this->error) return -1;
+      this->read_error = cabd_sys_read_block(sys, this->d, &outlen, ignore_cksum);
+      if (this->read_error) return -1;
 
       /* special Quantum hack -- trailer byte to allow the decompressor
        * to realign itself. CAB Quantum blocks, unlike LZX blocks, can have
