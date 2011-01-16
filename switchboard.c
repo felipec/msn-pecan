@@ -206,7 +206,7 @@ msn_switchboard_new(MsnSession *session)
     return swboard;
 }
 
-void
+static void
 msn_switchboard_free (MsnSwitchBoard *swboard)
 {
     MsnMessage *msg;
@@ -1613,7 +1613,7 @@ emoticon_msg(MsnCmdProc *cmdproc,
 }
 
 #ifdef HAVE_LIBPURPLE
-void
+static void
 invite_msg (MsnCmdProc *cmdproc, MsnMessage *msg)
 {
     GHashTable *body;

@@ -41,7 +41,7 @@ struct PlusTag
     int len;
 };
 
-gboolean
+static gboolean
 check_if_first_char_str_is_number (const gchar* str)
 {
     if (strncmp (str, "0", 1) == 0 || strncmp (str, "1", 1) == 0 ||
@@ -905,7 +905,7 @@ pn_html_unescape (const char *url)
                     { "reg", "®" },
                     { "apos", "'" },
                 };
-                int i;
+                unsigned i;
                 for (i = 0; i < ARRAY_SIZE(refs); i++) {
                     struct ref ref = refs[i];
                     int len = strlen(ref.name);

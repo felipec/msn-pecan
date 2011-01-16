@@ -507,7 +507,7 @@ new_chat (MsnSession *session,
     return swboard;
 }
 
-const char *get_my_alias(MsnSession *session)
+static const char *get_my_alias(MsnSession *session)
 {
     const char *alias;
     PurpleAccount *account = msn_session_get_user_data(session);
@@ -1951,6 +1951,8 @@ init_plugin (PurplePlugin *plugin)
 
 #ifndef STATIC_PECAN
 G_MODULE_EXPORT gboolean
+purple_init_plugin(PurplePlugin *plugin);
+G_MODULE_EXPORT gboolean
 purple_init_plugin(PurplePlugin *plugin)
 {
     plugin->info = &info;
@@ -1958,6 +1960,8 @@ purple_init_plugin(PurplePlugin *plugin)
     return purple_plugin_register(plugin);
 }
 #else
+gboolean
+purple_init_msn_pecan_plugin(void);
 gboolean
 purple_init_msn_pecan_plugin(void)
 {

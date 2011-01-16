@@ -334,7 +334,7 @@ write_impl (PnNode *conn,
 
         if (status == G_IO_STATUS_NORMAL)
         {
-            if (bytes_written < count)
+            if (bytes_written < (int) count)
             {
                 /* This shouldn't happen, right? */
                 pn_error ("write check: %d < %zu", bytes_written, count);
