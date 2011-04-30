@@ -19,11 +19,13 @@
 #include <time.h>
 
 #include "pn_oim.h"
+#include "pn_auth.h"
 #include "io/pn_ssl_conn.h"
 #include "io/pn_parser.h"
 
 #include "pn_util.h"
 #include "pn_locale.h"
+#include "pn_auth_priv.h"
 #include "ab/pn_contact_priv.h"
 
 #include "io/pn_node_private.h"
@@ -41,21 +43,7 @@
 struct PecanOimSession
 {
     MsnSession *session;
-    GQueue *request_queue;
-
-    struct
-    {
-        gchar *messenger_msn_com_t;
-        gchar *messenger_msn_com_p;
-
-        gchar *messengersecure_live_com;
-    } security_token;
-
-    struct
-    {
-        time_t messenger_msn_com;
-        time_t messengersecure_live_com;
-    } expiration_time;
+    GQueue *request_queue; /* TODO maybe this is not needed any more */
 
     gchar *lockkey;
     gboolean got_lockkey;
@@ -144,11 +132,6 @@ pn_oim_session_free (PecanOimSession *oim_session)
     }
     g_queue_free (oim_session->request_queue);
 
-    g_free (oim_session->security_token.messenger_msn_com_t);
-    g_free (oim_session->security_token.messenger_msn_com_p);
-
-    g_free (oim_session->security_token.messengersecure_live_com);
-
     g_free (oim_session->lockkey);
 
     g_free (oim_session);
@@ -161,6 +144,7 @@ send_receive_request (PnNode *conn,
     gchar *body;
     gchar *header;
     gsize body_len;
+    PnAuth *auth = oim_request->oim_session->session->auth;
 
     pn_log ("begin");
 
@@ -179,8 +163,8 @@ send_receive_request (PnNode *conn,
                             "</GetMessage>"
                             "</soap:Body>"
                             "</soap:Envelope>",
-                            oim_request->oim_session->security_token.messenger_msn_com_t,
-                            oim_request->oim_session->security_token.messenger_msn_com_p,
+                            auth->security_token.messenger_msn_com_t,
+                            auth->security_token.messenger_msn_com_p,
                             oim_request->message_id,
                             "false");
 
@@ -225,6 +209,7 @@ send_delete_request (PnNode *conn,
     gchar *body;
     gchar *header;
     gsize body_len;
+    PnAuth *auth = oim_request->oim_session->session->auth;
 
     pn_log ("begin");
 
@@ -244,8 +229,8 @@ send_delete_request (PnNode *conn,
                             "</DeleteMessages>"
                             "</soap:Body>"
                             "</soap:Envelope>",
-                            oim_request->oim_session->security_token.messenger_msn_com_t,
-                            oim_request->oim_session->security_token.messenger_msn_com_p,
+                            auth->security_token.messenger_msn_com_t,
+                            auth->security_token.messenger_msn_com_p,
                             oim_request->message_id);
 
     body_len = strlen (body);
@@ -293,6 +278,7 @@ send_send_request (PnNode *conn,
     PurpleConnection *gc;
     const gchar *friendly_name;
     gchar *friendly_name_base64, *run_id, *msgtext_base64, *tmp;
+    PnAuth *auth = oim_request->oim_session->session->auth;
 
     pn_log ("begin");
 
@@ -339,7 +325,7 @@ send_send_request (PnNode *conn,
                      session->username,
                      "=?utf-8?B?", friendly_name_base64, "?=",
                      oim_request->passport,
-                     oim_request->oim_session->security_token.messengersecure_live_com,
+                     auth->security_token.messengersecure_live_com,
                      "PROD0119GSJUC$18",
                      oim_request->oim_session->lockkey ? oim_request->oim_session->lockkey : "",
                      contact->sent_oims,
@@ -684,114 +670,6 @@ process_body_send (OimRequest *oim_request,
     }
 }
 
-static time_t
-parse_expiration_time (const char *str)
-{
-    int y, m, d, hour, min, sec;
-    struct tm tm;
-
-    sscanf (str, "%d-%d-%dT%d:%d:%dZ",
-            &y, &m, &d, &hour, &min, &sec);
-
-    memset(&tm, 0, sizeof(tm));
-    tm.tm_sec = sec;
-    tm.tm_min = min;
-    tm.tm_hour = hour;
-    tm.tm_mday = d;
-    tm.tm_mon = m - 1;
-    tm.tm_year = y - 1900;
-    tm.tm_isdst = 0;
-
-    return mktime (&tm) - timezone;
-}
-
-static void
-process_body_auth (OimRequest *oim_request,
-                   char *body,
-                   gsize length)
-{
-    gchar *cur;
-
-    pn_debug ("body=[%.*s]", (int) length, body);
-
-    cur = strstr (body, "<wsse:BinarySecurityToken Id=\"PPToken1\">");
-    if (!cur)
-        cur = strstr (body, "<wsse:BinarySecurityToken Id=\"Compact1\">");
-    if (cur)
-    {
-        gchar *login_params, *end, **tokens;
-
-        cur = strchr (cur, '>') + 1;
-        end = strchr (cur, '<');
-        login_params = g_strndup (cur, end - cur);
-
-        tokens = g_strsplit (login_params, "&amp;", 2);
-
-        g_free (oim_request->oim_session->security_token.messenger_msn_com_t);
-        g_free (oim_request->oim_session->security_token.messenger_msn_com_p);
-
-        oim_request->oim_session->security_token.messenger_msn_com_t = g_strdup (tokens[0] + 2);
-        oim_request->oim_session->security_token.messenger_msn_com_p = g_strdup (tokens[1] + 2);
-    }
-
-    cur = strstr (body, "<wsa:Address>messenger.msn.com</wsa:Address>");
-    if (cur)
-    {
-        gchar *end, *expires;
-        time_t t;
-
-        cur = strstr (cur, "<wsu:Expires>");
-        if (cur) {
-            cur += 13;
-            end = strchr (cur, '<');
-            if (end) {
-                expires = g_strndup (cur, end - cur);
-
-                t = parse_expiration_time (expires);
-                oim_request->oim_session->expiration_time.messenger_msn_com = t;
-
-                g_free (expires);
-            }
-        }
-    }
-
-    cur = strstr (body, "<wsse:BinarySecurityToken Id=\"PPToken2\">");
-    if (!cur)
-        cur = strstr (body, "<wsse:BinarySecurityToken Id=\"Compact2\">");
-    if (cur)
-    {
-        gchar *end;
-
-        cur = strchr (cur, '>') + 1;
-        end = strchr (cur, '<');
-
-        g_free (oim_request->oim_session->security_token.messengersecure_live_com);
-
-        oim_request->oim_session->security_token.messengersecure_live_com = g_strndup (cur, end - cur);
-    }
-
-    cur = strstr (body, "<wsa:Address>messengersecure.live.com</wsa:Address>");
-    if (cur)
-    {
-        gchar *end, *expires;
-        time_t t;
-
-        cur = strstr (cur, "<wsu:Expires>");
-        if (cur) {
-            cur += 13;
-            end = strchr (cur, '<');
-            if (end) {
-                expires = g_strndup (cur, end - cur);
-
-                t = parse_expiration_time (expires);
-                oim_request->oim_session->expiration_time.messengersecure_live_com = t;
-
-                g_free (expires);
-            }
-        }
-    }
-}
-
 static void
 read_cb (PnNode *conn,
          gpointer data)
@@ -849,8 +727,6 @@ read_cb (PnNode *conn,
             process_body_delete (oim_request, body, oim_request->content_size);
         else if (oim_request->type == PN_SEND_OIM)
             process_body_send (oim_request, body, oim_request->content_size);
-        else
-            process_body_auth (oim_request, body, oim_request->content_size);
 
         g_free(body);
     }
@@ -860,61 +736,53 @@ leave:
     next_request (oim_request->oim_session);
 }
 
+static void auth_cb (PnAuth *auth, void *data)
+{
+    PnSslConn *ssl_conn;
+    PnNode *conn;
+    OimRequest *oim_request = data;
+
+    ssl_conn = pn_ssl_conn_new ("oim", PN_NODE_NULL);
+
+    conn = PN_NODE (ssl_conn);
+    conn->session = oim_request->oim_session->session;
+
+    oim_request->parser = pn_parser_new (conn);
+    pn_ssl_conn_set_read_cb (ssl_conn, read_cb, oim_request);
+
+    if (oim_request->type == PN_SEND_OIM)
+        pn_node_connect (conn, "ows.messenger.msn.com", 443);
+    else
+        pn_node_connect (conn, "rsi.hotmail.com", 443);
+
+    oim_request->conn = conn;
+    oim_request->open_sig_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), oim_request);
+}
+
 static inline void
 oim_process_requests (PecanOimSession *oim_session)
 {
     OimRequest *oim_request;
+    int id;
 
     oim_request = g_queue_peek_head (oim_session->request_queue);
 
     if (!oim_request)
         return;
 
-    if (oim_request->type != PN_SSO_AUTH_OIM)
-    {
-        time_t current_time = time (NULL);
-        gboolean need_auth = FALSE;
-
-        if (oim_request->type == PN_RECEIVE_OIM || oim_request->type == PN_DELETE_OIM)
-        {
-            if (current_time >= oim_session->expiration_time.messenger_msn_com)
-                need_auth = TRUE;
-        }
-        else if (oim_request->type == PN_SEND_OIM)
-        {
-            if (current_time >= oim_session->expiration_time.messengersecure_live_com)
-                need_auth = TRUE;
-        }
-
-        if (need_auth)
-        {
-            oim_request = oim_request_new (oim_session, NULL, NULL, NULL, PN_SSO_AUTH_OIM);
-            g_queue_push_head (oim_session->request_queue, oim_request);
-        }
+    switch (oim_request->type) {
+        case PN_RECEIVE_OIM:
+        case PN_DELETE_OIM:
+            id = 0;
+            break;
+        case PN_SEND_OIM:
+            id = 1;
+            break;
+        default:
+            return;
     }
 
-    {
-        PnSslConn *ssl_conn;
-        PnNode *conn;
-
-        ssl_conn = pn_ssl_conn_new ("oim", PN_NODE_NULL);
-
-        conn = PN_NODE (ssl_conn);
-        conn->session = oim_session->session;
-
-        oim_request->parser = pn_parser_new (conn);
-        pn_ssl_conn_set_read_cb (ssl_conn, read_cb, oim_request);
-
-        if (oim_request->type == PN_SEND_OIM)
-            pn_node_connect (conn, "ows.messenger.msn.com", 443);
-        else if (oim_request->type == PN_SSO_AUTH_OIM)
-            pn_node_connect (conn, "login.live.com", 443);
-        else
-            pn_node_connect (conn, "rsi.hotmail.com", 443);
-
-        oim_request->conn = conn;
-        oim_request->open_sig_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), oim_request);
-    }
+    pn_auth_get_ticket (oim_session->session->auth, id, auth_cb, oim_request);
 }
 
 void
@@ -933,11 +801,6 @@ pn_oim_session_request (PecanOimSession *oim_session,
 
     if (initial)
     {
-        if (!(oim_session->expiration_time.messenger_msn_com &&
-            oim_session->expiration_time.messengersecure_live_com))
-            g_queue_push_head (oim_session->request_queue,
-                               oim_request_new (oim_session, NULL, NULL, NULL, PN_SSO_AUTH_OIM));
-
         oim_process_requests (oim_session);
     }
 }
