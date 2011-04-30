@@ -396,19 +396,3 @@ pn_auth_get_ticket (PnAuth *auth, int id, PnAuthCb cb, void *cb_data)
         cb (auth, cb_data);
     }
 }
-
-static void auth_cb (PnAuth *auth, void *data)
-{
-    char *tmp;
-    tmp = g_strdup_printf("t=%s&p=%s",
-                          auth->security_token.messenger_msn_com_t,
-                          auth->security_token.messenger_msn_com_p);
-    msn_got_login_params (auth->session, tmp);
-    g_free(tmp);
-}
-
-void
-pn_auth_start (PnAuth *auth)
-{
-    pn_auth_get_ticket (auth, 0, auth_cb, NULL);
-}

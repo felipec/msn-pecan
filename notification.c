@@ -28,6 +28,8 @@
 #include "session.h"
 #include "session_private.h"
 
+#include "pn_auth_priv.h"
+
 #include "cmd/cmdproc_private.h"
 #include "cmd/command_private.h"
 #include "cmd/transaction_private.h"
@@ -315,6 +317,16 @@ alive_timeout (void *data)
     return FALSE;
 }
 
+static void auth_cb (PnAuth *auth, void *data)
+{
+    char *tmp;
+    tmp = g_strdup_printf("t=%s&p=%s",
+                          auth->security_token.messenger_msn_com_t,
+                          auth->security_token.messenger_msn_com_p);
+    msn_got_login_params (auth->session, tmp);
+    g_free(tmp);
+}
+
 static void
 usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
@@ -339,7 +351,7 @@ usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     else if (!g_ascii_strcasecmp(cmd->params[1], "TWN"))
     {
         session->auth = pn_auth_new(session);
-        pn_auth_start (session->auth);
+        pn_auth_get_ticket (session->auth, 0, auth_cb, NULL);
     }
 }
 

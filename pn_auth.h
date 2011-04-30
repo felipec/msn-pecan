@@ -30,7 +30,6 @@ struct MsnSession;
 PnAuth *pn_auth_new (MsnSession *session);
 void pn_auth_free (PnAuth *oim_session);
 
-void pn_auth_start (PnAuth *auth);
 void pn_auth_get_ticket (PnAuth *auth, int id, PnAuthCb cb, void *cb_data);
 
 #endif /* PN_AUTH_H */
