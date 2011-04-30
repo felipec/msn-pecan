@@ -536,6 +536,14 @@ next_request (PecanOimSession *oim_session)
     oim_process_requests (oim_session);
 }
 
+static char *strstr_fwd(const char *haystack, const char *needle)
+{
+    char *t = strstr(haystack, needle);
+    if (t)
+        t += strlen(needle);
+    return t;
+}
+
 static void
 process_body_receive (OimRequest *oim_request,
                       char *body,
@@ -557,11 +565,14 @@ process_body_receive (OimRequest *oim_request,
         g_free (cur);
     }
 
-    cur = strstr (body, "\r\n\r\n");
+    cur = strstr_fwd (body, "\r\n\r\n");
+    if (!cur)
+        cur = strstr_fwd (body, "\n\n");
     if (cur) {
         gchar *end;
-        cur += 2;
         end = strstr (cur, "\r\n\r\n");
+        if (!end)
+            end = strstr (cur, "\n\n");
         if (!end)
             end = strstr (cur, "</GetMessageResult>");
         if (end)
