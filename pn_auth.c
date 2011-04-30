@@ -45,6 +45,9 @@ struct PnAuth
         time_t messenger_msn_com;
         time_t messengersecure_live_com;
     } expiration_time;
+
+    PnAuthCb cb;
+    void *cb_data;
 };
 
 typedef struct AuthRequest AuthRequest;
@@ -215,12 +218,7 @@ process_body (AuthRequest *req,
         }
     }
 
-    char *tmp;
-    tmp = g_strdup_printf("t=%s&p=%s",
-                          req->auth->security_token.messenger_msn_com_t,
-                          req->auth->security_token.messenger_msn_com_p);
-    msn_got_login_params (req->auth->session, tmp);
-    g_free(tmp);
+    req->auth->cb (req->auth, req->auth->cb_data);
 }
 
 static void
@@ -382,23 +380,54 @@ open_cb (PnNode *conn,
 }
 
 void
+pn_auth_get_ticket (PnAuth *auth, int id, PnAuthCb cb, void *cb_data)
+{
+    time_t ticket_time, current_time = time (NULL);
+
+    switch (id) {
+    case 0: ticket_time = auth->expiration_time.messenger_msn_com; break;
+    case 1: ticket_time = auth->expiration_time.messengersecure_live_com; break;
+    default: return;
+    }
+
+    if (current_time >= ticket_time) {
+        AuthRequest *req;
+        PnSslConn *ssl_conn;
+        PnNode *conn;
+
+        req = auth_request_new (auth);
+        ssl_conn = pn_ssl_conn_new ("auth", PN_NODE_NULL);
+
+        conn = PN_NODE (ssl_conn);
+        conn->session = auth->session;
+
+        req->parser = pn_parser_new (conn);
+        pn_ssl_conn_set_read_cb (ssl_conn, read_cb, req);
+
+        pn_node_connect (conn, "login.live.com", 443);
+
+        req->conn = conn;
+        req->open_sig_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), req);
+
+        auth->cb = cb;
+        auth->cb_data = cb_data;
+    } else {
+        cb (auth, cb_data);
+    }
+}
+
+static void auth_cb (PnAuth *auth, void *data)
+{
+    char *tmp;
+    tmp = g_strdup_printf("t=%s&p=%s",
+                          auth->security_token.messenger_msn_com_t,
+                          auth->security_token.messenger_msn_com_p);
+    msn_got_login_params (auth->session, tmp);
+    g_free(tmp);
+}
+
+void
 pn_auth_start (PnAuth *auth)
 {
-    AuthRequest *req;
-    PnSslConn *ssl_conn;
-    PnNode *conn;
-
-    req = auth_request_new (auth);
-    ssl_conn = pn_ssl_conn_new ("auth", PN_NODE_NULL);
-
-    conn = PN_NODE (ssl_conn);
-    conn->session = auth->session;
-
-    req->parser = pn_parser_new (conn);
-    pn_ssl_conn_set_read_cb (ssl_conn, read_cb, req);
-
-    pn_node_connect (conn, "login.live.com", 443);
-
-    req->conn = conn;
-    req->open_sig_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), req);
+    pn_auth_get_ticket (auth, 0, auth_cb, NULL);
 }
