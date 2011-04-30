@@ -7,3 +7,6 @@
 *.dll
 *.so
 *.d
+*.mo
+
+win32/libmsn-pecan/
