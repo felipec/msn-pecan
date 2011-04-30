@@ -17,6 +17,8 @@
  */
 
 #include "pn_auth.h"
+#include "pn_auth_priv.h"
+
 #include "io/pn_ssl_conn.h"
 #include "io/pn_parser.h"
 
@@ -28,27 +30,6 @@
 #include <string.h>
 #include <stdlib.h> /* for atoi */
 #include <stdio.h>
-
-struct PnAuth
-{
-    MsnSession *session;
-    struct
-    {
-        gchar *messenger_msn_com_t;
-        gchar *messenger_msn_com_p;
-
-        gchar *messengersecure_live_com;
-    } security_token;
-
-    struct
-    {
-        time_t messenger_msn_com;
-        time_t messengersecure_live_com;
-    } expiration_time;
-
-    PnAuthCb cb;
-    void *cb_data;
-};
 
 typedef struct AuthRequest AuthRequest;
 
