@@ -263,7 +263,7 @@ install_locales: locales
 win32-check:
 	test -f win32/libintl.dll.a
 
-win32: D := libmsn-pecan
+win32: D := win32/libmsn-pecan
 win32: win32-check $(plugin) locales
 	mkdir -p $(D)/plugins
 	cp $(plugin) libmsn-pecan-$(version)-dbg.dll
@@ -274,6 +274,6 @@ win32: win32-check $(plugin) locales
 	cp po/$$x.mo $(D)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
 	done
 	cp COPYING $(D)
-	tar -cf /tmp/libmsn-pecan.tar $(D)
+	makensis win32/installer.nsi
 
 -include $(deps)
