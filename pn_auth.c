@@ -139,6 +139,8 @@ process_body (AuthRequest *req,
     pn_debug ("body=[%.*s]", (int) length, body);
 
     cur = strstr (body, "<wsse:BinarySecurityToken Id=\"PPToken1\">");
+    if (!cur)
+        cur = strstr (body, "<wsse:BinarySecurityToken Id=\"Compact1\">");
     if (cur)
     {
         gchar *login_params, *end, **tokens;
@@ -177,7 +179,9 @@ process_body (AuthRequest *req,
         }
     }
 
-    cur = strstr (body, "<wsse:BinarySecurityToken Id=\"Compact2\">");
+    cur = strstr (body, "<wsse:BinarySecurityToken Id=\"PPToken2\">");
+    if (!cur)
+        cur = strstr (body, "<wsse:BinarySecurityToken Id=\"Compact2\">");
     if (cur)
     {
         gchar *end;
