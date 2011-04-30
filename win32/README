@@ -32,6 +32,10 @@ Then you can build msn-pecan:
 
 That's it! Copy libmsn-pecan.dll to your plugins directory on Pidgin :)
 
+Or to build the whole executable installer:
+
+ % make win32
+
 == to-do ==
 
  * Create builds to ease the process (glib and libpurple)
