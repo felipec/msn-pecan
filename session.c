@@ -34,7 +34,7 @@
 #endif /* defined(PECAN_CVR) */
 
 #include "sync.h"
-#include "nexus.h"
+#include "pn_auth.h"
 
 #include <glib/gstdio.h>
 #include <string.h>
@@ -175,8 +175,8 @@ msn_session_destroy (MsnSession *session)
     if (session->sync)
         msn_sync_destroy (session->sync);
 
-    if (session->nexus)
-        msn_nexus_destroy (session->nexus);
+    if (session->auth)
+        pn_auth_free (session->auth);
 
     pn_contact_free (session->user);
 

@@ -22,7 +22,7 @@
 #include "pn_log.h"
 #include "pn_locale.h"
 #include "sync.h"
-#include "nexus.h"
+#include "pn_auth.h"
 #include "pn_global.h"
 
 #include "session.h"
@@ -338,26 +338,8 @@ usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     }
     else if (!g_ascii_strcasecmp(cmd->params[1], "TWN"))
     {
-        /* Passport authentication */
-        char **elems, **cur, **tokens;
-
-        session->nexus = msn_nexus_new(session);
-
-        /* Parse the challenge data. */
-
-        elems = g_strsplit(cmd->params[3], ",", 0);
-
-        for (cur = elems; *cur != NULL; cur++)
-        {
-            tokens = g_strsplit(*cur, "=", 2);
-            g_hash_table_insert(session->nexus->challenge_data, tokens[0], tokens[1]);
-            /* Don't free each of the tokens, only the array. */
-            g_free(tokens);
-        }
-
-        g_strfreev(elems);
-
-        msn_nexus_connect(session->nexus);
+        session->auth = pn_auth_new(session);
+        pn_auth_start (session->auth);
     }
 }
 

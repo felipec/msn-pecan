@@ -94,6 +94,7 @@ objects := msn.o \
 	   pn_status.o \
 	   pn_oim.o \
 	   pn_dp_manager.o \
+	   pn_auth.o \
 	   cmd/cmdproc.o \
 	   cmd/command.o \
 	   cmd/msg.o \

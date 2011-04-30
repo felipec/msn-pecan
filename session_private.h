@@ -67,6 +67,7 @@ struct MsnSession
 
     struct MsnNotification *notification;
     struct MsnNexus *nexus;
+    struct PnAuth *auth;
     struct MsnSync *sync;
 
     GHashTable *conversations;
