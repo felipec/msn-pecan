@@ -31,6 +31,10 @@
 #include <stdlib.h> /* for atoi */
 #include <stdio.h>
 
+#ifdef __MINGW32__
+__MINGW_IMPORT long timezone;
+#endif
+
 typedef struct AuthRequest AuthRequest;
 
 struct AuthRequest

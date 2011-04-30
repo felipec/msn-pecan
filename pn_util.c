@@ -35,6 +35,10 @@
 #define BUFSIZE 256
 #endif /* HAVE_LIBPURPLE */
 
+#ifdef __MINGW32__
+__MINGW_IMPORT long timezone;
+#endif
+
 struct PlusTag
 {
     char *code;
