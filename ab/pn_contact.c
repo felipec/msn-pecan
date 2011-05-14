@@ -408,6 +408,7 @@ pn_contact_set_store_name (struct pn_contact *contact,
     contact->store_name = g_strdup (name);
 
 #ifdef HAVE_LIBPURPLE
+    if (contact->contactlist)
     {
         PurpleAccount *account;
         PurpleConnection *connection;

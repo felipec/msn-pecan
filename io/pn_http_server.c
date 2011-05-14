@@ -688,7 +688,7 @@ read_impl (PnNode *conn,
                 if (status == G_IO_STATUS_AGAIN)
                     return status;
 
-                if (str[0] == '\0')
+                if (!str || str[0] == '\0')
                     break;
 
 #ifdef PECAN_DEBUG_HTTP
