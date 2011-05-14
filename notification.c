@@ -1786,7 +1786,6 @@ msn_notification_init(void)
     msn_table_add_cmd(cbs_table, NULL, "URL", url_cmd);
 
     /* avoid unhandled command warnings */
-    msn_table_add_cmd(cbs_table, NULL, "CHG", NULL);
     msn_table_add_cmd(cbs_table, NULL, "UUX", NULL);
     msn_table_add_cmd(cbs_table, NULL, "SBS", NULL);
 
