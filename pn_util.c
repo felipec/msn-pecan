@@ -912,10 +912,9 @@ pn_html_unescape (const char *url)
                 unsigned i;
                 for (i = 0; i < ARRAY_SIZE(refs); i++) {
                     struct ref ref = refs[i];
-                    int len = strlen(ref.name);
+                    int len = MIN(strlen(ref.name), (size_t)(end - src));
                     if (strncmp (src, ref.name, len) == 0) {
                         dest = g_string_append (dest, ref.value);
-                        src += len;
                         break;
                     }
                 }
