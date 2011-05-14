@@ -198,7 +198,7 @@ ifdef LIBMSPACK
 endif
 
 $(plugin): $(objects)
-$(plugin): CFLAGS := $(CFLAGS) $(PURPLE_CFLAGS) $(GIO_CFLAGS) $(FALLBACK_CFLAGS) -D VERSION='"$(version)"'
+$(plugin): CFLAGS := $(CFLAGS) $(PURPLE_CFLAGS) $(GIO_CFLAGS) -D VERSION='"$(version)"'
 $(plugin): LIBS := $(plugin_libs)
 
 messages.pot: $(sources)
