@@ -19,6 +19,8 @@
 #ifndef PN_AUTH_PRIVATE_H
 #define PN_AUTH_PRIVATE_H
 
+struct AuthRequest;
+
 struct PnAuth
 {
     MsnSession *session;
@@ -38,6 +40,8 @@ struct PnAuth
 
     PnAuthCb cb;
     void *cb_data;
+
+    struct AuthRequest *pending_req;
 };
 
 #endif /* PN_AUTH_PRIVATE_H */

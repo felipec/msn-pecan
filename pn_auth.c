@@ -63,6 +63,9 @@ auth_request_new (PnAuth *auth)
 static inline void
 auth_request_free (AuthRequest *req)
 {
+    if (!req)
+        return;
+
     if (req->open_sig_handler)
         g_signal_handler_disconnect (req->conn, req->open_sig_handler);
 
@@ -87,6 +90,8 @@ pn_auth_free (PnAuth *auth)
 {
     if (!auth)
         return;
+
+    auth_request_free (auth->pending_req);
 
     g_free (auth->security_token.messenger_msn_com_t);
     g_free (auth->security_token.messenger_msn_com_p);
@@ -210,11 +215,13 @@ static void
 read_cb (PnNode *conn,
          gpointer data)
 {
+    PnAuth *auth;
     AuthRequest *req;
     GIOStatus status = G_IO_STATUS_NORMAL;
     gchar *str = NULL;
 
     req = data;
+    auth = req->auth;
 
     while (req->parser_state == 0)
     {
@@ -264,6 +271,8 @@ read_cb (PnNode *conn,
 
 leave:
     pn_node_close (conn);
+    auth_request_free (req);
+    auth->pending_req = NULL;
 }
 
 static void
@@ -394,6 +403,7 @@ pn_auth_get_ticket (PnAuth *auth, int id, PnAuthCb cb, void *cb_data)
         req->conn = conn;
         req->open_sig_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), req);
 
+        auth->pending_req = req;
         auth->cb = cb;
         auth->cb_data = cb_data;
     } else {
