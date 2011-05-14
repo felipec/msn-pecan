@@ -1131,12 +1131,20 @@ send_im (PurpleConnection *gc,
     {
         struct pn_contact *contact;
         MsnSwitchBoard *swboard;
+        gboolean offline = FALSE;
+        struct pn_contact *user;
 
         contact = pn_contactlist_find_contact (session->contactlist, who);
-
         swboard = msn_session_find_swboard (session, who);
+        user = msn_session_get_contact (session);
 
         if (contact && contact->status == PN_STATUS_OFFLINE && !swboard)
+            offline = TRUE;
+
+        if (user->status == PN_STATUS_HIDDEN)
+            offline = TRUE;
+
+        if (offline)
         {
             pn_oim_session_request (session->oim_session,
                                     who,
