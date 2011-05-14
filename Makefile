@@ -38,6 +38,9 @@ OTHER_WARNINGS := -D_FORTIFY_SOURCE=2 -fstack-protector -g3 -Wdisabled-optimizat
 
 CFLAGS += -Wall $(SIMPLE_WARNINGS)
 
+# workaround for gcc 4.3 extern inline
+override CFLAGS += -fgnu89-inline
+
 ifdef DEBUG
   override CFLAGS += -ggdb
 endif
