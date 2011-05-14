@@ -28,9 +28,9 @@ CFLAGS := -O2
 EXTRA_WARNINGS := -Wall -Wextra -Wformat-nonliteral -Wcast-align -Wpointer-arith \
 	-Wbad-function-cast -Wmissing-prototypes -Wstrict-prototypes \
 	-Wmissing-declarations -Winline -Wundef -Wnested-externs -Wcast-qual \
-	-Wshadow -Wwrite-strings -Wno-unused-parameter -Wfloat-equal -ansi -std=c99
+	-Wshadow -Wwrite-strings -Wno-unused-parameter -Wfloat-equal -std=c99
 
-SIMPLE_WARNINGS := -Wall -Wextra -ansi -std=c99 -Wno-unused-parameter -Wmissing-prototypes
+SIMPLE_WARNINGS := -Wall -Wextra -std=c99 -Wno-unused-parameter -Wmissing-prototypes
 
 OTHER_WARNINGS := -D_FORTIFY_SOURCE=2 -fstack-protector -g3 -Wdisabled-optimization \
 	-Wendif-labels -Wformat=2 -Wstack-protector -Wswitch
