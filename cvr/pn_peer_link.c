@@ -121,16 +121,12 @@ remove_lingering(struct pn_peer_link *link)
 void
 pn_peer_link_free(struct pn_peer_link *link)
 {
-    MsnSession *session;
-
     if (!link)
         return;
 
 #ifdef PECAN_DEBUG_SLPLINK
     pn_info("link=%p", link);
 #endif
-
-    session = link->session;
 
     remove_lingering(link);
 

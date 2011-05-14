@@ -707,10 +707,6 @@ got_invite(struct pn_peer_call *call,
            const char *type,
            const char *content)
 {
-    struct pn_peer_link *link;
-
-    link = call->link;
-
     pn_log("type=%s", type);
 
     if (strcmp(type, "application/x-msnmsgr-sessionreqbody") == 0) {

@@ -184,7 +184,6 @@ lst_cmd (MsnCmdProc *cmdproc,
     gchar *friendly = NULL;
     const gchar *user_guid = NULL;
     int list_op = -1;
-    gint type;
     guint i;
 
     for (i = 0; i < cmd->param_count; i++)
@@ -207,7 +206,6 @@ lst_cmd (MsnCmdProc *cmdproc,
     }
 
     list_op = g_ascii_strtod (cmd->params[i++], NULL);
-    type = g_ascii_strtod (cmd->params[i++], NULL);
 
     user = pn_contact_new (session->contactlist);
     pn_contact_set_passport (user, passport);

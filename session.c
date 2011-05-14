@@ -46,23 +46,6 @@
 #include <eventloop.h>
 #endif
 
-static void
-conversation_created_cb (PurpleConversation *conv, gpointer data)
-{
-    const gchar *tmp_user, *friendly_name;
-    MsnSession *session = data;
-    struct pn_contact *contact;
-
-    tmp_user = purple_conversation_get_name (conv);
-    contact = pn_contactlist_find_contact (session->contactlist, tmp_user);
-    if (contact)
-        friendly_name = pn_contact_get_friendly_name (contact);
-    else
-        friendly_name = tmp_user;
-    if (!friendly_name)
-        friendly_name = tmp_user;
-}
-
 #ifdef INTERNAL_MAINLOOP
 static inline gboolean
 g_main_context_iteration_timer ()
@@ -126,9 +109,6 @@ msn_session_new (const gchar *username,
     session->links = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) pn_peer_link_unref);
 #endif /* defined(PECAN_CVR) */
 
-    purple_signal_connect (purple_conversations_get_handle(), "conversation-created",
-                           session, PURPLE_CALLBACK (conversation_created_cb), session);
-
     return session;
 }
 
@@ -139,9 +119,6 @@ msn_session_destroy (MsnSession *session)
         return;
 
     pn_oim_session_free (session->oim_session);
-
-    purple_signal_disconnect (purple_conversations_get_handle(), "conversation-created",
-                              session, PURPLE_CALLBACK (conversation_created_cb));
 
     if (session->connected)
         msn_session_disconnect (session);

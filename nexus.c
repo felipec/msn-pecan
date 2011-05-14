@@ -323,7 +323,7 @@ static inline char *
 get_field(char *s1, const char *s2)
 {
     if (strncmp(s1, s2, strlen(s2)) == 0)
-        return s1 += strlen(s2);
+        return s1 + strlen(s2);
     return NULL;
 }
 

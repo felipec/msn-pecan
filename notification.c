@@ -331,12 +331,8 @@ static void
 usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSession *session;
-    PurpleAccount *account;
-    PurpleConnection *gc;
 
     session = cmdproc->session;
-    account = msn_session_get_user_data (session);
-    gc = purple_account_get_connection(account);
 
     if (!g_ascii_strcasecmp(cmd->params[1], "OK"))
     {
@@ -698,15 +694,11 @@ static void
 iln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSession *session;
-    PurpleAccount *account;
-    PurpleConnection *gc;
     struct pn_contact *user;
     const char *state, *passport;
     gchar *friendly;
 
     session = cmdproc->session;
-    account = msn_session_get_user_data (session);
-    gc = purple_account_get_connection(account);
 
     state    = cmd->params[1];
     passport = cmd->params[2];
@@ -761,16 +753,12 @@ static void
 nln_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSession *session;
-    PurpleAccount *account;
-    PurpleConnection *gc;
     struct pn_contact *user;
     unsigned long clientid;
     const char *state, *passport;
     gchar *friendly;
 
     session = cmdproc->session;
-    account = msn_session_get_user_data (session);
-    gc = purple_account_get_connection(account);
 
     state    = cmd->params[0];
     passport = cmd->params[1];
@@ -1271,13 +1259,11 @@ rng_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
 {
     MsnSession *session;
     MsnSwitchBoard *swboard;
-    const char *session_id;
     char *host;
     int port;
     const char *id;
 
     session = cmdproc->session;
-    session_id = cmd->params[0];
 
     msn_parse_socket(cmd->params[1], &host, &port);
 
@@ -1660,6 +1646,7 @@ system_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
                                         "conversations in progress.\n\nAfter the "
                                         "maintenance has been completed, you will be "
                                         "able to successfully sign in."), minutes);
+                break;
             default:
                 msg = NULL;
                 break;

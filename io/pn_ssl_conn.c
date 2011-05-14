@@ -155,12 +155,10 @@ connect_cb (gpointer data,
             PurpleInputCondition cond)
 {
     PnNode *conn;
-    PnSslConn *ssl_conn;
 
     pn_log ("begin");
 
     conn = PN_NODE (data);
-    ssl_conn = PN_SSL_CONN (data);
 
     g_object_ref (conn);
 

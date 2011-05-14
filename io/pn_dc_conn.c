@@ -89,13 +89,10 @@ write_impl(PnNode *conn,
            GError **error)
 {
     GIOStatus status = G_IO_STATUS_NORMAL;
-    PnDcConn *dc_conn;
     guint32 body_len;
     gsize bytes_written = 0;
 
     pn_debug("name=%s", conn->name);
-
-    dc_conn = PN_DC_CONN(conn);
 
     body_len = GUINT32_TO_LE(count);
 

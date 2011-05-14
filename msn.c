@@ -462,15 +462,12 @@ show_send_to_mobile_cb(PurpleBlistNode *node, gpointer ignored)
 {
     PurpleBuddy *buddy;
     PurpleConnection *gc;
-    MsnSession *session;
     MsnMobileData *data;
 
     g_return_if_fail(PURPLE_BLIST_NODE_IS_BUDDY(node));
 
     buddy = (PurpleBuddy *) node;
     gc = purple_account_get_connection(buddy->account);
-
-    session = gc->proto_data;
 
     data = g_new0(MsnMobileData, 1);
     data->gc = gc;
@@ -1465,7 +1462,6 @@ rem_permit (PurpleConnection *gc,
 {
     MsnSession *session;
     struct pn_contact_list *contactlist;
-    struct pn_contact *user;
 
     session = gc->proto_data;
     contactlist = session->contactlist;
@@ -1475,8 +1471,6 @@ rem_permit (PurpleConnection *gc,
         pn_error ("not connected");
         g_return_if_reached ();
     }
-
-    user = pn_contactlist_find_contact (contactlist, who);
 
     pn_contactlist_rem_buddy (contactlist, who, MSN_LIST_AL, NULL);
     pn_contactlist_add_buddy (contactlist, who, MSN_LIST_BL, NULL);
@@ -1488,7 +1482,6 @@ rem_deny (PurpleConnection *gc,
 {
     MsnSession *session;
     struct pn_contact_list *contactlist;
-    struct pn_contact *user;
 
     session = gc->proto_data;
     contactlist = session->contactlist;
@@ -1498,8 +1491,6 @@ rem_deny (PurpleConnection *gc,
         pn_error ("not connected");
         g_return_if_reached ();
     }
-
-    user = pn_contactlist_find_contact (contactlist, who);
 
     pn_contactlist_rem_buddy (contactlist, who, MSN_LIST_BL, NULL);
     pn_contactlist_add_buddy (contactlist, who, MSN_LIST_AL, NULL);
@@ -1578,14 +1569,12 @@ chat_send (PurpleConnection *gc,
            const gchar *message,
            PurpleMessageFlags flags)
 {
-    PurpleAccount *account;
     MsnSession *session;
     MsnSwitchBoard *swboard;
     MsnMessage *msg;
     char *msgformat;
     char *msgtext;
 
-    account = purple_connection_get_account (gc);
     session = gc->proto_data;
     swboard = msn_session_find_swboard_with_id (session, id);
 
