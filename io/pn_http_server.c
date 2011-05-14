@@ -969,7 +969,8 @@ foo_write (PnNode *conn,
 #endif
 
     http_conn->waiting_response = TRUE;
-    pn_timer_stop (http_conn->timer);
+    if (http_conn->timer)
+        pn_timer_stop (http_conn->timer);
 
     if (http_conn->cur)
         g_object_unref (http_conn->cur);
