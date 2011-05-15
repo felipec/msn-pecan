@@ -63,7 +63,6 @@ struct MsnSession
     gboolean connected;
     gboolean logged_in; /** @todo move to libpurple user_data and cancel
                           operations that require us to be logged in. */
-    PnNode *http_conn;
 
     struct MsnNotification *notification;
     struct MsnNexus *nexus;
