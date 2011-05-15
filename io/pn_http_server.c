@@ -135,9 +135,11 @@ read_cb (GIOChannel *source,
 
     if (!conn->error)
     {
-        g_object_ref (conn->prev);
-        pn_node_parse (conn->prev, buf, bytes_read);
-        g_object_unref (conn->prev);
+        if (bytes_read) {
+            g_object_ref (conn->prev);
+            pn_node_parse (conn->prev, buf, bytes_read);
+            g_object_unref (conn->prev);
+        }
 
         if (conn->error)
         {
@@ -501,7 +503,13 @@ connect_impl (PnNode *conn,
 
     http_conn = PN_HTTP_SERVER (conn);
 
+    g_free (conn->hostname);
+    conn->hostname = g_strdup (hostname);
+    conn->port = port;
+
     g_return_if_fail (conn->prev);
+
+    pn_node_close (conn);
 
     conn->status = PN_NODE_STATUS_CONNECTING;
 
