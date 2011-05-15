@@ -638,7 +638,8 @@ dispose (GObject *obj)
 
     if (conn->next)
     {
-        g_signal_handler_disconnect (conn->next, conn->open_sig_handler);
+        if (conn->open_sig_handler)
+            g_signal_handler_disconnect (conn->next, conn->open_sig_handler);
         g_signal_handler_disconnect (conn->next, conn->close_sig_handler);
         g_signal_handler_disconnect (conn->next, conn->error_sig_handler);
         pn_node_free (conn->next);
