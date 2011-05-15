@@ -62,16 +62,18 @@ static PnNodeClass *parent_class;
 
 typedef struct
 {
+    gboolean poll;
     gchar *body;
     gsize body_len;
 } HttpQueueData;
 
 static GIOStatus
-foo_write (PnNode *conn,
-           const gchar *buf,
-           gsize count,
-           gsize *ret_bytes_written,
-           GError **error);
+post (PnHttpServer *http_conn,
+      gboolean poll,
+      const gchar *buf,
+      gsize count,
+      gsize *ret_bytes_written,
+      GError **error);
 
 static void
 process_queue (PnHttpServer *http_conn,
@@ -83,11 +85,8 @@ process_queue (PnHttpServer *http_conn,
 
     if (queue_data)
     {
-        foo_write (PN_NODE (http_conn),
-                   queue_data->body,
-                   queue_data->body_len,
-                   NULL,
-                   error);
+        post (http_conn, queue_data->poll, queue_data->body, queue_data->body_len, NULL, NULL);
+
         g_free (queue_data->body);
         g_free (queue_data);
     }
@@ -855,20 +854,6 @@ leave:
 }
 
 static GIOStatus
-foo_write (PnNode *conn,
-           const gchar *buf,
-           gsize count,
-           gsize *ret_bytes_written,
-           GError **error)
-{
-    PnHttpServer *http_conn = PN_HTTP_SERVER (conn);
-
-    pn_debug ("stream=%p", conn->stream);
-
-    return post (http_conn, FALSE, buf, count, ret_bytes_written, error);
-}
-
-static GIOStatus
 write_impl (PnNode *conn,
             const gchar *buf,
             gsize count,
@@ -899,7 +884,7 @@ write_impl (PnNode *conn,
         return G_IO_STATUS_NORMAL;
     }
 
-    return foo_write (conn, buf, count, ret_bytes_written, error);
+    return post (http_conn, FALSE, buf, count, ret_bytes_written, error);
 }
 
 /* GObject stuff. */
