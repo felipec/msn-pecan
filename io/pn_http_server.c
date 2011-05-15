@@ -47,8 +47,6 @@ struct PnHttpServer
     gchar *session;
     gchar *gateway;
 
-    gchar *old_buffer;
-
     guint write_watch;
     GIOStatus last_flush;
 };
@@ -141,18 +139,9 @@ read_cb (GIOChannel *source,
 
         http_conn = PN_HTTP_SERVER (conn);
 
-        /* make sure the server is not sending the same buffer again */
-        /** @todo find out why this happens */
-        if (!(http_conn->old_buffer &&
-              strncmp (buf, http_conn->old_buffer, bytes_read) == 0))
-        {
-            g_object_ref (conn->prev);
-            pn_node_parse (conn->prev, buf, bytes_read);
-            g_object_unref (conn->prev);
-
-            g_free (http_conn->old_buffer);
-            http_conn->old_buffer = g_strndup (buf, bytes_read);
-        }
+        g_object_ref (conn->prev);
+        pn_node_parse (conn->prev, buf, bytes_read);
+        g_object_unref (conn->prev);
 
         if (conn->error)
         {
@@ -894,7 +883,6 @@ finalize (GObject *obj)
 {
     PnHttpServer *http_conn = PN_HTTP_SERVER (obj);
 
-    g_free (http_conn->old_buffer);
     g_free (http_conn->gateway);
     g_queue_free (http_conn->write_queue);
 
