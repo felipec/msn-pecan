@@ -60,7 +60,6 @@ struct PnNode
     gchar *name;
 
     gpointer data; /**< Client data. */
-    gpointer foo_data;
     PnNode *prev;
     PnNode *next;
 
