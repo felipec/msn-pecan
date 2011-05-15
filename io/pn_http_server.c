@@ -249,6 +249,20 @@ write_cb (GIOChannel *source,
     return FALSE;
 }
 
+static GIOStatus
+async_flush (PnHttpServer *http_conn, GError **error)
+{
+    PnNode *conn = PN_NODE(http_conn);
+
+    http_conn->last_flush = pn_stream_flush (conn->stream, error);
+
+    if (http_conn->last_flush == G_IO_STATUS_AGAIN)
+        http_conn->write_watch = g_io_add_watch (conn->stream->channel,
+                                                 G_IO_OUT, write_cb, http_conn);
+
+    return http_conn->last_flush;
+}
+
 static gboolean
 http_poll (gpointer data)
 {
@@ -319,15 +333,11 @@ http_poll (gpointer data)
 
     if (status == G_IO_STATUS_NORMAL)
     {
-        status = pn_stream_flush (conn->stream, &tmp_error);
+        status = async_flush (http_conn, &tmp_error);
 
-        if (status == G_IO_STATUS_AGAIN) {
-            http_conn->last_flush = status;
-            http_conn->write_watch = g_io_add_watch(conn->stream->channel,
-                                                    G_IO_OUT, write_cb, http_conn);
-            /* fake status */
+        /* fake status */
+        if (status == G_IO_STATUS_AGAIN)
             status = G_IO_STATUS_NORMAL;
-        }
 
         if (status == G_IO_STATUS_NORMAL)
             pn_log ("bytes_written=%zu", bytes_written);
@@ -877,15 +887,11 @@ foo_write (PnNode *conn,
         pn_timer_stop (http_conn->timer);
 
     if (status == G_IO_STATUS_NORMAL) {
-        status = pn_stream_flush (conn->stream, &tmp_error);
+        status = async_flush (http_conn, &tmp_error);
 
-        if (status == G_IO_STATUS_AGAIN) {
-            http_conn->last_flush = status;
-            http_conn->write_watch = g_io_add_watch(conn->stream->channel,
-                                                    G_IO_OUT, write_cb, http_conn);
-            /* fake status */
+        /* fake status */
+        if (status == G_IO_STATUS_AGAIN)
             status = G_IO_STATUS_NORMAL;
-        }
     }
 
     if (status == G_IO_STATUS_NORMAL)
