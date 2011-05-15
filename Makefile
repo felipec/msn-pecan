@@ -22,6 +22,7 @@ LIBMSPACK := y
 PLUS_SOUNDS := y
 DEBUG := y
 DIRECTCONN := y
+GIO := y
 
 CFLAGS := -O2
 
