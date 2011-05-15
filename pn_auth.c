@@ -149,6 +149,9 @@ process_body (AuthRequest *req,
 
         req->auth->security_token.messenger_msn_com_t = g_strdup (tokens[0] + 2);
         req->auth->security_token.messenger_msn_com_p = g_strdup (tokens[1] + 2);
+
+        g_strfreev (tokens);
+        g_free (login_params);
     }
 
     cur = strstr (body, "<wsa:Address>messenger.msn.com</wsa:Address>");
@@ -245,6 +248,7 @@ read_cb (PnNode *conn,
             /* now comes the content */
             if (str[0] == '\0') {
                 req->parser_state++;
+                g_free (str);
                 break;
             }
 
