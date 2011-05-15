@@ -77,16 +77,6 @@ msn_session_new (const gchar *username,
     /** @todo sb and ns need this here but should be updated on-the-fly. */
     msn_session_set_bool (session, "use_http_method", http_method);
 
-#if 0
-    if (session->http_method)
-    {
-        PnNode *foo;
-        foo = PN_NODE (pn_http_server_new ("foo server"));
-        foo->session = session;
-        session->http_conn = foo;
-    }
-#endif
-
     session->dp_manager = pn_dp_manager_new (session);
 
     session->notification = msn_notification_new (session);
@@ -239,9 +229,6 @@ msn_session_disconnect (MsnSession *session)
 
     if (session->notification)
         msn_notification_close (session->notification);
-
-    if (session->http_conn)
-        pn_node_close (session->http_conn);
 }
 
 /* TODO: This must go away when conversation is redesigned */

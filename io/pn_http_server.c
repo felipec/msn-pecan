@@ -56,7 +56,6 @@ struct PnHttpServer
     gchar *session;
     gchar *gateway;
 
-    GHashTable *childs;
     PnNode *cur;
     gchar *old_buffer;
 
@@ -563,11 +562,6 @@ close_impl (PnNode *conn)
         }
     }
 
-#if 0
-    /** @todo check that there aren't recursive frees. */
-    g_hash_table_remove_all (http_conn->childs);
-#endif
-
     parent_class->close (conn);
 
     pn_log ("end");
@@ -766,60 +760,32 @@ read_impl (PnNode *conn,
         if (http_conn->parser_state == 2)
         {
             {
-                PnNode *child;
                 gchar *session_id;
                 gchar *t;
 
                 t = strchr (http_conn->last_session_id, '.');
                 session_id = g_strndup (http_conn->last_session_id, t - http_conn->last_session_id);
 
-                child = g_hash_table_lookup (http_conn->childs, session_id);
-                pn_log ("child=%p", child);
                 pn_log ("sesison_id=[%s]", session_id);
 
                 if (http_conn->session && (strcmp (http_conn->session, "close") == 0))
                 {
-                    if (child)
-                    {
-                        PnNode *foo;
+                    pn_node_close (http_conn->cur);
+                    g_object_unref (http_conn->cur);
+                    http_conn->cur = NULL;
 
-                        pn_info ("removing child");
-                        pn_node_close (child);
-                        g_hash_table_remove (http_conn->childs, session_id);
+                    g_free (http_conn->gateway);
+                    http_conn->gateway = NULL;
 
-                        g_object_unref (http_conn->cur);
-                        g_free (http_conn->gateway);
-                        g_free (http_conn->last_session_id);
-                        if ((foo = PN_NODE (g_hash_table_peek_first (http_conn->childs))))
-                        {
-                            http_conn->cur = foo;
-                            http_conn->gateway = g_strdup (foo->hostname);
-                            http_conn->last_session_id = g_strdup (foo->foo_data);
-                        }
-                        else
-                        {
-                            pn_info ("no more childs");
-                            http_conn->cur = NULL;
-                            http_conn->gateway = NULL;
-                            http_conn->last_session_id = NULL;
-                            pn_node_close (conn);
-                        }
-                    }
+                    g_free (http_conn->last_session_id);
+                    http_conn->last_session_id = NULL;
+
+                    pn_node_close (conn);
                 }
                 else
                 {
-                    if (!child)
-                    {
-                        child = http_conn->cur;
-                        pn_info ("adding child: %p", child);
-                        g_hash_table_insert (http_conn->childs, g_strdup (session_id), g_object_ref (child));
-                    }
-
-                    if (child)
-                    {
-                        g_free (child->foo_data);
-                        child->foo_data = g_strdup (http_conn->last_session_id);
-                    }
+                    g_free (http_conn->cur->foo_data);
+                    http_conn->cur->foo_data = g_strdup (http_conn->last_session_id);
 
                     pn_debug ("session=%s", http_conn->session);
                 }
@@ -1052,7 +1018,6 @@ finalize (GObject *obj)
     g_free (http_conn->old_buffer);
     g_free (http_conn->gateway);
     g_queue_free (http_conn->write_queue);
-    g_hash_table_destroy (http_conn->childs);
 
     G_OBJECT_CLASS (parent_class)->finalize (obj);
 }
@@ -1082,7 +1047,6 @@ instance_init (GTypeInstance *instance,
 
     http_conn->gateway = g_strdup ("gateway.messenger.hotmail.com");
     http_conn->write_queue = g_queue_new ();
-    http_conn->childs = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
 }
 
 GType

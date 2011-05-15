@@ -175,21 +175,13 @@ msn_notification_new(MsnSession *session)
 
         if (msn_session_get_bool (session, "use_http_method"))
         {
-            if (session->http_conn)
-            {
-                /* A single http connection shared by all nodes */
-                pn_node_link (conn, session->http_conn);
-            }
-            else
-            {
-                /* Each node has it's own http connection. */
-                PnNode *foo;
+            /* Each node has it's own http connection. */
+            PnNode *http;
 
-                foo = PN_NODE (pn_http_server_new ("foo server"));
-                foo->session = session;
-                pn_node_link (conn, foo);
-                g_object_unref (foo);
-            }
+            http = PN_NODE (pn_http_server_new ("http gateway (ns)"));
+            http->session = session;
+            pn_node_link (conn, http);
+            g_object_unref (http);
         }
 
         notification->open_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), notification);
