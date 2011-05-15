@@ -916,7 +916,6 @@ write_impl (PnNode *conn,
             GError **error)
 {
     PnHttpServer *http_conn;
-    GIOStatus status = G_IO_STATUS_NORMAL;
 
     http_conn = PN_HTTP_SERVER (conn);
 
@@ -932,12 +931,15 @@ write_impl (PnNode *conn,
         queue_data->body_len = count;
 
         g_queue_push_tail (http_conn->write_queue, queue_data);
-        return status;
+
+        /* fake success */
+        if (ret_bytes_written)
+            *ret_bytes_written = count;
+
+        return G_IO_STATUS_NORMAL;
     }
 
-    status = foo_write (conn, buf, count, ret_bytes_written, error);
-
-    return status;
+    return foo_write (conn, buf, count, ret_bytes_written, error);
 }
 
 /* GObject stuff. */
