@@ -759,38 +759,26 @@ read_impl (PnNode *conn,
 
         if (http_conn->parser_state == 2)
         {
+            if (http_conn->session && (strcmp (http_conn->session, "close") == 0))
             {
-                gchar *session_id;
-                gchar *t;
+                pn_node_close (http_conn->cur);
+                g_object_unref (http_conn->cur);
+                http_conn->cur = NULL;
 
-                t = strchr (http_conn->last_session_id, '.');
-                session_id = g_strndup (http_conn->last_session_id, t - http_conn->last_session_id);
+                g_free (http_conn->gateway);
+                http_conn->gateway = NULL;
 
-                pn_log ("sesison_id=[%s]", session_id);
+                g_free (http_conn->last_session_id);
+                http_conn->last_session_id = NULL;
 
-                if (http_conn->session && (strcmp (http_conn->session, "close") == 0))
-                {
-                    pn_node_close (http_conn->cur);
-                    g_object_unref (http_conn->cur);
-                    http_conn->cur = NULL;
+                pn_node_close (conn);
+            }
+            else
+            {
+                g_free (http_conn->cur->foo_data);
+                http_conn->cur->foo_data = g_strdup (http_conn->last_session_id);
 
-                    g_free (http_conn->gateway);
-                    http_conn->gateway = NULL;
-
-                    g_free (http_conn->last_session_id);
-                    http_conn->last_session_id = NULL;
-
-                    pn_node_close (conn);
-                }
-                else
-                {
-                    g_free (http_conn->cur->foo_data);
-                    http_conn->cur->foo_data = g_strdup (http_conn->last_session_id);
-
-                    pn_debug ("session=%s", http_conn->session);
-                }
-
-                g_free (session_id);
+                pn_debug ("session=%s", http_conn->session);
             }
 
             status = pn_stream_read (conn->stream, buf, MIN (http_conn->content_length, count), &bytes_read, &tmp_error);
