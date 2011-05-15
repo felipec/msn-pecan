@@ -306,7 +306,7 @@ http_poll (gpointer data)
 #endif /* HAVE_LIBPURPLE */
 
     params = g_strdup_printf ("Action=poll&SessionID=%s",
-                              (gchar *) http_conn->cur->foo_data);
+                              (gchar *) http_conn->last_session_id);
 
     header = g_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
                               "Accept: */*\r\n"
@@ -775,9 +775,6 @@ read_impl (PnNode *conn,
             }
             else
             {
-                g_free (http_conn->cur->foo_data);
-                http_conn->cur->foo_data = g_strdup (http_conn->last_session_id);
-
                 pn_debug ("session=%s", http_conn->session);
             }
 
@@ -845,7 +842,7 @@ foo_write (PnNode *conn,
         gchar *auth = NULL;
         gchar *session_id;
 
-        session_id = prev->foo_data;
+        session_id = http_conn->last_session_id;
 
         if (session_id)
         {
