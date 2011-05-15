@@ -267,8 +267,6 @@ post (PnHttpServer *http_conn,
     gchar *header;
     gchar *params;
     gchar *auth = NULL;
-    gchar *body = NULL;
-    gsize body_len;
     gchar *session_id = http_conn->last_session_id;
 
     conn = PN_NODE (http_conn);
@@ -288,7 +286,6 @@ post (PnHttpServer *http_conn,
     auth = get_auth(conn);
 #endif /* HAVE_LIBPURPLE */
 
-    /** @todo investigate why this returns NULL sometimes. */
     header = g_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
                               "Accept: */*\r\n"
                               "User-Agent: MSMSGS\r\n"
@@ -313,44 +310,11 @@ post (PnHttpServer *http_conn,
     pn_debug ("header=[%s]", header);
 #endif
 
-    /** @todo this is inefficient */
-    if (header)
-    {
-        if (buf && count) {
-            gsize header_len;
-            header_len = strlen (header);
-            body_len = header_len + count;
-            body = g_malloc (body_len);
-            memcpy (body, header, header_len);
-            memcpy (body + header_len, buf, count);
-            g_free (header);
-        }
-        else
-        {
-            body = header;
-            body_len = strlen (header);
-        }
-    }
+    status = pn_stream_write_full (conn->stream, header, strlen (header), &bytes_written, &tmp_error);
+    g_free (header);
 
-    if (body)
-    {
-        status = pn_stream_write_full (conn->stream, body, body_len, &bytes_written, &tmp_error);
-        g_free (body);
-    }
-    else
-    {
-        /** @todo this shouldn't happen. */
-        pn_error ("body is null!");
-        status = G_IO_STATUS_ERROR;
-    }
-
-    /** @todo investigate why multiple g_io_channel_write has memory leaks. */
-#if 0
-    if (status == G_IO_STATUS_NORMAL)
-    {
+    if (buf && status == G_IO_STATUS_NORMAL)
         status = pn_stream_write_full (conn->stream, buf, count, &bytes_written, &tmp_error);
-    }
-#endif
 
     http_conn->waiting_response = TRUE;
     if (http_conn->timer)
