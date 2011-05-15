@@ -491,9 +491,6 @@ close_impl (PnNode *conn)
 
     conn->status = PN_NODE_STATUS_CLOSED;
 
-    g_free (conn->hostname);
-    conn->hostname = NULL;
-
     if (conn->next) {
         pn_node_close (conn->next);
         goto leave;
@@ -692,6 +689,7 @@ finalize (GObject *obj)
 
     pn_node_close (conn);
 
+    g_free (conn->hostname);
     g_free (conn->name);
     parent_class->finalize (obj);
 }
