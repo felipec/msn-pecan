@@ -301,6 +301,8 @@ pn_node_link (PnNode *conn,
               PnNode *next)
 {
     conn->next = g_object_ref (next);
+    next->prev = conn;
+
     conn->open_sig_handler = g_signal_connect (next, "open", G_CALLBACK (open_cb), conn);
     conn->close_sig_handler = g_signal_connect (next, "close", G_CALLBACK (close_cb), conn);
     conn->error_sig_handler = g_signal_connect (next, "error", G_CALLBACK (error_cb), conn);
@@ -450,9 +452,7 @@ connect_impl (PnNode *conn,
     {
         conn->status = PN_NODE_STATUS_CONNECTING;
 
-        conn->next->prev = conn;
         pn_node_connect (conn->next, hostname, port);
-        conn->next->prev = NULL;
     }
     else
     {
@@ -552,17 +552,7 @@ write_impl (PnNode *conn,
 
     if (conn->next)
     {
-        PnNode *next;
-
-        next = conn->next;
-
-        /* conn->next has already a ref from conn, but let's just be sure and
-         * ref anyway */
-        g_object_ref (next);
-        next->prev = conn;
-        status = pn_node_write (next, buf, count, ret_bytes_written, error);
-        next->prev = NULL;
-        g_object_unref (next);
+        status = pn_node_write (conn->next, buf, count, ret_bytes_written, error);
     }
     else
     {
@@ -623,9 +613,7 @@ read_impl (PnNode *conn,
     if (conn->next)
     {
         pn_error ("whaaat");
-        conn->next->prev = conn;
         status = pn_node_read (conn->next, buf, count, ret_bytes_read, error);
-        conn->next->prev = NULL;
     }
     else
     {
