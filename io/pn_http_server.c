@@ -16,15 +16,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-/*
- * Each command connection (NS,SB) can use the auxiliar HTTP connection method.
- * So commands are sent through a single HTTP gateway (ideally).
- *
- * The current implementation uses one HTTP connection per command connection.
- * For the NS the default gateway is used, but for SB's the SB IP is used.
- * That seems to work.
- */
-
 #include "pn_http_server.h"
 #include "pn_node_private.h"
 #include "pn_stream.h"
@@ -56,7 +47,6 @@ struct PnHttpServer
     gchar *session;
     gchar *gateway;
 
-    PnNode *cur;
     gchar *old_buffer;
 
     guint write_watch;
@@ -72,14 +62,12 @@ static PnNodeClass *parent_class;
 
 typedef struct
 {
-    PnNode *conn;
     gchar *body;
     gsize body_len;
 } HttpQueueData;
 
 static GIOStatus
 foo_write (PnNode *conn,
-           PnNode *prev,
            const gchar *buf,
            gsize count,
            gsize *ret_bytes_written,
@@ -96,12 +84,10 @@ process_queue (PnHttpServer *http_conn,
     if (queue_data)
     {
         foo_write (PN_NODE (http_conn),
-                   queue_data->conn,
                    queue_data->body,
                    queue_data->body_len,
                    NULL,
                    error);
-        g_object_unref (queue_data->conn);
         g_free (queue_data->body);
         g_free (queue_data);
     }
@@ -156,18 +142,17 @@ read_cb (GIOChannel *source,
 
         http_conn = PN_HTTP_SERVER (conn);
 
-        if (http_conn->cur)
+        /* make sure the server is not sending the same buffer again */
+        /** @todo find out why this happens */
+        if (!(http_conn->old_buffer &&
+              strncmp (buf, http_conn->old_buffer, bytes_read) == 0))
         {
-            /* make sure the server is not sending the same buffer again */
-            /** @todo find out why this happens */
-            if (!(http_conn->old_buffer &&
-                  strncmp (buf, http_conn->old_buffer, bytes_read) == 0))
-            {
-                pn_node_parse (http_conn->cur, buf, bytes_read);
+            g_object_ref (conn->prev);
+            pn_node_parse (conn->prev, buf, bytes_read);
+            g_object_unref (conn->prev);
 
-                g_free (http_conn->old_buffer);
-                http_conn->old_buffer = g_strndup (buf, bytes_read);
-            }
+            g_free (http_conn->old_buffer);
+            http_conn->old_buffer = g_strndup (buf, bytes_read);
         }
 
         if (conn->error)
@@ -284,11 +269,6 @@ http_poll (gpointer data)
     http_conn = PN_HTTP_SERVER (data);
 
     pn_debug ("stream=%p", conn->stream);
-
-    if (!http_conn->cur)
-        return TRUE;
-
-    g_return_val_if_fail (http_conn->cur, FALSE);
 
     count++;
 
@@ -484,41 +464,30 @@ connect_impl (PnNode *conn,
 
     http_conn = PN_HTTP_SERVER (conn);
 
+    g_return_if_fail (conn->prev);
+
     conn->status = PN_NODE_STATUS_CONNECTING;
 
-    if (!conn->stream)
-    {
-        port = 80;
-        pn_debug ("conn=%p,hostname=%s,port=%d", conn, hostname, port);
-        if (conn->prev->type == PN_NODE_NS)
-            hostname = http_conn->gateway;
+    port = 80;
+    pn_debug ("conn=%p,hostname=%s,port=%d", conn, hostname, port);
+    if (conn->prev->type == PN_NODE_NS)
+        hostname = http_conn->gateway;
 
 #if defined(USE_GIO)
-        GSocketClient *client;
-        client = g_socket_client_new();
-        g_socket_client_connect_to_host_async(client, hostname, port,
-                                              NULL, connect_cb, conn);
+    GSocketClient *client;
+    client = g_socket_client_new();
+    g_socket_client_connect_to_host_async(client, hostname, port,
+                                          NULL, connect_cb, conn);
 #elif defined(HAVE_LIBPURPLE)
-        /* close a pending connection */
-        /* this can happen when reconecting before receiving the connection
-         * callback. */
-        if (conn->connect_data)
-            purple_proxy_connect_cancel (conn->connect_data);
+    /* close a pending connection */
+    /* this can happen when reconecting before receiving the connection
+     * callback. */
+    if (conn->connect_data)
+        purple_proxy_connect_cancel (conn->connect_data);
 
-        conn->connect_data = purple_proxy_connect (NULL, msn_session_get_user_data (conn->session),
-                                                   hostname, port, connect_cb, conn);
+    conn->connect_data = purple_proxy_connect (NULL, msn_session_get_user_data (conn->session),
+                                               hostname, port, connect_cb, conn);
 #endif
-    }
-    else
-    {
-        if (conn->prev)
-        {
-            /* fake open */
-            PnNodeClass *class;
-            class = g_type_class_peek (PN_NODE_TYPE);
-            g_signal_emit (G_OBJECT (conn->prev), class->open_sig, 0, conn->prev);
-        }
-    }
 }
 
 static void
@@ -556,7 +525,6 @@ close_impl (PnNode *conn)
         HttpQueueData *queue_data;
         while ((queue_data = g_queue_pop_head (http_conn->write_queue)))
         {
-            g_object_unref (queue_data->conn);
             g_free (queue_data->body);
             g_free (queue_data);
         }
@@ -760,23 +728,9 @@ read_impl (PnNode *conn,
         if (http_conn->parser_state == 2)
         {
             if (http_conn->session && (strcmp (http_conn->session, "close") == 0))
-            {
-                pn_node_close (http_conn->cur);
-                g_object_unref (http_conn->cur);
-                http_conn->cur = NULL;
-
-                g_free (http_conn->gateway);
-                http_conn->gateway = NULL;
-
-                g_free (http_conn->last_session_id);
-                http_conn->last_session_id = NULL;
-
                 pn_node_close (conn);
-            }
             else
-            {
                 pn_debug ("session=%s", http_conn->session);
-            }
 
             status = pn_stream_read (conn->stream, buf, MIN (http_conn->content_length, count), &bytes_read, &tmp_error);
 
@@ -819,7 +773,6 @@ leave:
 
 static GIOStatus
 foo_write (PnNode *conn,
-           PnNode *prev,
            const gchar *buf,
            gsize count,
            gsize *ret_bytes_written,
@@ -852,8 +805,8 @@ foo_write (PnNode *conn,
         else
         {
             params = g_strdup_printf ("Action=open&Server=%s&IP=%s",
-                                      prev->type == PN_NODE_NS ? "NS" : "SB",
-                                      prev->hostname);
+                                      conn->prev->type == PN_NODE_NS ? "NS" : "SB",
+                                      conn->prev->hostname);
         }
 
 #ifdef HAVE_LIBPURPLE
@@ -923,11 +876,6 @@ foo_write (PnNode *conn,
     if (http_conn->timer)
         pn_timer_stop (http_conn->timer);
 
-    if (http_conn->cur)
-        g_object_unref (http_conn->cur);
-    http_conn->cur = prev;
-    g_object_ref (G_OBJECT (http_conn->cur));
-
     if (status == G_IO_STATUS_NORMAL) {
         status = pn_stream_flush (conn->stream, &tmp_error);
 
@@ -962,16 +910,11 @@ write_impl (PnNode *conn,
             GError **error)
 {
     PnHttpServer *http_conn;
-    PnNode *prev;
     GIOStatus status = G_IO_STATUS_NORMAL;
 
     http_conn = PN_HTTP_SERVER (conn);
-    prev = PN_NODE (conn->prev);
 
     pn_debug ("stream=%p", conn->stream);
-    pn_debug ("conn=%p,prev=%p", conn, prev);
-
-    g_return_val_if_fail (prev, G_IO_STATUS_ERROR);
 
     if (http_conn->waiting_response)
     {
@@ -979,8 +922,6 @@ write_impl (PnNode *conn,
 
         queue_data = g_new0 (HttpQueueData, 1);
 
-        g_object_ref (G_OBJECT (prev));
-        queue_data->conn = prev;
         queue_data->body = g_memdup (buf, count);
         queue_data->body_len = count;
 
@@ -988,7 +929,7 @@ write_impl (PnNode *conn,
         return status;
     }
 
-    status = foo_write (conn, prev, buf, count, ret_bytes_written, error);
+    status = foo_write (conn, buf, count, ret_bytes_written, error);
 
     return status;
 }
