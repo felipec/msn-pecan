@@ -464,7 +464,10 @@ close_impl (PnNode *conn)
     }
 
 #if defined(USE_GIO)
-    g_object_unref(conn->socket_conn);
+    if (conn->socket_conn) {
+        g_object_unref(conn->socket_conn);
+        conn->socket_conn = NULL;
+    }
 #elif defined(HAVE_LIBPURPLE)
     if (conn->connect_data) {
         purple_proxy_connect_cancel (conn->connect_data);
