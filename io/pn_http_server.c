@@ -263,19 +263,138 @@ async_flush (PnHttpServer *http_conn, GError **error)
     return http_conn->last_flush;
 }
 
+static GIOStatus
+post (PnHttpServer *http_conn,
+      gboolean poll,
+      const gchar *buf,
+      gsize count,
+      gsize *ret_bytes_written,
+      GError **error)
+{
+    PnNode *conn;
+    GIOStatus status = G_IO_STATUS_NORMAL;
+    GError *tmp_error = NULL;
+    gsize bytes_written = 0;
+
+    gchar *header;
+    gchar *params;
+    gchar *auth = NULL;
+    gchar *body = NULL;
+    gsize body_len;
+    gchar *session_id = http_conn->last_session_id;
+
+    conn = PN_NODE (http_conn);
+
+    if (poll)
+        params = g_strdup_printf ("Action=poll&SessionID=%s",
+                                  session_id);
+    else if (session_id)
+        params = g_strdup_printf ("SessionID=%s",
+                                  session_id);
+    else
+        params = g_strdup_printf ("Action=open&Server=%s&IP=%s",
+                                  conn->prev->type == PN_NODE_NS ? "NS" : "SB",
+                                  conn->prev->hostname);
+
+#ifdef HAVE_LIBPURPLE
+    auth = get_auth(conn);
+#endif /* HAVE_LIBPURPLE */
+
+    /** @todo investigate why this returns NULL sometimes. */
+    header = g_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
+                              "Accept: */*\r\n"
+                              "User-Agent: MSMSGS\r\n"
+                              "Host: %s\r\n"
+                              "%s" /* Proxy auth */
+                              "Proxy-Connection: Keep-Alive\r\n"
+                              "Connection: Keep-Alive\r\n"
+                              "Pragma: no-cache\r\n"
+                              "Cache-Control: no-cache\r\n"
+                              "Content-Type: application/x-msn-messenger\r\n"
+                              "Content-Length: %zu\r\n\r\n",
+                              http_conn->gateway,
+                              params,
+                              http_conn->gateway,
+                              auth ? auth : "",
+                              count);
+
+    g_free (params);
+    g_free (auth);
+
+#ifdef PECAN_DEBUG_HTTP
+    pn_debug ("header=[%s]", header);
+#endif
+
+    /** @todo this is inefficient */
+    if (header)
+    {
+        if (buf && count) {
+            gsize header_len;
+            header_len = strlen (header);
+            body_len = header_len + count;
+            body = g_malloc (body_len);
+            memcpy (body, header, header_len);
+            memcpy (body + header_len, buf, count);
+            g_free (header);
+        }
+        else
+        {
+            body = header;
+            body_len = strlen (header);
+        }
+    }
+
+    if (body)
+    {
+        status = pn_stream_write_full (conn->stream, body, body_len, &bytes_written, &tmp_error);
+        g_free (body);
+    }
+    else
+    {
+        /** @todo this shouldn't happen. */
+        pn_error ("body is null!");
+        status = G_IO_STATUS_ERROR;
+    }
+
+    /** @todo investigate why multiple g_io_channel_write has memory leaks. */
+#if 0
+    if (status == G_IO_STATUS_NORMAL)
+    {
+        status = pn_stream_write_full (conn->stream, buf, count, &bytes_written, &tmp_error);
+    }
+#endif
+
+    http_conn->waiting_response = TRUE;
+    if (http_conn->timer)
+        pn_timer_stop (http_conn->timer);
+
+    if (status == G_IO_STATUS_NORMAL)
+    {
+        status = async_flush (http_conn, &tmp_error);
+
+        /* fake status */
+        if (status == G_IO_STATUS_AGAIN)
+            status = G_IO_STATUS_NORMAL;
+    }
+
+    if (status == G_IO_STATUS_NORMAL)
+        pn_log ("bytes_written=%zu", bytes_written);
+    else
+        pn_error ("not normal");
+
+    if (ret_bytes_written)
+        *ret_bytes_written = bytes_written;
+
+    return status;
+}
+
 static gboolean
 http_poll (gpointer data)
 {
     PnNode *conn;
     PnHttpServer *http_conn;
     GIOStatus status = G_IO_STATUS_NORMAL;
-    GError *tmp_error = NULL;
-    gsize bytes_written = 0;
     static guint count = 0;
-
-    gchar *header;
-    gchar *params;
-    gchar *auth = NULL;
 
     g_return_val_if_fail (data != NULL, FALSE);
 
@@ -295,53 +414,7 @@ http_poll (gpointer data)
         return TRUE;
     }
 
-#ifdef HAVE_LIBPURPLE
-    auth = get_auth(conn);
-#endif /* HAVE_LIBPURPLE */
-
-    params = g_strdup_printf ("Action=poll&SessionID=%s",
-                              (gchar *) http_conn->last_session_id);
-
-    header = g_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
-                              "Accept: */*\r\n"
-                              "User-Agent: MSMSGS\r\n"
-                              "Host: %s\r\n"
-                              "%s" /* Proxy auth */
-                              "Proxy-Connection: Keep-Alive\r\n"
-                              "Connection: Keep-Alive\r\n"
-                              "Pragma: no-cache\r\n"
-                              "Cache-Control: no-cache\r\n"
-                              "Content-Type: application/x-msn-messenger\r\n"
-                              "Content-Length: 0\r\n\r\n",
-                              http_conn->gateway,
-                              params,
-                              http_conn->gateway,
-                              auth ? auth : "");
-
-#ifdef PECAN_DEBUG_HTTP
-    pn_debug ("header=[%s]", header);
-#endif
-
-    g_free (params);
-
-    status = pn_stream_write_full (conn->stream, header, strlen (header), &bytes_written, &tmp_error);
-
-    g_free (header);
-
-    http_conn->waiting_response = TRUE;
-    pn_timer_stop (http_conn->timer);
-
-    if (status == G_IO_STATUS_NORMAL)
-    {
-        status = async_flush (http_conn, &tmp_error);
-
-        /* fake status */
-        if (status == G_IO_STATUS_AGAIN)
-            status = G_IO_STATUS_NORMAL;
-
-        if (status == G_IO_STATUS_NORMAL)
-            pn_log ("bytes_written=%zu", bytes_written);
-    }
+    status = post (http_conn, TRUE, NULL, 0, NULL, NULL);
 
     if (status != G_IO_STATUS_NORMAL)
     {
@@ -788,124 +861,11 @@ foo_write (PnNode *conn,
            gsize *ret_bytes_written,
            GError **error)
 {
-    GIOStatus status = G_IO_STATUS_NORMAL;
-    PnHttpServer *http_conn;
-    GError *tmp_error = NULL;
-    gsize bytes_written = 0;
-
-    http_conn = PN_HTTP_SERVER (conn);
+    PnHttpServer *http_conn = PN_HTTP_SERVER (conn);
 
     pn_debug ("stream=%p", conn->stream);
 
-    {
-        gchar *params;
-        gchar *header;
-        gchar *body = NULL;
-        gsize body_len;
-        gchar *auth = NULL;
-        gchar *session_id;
-
-        session_id = http_conn->last_session_id;
-
-        if (session_id)
-        {
-            params = g_strdup_printf ("SessionID=%s",
-                                      session_id);
-        }
-        else
-        {
-            params = g_strdup_printf ("Action=open&Server=%s&IP=%s",
-                                      conn->prev->type == PN_NODE_NS ? "NS" : "SB",
-                                      conn->prev->hostname);
-        }
-
-#ifdef HAVE_LIBPURPLE
-        auth = get_auth(conn);
-#endif /* HAVE_LIBPURPLE */
-
-        /** @todo investigate why this returns NULL sometimes. */
-        header = g_strdup_printf ("POST http://%s/gateway/gateway.dll?%s HTTP/1.1\r\n"
-                                  "Accept: */*\r\n"
-                                  "User-Agent: MSMSGS\r\n"
-                                  "Host: %s\r\n"
-                                  "%s" /* Proxy auth */
-                                  "Proxy-Connection: Keep-Alive\r\n"
-                                  "Connection: Keep-Alive\r\n"
-                                  "Pragma: no-cache\r\n"
-                                  "Cache-Control: no-cache\r\n"
-                                  "Content-Type: application/x-msn-messenger\r\n"
-                                  "Content-Length: %zu\r\n\r\n",
-                                  http_conn->gateway,
-                                  params,
-                                  http_conn->gateway,
-                                  auth ? auth : "",
-                                  count);
-
-        g_free (params);
-        g_free (auth);
-
-#ifdef PECAN_DEBUG_HTTP
-        pn_debug ("header=[%s]", header);
-#endif
-
-        /** @todo this is inefficient */
-        if (header)
-        {
-            gsize header_len;
-            header_len = strlen (header);
-            body_len = header_len + count;
-            body = g_malloc (body_len);
-            memcpy (body, header, header_len);
-            memcpy (body + header_len, buf, count);
-            g_free (header);
-        }
-
-        if (body)
-        {
-            status = pn_stream_write_full (conn->stream, body, body_len, &bytes_written, &tmp_error);
-
-            g_free (body);
-        }
-        else
-        {
-            /** @todo this shouldn't happen. */
-            pn_error ("body is null!");
-            status = G_IO_STATUS_ERROR;
-        }
-    }
-
-    /** @todo investigate why multiple g_io_channel_write has memory leaks. */
-#if 0
-    if (status == G_IO_STATUS_NORMAL)
-    {
-        status = pn_stream_write_full (conn->stream, buf, count, &bytes_written, &tmp_error);
-    }
-#endif
-
-    http_conn->waiting_response = TRUE;
-    if (http_conn->timer)
-        pn_timer_stop (http_conn->timer);
-
-    if (status == G_IO_STATUS_NORMAL) {
-        status = async_flush (http_conn, &tmp_error);
-
-        /* fake status */
-        if (status == G_IO_STATUS_AGAIN)
-            status = G_IO_STATUS_NORMAL;
-    }
-
-    if (status == G_IO_STATUS_NORMAL)
-        pn_log ("bytes_written=%zu", bytes_written);
-    else
-        pn_error ("not normal");
-
-    if (ret_bytes_written)
-        *ret_bytes_written = bytes_written;
-
-    if (tmp_error)
-        g_propagate_error (error, tmp_error);
-
-    return status;
+    return post (http_conn, FALSE, buf, count, ret_bytes_written, error);
 }
 
 static GIOStatus
