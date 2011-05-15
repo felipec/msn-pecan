@@ -49,6 +49,8 @@ struct PnHttpServer
 
     guint write_watch;
     GIOStatus last_flush;
+
+    gboolean alive;
 };
 
 struct PnHttpServerClass
@@ -135,10 +137,20 @@ read_cb (GIOChannel *source,
 
     if (!conn->error)
     {
+        PnHttpServer *http_conn;
+
+        http_conn = PN_HTTP_SERVER (conn);
+
         if (bytes_read) {
             g_object_ref (conn->prev);
             pn_node_parse (conn->prev, buf, bytes_read);
             g_object_unref (conn->prev);
+        }
+
+        if (!http_conn->waiting_response && !http_conn->alive)
+        {
+            g_object_unref (conn);
+            return FALSE;
         }
 
         if (conn->error)
@@ -338,6 +350,13 @@ post (PnHttpServer *http_conn,
     return status;
 }
 
+static void reconnect(PnNode *conn)
+{
+    char *hostname = g_strdup (conn->hostname);
+    pn_node_connect (conn, hostname, conn->port);
+    g_free (hostname);
+}
+
 static gboolean
 http_poll (gpointer data)
 {
@@ -361,6 +380,21 @@ http_poll (gpointer data)
     {
         /* There's no need to poll if we're already waiting for a response */
         pn_debug ("waiting for response");
+        return TRUE;
+    }
+
+    if (!http_conn->alive)
+    {
+        HttpQueueData *queue_data;
+
+        queue_data = g_new0 (HttpQueueData, 1);
+
+        queue_data->poll = TRUE;
+
+        g_queue_push_tail (http_conn->write_queue, queue_data);
+
+        reconnect (conn);
+
         return TRUE;
     }
 
@@ -415,6 +449,7 @@ connect_cb(GObject *source,
         g_io_channel_set_line_term (channel, "\r\n", 2);
 
         conn->status = PN_NODE_STATUS_OPEN;
+        http_conn->alive = TRUE;
 
         http_conn->timer = pn_timer_new (http_poll, http_conn);
         pn_timer_start (http_conn->timer, 2);
@@ -426,6 +461,8 @@ connect_cb(GObject *source,
             class = g_type_class_peek (PN_NODE_TYPE);
             g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
         }
+
+        process_queue (http_conn, &conn->error);
     }
     else {
         PnNodeClass *class;
@@ -467,6 +504,7 @@ connect_cb (gpointer data,
         g_io_channel_set_line_term (channel, "\r\n", 2);
 
         conn->status = PN_NODE_STATUS_OPEN;
+        http_conn->alive = TRUE;
 
         http_conn->timer = pn_timer_new (http_poll, http_conn);
         pn_timer_start (http_conn->timer, 2);
@@ -478,6 +516,8 @@ connect_cb (gpointer data,
             class = g_type_class_peek (PN_NODE_TYPE);
             g_signal_emit (G_OBJECT (conn), class->open_sig, 0, conn);
         }
+
+        process_queue (http_conn, &conn->error);
     }
     else
     {
@@ -558,23 +598,8 @@ close_impl (PnNode *conn)
         http_conn->write_watch = 0;
     }
 
-    g_free (http_conn->last_session_id);
-    http_conn->last_session_id = NULL;
-
-    g_free (http_conn->session);
-    http_conn->session = NULL;
-
     http_conn->parser_state = 0;
     http_conn->waiting_response = FALSE;
-
-    {
-        HttpQueueData *queue_data;
-        while ((queue_data = g_queue_pop_head (http_conn->write_queue)))
-        {
-            g_free (queue_data->body);
-            g_free (queue_data);
-        }
-    }
 
     parent_class->close (conn);
 
@@ -717,6 +742,12 @@ read_impl (PnNode *conn,
                 {
                     http_conn->content_length = atoi (tokens[1]);
                 }
+                else if (strcmp (tokens[0], "Proxy-Connection") == 0 ||
+                         strcmp (tokens[0], "Connection") == 0)
+                {
+                    if (strcmp (tokens[1], "close") == 0)
+                        http_conn->alive = FALSE;
+                }
                 else if (strcmp (tokens[0], "X-MSN-Messenger") == 0)
                 {
                     gchar **tokens_b;
@@ -773,11 +804,6 @@ read_impl (PnNode *conn,
 
         if (http_conn->parser_state == 2)
         {
-            if (http_conn->session && (strcmp (http_conn->session, "close") == 0))
-                pn_node_close (conn);
-            else
-                pn_debug ("session=%s", http_conn->session);
-
             status = pn_stream_read (conn->stream, buf, MIN (http_conn->content_length, count), &bytes_read, &tmp_error);
 
             if (status == G_IO_STATUS_AGAIN)
@@ -793,6 +819,11 @@ read_impl (PnNode *conn,
 
             pn_log ("con_len=%d,read=%zu", http_conn->content_length, bytes_read);
 
+            if (http_conn->session && (strcmp (http_conn->session, "close") == 0))
+                pn_node_close (conn);
+            else
+                pn_debug ("session=%s", http_conn->session);
+
             if (conn->status == PN_NODE_STATUS_CLOSED)
                 goto leave;
 
@@ -800,7 +831,8 @@ read_impl (PnNode *conn,
                 http_conn->parser_state = 0;
                 http_conn->waiting_response = FALSE;
                 pn_timer_restart (http_conn->timer);
-                process_queue (http_conn, &conn->error);
+                if (http_conn->alive)
+                    process_queue (http_conn, &conn->error);
             }
         }
 
@@ -830,7 +862,7 @@ write_impl (PnNode *conn,
 
     pn_debug ("stream=%p", conn->stream);
 
-    if (http_conn->waiting_response)
+    if (http_conn->waiting_response || !http_conn->alive)
     {
         HttpQueueData *queue_data;
 
@@ -840,6 +872,9 @@ write_impl (PnNode *conn,
         queue_data->body_len = count;
 
         g_queue_push_tail (http_conn->write_queue, queue_data);
+
+        if (!http_conn->waiting_response)
+            reconnect (conn);
 
         /* fake success */
         if (ret_bytes_written)
@@ -857,6 +892,18 @@ static void
 finalize (GObject *obj)
 {
     PnHttpServer *http_conn = PN_HTTP_SERVER (obj);
+
+    g_free (http_conn->last_session_id);
+    g_free (http_conn->session);
+
+    {
+        HttpQueueData *queue_data;
+        while ((queue_data = g_queue_pop_head (http_conn->write_queue)))
+        {
+            g_free (queue_data->body);
+            g_free (queue_data);
+        }
+    }
 
     g_free (http_conn->gateway);
     g_queue_free (http_conn->write_queue);
