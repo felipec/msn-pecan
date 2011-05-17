@@ -17,12 +17,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include "pn_global.h"
+
 #include "pn_contact.h"
 #include "pn_contact_priv.h"
 #include "pn_contactlist.h"
 #include "pn_contactlist_priv.h"
 #include "pn_group.h"
 #include "pn_log.h"
+#include "pn_locale.h"
 #include "pn_util.h"
 
 #include "pn_dp_manager.h" /* for pn_dp_manager_contact_set_object */
@@ -70,6 +73,7 @@ pn_contact_free (struct pn_contact *contact)
     g_free (contact->passport);
     g_free (contact->friendly_name);
     g_free (contact->personal_message);
+    g_free (contact->client_name);
     g_free (contact->store_name);
     g_free (contact->guid);
     g_free (contact->phone.home);
@@ -77,6 +81,64 @@ pn_contact_free (struct pn_contact *contact)
     g_free (contact->phone.mobile);
 
     g_free (contact);
+}
+
+static void
+update_client_name (struct pn_contact *contact)
+{
+    if (contact->client_name)
+        return;
+
+    unsigned long client_id;
+    const char *msnc_v = NULL;
+    client_id = pn_contact_get_client_id (contact) / 268435456;
+
+    if (client_id == 1)
+        msnc_v = "MSNC1";
+    else if (client_id == 2)
+        msnc_v = "MSNC2";
+    else if (client_id == 3)
+        msnc_v = "MSNC3";
+    else if (client_id == 4)
+        msnc_v = "MSNC4";
+    else if (client_id == 5)
+        msnc_v = "MSNC5";
+    else if (client_id == 6)
+        msnc_v = "MSNC6";
+    else if (client_id == 7)
+        msnc_v = "MSNC7";
+    else if (client_id == 8)
+        msnc_v = "MSNC8 (MSNP15)";
+    else if (client_id == 9)
+        msnc_v = "MSNC9 (MSNP16)";
+    else if (client_id == 10)
+        msnc_v = "MSNC10 (MSNP18)";
+    else if (client_id == 11)
+        msnc_v = "MSNC11 (MSNP21)";
+
+#if defined(PECAN_CVR)
+#ifdef HAVE_LIBPURPLE
+    struct pn_msnobj *obj = pn_contact_get_object (contact);
+    const gchar *location;
+
+    if (!obj)
+        goto next;
+
+    location = pn_msnobj_get_location (obj);
+    if (strcmp(location, "amsn.tmp") == 0)
+        contact->client_name = g_strdup_printf("aMSN (%s)", msnc_v ? msnc_v : _("unknown version"));
+    else if (strcmp(location, "KMess.tmp") == 0)
+        contact->client_name = g_strdup_printf("KMess (%s)", msnc_v ? msnc_v : _("unknown version"));
+    else if (strcmp(location, "Mercury.tmp") == 0)
+        contact->client_name = g_strdup_printf("Mercury (%s)", msnc_v ? msnc_v : _("unknown version"));
+    else if (strcmp(location, "kopete.tmp") == 0)
+        contact->client_name = g_strdup_printf("Kopete (%s)", msnc_v ? msnc_v : _("unknown version"));
+#endif /* HAVE_LIBPURPLE */
+#endif /* defined(PECAN_CVR) */
+
+next:
+    if (!contact->client_name)
+        contact->client_name = g_strdup(msnc_v);
 }
 
 void
@@ -146,6 +208,8 @@ pn_contact_update (struct pn_contact *contact)
 
     purple_prpl_got_user_idle (account, contact->passport, idle, idle ? -1 : 0);
 #endif /* HAVE_LIBPURPLE */
+
+    update_client_name (contact);
 }
 
 gboolean
@@ -206,12 +270,33 @@ pn_contact_set_client_id (struct pn_contact *contact,
                           gulong client_id)
 {
     contact->client_id = client_id;
+
+    update_client_name (contact);
 }
 
 gulong
 pn_contact_get_client_id (struct pn_contact *contact)
 {
     return contact->client_id;
+}
+
+void
+pn_contact_set_client_name (struct pn_contact *contact,
+                            const gchar *client_name)
+{
+    if (!client_name)
+        return;
+
+    if (contact->client_name)
+        g_free(contact->client_name);
+
+    contact->client_name = g_strdup(client_name);
+}
+
+const gchar *
+pn_contact_get_client_name (struct pn_contact *contact)
+{
+    return contact->client_name;
 }
 
 void
@@ -606,6 +691,9 @@ pn_contact_set_object (struct pn_contact *contact,
 
     if (contact->msnobj == obj)
         return;
+
+    /* Update client name if possible */
+    update_client_name (contact);
 
     old_obj = contact->msnobj;
     contact->msnobj = obj;

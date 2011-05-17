@@ -59,6 +59,7 @@ struct pn_contact {
     gchar *store_name; /**< The name stored in the server. */
     gchar *friendly_name; /**< The friendly name. */
     gchar *personal_message; /**< The personal message. */
+    gchar *client_name; /**< The client name/version. */
     CurrentMedia media; /**< The current media. */
     gchar *guid; /**< The GUID. Only present for contacts in our FL. */
 

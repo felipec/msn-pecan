@@ -1031,12 +1031,30 @@ plain_msg(MsnCmdProc *cmdproc, MsnMessage *msg)
         return;
     }
 
-#if 0
     if ((value = msn_message_get_attr(msg, "User-Agent")) != NULL)
     {
-        pn_debug ("user-agent=[%s]", value);
+        gchar *end;
+
+        pn_debug("user-agent=[%s]", value);
+
+        end = strchr(value, '/');
+        if (end)
+        {
+            struct pn_contact *contact;
+            contact = pn_contactlist_find_contact(cmdproc->session->contactlist, passport);
+
+            if (contact)
+            {
+                gchar *client;
+                end[0] = ' ';
+                client = g_strdup(value);
+
+                pn_contact_set_client_name(contact, client);
+
+                g_free(client);
+            }
+        }
     }
-#endif
 
     if ((value = msn_message_get_attr(msg, "P4-Context")) != NULL)
     {

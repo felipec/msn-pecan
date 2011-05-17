@@ -312,4 +312,9 @@ gboolean pn_contact_is_blocked (const struct pn_contact *contact);
 
 gboolean pn_contact_can_receive (const struct pn_contact *contact);
 
+const gchar *pn_contact_get_client_name (struct pn_contact *contact);
+
+void pn_contact_set_client_name (struct pn_contact *contact,
+                                 const gchar *client_name);
+
 #endif /* PN_CONTACT_H */

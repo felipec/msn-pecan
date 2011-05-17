@@ -743,6 +743,12 @@ tooltip_text (PurpleBuddy *buddy,
 
     purple_notify_user_info_add_pair (user_info, _("Blocked"),
                                       (pn_contact_is_blocked (user) ? _("Yes") : _("No")));
+
+    if (pn_contact_get_client_name (user))
+    {
+        purple_notify_user_info_add_pair (user_info, _("Client"),
+                                          pn_contact_get_client_name (user));
+    }
 }
 
 static inline PurpleStatusType *
