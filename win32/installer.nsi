@@ -6,7 +6,7 @@ SetCompressor lzma
 ; todo: SetBrandingImage
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "msn-pecan"
-!define PRODUCT_VERSION "0.1.2"
+!define PRODUCT_VERSION "0.1.3"
 !define PRODUCT_PUBLISHER "Felipe Contreras"
 !define PRODUCT_WEB_SITE "http://msn-pecan.googlecode.com/"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
