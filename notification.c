@@ -347,7 +347,7 @@ usr_cmd(MsnCmdProc *cmdproc, MsnCommand *cmd)
     else if (!g_ascii_strcasecmp(cmd->params[1], "TWN"))
     {
         session->auth = pn_auth_new(session);
-        pn_auth_get_ticket (session->auth, 0, auth_cb, NULL);
+        pn_auth_get_ticket (session->auth, 0, auth_cb, cmd->params[3], NULL);
     }
 }
 

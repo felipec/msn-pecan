@@ -47,7 +47,12 @@ struct AuthRequest
     PnParser *parser;
     guint parser_state;
     gsize content_size;
+
+    gchar *redirect_url;
+    gchar *ticket;
 };
+
+static void open_cb (PnNode *conn, AuthRequest *req);
 
 static inline AuthRequest *
 auth_request_new (PnAuth *auth)
@@ -71,6 +76,8 @@ auth_request_free (AuthRequest *req)
 
     pn_node_free (req->conn);
     pn_parser_free (req->parser);
+    g_free (req->redirect_url);
+    g_free (req->ticket);
     g_free (req);
 }
 
@@ -129,7 +136,20 @@ process_body (AuthRequest *req,
 {
     gchar *cur;
 
-    pn_debug ("body=[%.*s]", (int) length, body);
+    pn_test ("body=[%.*s]", (int) length, body);
+
+    cur = strstr (body, "<psf:redirectUrl>");
+    if (cur)
+    {
+        gchar *end;
+
+        cur = strchr (cur, '>') + 1;
+        end = strchr (cur, '<');
+
+        req->redirect_url = g_strndup (cur, end - cur);
+
+        return;
+    }
 
     cur = strstr (body, "<wsse:BinarySecurityToken Id=\"PPToken1\">");
     if (!cur)
@@ -274,9 +294,17 @@ read_cb (PnNode *conn,
     }
 
 leave:
-    pn_node_close (conn);
-    auth_request_free (req);
-    auth->pending_req = NULL;
+    if (req->redirect_url)
+    {
+        pn_node_connect (req->conn, "msnia.login.live.com", 443);
+        req->open_sig_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), req);
+    }
+    else
+    {
+        pn_node_close (conn);
+        auth_request_free (req);
+        auth->pending_req = NULL;
+    }
 }
 
 static void
@@ -287,6 +315,7 @@ open_cb (PnNode *conn,
     gchar *body;
     gchar *header;
     gsize body_len;
+    gchar *ticket = NULL;
 
     g_signal_handler_disconnect (conn, req->open_sig_handler);
     req->open_sig_handler = 0;
@@ -294,6 +323,18 @@ open_cb (PnNode *conn,
     pn_log ("begin");
 
     session = req->auth->session;
+    if (req->ticket)
+    {
+        char *decoded, *joined , **split;
+
+        decoded = g_uri_unescape_string (req->ticket, NULL);
+        split = g_strsplit (decoded, ",", -1);
+        g_free (decoded);
+        joined = g_strjoinv ("&", split);
+        g_strfreev (split);
+        ticket = g_markup_escape_text (joined, -1);
+        g_free (joined);
+    }
 
     body = g_strdup_printf ("<?xml version=\"1.0\" encoding=\"utf-8\"?>"
                             "<Envelope xmlns=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:wsse=\"http://schemas.xmlsoap.org/ws/2003/06/secext\" xmlns:saml=\"urn:oasis:names:tc:SAML:1.0:assertion\" xmlns:wsp=\"http://schemas.xmlsoap.org/ws/2002/12/policy\" xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" xmlns:wsa=\"http://schemas.xmlsoap.org/ws/2004/03/addressing\" xmlns:wssc=\"http://schemas.xmlsoap.org/ws/2004/04/sc\" xmlns:wst=\"http://schemas.xmlsoap.org/ws/2004/04/trust\">"
@@ -303,7 +344,7 @@ open_cb (PnNode *conn,
                             "<ps:BinaryVersion>4</ps:BinaryVersion>"
                             "<ps:UIVersion>1</ps:UIVersion>"
                             "<ps:Cookies></ps:Cookies>"
-                            "<ps:RequestParams>AQAAAAIAAABsYwQAAAAxMDMz</ps:RequestParams>"
+                            "<ps:RequestParams>AQAAAAIAAABsYwQAAAAzMDg0</ps:RequestParams>"
                             "</ps:AuthInfo>"
                             "<wsse:Security>"
                             "<wsse:UsernameToken Id=\"user\">"
@@ -329,26 +370,20 @@ open_cb (PnNode *conn,
                             "<wsa:Address>messenger.msn.com</wsa:Address>"
                             "</wsa:EndpointReference>"
                             "</wsp:AppliesTo>"
-                            "<wsse:PolicyReference URI=\"?id=507\"></wsse:PolicyReference>"
-                            "</wst:RequestSecurityToken>"
-                            "<wst:RequestSecurityToken Id=\"RST2\">"
-                            "<wst:RequestType>http://schemas.xmlsoap.org/ws/2004/04/security/trust/Issue</wst:RequestType>"
-                            "<wsp:AppliesTo>"
-                            "<wsa:EndpointReference>"
-                            "<wsa:Address>messengersecure.live.com</wsa:Address>"
-                            "</wsa:EndpointReference>"
-                            "</wsp:AppliesTo>"
-                            "<wsse:PolicyReference URI=\"MBI_SSL\"></wsse:PolicyReference>"
+                            "<wsse:PolicyReference URI=\"?%s\"></wsse:PolicyReference>"
                             "</wst:RequestSecurityToken>"
                             "</ps:RequestMultipleSecurityTokens>"
                             "</Body>"
                             "</Envelope>",
                             session->username,
-                            session->password);
+                            session->password,
+                            ticket ? ticket : "?id=507");
+
+    g_free (ticket);
 
     body_len = strlen (body);
 
-    header = g_strdup_printf ("POST /RST.srf HTTP/1.1\r\n"
+    header = g_strdup_printf ("POST %s HTTP/1.1\r\n"
                               "Accept: */*\r\n"
                               "Content-Type: text/xml; charset=utf-8\r\n"
                               "Content-Length: %zu\r\n"
@@ -357,13 +392,14 @@ open_cb (PnNode *conn,
                               "Connection: Keep-Alive\r\n"
                               "Cache-Control: no-cache\r\n"
                               "\r\n%s",
+                              req->redirect_url ? "/pp1100/RST.srf" : "/RST.srf",
                               body_len,
-                              "login.live.com",
+                              conn->hostname,
                               body);
 
     g_free (body);
 
-    pn_debug ("header=[%s]", header);
+    pn_test ("header=[%s]", header);
     /* pn_debug ("body=[%s]", body); */
 
     {
@@ -378,9 +414,11 @@ open_cb (PnNode *conn,
 }
 
 void
-pn_auth_get_ticket (PnAuth *auth, int id, PnAuthCb cb, void *cb_data)
+pn_auth_get_ticket (PnAuth *auth, int id, PnAuthCb cb, const char *ticket, void *cb_data)
 {
     time_t ticket_time, current_time = time (NULL);
+
+    g_print("ticket=%s\n", ticket);
 
     switch (id) {
     case 0: ticket_time = auth->expiration_time.messenger_msn_com; break;
@@ -405,6 +443,7 @@ pn_auth_get_ticket (PnAuth *auth, int id, PnAuthCb cb, void *cb_data)
         pn_node_connect (conn, "login.live.com", 443);
 
         req->conn = conn;
+        req->ticket = g_strdup (ticket);
         req->open_sig_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), req);
 
         auth->pending_req = req;

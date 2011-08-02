@@ -793,7 +793,7 @@ oim_process_requests (PecanOimSession *oim_session)
             return;
     }
 
-    pn_auth_get_ticket (oim_session->session->auth, id, auth_cb, oim_request);
+    pn_auth_get_ticket (oim_session->session->auth, id, auth_cb, NULL, oim_request);
 }
 
 void
