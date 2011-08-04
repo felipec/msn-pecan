@@ -296,6 +296,9 @@ read_cb (PnNode *conn,
 leave:
     if (req->redirect_url)
     {
+        req->parser_state = 0;
+        g_free (req->redirect_url);
+        req->redirect_url = NULL;
         pn_node_connect (req->conn, "msnia.login.live.com", 443);
         req->open_sig_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), req);
     }
@@ -343,10 +346,10 @@ open_cb (PnNode *conn,
                             "<ps:HostingApp>{7108E71A-9926-4FCB-BCC9-9A9D3F32E423}</ps:HostingApp>"
                             "<ps:BinaryVersion>4</ps:BinaryVersion>"
                             "<ps:UIVersion>1</ps:UIVersion>"
-                            "<ps:Cookies></ps:Cookies>"
+                            "<ps:Cookies/>"
                             "<ps:RequestParams>AQAAAAIAAABsYwQAAAAzMDg0</ps:RequestParams>"
                             "</ps:AuthInfo>"
-                            "<wsse:Security>"
+                            "<wsse:Security xmlns:wsse=\"http://schemas.xmlsoap.org/ws/2003/06/secext\">"
                             "<wsse:UsernameToken Id=\"user\">"
                             "<wsse:Username>%s</wsse:Username>"
                             "<wsse:Password>%s</wsse:Password>"
@@ -358,7 +361,7 @@ open_cb (PnNode *conn,
                             "<wst:RequestSecurityToken Id=\"RST0\">"
                             "<wst:RequestType>http://schemas.xmlsoap.org/ws/2004/04/security/trust/Issue</wst:RequestType>"
                             "<wsp:AppliesTo>"
-                            "<wsa:EndpointReference>"
+                            "<wsa:EndpointReference xmlns:wsa=\"http://schemas.xmlsoap.org/ws/2004/03/addressing\">"
                             "<wsa:Address>http://Passport.NET/tb</wsa:Address>"
                             "</wsa:EndpointReference>"
                             "</wsp:AppliesTo>"
@@ -366,18 +369,17 @@ open_cb (PnNode *conn,
                             "<wst:RequestSecurityToken Id=\"RST1\">"
                             "<wst:RequestType>http://schemas.xmlsoap.org/ws/2004/04/security/trust/Issue</wst:RequestType>"
                             "<wsp:AppliesTo>"
-                            "<wsa:EndpointReference>"
+                            "<wsa:EndpointReference xmlns:wsa=\"http://schemas.xmlsoap.org/ws/2004/03/addressing\">"
                             "<wsa:Address>messenger.msn.com</wsa:Address>"
                             "</wsa:EndpointReference>"
                             "</wsp:AppliesTo>"
-                            "<wsse:PolicyReference URI=\"?%s\"></wsse:PolicyReference>"
+                            "<wsse:PolicyReference xmlns:wsse=\"http://schemas.xmlsoap.org/ws/2003/06/secext\" URI=\"?id=507\"/>"
                             "</wst:RequestSecurityToken>"
                             "</ps:RequestMultipleSecurityTokens>"
                             "</Body>"
                             "</Envelope>",
                             session->username,
-                            session->password,
-                            ticket ? ticket : "?id=507");
+                            session->password);
 
     g_free (ticket);
 
@@ -440,7 +442,7 @@ pn_auth_get_ticket (PnAuth *auth, int id, PnAuthCb cb, const char *ticket, void 
         req->parser = pn_parser_new (conn);
         pn_ssl_conn_set_read_cb (ssl_conn, read_cb, req);
 
-        pn_node_connect (conn, "login.live.com", 443);
+        pn_node_connect (conn, "loginnet.passport.com", 443);
 
         req->conn = conn;
         req->ticket = g_strdup (ticket);
