@@ -513,6 +513,9 @@ write_impl (PnNode *conn,
 
     pn_debug ("name=%s", conn->name);
 
+    if (conn->status != PN_NODE_STATUS_OPEN)
+        return G_IO_CHANNEL_ERROR_INVAL;
+
     if (conn->next)
     {
         PnNode *next;
