@@ -47,7 +47,11 @@ struct AuthRequest
     PnParser *parser;
     guint parser_state;
     gsize content_size;
+
+    gchar *redirect_url;
 };
+
+static void open_cb (PnNode *conn, AuthRequest *req);
 
 static inline AuthRequest *
 auth_request_new (PnAuth *auth)
@@ -71,6 +75,7 @@ auth_request_free (AuthRequest *req)
 
     pn_node_free (req->conn);
     pn_parser_free (req->parser);
+    g_free (req->redirect_url);
     g_free (req);
 }
 
@@ -130,6 +135,29 @@ process_body (AuthRequest *req,
     gchar *cur;
 
     pn_debug ("body=[%.*s]", (int) length, body);
+
+    cur = strstr (body, "<psf:redirectUrl>");
+    if (cur)
+    {
+        gchar *end;
+        char *domain, *path;
+
+        cur = strchr (cur, '>') + 1;
+        end = strchr (cur, '<');
+
+        req->redirect_url = g_strndup (cur, end - cur);
+        cur = strchr (req->redirect_url, ':') + 3;
+        end = strchr (cur, '/');
+
+        domain = g_strndup (cur, end - cur);
+        g_print ("domain=%s\n", domain);
+
+        cur = end + 1;
+        path = g_strdup (cur);
+        g_print ("path=%s\n", path);
+
+        return;
+    }
 
     cur = strstr (body, "<wsse:BinarySecurityToken Id=\"PPToken1\">");
     if (!cur)
@@ -274,9 +302,20 @@ read_cb (PnNode *conn,
     }
 
 leave:
-    pn_node_close (conn);
-    auth_request_free (req);
-    auth->pending_req = NULL;
+    if (req->redirect_url)
+    {
+        req->parser_state = 0;
+        g_free (req->redirect_url);
+        req->redirect_url = NULL;
+        pn_node_connect (req->conn, "msnia.login.live.com", 443);
+        req->open_sig_handler = g_signal_connect (conn, "open", G_CALLBACK (open_cb), req);
+    }
+    else
+    {
+        pn_node_close (conn);
+        auth_request_free (req);
+        auth->pending_req = NULL;
+    }
 }
 
 static void
@@ -348,7 +387,7 @@ open_cb (PnNode *conn,
 
     body_len = strlen (body);
 
-    header = g_strdup_printf ("POST /RST.srf HTTP/1.1\r\n"
+    header = g_strdup_printf ("POST %s HTTP/1.1\r\n"
                               "Accept: */*\r\n"
                               "Content-Type: text/xml; charset=utf-8\r\n"
                               "Content-Length: %zu\r\n"
@@ -357,8 +396,9 @@ open_cb (PnNode *conn,
                               "Connection: Keep-Alive\r\n"
                               "Cache-Control: no-cache\r\n"
                               "\r\n%s",
+                              req->redirect_url ? "/pp1100/RST.srf" : "/RST.srf",
                               body_len,
-                              "login.live.com",
+                              conn->hostname,
                               body);
 
     g_free (body);
