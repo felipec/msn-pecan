@@ -77,6 +77,7 @@ struct PnNode
     gboolean dump_file;
 #if defined(USE_GIO)
     GSocketConnection *socket_conn;
+    GCancellable *socket_cancel;
 #elif defined(HAVE_LIBPURPLE)
     struct _PurpleProxyConnectData *connect_data;
 #endif
