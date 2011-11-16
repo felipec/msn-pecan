@@ -133,6 +133,8 @@ update_client_name (struct pn_contact *contact)
         contact->client_name = g_strdup_printf("Mercury (%s)", msnc_v ? msnc_v : _("unknown version"));
     else if (strcmp(location, "kopete.tmp") == 0)
         contact->client_name = g_strdup_printf("Kopete (%s)", msnc_v ? msnc_v : _("unknown version"));
+    else if (strcmp(location, "msn-pecan.tmp") == 0)
+        contact->client_name = g_strdup_printf("msn-pecan (%s)", msnc_v ? msnc_v : _("unknown version"));
 #endif /* HAVE_LIBPURPLE */
 #endif /* defined(PECAN_CVR) */
 
@@ -540,7 +542,7 @@ pn_contact_set_buddy_icon (struct pn_contact *contact,
 #ifdef HAVE_LIBPURPLE
     struct pn_msnobj *obj;
 
-    obj = pn_msnobj_new_from_image (image, "TFR2C2.tmp", pn_contact_get_passport (contact),
+    obj = pn_msnobj_new_from_image (image, "msn-pecan.tmp", pn_contact_get_passport (contact),
                                     PN_MSNOBJ_USERTILE);
     pn_contact_set_object (contact, obj);
 #endif /* HAVE_LIBPURPLE */
