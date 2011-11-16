@@ -120,21 +120,28 @@ update_client_name (struct pn_contact *contact)
 #ifdef HAVE_LIBPURPLE
     struct pn_msnobj *obj = pn_contact_get_object (contact);
     const gchar *location;
+    const char *client;
 
     if (!obj)
         goto next;
 
     location = pn_msnobj_get_location (obj);
     if (strcmp(location, "amsn.tmp") == 0)
-        contact->client_name = g_strdup_printf("aMSN (%s)", msnc_v ? msnc_v : _("unknown version"));
+        client = "aMSN";
     else if (strcmp(location, "KMess.tmp") == 0)
-        contact->client_name = g_strdup_printf("KMess (%s)", msnc_v ? msnc_v : _("unknown version"));
+        client = "KMess";
     else if (strcmp(location, "Mercury.tmp") == 0)
-        contact->client_name = g_strdup_printf("Mercury (%s)", msnc_v ? msnc_v : _("unknown version"));
+        client = "Mercury";
     else if (strcmp(location, "kopete.tmp") == 0)
-        contact->client_name = g_strdup_printf("Kopete (%s)", msnc_v ? msnc_v : _("unknown version"));
+        client = "kopete";
     else if (strcmp(location, "msn-pecan.tmp") == 0)
-        contact->client_name = g_strdup_printf("msn-pecan (%s)", msnc_v ? msnc_v : _("unknown version"));
+        client = "msn-pecan";
+    else
+        client = NULL;
+
+    if (client)
+        contact->client_name = g_strdup_printf("%s (%s)",
+                client, msnc_v ? msnc_v : _("unknown version"));
 #endif /* HAVE_LIBPURPLE */
 #endif /* defined(PECAN_CVR) */
 
