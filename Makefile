@@ -6,11 +6,13 @@ MSGFMT := msgfmt
 
 PLATFORM := $(shell $(CC) -dumpmachine | awk -F - '{ print $$NF }')
 
-PURPLE_CFLAGS := $(shell pkg-config --cflags purple)
-PURPLE_LIBS := $(shell pkg-config --libs purple)
-PURPLE_LIBDIR := $(shell pkg-config --variable=libdir purple)
-PURPLE_DATADIR := $(shell pkg-config --variable=datadir purple)
-PURPLE_PLUGINDIR := $(shell pkg-config --variable=plugindir purple)
+purple_name := purple
+
+PURPLE_CFLAGS := $(shell pkg-config --cflags $(purple_name))
+PURPLE_LIBS := $(shell pkg-config --libs $(purple_name))
+PURPLE_LIBDIR := $(shell pkg-config --variable=libdir $(purple_name))
+PURPLE_DATADIR := $(shell pkg-config --variable=datadir $(purple_name))
+PURPLE_PLUGINDIR := $(shell pkg-config --variable=plugindir $(purple_name))
 
 GIO_CFLAGS := $(shell pkg-config --cflags gio-2.0)
 GIO_LIBS := $(shell pkg-config --libs gio-2.0)
