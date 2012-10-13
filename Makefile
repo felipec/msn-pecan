@@ -10,7 +10,7 @@ PURPLE_CFLAGS := $(shell pkg-config --cflags purple)
 PURPLE_LIBS := $(shell pkg-config --libs purple)
 PURPLE_LIBDIR := $(shell pkg-config --variable=libdir purple)
 PURPLE_DATADIR := $(shell pkg-config --variable=datadir purple)
-PURPLE_PLUGINDIR := $(PURPLE_LIBDIR)/purple-2
+PURPLE_PLUGINDIR := $(shell pkg-config --variable=plugindir purple)
 
 GIO_CFLAGS := $(shell pkg-config --cflags gio-2.0)
 GIO_LIBS := $(shell pkg-config --libs gio-2.0)
