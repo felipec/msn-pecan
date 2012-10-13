@@ -338,11 +338,17 @@ connect_cb(GObject *source,
 {
     GSocketConnection *socket_conn;
     PnNode *conn;
+    GError *error = NULL;
 
     conn = PN_NODE(user_data);
-    socket_conn = g_socket_client_connect_to_host_finish(G_SOCKET_CLIENT(source), res, NULL);
+    socket_conn = g_socket_client_connect_to_host_finish(G_SOCKET_CLIENT(source), res, &error);
 
     g_object_unref(source);
+
+    if (error) {
+        g_error_free(error);
+        return;
+    }
 
     g_object_ref(conn);
 
@@ -463,8 +469,9 @@ connect_impl (PnNode *conn,
 #if defined(USE_GIO)
         GSocketClient *client;
         client = g_socket_client_new();
+        conn->socket_cancel = g_cancellable_new();
         g_socket_client_connect_to_host_async(client, hostname, port,
-                                              NULL, connect_cb, conn);
+                                              conn->socket_cancel, connect_cb, conn);
 #elif defined(HAVE_LIBPURPLE)
         conn->connect_data = purple_proxy_connect (NULL, msn_session_get_user_data (conn->session),
                                                    hostname, port, connect_cb, conn);
@@ -503,6 +510,11 @@ close_impl (PnNode *conn)
     if (conn->socket_conn) {
         g_object_unref(conn->socket_conn);
         conn->socket_conn = NULL;
+    }
+    if (conn->socket_cancel) {
+        g_cancellable_cancel(conn->socket_cancel);
+        g_object_unref(conn->socket_cancel);
+        conn->socket_cancel = NULL;
     }
 #else
 #if defined(HAVE_LIBPURPLE)
@@ -549,6 +561,9 @@ write_impl (PnNode *conn,
     GIOStatus status = G_IO_STATUS_NORMAL;
 
     pn_debug ("name=%s", conn->name);
+
+    if (conn->status != PN_NODE_STATUS_OPEN)
+        return G_IO_CHANNEL_ERROR_INVAL;
 
     if (conn->next)
     {

@@ -375,12 +375,18 @@ connect_cb(GObject *source,
     GSocketConnection *socket_conn;
     PnNode *conn;
     PnHttpServer *http_conn;
+    GError *error = NULL;
 
     conn = PN_NODE(user_data);
     http_conn = PN_HTTP_SERVER(user_data);
-    socket_conn = g_socket_client_connect_to_host_finish(G_SOCKET_CLIENT(source), res, NULL);
+    socket_conn = g_socket_client_connect_to_host_finish(G_SOCKET_CLIENT(source), res, &error);
 
     g_object_unref(source);
+
+    if (error) {
+        g_error_free(error);
+        return;
+    }
 
     g_object_ref(conn);
 
@@ -497,8 +503,9 @@ connect_impl (PnNode *conn,
 #if defined(USE_GIO)
         GSocketClient *client;
         client = g_socket_client_new();
+        conn->socket_cancel = g_cancellable_new();
         g_socket_client_connect_to_host_async(client, hostname, port,
-                                              NULL, connect_cb, conn);
+                                              conn->socket_cancel, connect_cb, conn);
 #elif defined(HAVE_LIBPURPLE)
         /* close a pending connection */
         /* this can happen when reconecting before receiving the connection

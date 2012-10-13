@@ -194,10 +194,14 @@ error_cb (PurpleSslConnection *gsc,
           gpointer data)
 {
     PnNode *conn;
+    PnSslConn *ssl_conn;
 
     pn_log ("begin");
 
     conn = PN_NODE (data);
+    ssl_conn = PN_SSL_CONN (conn);
+
+    ssl_conn->ssl_data = NULL;
 
     {
         PnNodeClass *class;

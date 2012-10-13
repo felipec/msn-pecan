@@ -1,12 +1,19 @@
 In order to compile for win32 you will need mingw32, and a build of libpurple
 as well as glib for win32 ready.
 
-The easiest is to cross-compile from Fedora, and use libpurple-mini.
+The easiest is to use libpurple-mini.
 
 Always make sure the cross-compilation environment is correct:
 
+Fedora:
+
  % export PKG_CONFIG_LIBDIR=/usr/i686-pc-mingw32/sys-root/mingw/lib/pkgconfig
  % export CROSS_COMPILE=i686-pc-mingw32-
+
+Arch Linux:
+
+ % export PKG_CONFIG_LIBDIR=/usr/i486-mingw32/lib/pkgconfig
+ % export CROSS_COMPILE=i486-mingw32-
 
 = libpurple =
 
