@@ -230,16 +230,10 @@ clean:
 
 dist: base := msn-pecan-$(version)
 dist:
-	git archive --format=tar --prefix=$(base)/ HEAD > /tmp/$(base).tar
-	mkdir -p $(base)
-	git-changelog > $(base)/ChangeLog
-	chmod 664 $(base)/ChangeLog
-	tar --append -f /tmp/$(base).tar --owner root --group root $(base)/ChangeLog
-	echo $(version) > $(base)/.version
-	chmod 664 $(base)/.version
-	tar --append -f /tmp/$(base).tar --owner root --group root $(base)/.version
-	rm -r $(base)
-	bzip2 /tmp/$(base).tar
+	echo $(version) > .version
+	git-changelog > ChangeLog
+	tar -cJf /tmp/$(base).tar.xz --transform='s#^#$(base)/#' -- `git ls-files` .version ChangeLog
+	rm -rf .version ChangeLog
 
 install: $(plugin)
 	install -D $(plugin) $(D)$(PURPLE_PLUGINDIR)/$(plugin)
