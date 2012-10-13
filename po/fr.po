@@ -6,74 +6,74 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pidgin-msn-pecan\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2010-02-06 02:03+0200\n"
-"PO-Revision-Date: 2010-01-02 21:51+0000\n"
-"Last-Translator: Pierre Slamich <pierre.slamich@gmail.com>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-10-13 10:34+0200\n"
+"PO-Revision-Date: 2010-07-14 17:23+0000\n"
+"Last-Translator: Thibault Févry <Unknown>\n"
 "Language-Team: French <fr@li.org>\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2010-02-27 00:16+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2012-10-13 08:12+0000\n"
+"X-Generator: Launchpad (build 16137)\n"
 
-#: msn.c:160
+#: msn.c:163
 msgid "Nudge"
 msgstr "Wizz"
 
-#: msn.c:161
+#: msn.c:164
 #, c-format
 msgid "%s has nudged you!"
 msgstr "%s vient de vous envoyer un wizz !"
 
-#: msn.c:162
+#: msn.c:165
 #, c-format
 msgid "Nudging %s..."
 msgstr "Envoi d'un wizz à %s..."
 
-#: msn.c:306
+#: msn.c:322
 msgid "Set your friendly name."
 msgstr "Changer l'alias"
 
-#: msn.c:307
+#: msn.c:323
 msgid "This is the name that other MSN buddies will see you as."
 msgstr "Nom sous lequel les utilisateurs MSN vous verront."
 
-#: msn.c:310 msn.c:331 msn.c:349 msn.c:366 msn.c:383
+#: msn.c:326 msn.c:347 msn.c:365 msn.c:382 msn.c:399
 msgid "OK"
 msgstr "Valider"
 
-#: msn.c:311 msn.c:332 msn.c:350 msn.c:367 msn.c:384 msn.c:405
+#: msn.c:327 msn.c:348 msn.c:366 msn.c:383 msn.c:400 msn.c:421
 msgid "Cancel"
 msgstr "Annuler"
 
-#: msn.c:326
+#: msn.c:342
 msgid "Set your personal message."
 msgstr "Configurez votre message personnel."
 
-#: msn.c:327
+#: msn.c:343
 msgid "This is the message that other MSN buddies will see under your name."
 msgstr ""
 "Il s'agit du message que vos contacts MSN pourront voir sous votre nom."
 
-#: msn.c:347
+#: msn.c:363
 msgid "Set your home phone number."
 msgstr "Définir le numéro de téléphonne de domicile"
 
-#: msn.c:364
+#: msn.c:380
 msgid "Set your work phone number."
 msgstr "Définir le numéro de téléphone professionnel"
 
-#: msn.c:381
+#: msn.c:397
 msgid "Set your mobile phone number."
 msgstr "Définir le numéro de téléphone portable"
 
-#: msn.c:396
+#: msn.c:412
 msgid "Allow MSN Mobile pages?"
 msgstr "Autoriser les messages MSN vers votre téléphone portable ?"
 
-#: msn.c:397
+#: msn.c:413
 msgid ""
 "Do you want to allow or disallow people on your buddy list to send you MSN "
 "Mobile pages to your cell phone or other mobile device?"
@@ -81,201 +81,196 @@ msgstr ""
 "Voulez-vous autorisez les contacts de votre liste à vous envoyer des "
 "messages MSN sur votre téléphone portable ?"
 
-#: msn.c:403
+#: msn.c:419
 msgid "Allow"
 msgstr "Autoriser"
 
-#: msn.c:404
+#: msn.c:420
 msgid "Disallow"
 msgstr "Empêcher"
 
-#: msn.c:419
+#: msn.c:435
 msgid "This account's email is not enabled."
 msgstr "Ce compte mail n'est pas activé."
 
-#: msn.c:463
+#: msn.c:476
 msgid "Send a mobile message."
 msgstr "Envoyer un message vers un téléphone portable."
 
-#: msn.c:465
+#: msn.c:478
 msgid "Page"
 msgstr "Page"
 
-#: msn.c:466
+#: msn.c:479
 msgid "Close"
 msgstr "Fermer"
 
-#: msn.c:624
+#: msn.c:649
 #, c-format
 msgid "Playing %s"
 msgstr "Joue %s"
 
-#: msn.c:626
+#: msn.c:651
 #, c-format
 msgid "Editing %s"
 msgstr "Modifie %s"
 
-#: msn.c:676
+#: msn.c:701
 msgid "Status"
 msgstr "État"
 
-#: msn.c:677
+#: msn.c:702
 msgid "Idle"
 msgstr "Inactif(ve)"
 
-#: msn.c:687
+#: msn.c:712
 msgid "Personal Message"
 msgstr "Message personnel"
 
-#: msn.c:704
+#: msn.c:729
 msgid "Now Listening"
 msgstr "Ecoute Actuellement"
 
-#: msn.c:710
+#: msn.c:735
 msgid "Playing a game"
 msgstr "Joue"
 
-#: msn.c:714
+#: msn.c:739
 msgid "Working"
 msgstr "Travail"
 
-#: msn.c:718
-msgid "Has you"
-msgstr "Vous êtes dans sa liste"
-
-#: msn.c:719 msn.c:723 msn.c:1720
-msgid "Yes"
-msgstr "Oui"
-
-#: msn.c:719 msn.c:723 msn.c:1720
-msgid "No"
-msgstr "Non"
-
-#: msn.c:722
+#: msn.c:744
 msgid "Blocked"
 msgstr "Bloqué(e)"
 
-#: msn.c:734
+#: msn.c:745 msn.c:1738
+msgid "Yes"
+msgstr "Oui"
+
+#: msn.c:745 msn.c:1738
+msgid "No"
+msgstr "Non"
+
+#: msn.c:756
 msgid "Message"
 msgstr "Message"
 
-#: msn.c:749
+#: msn.c:771
 msgid "Be Right Back"
 msgstr "De retour dans une minute"
 
-#: msn.c:750
+#: msn.c:772
 msgid "Busy"
 msgstr "Occupé(e)"
 
-#: msn.c:751
+#: msn.c:773
 msgid "On the Phone"
 msgstr "Au téléphone"
 
-#: msn.c:752
+#: msn.c:774
 msgid "Out to Lunch"
 msgstr "Parti(e) manger"
 
-#: msn.c:770
+#: msn.c:792
 msgid "Song Title"
 msgstr "Nom de la chanson"
 
-#: msn.c:771
+#: msn.c:793
 msgid "Song Artist"
 msgstr "Nom de l'artiste"
 
-#: msn.c:772
+#: msn.c:794
 msgid "Song Album"
 msgstr "Album"
 
-#: msn.c:773
+#: msn.c:795
 msgid "Game Name"
 msgstr "Nom du jeu"
 
-#: msn.c:774
+#: msn.c:796
 msgid "Office App Name"
 msgstr "Nom de l'application office"
 
-#: msn.c:794
+#: msn.c:816
 msgid "Set Friendly Name..."
 msgstr "Changer l'alias..."
 
-#: msn.c:799
+#: msn.c:821
 msgid "Set Personal Message..."
 msgstr "Mettez un message personnel..."
 
-#: msn.c:806
+#: msn.c:828
 msgid "Set Home Phone Number..."
 msgstr "Définir le numéro de téléphone du domicile..."
 
-#: msn.c:810
+#: msn.c:832
 msgid "Set Work Phone Number..."
 msgstr "Définir le numéro de téléphone professionnel..."
 
-#: msn.c:814
+#: msn.c:836
 msgid "Set Mobile Phone Number..."
 msgstr "Définir le numéro de téléphone portable..."
 
-#: msn.c:820
+#: msn.c:842
 msgid "Enable/Disable Mobile Devices..."
 msgstr "Activer ou désactiver les périphériques mobiles..."
 
-#: msn.c:825
+#: msn.c:847
 msgid "Allow/Disallow Mobile Pages..."
 msgstr "Autoriser ou empêcher les messages sur téléphones portables..."
 
-#: msn.c:835
+#: msn.c:857
 msgid "Open Hotmail Inbox"
 msgstr "Ouvrir votre boîte de réception Hotmail"
 
 #. * @todo why is there a special way to do this?
-#: msn.c:865
+#: msn.c:887
 msgid "Send to Mobile"
 msgstr "Envoyer vers un téléphone portable"
 
-#: msn.c:873
+#: msn.c:895
 msgid "Initiate _Chat"
 msgstr "Lancer une _discussion"
 
-#: msn.c:899
-msgid ""
-"SSL support is needed for MSN. Please install a supported SSL library."
+#: msn.c:922 msn.c:926
+msgid "SSL support is needed for MSN. Please install a supported SSL library."
 msgstr ""
 "Le support de SSL est nécessaire pour WLM. Veuillez installer une "
 "bibliothèque SSL pour l'application."
 
-#: msn.c:934
+#: msn.c:962
 msgid "Connecting"
 msgstr "Connexion"
 
-#: msn.c:937
+#: msn.c:965
 msgid "Failed to connect to server."
 msgstr "Impossible de se connecter au serveur."
 
-#: msn.c:1685
+#: msn.c:1703
 msgid "Username"
 msgstr "Identifiant"
 
-#: msn.c:1695
+#: msn.c:1713
 msgid "Friendly Name"
 msgstr "Alias"
 
-#: msn.c:1711
+#: msn.c:1729
 msgid "Home Phone"
 msgstr "Téléphone du domicile"
 
-#: msn.c:1714
+#: msn.c:1732
 msgid "Mobile Phone"
 msgstr "Téléphone portable"
 
-#: msn.c:1717
+#: msn.c:1735
 msgid "Work Phone"
 msgstr "Téléphone professionnel"
 
-#: msn.c:1719
+#: msn.c:1737
 msgid "Has Space"
 msgstr "sur myspace"
 
-#: msn.c:1728
+#: msn.c:1746
 msgid "Profile URL"
 msgstr "Lien du profil"
 
@@ -288,64 +283,64 @@ msgstr "Lien du profil"
 #. *< name
 #. *< version
 #. *< summary
-#: msn.c:1854 msn.c:1855
+#: msn.c:1878 msn.c:1879
 msgid "WLM Protocol Plugin"
 msgstr "Greffon de protocole WLM"
 
-#: msn.c:1890
+#: msn.c:1914
 msgid "Server"
 msgstr "Serveur"
 
-#: msn.c:1893
+#: msn.c:1917
 msgid "Port"
 msgstr "Port"
 
-#: msn.c:1896
+#: msn.c:1920
 msgid "Use HTTP Method"
 msgstr "Utiliser le protocole HTTP"
 
-#: msn.c:1899
+#: msn.c:1923
 msgid "Show custom smileys"
 msgstr "Montrer les émoticônes personnalisées"
 
-#: msn.c:1902
+#: msn.c:1926
 msgid "Use server-side alias"
 msgstr "Utiliser un nom utilisateur du côté serveur"
 
-#: msn.c:1906
+#: msn.c:1930
 msgid "Use direct connections"
 msgstr "Utilisez des connexions directes"
 
-#: msn.c:1910
+#: msn.c:1934
 msgid "Use user displays"
 msgstr "Utiliser l'affichage utilisateur"
 
-#: msn.c:1913
+#: msn.c:1937
 msgid "Don't show Messenger Plus! tags"
 msgstr "Ne pas afficher les tags Messenger Plus!"
 
-#: msn.c:1920
+#: msn.c:1944
 msgid "nudge: nudge a user to get their attention"
 msgstr "wizz : envoyez un « wizz » à un contact pour attirer son attention"
 
-#: nexus.c:82
+#: nexus.c:85
 #, c-format
 msgid "error on nexus server: %s"
 msgstr "erreur sur le serveur nexus : %s"
 
-#: nexus.c:86
+#: nexus.c:89
 msgid "error on nexus server"
 msgstr "erreur sur le serveur Nexus"
 
-#: nexus.c:187
+#: nexus.c:195
 msgid "nexus parse error"
-msgstr ""
+msgstr "Erreur de parsing nexus"
 
-#: nexus.c:215 nexus.c:308 nexus.c:342 nexus.c:421
+#: nexus.c:221 nexus.c:314 nexus.c:348 nexus.c:438
 msgid "nexus stream error"
-msgstr ""
+msgstr "erreur de flux nexus"
 
-#: notification.c:90 notification.c:135
+#: notification.c:92 notification.c:137
 #, c-format
 msgid ""
 "Error on notification server:\n"
@@ -354,7 +349,7 @@ msgstr ""
 "Erreur du serveur de notification :\n"
 "%s"
 
-#: notification.c:97
+#: notification.c:99
 msgid ""
 "Error on notification server:\n"
 "Unknown"
@@ -362,44 +357,44 @@ msgstr ""
 "Erreur du serveur de notification :\n"
 "Inconnue"
 
-#: notification.c:249
+#: notification.c:256
 #, c-format
 msgid "%s is not a valid group."
 msgstr "%s n'est pas un nom de groupe valide"
 
-#: notification.c:254 session.c:427
+#: notification.c:261 session.c:407
 msgid "Unknown error."
 msgstr "Erreur inconnue."
 
-#: notification.c:257
+#: notification.c:264
 #, c-format
 msgid "%s on %s (%s)"
 msgstr "%s pour %s (%s)"
 
-#: notification.c:588
+#: notification.c:595
 #, c-format
 msgid "Unable to add user on %s (%s)"
 msgstr "Impossible d'ajouter l'utilisateur à la liste de %s (%s)"
 
-#: notification.c:592
+#: notification.c:599
 #, c-format
 msgid "Unable to block user on %s (%s)"
 msgstr "Impossible de bloquer l'utilisateur pour %s (%s)"
 
-#: notification.c:596
+#: notification.c:603
 #, c-format
 msgid "Unable to permit user on %s (%s)"
 msgstr "Impossible d'autoriser l'utilisateur pour %s (%s)"
 
-#: notification.c:982
+#: notification.c:989
 msgid "Unable to rename group"
 msgstr "Impossible de renommer le groupe"
 
-#: notification.c:1041
+#: notification.c:1048
 msgid "Unable to delete group"
 msgstr "Impossible de supprimer le groupe"
 
-#: notification.c:1638
+#: notification.c:1643
 #, c-format
 msgid ""
 "The MSN server will shut down for maintenance in %d minutes. You will "
@@ -415,44 +410,38 @@ msgstr ""
 "\n"
 "Après l'achèvement de la maintenance, vous pourrez à nouveau vous connecter."
 
-#: session.c:64
-#, c-format
-msgid "You are not in %s's contact list."
-msgstr "Vous n'êtes pas sur la liste des contacts de %s"
-
-#: session.c:397
+#: session.c:379
 msgid "Our protocol is not supported by the server."
 msgstr "Notre protocole n'est pas supporté par le serveur."
 
-#: session.c:401
+#: session.c:383
 msgid "Error parsing HTTP."
 msgstr "Erreur d'interprétation HTTP"
 
-#: session.c:405
+#: session.c:386
 msgid "You have signed on from another location."
 msgstr "Vous venez de vous connecter depuis un autre endroit."
 
-#: session.c:408
-msgid ""
-"The MSN servers are temporarily unavailable. Please wait and try again."
+#: session.c:389
+msgid "The MSN servers are temporarily unavailable. Please wait and try again."
 msgstr ""
 "Les serveurs WLM ne sont pas disponibles pour l'instant. Veuillez réessayer "
 "dans un instant."
 
-#: session.c:413
+#: session.c:394
 msgid "The MSN servers are going down temporarily."
 msgstr "Les serveurs WLM sont coupés temporairement."
 
-#: session.c:418
+#: session.c:398
 #, c-format
 msgid "Unable to authenticate: %s"
 msgstr "Impossible de s'authentifier : %s"
 
-#: session.c:419
+#: session.c:399
 msgid "Unknown error"
 msgstr "Erreur inconnue"
 
-#: session.c:422
+#: session.c:402
 msgid ""
 "Your MSN buddy list is temporarily unavailable. Please wait and try again."
 msgstr ""
@@ -473,8 +462,7 @@ msgstr "Impossible d'envoyer le message suite à une erreur de connexion :"
 
 #: switchboard.c:559
 msgid "Message could not be sent because we are sending too quickly:"
-msgstr ""
-"Impossible d'envoyer le message car la vitesse maximale est dépassée :"
+msgstr "Impossible d'envoyer le message car la vitesse maximale est dépassée :"
 
 #: switchboard.c:563
 msgid ""
@@ -496,7 +484,7 @@ msgstr ""
 msgid "Message may have not been sent because an unknown error occurred:"
 msgstr "Impossible d'envoyer le message à cause d'une erreur inconnue :"
 
-#: switchboard.c:985
+#: switchboard.c:979
 #, c-format
 msgid ""
 "sent you a Messenger Plus! sound. Click <a href='audio://%s'>here</a> to "
@@ -505,7 +493,7 @@ msgstr ""
 "vous a envoyé un son Messenger Plus ! Cliquez <a href='audio://%s'>ici</a> "
 "pour l'écouter."
 
-#: switchboard.c:987
+#: switchboard.c:981
 #, c-format
 msgid ""
 "sent you a Messenger Plus! sound. Click <a href='file://%s'>here</a> to play "
@@ -514,7 +502,7 @@ msgstr ""
 "vous a envoyé un son Messenger Plus! Cliquez <a href='file://%s'>ici</a> "
 "pour l'écouter."
 
-#: switchboard.c:990
+#: switchboard.c:984
 #, c-format
 msgid ""
 "sent you a Messenger Plus! sound. Copy the following link in your web "
@@ -523,7 +511,7 @@ msgstr ""
 "vous a envoyé un son Messenger Plus ! Copiez le lien suivant dans votre "
 "navigateur web pour l'écouter : file://%s"
 
-#: switchboard.c:1002
+#: switchboard.c:996
 msgid ""
 "sent you a Messenger Plus! sound, but it cannot be played due to an error "
 "happened while storing the file."
@@ -531,11 +519,11 @@ msgstr ""
 "vous a envoyé un son Messenger Plus! mais il ne peux pas être joué car une "
 "erreur est survenue lors du stockage du fichier."
 
-#: switchboard.c:1189
+#: switchboard.c:1183
 msgid "received handwritten message"
 msgstr "a reçu le message manuscrit"
 
-#: switchboard.c:1202
+#: switchboard.c:1196
 msgid ""
 "sent you an handwritten message, but it cannot be displayed due to an error "
 "happened while storing the file."
@@ -543,14 +531,14 @@ msgstr ""
 "vous a envoyé un message manuscrit, mais celui-ci ne peut pas être affiché à "
 "cause d'une erreur survenue pendant l'enregistrement du fichier."
 
-#: switchboard.c:1264
+#: switchboard.c:1258
 #, c-format
 msgid "sent you a voice clip. Click <a href='file://%s'>here</a> to play it."
 msgstr ""
 "vous a envoyé un clip sonore. Cliquez Click <a href='file://%s'>ici</a> pour "
 "l'écouter."
 
-#: switchboard.c:1266
+#: switchboard.c:1260
 #, c-format
 msgid ""
 "sent you a voice clip. Copy the following link in your web browser to play "
@@ -559,7 +547,7 @@ msgstr ""
 "vous a envoyé un message vocal. Copiez le lien suivant dans votre navigateur "
 "web pour l'écouter : file://%s"
 
-#: switchboard.c:1278
+#: switchboard.c:1272
 msgid ""
 "sent you a voice clip, but it cannot be played dueto an error happened while "
 "storing the file."
@@ -567,7 +555,7 @@ msgstr ""
 "vous a envoyé un message vocal, mais celui-ci ne peut pas être affiché à "
 "cause d'une erreur survenue pendant l'enregistrement du fichier."
 
-#: switchboard.c:1361 switchboard.c:1368
+#: switchboard.c:1355 switchboard.c:1362
 #, c-format
 msgid ""
 "<a href=\"file://%s\">Click here to view the wink in your web browser</a>"
@@ -575,7 +563,7 @@ msgstr ""
 "<a href=\"file://%s\">Cliquez ici pou voir le clin d'œil dans votre "
 "navigateur web</a>"
 
-#: switchboard.c:1399
+#: switchboard.c:1393
 #, c-format
 msgid ""
 "sent a wink:\n"
@@ -586,7 +574,7 @@ msgstr ""
 "%s\n"
 "%s"
 
-#: switchboard.c:1401
+#: switchboard.c:1395
 #, c-format
 msgid ""
 "sent a wink.\n"
@@ -595,11 +583,11 @@ msgstr ""
 "vous a envoyé un clin d'œil.\n"
 "%s"
 
-#: switchboard.c:1417
+#: switchboard.c:1411
 msgid "sent a wink, but it could not be displayed."
 msgstr "vous a envoyé un clin d'œil, mais celui-ci ne peut pas être affiché."
 
-#: switchboard.c:1638
+#: switchboard.c:1647
 msgid " sent you a voice chat invite, which is not yet supported."
 msgstr ""
 " vous a envoyé une invitation pour une conversation audio, ce qui n'est pas "
@@ -822,7 +810,7 @@ msgstr "Mauvais ticket"
 msgid "Unknown Error Code %u"
 msgstr "Erreur inconnue code %u"
 
-#: pn_oim.c:659
+#: pn_oim.c:658
 msgid ""
 "The following message wasn't sent due to an authentication error. Please "
 "logout and login again before sending a new message."
@@ -830,7 +818,7 @@ msgstr ""
 "Le message suivant n'a pas été envoyé suite à une erreur d'authentification. "
 "Veuillez vous déconnecter et vous reconnecter avant de ré-envoyer un message."
 
-#: pn_oim.c:662
+#: pn_oim.c:661
 msgid ""
 "The following message wasn't sent because the system is unavailable. This "
 "normally happens when the user is blocked or does not exist."
@@ -838,7 +826,7 @@ msgstr ""
 "Le message suivant n'a pas été envoyé parce que le système est indisponible. "
 "Cela survient normalement lorsque l'utilisateur est bloqué ou n'existe pas."
 
-#: pn_oim.c:665
+#: pn_oim.c:664
 msgid ""
 "The following message wasn't sent because you've sent messages too quickly. "
 "Please wait about 10 seconds before sending again the message."
@@ -847,74 +835,29 @@ msgstr ""
 "messages trop rapidement. Veuillez patienter 10 secondes avant de ré-envoyer "
 "le message."
 
-#: pn_oim.c:668
+#: pn_oim.c:667
 msgid "The following message wasn't sent because it's too large."
 msgstr "Le message suivant n'a pas été envoyé parce qu'il est trop long."
 
-#: ab/pn_contactlist.c:815
+#: ab/pn_contactlist.c:813
 #, c-format
 msgid "Can't add to \"%s\"; it's a virtual group"
 msgstr "Ne peut ajouter à « %s » ; il s'agit d'un groupe virtuel"
 
-#: cvr/pn_peer_msg.c:557
+#: cvr/pn_peer_msg.c:564
 msgid "requests to view your webcam, but this request is not yet supported."
 msgstr ""
 "demande à voir votre webcam, mais cette requête n'est pas encore prise en "
 "charge."
 
-#: cvr/pn_peer_msg.c:562
+#: cvr/pn_peer_msg.c:569
 msgid "has sent you a webcam invite, which is not yet supported."
 msgstr ""
 "vous a envoyé une invitation pour une conversation video, ce qui n'est pas "
 "supporté actuellement."
 
-#~ msgid "Unable to connect"
-#~ msgstr "Impossible de se connecter"
+#~ msgid "Has you"
+#~ msgstr "Vous êtes dans sa liste"
 
-#, c-format
-#~ msgid ""
-#~ "The MSN server will shut down for maintenance in %d minute. You will "
-#~ "automatically be signed out at that time.  Please finish any conversations "
-#~ "in progress.\n"
-#~ "\n"
-#~ "After the maintenance has been completed, you will be able to successfully "
-#~ "sign in."
-#~ msgid_plural ""
-#~ "The MSN server will shut down for maintenance in %d minutes. You will "
-#~ "automatically be signed out at that time.  Please finish any conversations "
-#~ "in progress.\n"
-#~ "\n"
-#~ "After the maintenance has been completed, you will be able to successfully "
-#~ "sign in."
-#~ msgstr[0] ""
-#~ "Le serveur MSN va être coupé pour effectuer des opérations de maintenance "
-#~ "dans %d minute. Vous serez automatiquement déconnecté à ce moment. Veuillez "
-#~ "terminez vos conversations en cours.\n"
-#~ "\n"
-#~ "Une fois les opérations de maintenance effectuées, vous pourrez vous "
-#~ "reconnecter."
-#~ msgstr[1] ""
-#~ "Le serveur MSN va être coupé pour effectuer des opérations de maintenance "
-#~ "dans %d minutes. Vous serez automatiquement déconnecté à ce moment. Veuillez "
-#~ "terminez vos conversations en cours.\n"
-#~ "\n"
-#~ "Une fois les opérations de maintenance effectuées, vous pourrez vous "
-#~ "reconnecter."
-
-#~ msgid "Message may have not been sent because a timeout occurred:"
-#~ msgstr "Le message peut ne pas avoir été envoyé à cause d'un temps mort :"
-
-#, c-format
-#~ msgid "%s has removed you from his or her buddy list."
-#~ msgstr "%s vous a supprimé de sa liste de contacts."
-
-#, c-format
-#~ msgid "%s has added you to his or her buddy list."
-#~ msgstr "%s vous a ajouté à sa liste de contacts."
-
-#~ msgid ""
-#~ "sent you a voice clip, but it cannot be played due to an error happened "
-#~ "while storing the file."
-#~ msgstr ""
-#~ "vous a envoyé un clip sonore mais il ne peux pas être joué car une erreur "
-#~ "est survenue lors du stockage du fichier."
+#~ msgid "You are not in %s's contact list."
+#~ msgstr "Vous n'êtes pas sur la liste des contacts de %s"

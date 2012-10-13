@@ -6,271 +6,266 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: msn-pecan\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2010-02-06 02:03+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-10-13 10:34+0200\n"
 "PO-Revision-Date: 2010-01-14 17:02+0000\n"
-"Last-Translator: Kristjan <Unknown>\n"
+"Last-Translator: Kristjan SCHMIDT <Unknown>\n"
 "Language-Team: Esperanto <eo@li.org>\n"
+"Language: eo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2010-02-27 00:16+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2012-10-13 08:12+0000\n"
+"X-Generator: Launchpad (build 16137)\n"
 
-#: msn.c:160
+#: msn.c:163
 msgid "Nudge"
 msgstr "Kubutumi"
 
-#: msn.c:161
+#: msn.c:164
 #, c-format
 msgid "%s has nudged you!"
 msgstr "%s kubutumis vin!"
 
-#: msn.c:162
+#: msn.c:165
 #, c-format
 msgid "Nudging %s..."
 msgstr "Kubutumante %sn…"
 
-#: msn.c:306
+#: msn.c:322
 msgid "Set your friendly name."
 msgstr "Difinu vian amikan nomon."
 
-#: msn.c:307
+#: msn.c:323
 msgid "This is the name that other MSN buddies will see you as."
 msgstr "Tio estas la nomo kiu aliaj MSN kunuloj vidos vin kiel."
 
-#: msn.c:310 msn.c:331 msn.c:349 msn.c:366 msn.c:383
+#: msn.c:326 msn.c:347 msn.c:365 msn.c:382 msn.c:399
 msgid "OK"
 msgstr "Bone"
 
-#: msn.c:311 msn.c:332 msn.c:350 msn.c:367 msn.c:384 msn.c:405
+#: msn.c:327 msn.c:348 msn.c:366 msn.c:383 msn.c:400 msn.c:421
 msgid "Cancel"
 msgstr "Rezigni"
 
-#: msn.c:326
+#: msn.c:342
 msgid "Set your personal message."
 msgstr "Difinu vian personan mesaĝon."
 
-#: msn.c:327
+#: msn.c:343
 msgid "This is the message that other MSN buddies will see under your name."
 msgstr "Tio estas la mesaĝon kiu aliaj MSN kunuloj vidos sub via nomo."
 
-#: msn.c:347
+#: msn.c:363
 msgid "Set your home phone number."
 msgstr "Difinu vian hejm telefononombron."
 
-#: msn.c:364
+#: msn.c:380
 msgid "Set your work phone number."
 msgstr "Difinu vian labor telefononombron."
 
-#: msn.c:381
+#: msn.c:397
 msgid "Set your mobile phone number."
 msgstr "Difiniu vian poŝtelefona nombron."
 
-#: msn.c:396
+#: msn.c:412
 msgid "Allow MSN Mobile pages?"
 msgstr "Ĉu vi volas permesi MSN poŝtelefonajn paĝojn?"
 
-#: msn.c:397
+#: msn.c:413
 msgid ""
 "Do you want to allow or disallow people on your buddy list to send you MSN "
 "Mobile pages to your cell phone or other mobile device?"
 msgstr ""
 
-#: msn.c:403
+#: msn.c:419
 msgid "Allow"
 msgstr "Permesi"
 
-#: msn.c:404
+#: msn.c:420
 msgid "Disallow"
 msgstr "Malpermesi"
 
-#: msn.c:419
+#: msn.c:435
 msgid "This account's email is not enabled."
 msgstr "La retpoŝto ties konto ne estas ŝaltita."
 
-#: msn.c:463
+#: msn.c:476
 msgid "Send a mobile message."
 msgstr "Sendi poŝtelefonan mesaĝon."
 
-#: msn.c:465
+#: msn.c:478
 msgid "Page"
 msgstr "Paĝo"
 
-#: msn.c:466
+#: msn.c:479
 msgid "Close"
 msgstr "Fermi"
 
-#: msn.c:624
+#: msn.c:649
 #, c-format
 msgid "Playing %s"
 msgstr "Ludanta %s"
 
-#: msn.c:626
+#: msn.c:651
 #, c-format
 msgid "Editing %s"
 msgstr "Redaktante %s"
 
-#: msn.c:676
+#: msn.c:701
 msgid "Status"
 msgstr "Stato"
 
-#: msn.c:677
+#: msn.c:702
 msgid "Idle"
 msgstr "Senokupa"
 
-#: msn.c:687
+#: msn.c:712
 msgid "Personal Message"
 msgstr "Persona mesaĝo"
 
-#: msn.c:704
+#: msn.c:729
 msgid "Now Listening"
 msgstr "Nun aŭskultanta"
 
-#: msn.c:710
+#: msn.c:735
 msgid "Playing a game"
 msgstr "Ludanta"
 
-#: msn.c:714
+#: msn.c:739
 msgid "Working"
 msgstr "Laborante"
 
-#: msn.c:718
-msgid "Has you"
-msgstr "Havas vin"
-
-#: msn.c:719 msn.c:723 msn.c:1720
-msgid "Yes"
-msgstr "Jes"
-
-#: msn.c:719 msn.c:723 msn.c:1720
-msgid "No"
-msgstr "Ne"
-
-#: msn.c:722
+#: msn.c:744
 msgid "Blocked"
 msgstr "Blokita"
 
-#: msn.c:734
+#: msn.c:745 msn.c:1738
+msgid "Yes"
+msgstr "Jes"
+
+#: msn.c:745 msn.c:1738
+msgid "No"
+msgstr "Ne"
+
+#: msn.c:756
 msgid "Message"
 msgstr "Mesaĝo"
 
-#: msn.c:749
+#: msn.c:771
 msgid "Be Right Back"
 msgstr "Tuj Revenas"
 
-#: msn.c:750
+#: msn.c:772
 msgid "Busy"
 msgstr "Okupata"
 
-#: msn.c:751
+#: msn.c:773
 msgid "On the Phone"
 msgstr "Telefonante"
 
-#: msn.c:752
+#: msn.c:774
 msgid "Out to Lunch"
 msgstr "Ekstere manĝanten"
 
-#: msn.c:770
+#: msn.c:792
 msgid "Song Title"
 msgstr "Musiktitolo"
 
-#: msn.c:771
+#: msn.c:793
 msgid "Song Artist"
 msgstr "Musikartisto"
 
-#: msn.c:772
+#: msn.c:794
 msgid "Song Album"
 msgstr "Musikaro"
 
-#: msn.c:773
+#: msn.c:795
 msgid "Game Name"
 msgstr "Ludnomo"
 
-#: msn.c:774
+#: msn.c:796
 msgid "Office App Name"
 msgstr ""
 
-#: msn.c:794
+#: msn.c:816
 msgid "Set Friendly Name..."
 msgstr "Difinu Amika Nomo..."
 
-#: msn.c:799
+#: msn.c:821
 msgid "Set Personal Message..."
 msgstr "Difinu persona mesaĝo…"
 
-#: msn.c:806
+#: msn.c:828
 msgid "Set Home Phone Number..."
 msgstr "Difinu Hejm-Telefonnumeron..."
 
-#: msn.c:810
+#: msn.c:832
 msgid "Set Work Phone Number..."
 msgstr "Difinu Labor-Telefonnumeron..."
 
-#: msn.c:814
+#: msn.c:836
 msgid "Set Mobile Phone Number..."
 msgstr "Difiniu Poŝtelefonan Numeron..."
 
-#: msn.c:820
+#: msn.c:842
 msgid "Enable/Disable Mobile Devices..."
 msgstr "Ebligu/Malebligu Poŝtelefonajn Ekipaĵojn..."
 
-#: msn.c:825
+#: msn.c:847
 msgid "Allow/Disallow Mobile Pages..."
 msgstr "Ebligu/Malebligu Poŝtelefonajn Paĝojn..."
 
-#: msn.c:835
+#: msn.c:857
 msgid "Open Hotmail Inbox"
 msgstr "Malfermu Hotmail-an Alkeston"
 
 #. * @todo why is there a special way to do this?
-#: msn.c:865
+#: msn.c:887
 msgid "Send to Mobile"
 msgstr "Sendu al Poŝtelefono"
 
-#: msn.c:873
+#: msn.c:895
 msgid "Initiate _Chat"
 msgstr "Iniciatu _Babilon"
 
-#: msn.c:899
-msgid ""
-"SSL support is needed for MSN. Please install a supported SSL library."
+#: msn.c:922 msn.c:926
+msgid "SSL support is needed for MSN. Please install a supported SSL library."
 msgstr ""
 
-#: msn.c:934
+#: msn.c:962
 msgid "Connecting"
 msgstr "Konektante"
 
-#: msn.c:937
+#: msn.c:965
 msgid "Failed to connect to server."
 msgstr "Malsukcesis konekti servilon."
 
-#: msn.c:1685
+#: msn.c:1703
 msgid "Username"
 msgstr "Uzantonomo"
 
-#: msn.c:1695
+#: msn.c:1713
 msgid "Friendly Name"
 msgstr "Amika nomo"
 
-#: msn.c:1711
+#: msn.c:1729
 msgid "Home Phone"
 msgstr "Hejma telefono"
 
-#: msn.c:1714
+#: msn.c:1732
 msgid "Mobile Phone"
 msgstr "Poŝtelefono"
 
-#: msn.c:1717
+#: msn.c:1735
 msgid "Work Phone"
 msgstr "Laboreja telefono"
 
-#: msn.c:1719
+#: msn.c:1737
 msgid "Has Space"
 msgstr ""
 
-#: msn.c:1728
+#: msn.c:1746
 msgid "Profile URL"
 msgstr "Profilo URL"
 
@@ -283,114 +278,114 @@ msgstr "Profilo URL"
 #. *< name
 #. *< version
 #. *< summary
-#: msn.c:1854 msn.c:1855
+#: msn.c:1878 msn.c:1879
 msgid "WLM Protocol Plugin"
 msgstr "WLM'protokol'kromprogramo"
 
-#: msn.c:1890
+#: msn.c:1914
 msgid "Server"
 msgstr "Servilo"
 
-#: msn.c:1893
+#: msn.c:1917
 msgid "Port"
 msgstr "Pordo"
 
-#: msn.c:1896
+#: msn.c:1920
 msgid "Use HTTP Method"
 msgstr "Uzu HTTP-an metodon"
 
-#: msn.c:1899
+#: msn.c:1923
 msgid "Show custom smileys"
 msgstr "Montru personajn ridmienojn"
 
-#: msn.c:1902
+#: msn.c:1926
 msgid "Use server-side alias"
 msgstr "Uzi servilflankan kromnomon"
 
-#: msn.c:1906
+#: msn.c:1930
 msgid "Use direct connections"
 msgstr "Uzi senvicajn konektojn"
 
-#: msn.c:1910
+#: msn.c:1934
 msgid "Use user displays"
 msgstr ""
 
-#: msn.c:1913
+#: msn.c:1937
 msgid "Don't show Messenger Plus! tags"
 msgstr "Malmontri Messenger Plus!-ajn markojn"
 
-#: msn.c:1920
+#: msn.c:1944
 msgid "nudge: nudge a user to get their attention"
 msgstr "Kubutumo: kubutumu uzanton por akiri sian atenton"
 
-#: nexus.c:82
+#: nexus.c:85
 #, c-format
 msgid "error on nexus server: %s"
 msgstr ""
 
-#: nexus.c:86
+#: nexus.c:89
 msgid "error on nexus server"
 msgstr ""
 
-#: nexus.c:187
+#: nexus.c:195
 msgid "nexus parse error"
 msgstr ""
 
-#: nexus.c:215 nexus.c:308 nexus.c:342 nexus.c:421
+#: nexus.c:221 nexus.c:314 nexus.c:348 nexus.c:438
 msgid "nexus stream error"
 msgstr ""
 
-#: notification.c:90 notification.c:135
+#: notification.c:92 notification.c:137
 #, c-format
 msgid ""
 "Error on notification server:\n"
 "%s"
 msgstr ""
 
-#: notification.c:97
+#: notification.c:99
 msgid ""
 "Error on notification server:\n"
 "Unknown"
 msgstr ""
 
-#: notification.c:249
+#: notification.c:256
 #, c-format
 msgid "%s is not a valid group."
 msgstr "%s ne estas valida grupo."
 
-#: notification.c:254 session.c:427
+#: notification.c:261 session.c:407
 msgid "Unknown error."
 msgstr "Nekonata eraro."
 
-#: notification.c:257
+#: notification.c:264
 #, c-format
 msgid "%s on %s (%s)"
 msgstr "%s sur %s (%s)"
 
-#: notification.c:588
+#: notification.c:595
 #, c-format
 msgid "Unable to add user on %s (%s)"
 msgstr "Ne eblas aldoni uzanto sur %s (%s)"
 
-#: notification.c:592
+#: notification.c:599
 #, c-format
 msgid "Unable to block user on %s (%s)"
 msgstr "Ne eblas bloki uzanton sur %s (%s)"
 
-#: notification.c:596
+#: notification.c:603
 #, c-format
 msgid "Unable to permit user on %s (%s)"
 msgstr "Ne eblas permezi uzanton sur %s (%s)"
 
-#: notification.c:982
+#: notification.c:989
 msgid "Unable to rename group"
 msgstr "Ne eblas alinomigi grupon"
 
-#: notification.c:1041
+#: notification.c:1048
 msgid "Unable to delete group"
 msgstr "Ne eblas forigi grupo"
 
-#: notification.c:1638
+#: notification.c:1643
 #, c-format
 msgid ""
 "The MSN server will shut down for maintenance in %d minutes. You will "
@@ -401,42 +396,36 @@ msgid ""
 "sign in."
 msgstr ""
 
-#: session.c:64
-#, c-format
-msgid "You are not in %s's contact list."
-msgstr "Vi ne estas en la kontaktaro de %s."
-
-#: session.c:397
+#: session.c:379
 msgid "Our protocol is not supported by the server."
 msgstr "La servilo ne subtenas nian protokolon."
 
-#: session.c:401
+#: session.c:383
 msgid "Error parsing HTTP."
 msgstr ""
 
-#: session.c:405
+#: session.c:386
 msgid "You have signed on from another location."
 msgstr "Vi ensalutis el alia loko."
 
-#: session.c:408
-msgid ""
-"The MSN servers are temporarily unavailable. Please wait and try again."
+#: session.c:389
+msgid "The MSN servers are temporarily unavailable. Please wait and try again."
 msgstr ""
 
-#: session.c:413
+#: session.c:394
 msgid "The MSN servers are going down temporarily."
 msgstr ""
 
-#: session.c:418
+#: session.c:398
 #, c-format
 msgid "Unable to authenticate: %s"
 msgstr ""
 
-#: session.c:419
+#: session.c:399
 msgid "Unknown error"
 msgstr "Nekonata eraro"
 
-#: session.c:422
+#: session.c:402
 msgid ""
 "Your MSN buddy list is temporarily unavailable. Please wait and try again."
 msgstr ""
@@ -472,68 +461,68 @@ msgstr ""
 msgid "Message may have not been sent because an unknown error occurred:"
 msgstr ""
 
-#: switchboard.c:985
+#: switchboard.c:979
 #, c-format
 msgid ""
 "sent you a Messenger Plus! sound. Click <a href='audio://%s'>here</a> to "
 "play it."
 msgstr ""
 
-#: switchboard.c:987
+#: switchboard.c:981
 #, c-format
 msgid ""
 "sent you a Messenger Plus! sound. Click <a href='file://%s'>here</a> to play "
 "it."
 msgstr ""
 
-#: switchboard.c:990
+#: switchboard.c:984
 #, c-format
 msgid ""
 "sent you a Messenger Plus! sound. Copy the following link in your web "
 "browser to play it: file://%s"
 msgstr ""
 
-#: switchboard.c:1002
+#: switchboard.c:996
 msgid ""
 "sent you a Messenger Plus! sound, but it cannot be played due to an error "
 "happened while storing the file."
 msgstr ""
 
-#: switchboard.c:1189
+#: switchboard.c:1183
 msgid "received handwritten message"
 msgstr ""
 
-#: switchboard.c:1202
+#: switchboard.c:1196
 msgid ""
 "sent you an handwritten message, but it cannot be displayed due to an error "
 "happened while storing the file."
 msgstr ""
 
-#: switchboard.c:1264
+#: switchboard.c:1258
 #, c-format
 msgid "sent you a voice clip. Click <a href='file://%s'>here</a> to play it."
 msgstr ""
 
-#: switchboard.c:1266
+#: switchboard.c:1260
 #, c-format
 msgid ""
 "sent you a voice clip. Copy the following link in your web browser to play "
 "it: file://%s"
 msgstr ""
 
-#: switchboard.c:1278
+#: switchboard.c:1272
 msgid ""
 "sent you a voice clip, but it cannot be played dueto an error happened while "
 "storing the file."
 msgstr ""
 
-#: switchboard.c:1361 switchboard.c:1368
+#: switchboard.c:1355 switchboard.c:1362
 #, c-format
 msgid ""
 "<a href=\"file://%s\">Click here to view the wink in your web browser</a>"
 msgstr ""
 
-#: switchboard.c:1399
+#: switchboard.c:1393
 #, c-format
 msgid ""
 "sent a wink:\n"
@@ -541,18 +530,18 @@ msgid ""
 "%s"
 msgstr ""
 
-#: switchboard.c:1401
+#: switchboard.c:1395
 #, c-format
 msgid ""
 "sent a wink.\n"
 "%s"
 msgstr ""
 
-#: switchboard.c:1417
+#: switchboard.c:1411
 msgid "sent a wink, but it could not be displayed."
 msgstr ""
 
-#: switchboard.c:1638
+#: switchboard.c:1647
 msgid " sent you a voice chat invite, which is not yet supported."
 msgstr ""
 
@@ -773,37 +762,43 @@ msgstr "Malbona bileto"
 msgid "Unknown Error Code %u"
 msgstr "Nekoneta erarkodo %u"
 
-#: pn_oim.c:659
+#: pn_oim.c:658
 msgid ""
 "The following message wasn't sent due to an authentication error. Please "
 "logout and login again before sending a new message."
 msgstr ""
 
-#: pn_oim.c:662
+#: pn_oim.c:661
 msgid ""
 "The following message wasn't sent because the system is unavailable. This "
 "normally happens when the user is blocked or does not exist."
 msgstr ""
 
-#: pn_oim.c:665
+#: pn_oim.c:664
 msgid ""
 "The following message wasn't sent because you've sent messages too quickly. "
 "Please wait about 10 seconds before sending again the message."
 msgstr ""
 
-#: pn_oim.c:668
+#: pn_oim.c:667
 msgid "The following message wasn't sent because it's too large."
 msgstr ""
 
-#: ab/pn_contactlist.c:815
+#: ab/pn_contactlist.c:813
 #, c-format
 msgid "Can't add to \"%s\"; it's a virtual group"
 msgstr "Ne povas aldoni al “%s”; ĝi estas virtuala grupo."
 
-#: cvr/pn_peer_msg.c:557
+#: cvr/pn_peer_msg.c:564
 msgid "requests to view your webcam, but this request is not yet supported."
 msgstr ""
 
-#: cvr/pn_peer_msg.c:562
+#: cvr/pn_peer_msg.c:569
 msgid "has sent you a webcam invite, which is not yet supported."
 msgstr ""
+
+#~ msgid "Has you"
+#~ msgstr "Havas vin"
+
+#~ msgid "You are not in %s's contact list."
+#~ msgstr "Vi ne estas en la kontaktaro de %s."

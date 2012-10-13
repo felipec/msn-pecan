@@ -6,73 +6,73 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: msn-pecan\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2010-02-06 02:03+0200\n"
-"PO-Revision-Date: 2010-01-17 13:55+0000\n"
-"Last-Translator: Jimmy Frydkær Jensen <thewolf40@mailme.dk>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-10-13 10:34+0200\n"
+"PO-Revision-Date: 2010-02-27 01:35+0000\n"
+"Last-Translator: Jimmy Frydkær Dürr <thewolf40@mailme.dk>\n"
 "Language-Team: Danish <da@li.org>\n"
+"Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2010-02-27 00:16+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2012-10-13 08:12+0000\n"
+"X-Generator: Launchpad (build 16137)\n"
 
-#: msn.c:160
+#: msn.c:163
 msgid "Nudge"
 msgstr "Vink"
 
-#: msn.c:161
+#: msn.c:164
 #, c-format
 msgid "%s has nudged you!"
 msgstr "%s flirter med dig!"
 
-#: msn.c:162
+#: msn.c:165
 #, c-format
 msgid "Nudging %s..."
 msgstr "Flirter med %s..."
 
-#: msn.c:306
+#: msn.c:322
 msgid "Set your friendly name."
 msgstr "Sæt dit synlige navn."
 
-#: msn.c:307
+#: msn.c:323
 msgid "This is the name that other MSN buddies will see you as."
 msgstr "Dette er navnet som dine andre MSN venner vil se dig som."
 
-#: msn.c:310 msn.c:331 msn.c:349 msn.c:366 msn.c:383
+#: msn.c:326 msn.c:347 msn.c:365 msn.c:382 msn.c:399
 msgid "OK"
 msgstr "OK"
 
-#: msn.c:311 msn.c:332 msn.c:350 msn.c:367 msn.c:384 msn.c:405
+#: msn.c:327 msn.c:348 msn.c:366 msn.c:383 msn.c:400 msn.c:421
 msgid "Cancel"
 msgstr "Annullér"
 
-#: msn.c:326
+#: msn.c:342
 msgid "Set your personal message."
 msgstr "Sæt din personlige meddelelse."
 
-#: msn.c:327
+#: msn.c:343
 msgid "This is the message that other MSN buddies will see under your name."
 msgstr "Dette er den besked andre MSN-venner vil se under dit navn."
 
-#: msn.c:347
+#: msn.c:363
 msgid "Set your home phone number."
 msgstr "Sæt hjemmetelefonnummer."
 
-#: msn.c:364
+#: msn.c:380
 msgid "Set your work phone number."
 msgstr "Sæt arbejdstelefonnummer."
 
-#: msn.c:381
+#: msn.c:397
 msgid "Set your mobile phone number."
 msgstr "Sæt mobiltelefon nummer."
 
-#: msn.c:396
+#: msn.c:412
 msgid "Allow MSN Mobile pages?"
 msgstr "Tillad MSN mobiltelefon sider?"
 
-#: msn.c:397
+#: msn.c:413
 msgid ""
 "Do you want to allow or disallow people on your buddy list to send you MSN "
 "Mobile pages to your cell phone or other mobile device?"
@@ -80,201 +80,196 @@ msgstr ""
 "Vil du tillade eller nægte folk på din venneliste at sende dig MSN "
 "mobiltelefon sider til din mobiltelefon eller andre mobilenheder?"
 
-#: msn.c:403
+#: msn.c:419
 msgid "Allow"
 msgstr "Tillad"
 
-#: msn.c:404
+#: msn.c:420
 msgid "Disallow"
 msgstr "Tillad ikke"
 
-#: msn.c:419
+#: msn.c:435
 msgid "This account's email is not enabled."
 msgstr "Denne kontos E-mail er ikke aktiveret."
 
-#: msn.c:463
+#: msn.c:476
 msgid "Send a mobile message."
 msgstr "Send en mobilbesked."
 
-#: msn.c:465
+#: msn.c:478
 msgid "Page"
 msgstr "Side"
 
-#: msn.c:466
+#: msn.c:479
 msgid "Close"
 msgstr "Luk"
 
-#: msn.c:624
+#: msn.c:649
 #, c-format
 msgid "Playing %s"
 msgstr "Afspiller %s"
 
-#: msn.c:626
+#: msn.c:651
 #, c-format
 msgid "Editing %s"
 msgstr "Redigerer %s"
 
-#: msn.c:676
+#: msn.c:701
 msgid "Status"
 msgstr "Status"
 
-#: msn.c:677
+#: msn.c:702
 msgid "Idle"
 msgstr "Inaktiv"
 
-#: msn.c:687
+#: msn.c:712
 msgid "Personal Message"
 msgstr "Personlig meddelelse"
 
-#: msn.c:704
+#: msn.c:729
 msgid "Now Listening"
 msgstr "Lytter til"
 
-#: msn.c:710
+#: msn.c:735
 msgid "Playing a game"
 msgstr "Spiller et spil"
 
-#: msn.c:714
+#: msn.c:739
 msgid "Working"
 msgstr "Arbejder"
 
-#: msn.c:718
-msgid "Has you"
-msgstr "Har dig"
-
-#: msn.c:719 msn.c:723 msn.c:1720
-msgid "Yes"
-msgstr "Ja"
-
-#: msn.c:719 msn.c:723 msn.c:1720
-msgid "No"
-msgstr "Nej"
-
-#: msn.c:722
+#: msn.c:744
 msgid "Blocked"
 msgstr "Blokeret"
 
-#: msn.c:734
+#: msn.c:745 msn.c:1738
+msgid "Yes"
+msgstr "Ja"
+
+#: msn.c:745 msn.c:1738
+msgid "No"
+msgstr "Nej"
+
+#: msn.c:756
 msgid "Message"
 msgstr "Meddelelse"
 
-#: msn.c:749
+#: msn.c:771
 msgid "Be Right Back"
 msgstr "Er snart tilbage"
 
-#: msn.c:750
+#: msn.c:772
 msgid "Busy"
 msgstr "Optaget"
 
-#: msn.c:751
+#: msn.c:773
 msgid "On the Phone"
 msgstr "Taler i telefon"
 
-#: msn.c:752
+#: msn.c:774
 msgid "Out to Lunch"
 msgstr "Ude til frokost"
 
-#: msn.c:770
+#: msn.c:792
 msgid "Song Title"
 msgstr "Sangtitel"
 
-#: msn.c:771
+#: msn.c:793
 msgid "Song Artist"
 msgstr "Sang artist"
 
-#: msn.c:772
+#: msn.c:794
 msgid "Song Album"
 msgstr "Sang album"
 
-#: msn.c:773
+#: msn.c:795
 msgid "Game Name"
 msgstr "Spilnavn"
 
-#: msn.c:774
+#: msn.c:796
 msgid "Office App Name"
 msgstr "Office App Navn"
 
-#: msn.c:794
+#: msn.c:816
 msgid "Set Friendly Name..."
 msgstr "Sæt synligt navn..."
 
-#: msn.c:799
+#: msn.c:821
 msgid "Set Personal Message..."
 msgstr "Sæt personlig meddelelse..."
 
-#: msn.c:806
+#: msn.c:828
 msgid "Set Home Phone Number..."
 msgstr "Sæt hjemmetelefonnummer..."
 
-#: msn.c:810
+#: msn.c:832
 msgid "Set Work Phone Number..."
 msgstr "Sæt arbejdstelefonnummer..."
 
-#: msn.c:814
+#: msn.c:836
 msgid "Set Mobile Phone Number..."
 msgstr "Sæt mobiltelefonnummer..."
 
-#: msn.c:820
+#: msn.c:842
 msgid "Enable/Disable Mobile Devices..."
 msgstr "Aktivér/Deaktivér mobiltelefoner..."
 
-#: msn.c:825
+#: msn.c:847
 msgid "Allow/Disallow Mobile Pages..."
 msgstr "Tillad/Nægt mobiltelefon sider..."
 
-#: msn.c:835
+#: msn.c:857
 msgid "Open Hotmail Inbox"
 msgstr "Åbn Hotmail indbakke"
 
 #. * @todo why is there a special way to do this?
-#: msn.c:865
+#: msn.c:887
 msgid "Send to Mobile"
 msgstr "Send til mobiltelefon"
 
-#: msn.c:873
+#: msn.c:895
 msgid "Initiate _Chat"
 msgstr "Åbn _Chat"
 
-#: msn.c:899
-msgid ""
-"SSL support is needed for MSN. Please install a supported SSL library."
+#: msn.c:922 msn.c:926
+msgid "SSL support is needed for MSN. Please install a supported SSL library."
 msgstr ""
 "SSL-understøttelse er krævet til MSN. Installér et understøttet SSL-"
 "bibliotek."
 
-#: msn.c:934
+#: msn.c:962
 msgid "Connecting"
 msgstr "Forbinder"
 
-#: msn.c:937
+#: msn.c:965
 msgid "Failed to connect to server."
 msgstr "Kunne ikke forbinde til server."
 
-#: msn.c:1685
+#: msn.c:1703
 msgid "Username"
 msgstr "Brugernavn"
 
-#: msn.c:1695
+#: msn.c:1713
 msgid "Friendly Name"
 msgstr "Venlig navn"
 
-#: msn.c:1711
+#: msn.c:1729
 msgid "Home Phone"
 msgstr "Hjemmetelefon"
 
-#: msn.c:1714
+#: msn.c:1732
 msgid "Mobile Phone"
 msgstr "Mobiltelefon"
 
-#: msn.c:1717
+#: msn.c:1735
 msgid "Work Phone"
 msgstr "Arbejdstelefon"
 
-#: msn.c:1719
+#: msn.c:1737
 msgid "Has Space"
 msgstr "Has Space"
 
-#: msn.c:1728
+#: msn.c:1746
 msgid "Profile URL"
 msgstr "Profil URL"
 
@@ -287,64 +282,64 @@ msgstr "Profil URL"
 #. *< name
 #. *< version
 #. *< summary
-#: msn.c:1854 msn.c:1855
+#: msn.c:1878 msn.c:1879
 msgid "WLM Protocol Plugin"
 msgstr "WLM Protokol Plugin"
 
-#: msn.c:1890
+#: msn.c:1914
 msgid "Server"
 msgstr "Server"
 
-#: msn.c:1893
+#: msn.c:1917
 msgid "Port"
 msgstr "Port"
 
-#: msn.c:1896
+#: msn.c:1920
 msgid "Use HTTP Method"
 msgstr "Brug HTTP-metode"
 
-#: msn.c:1899
+#: msn.c:1923
 msgid "Show custom smileys"
 msgstr "Vis brugerdefinerede smileys"
 
-#: msn.c:1902
+#: msn.c:1926
 msgid "Use server-side alias"
 msgstr "Brug server-side alias"
 
-#: msn.c:1906
+#: msn.c:1930
 msgid "Use direct connections"
 msgstr "Brug direkte forbindelse"
 
-#: msn.c:1910
+#: msn.c:1934
 msgid "Use user displays"
 msgstr "Brug bruger-displays"
 
-#: msn.c:1913
+#: msn.c:1937
 msgid "Don't show Messenger Plus! tags"
 msgstr "Vis ikke Messenger Plus! mærker"
 
-#: msn.c:1920
+#: msn.c:1944
 msgid "nudge: nudge a user to get their attention"
 msgstr "vink: vink en bruger for at få deres opmærksomhed"
 
-#: nexus.c:82
+#: nexus.c:85
 #, c-format
 msgid "error on nexus server: %s"
 msgstr "fejl på nexus-server: %s"
 
-#: nexus.c:86
+#: nexus.c:89
 msgid "error on nexus server"
 msgstr "fejl på nexus-server"
 
-#: nexus.c:187
+#: nexus.c:195
 msgid "nexus parse error"
 msgstr "nexus paese-fejl"
 
-#: nexus.c:215 nexus.c:308 nexus.c:342 nexus.c:421
+#: nexus.c:221 nexus.c:314 nexus.c:348 nexus.c:438
 msgid "nexus stream error"
 msgstr "nexus stream-fejl"
 
-#: notification.c:90 notification.c:135
+#: notification.c:92 notification.c:137
 #, c-format
 msgid ""
 "Error on notification server:\n"
@@ -353,7 +348,7 @@ msgstr ""
 "Fejl på notifikations-server:\n"
 "%s"
 
-#: notification.c:97
+#: notification.c:99
 msgid ""
 "Error on notification server:\n"
 "Unknown"
@@ -361,44 +356,44 @@ msgstr ""
 "Fejl på notifikations-server:\n"
 "Ukendt"
 
-#: notification.c:249
+#: notification.c:256
 #, c-format
 msgid "%s is not a valid group."
 msgstr "%s er ikke en gyldig gruppe."
 
-#: notification.c:254 session.c:427
+#: notification.c:261 session.c:407
 msgid "Unknown error."
 msgstr "Ukendt fejl."
 
-#: notification.c:257
+#: notification.c:264
 #, c-format
 msgid "%s on %s (%s)"
 msgstr "%s på %s (%s)"
 
-#: notification.c:588
+#: notification.c:595
 #, c-format
 msgid "Unable to add user on %s (%s)"
 msgstr "Kunne ikke tilføje brugeren på %s (%s)"
 
-#: notification.c:592
+#: notification.c:599
 #, c-format
 msgid "Unable to block user on %s (%s)"
 msgstr "Kunne ikke blokere bruger på %s (%s)"
 
-#: notification.c:596
+#: notification.c:603
 #, c-format
 msgid "Unable to permit user on %s (%s)"
 msgstr "Kunne ikke tillade bruger på %s (%s)"
 
-#: notification.c:982
+#: notification.c:989
 msgid "Unable to rename group"
 msgstr "Kunne ikke omdøbe gruppe"
 
-#: notification.c:1041
+#: notification.c:1048
 msgid "Unable to delete group"
 msgstr "Kunne ikke slette gruppe"
 
-#: notification.c:1638
+#: notification.c:1643
 #, c-format
 msgid ""
 "The MSN server will shut down for maintenance in %d minutes. You will "
@@ -415,43 +410,37 @@ msgstr ""
 "Efter vedligeholdsarbejdet er gennemført, vil du igen være i stand til at "
 "logge ind."
 
-#: session.c:64
-#, c-format
-msgid "You are not in %s's contact list."
-msgstr "Du er ikke på %s's kontaktliste."
-
-#: session.c:397
+#: session.c:379
 msgid "Our protocol is not supported by the server."
 msgstr "Vores protokol understøttes ikke af denne server."
 
-#: session.c:401
+#: session.c:383
 msgid "Error parsing HTTP."
 msgstr "Fejl ved fortolkning af HTTP."
 
-#: session.c:405
+#: session.c:386
 msgid "You have signed on from another location."
 msgstr "Du er logget ind fra en anden maskine."
 
-#: session.c:408
-msgid ""
-"The MSN servers are temporarily unavailable. Please wait and try again."
+#: session.c:389
+msgid "The MSN servers are temporarily unavailable. Please wait and try again."
 msgstr ""
 "MSN serverne er midlertidigt utilgængelige. Vent og forsøg igen senere."
 
-#: session.c:413
+#: session.c:394
 msgid "The MSN servers are going down temporarily."
 msgstr "MSN serverne lukkes midlertidigt."
 
-#: session.c:418
+#: session.c:398
 #, c-format
 msgid "Unable to authenticate: %s"
 msgstr "Kunne ikke godkende: %s"
 
-#: session.c:419
+#: session.c:399
 msgid "Unknown error"
 msgstr "Ukendt fejl"
 
-#: session.c:422
+#: session.c:402
 msgid ""
 "Your MSN buddy list is temporarily unavailable. Please wait and try again."
 msgstr ""
@@ -491,7 +480,7 @@ msgstr ""
 msgid "Message may have not been sent because an unknown error occurred:"
 msgstr "Beskeden er måske ikke blevet sendt, da en ukendt fejl er opstået:"
 
-#: switchboard.c:985
+#: switchboard.c:979
 #, c-format
 msgid ""
 "sent you a Messenger Plus! sound. Click <a href='audio://%s'>here</a> to "
@@ -500,7 +489,7 @@ msgstr ""
 "har sendt dig en Messenger Plus! lyd. Klik <a href='audio'://%s>her>/a> for "
 "at afspille den."
 
-#: switchboard.c:987
+#: switchboard.c:981
 #, c-format
 msgid ""
 "sent you a Messenger Plus! sound. Click <a href='file://%s'>here</a> to play "
@@ -509,7 +498,7 @@ msgstr ""
 "har sendt dig en Messenger Plus! lyd. Klik <a href='file://%s'>here</a> for "
 "at afspille den."
 
-#: switchboard.c:990
+#: switchboard.c:984
 #, c-format
 msgid ""
 "sent you a Messenger Plus! sound. Copy the following link in your web "
@@ -518,7 +507,7 @@ msgstr ""
 "har sendt dig en Messenger Plus! lyd. Kopier følgende link i din web-browser "
 "for at afspille den: file://%s"
 
-#: switchboard.c:1002
+#: switchboard.c:996
 msgid ""
 "sent you a Messenger Plus! sound, but it cannot be played due to an error "
 "happened while storing the file."
@@ -526,11 +515,11 @@ msgstr ""
 "har sendt dig en Messenger Plus! lyd, men den kan ikke afspilles på grund af "
 "en fejl under lagring af filen."
 
-#: switchboard.c:1189
+#: switchboard.c:1183
 msgid "received handwritten message"
 msgstr "modtog håndskrevet meddelelse"
 
-#: switchboard.c:1202
+#: switchboard.c:1196
 msgid ""
 "sent you an handwritten message, but it cannot be displayed due to an error "
 "happened while storing the file."
@@ -538,33 +527,33 @@ msgstr ""
 "har sendt dig en håndskrevet meddelelse, men den kan ikke vises på grund af "
 "en fejl som opstod under lagring af filen."
 
-#: switchboard.c:1264
+#: switchboard.c:1258
 #, c-format
 msgid "sent you a voice clip. Click <a href='file://%s'>here</a> to play it."
 msgstr ""
 "har sendt dig et voice clip. Klik <a href='file://%s'>here</a> for at "
 "afspille den."
 
-#: switchboard.c:1266
+#: switchboard.c:1260
 #, c-format
 msgid ""
 "sent you a voice clip. Copy the following link in your web browser to play "
 "it: file://%s"
 msgstr ""
 
-#: switchboard.c:1278
+#: switchboard.c:1272
 msgid ""
 "sent you a voice clip, but it cannot be played dueto an error happened while "
 "storing the file."
 msgstr ""
 
-#: switchboard.c:1361 switchboard.c:1368
+#: switchboard.c:1355 switchboard.c:1362
 #, c-format
 msgid ""
 "<a href=\"file://%s\">Click here to view the wink in your web browser</a>"
 msgstr ""
 
-#: switchboard.c:1399
+#: switchboard.c:1393
 #, c-format
 msgid ""
 "sent a wink:\n"
@@ -572,18 +561,18 @@ msgid ""
 "%s"
 msgstr ""
 
-#: switchboard.c:1401
+#: switchboard.c:1395
 #, c-format
 msgid ""
 "sent a wink.\n"
 "%s"
 msgstr ""
 
-#: switchboard.c:1417
+#: switchboard.c:1411
 msgid "sent a wink, but it could not be displayed."
 msgstr ""
 
-#: switchboard.c:1638
+#: switchboard.c:1647
 msgid " sent you a voice chat invite, which is not yet supported."
 msgstr ""
 
@@ -804,81 +793,43 @@ msgstr "Fejl fra server: \"Bad ticket\""
 msgid "Unknown Error Code %u"
 msgstr "Ukendt fejl-kode %u"
 
-#: pn_oim.c:659
+#: pn_oim.c:658
 msgid ""
 "The following message wasn't sent due to an authentication error. Please "
 "logout and login again before sending a new message."
 msgstr ""
 
-#: pn_oim.c:662
+#: pn_oim.c:661
 msgid ""
 "The following message wasn't sent because the system is unavailable. This "
 "normally happens when the user is blocked or does not exist."
 msgstr ""
 
-#: pn_oim.c:665
+#: pn_oim.c:664
 msgid ""
 "The following message wasn't sent because you've sent messages too quickly. "
 "Please wait about 10 seconds before sending again the message."
 msgstr ""
 
-#: pn_oim.c:668
+#: pn_oim.c:667
 msgid "The following message wasn't sent because it's too large."
 msgstr ""
 
-#: ab/pn_contactlist.c:815
+#: ab/pn_contactlist.c:813
 #, c-format
 msgid "Can't add to \"%s\"; it's a virtual group"
 msgstr "Kan ikke tilføje \"%s\"; det er en virtuel gruppe"
 
-#: cvr/pn_peer_msg.c:557
+#: cvr/pn_peer_msg.c:564
 msgid "requests to view your webcam, but this request is not yet supported."
 msgstr ""
 
-#: cvr/pn_peer_msg.c:562
+#: cvr/pn_peer_msg.c:569
 msgid "has sent you a webcam invite, which is not yet supported."
 msgstr ""
 
-#~ msgid "Unable to connect"
-#~ msgstr "Kunne ikke forbinde."
+#~ msgid "Has you"
+#~ msgstr "Har dig"
 
-#, c-format
-#~ msgid ""
-#~ "The MSN server will shut down for maintenance in %d minute. You will "
-#~ "automatically be signed out at that time.  Please finish any conversations "
-#~ "in progress.\n"
-#~ "\n"
-#~ "After the maintenance has been completed, you will be able to successfully "
-#~ "sign in."
-#~ msgid_plural ""
-#~ "The MSN server will shut down for maintenance in %d minutes. You will "
-#~ "automatically be signed out at that time.  Please finish any conversations "
-#~ "in progress.\n"
-#~ "\n"
-#~ "After the maintenance has been completed, you will be able to successfully "
-#~ "sign in."
-#~ msgstr[0] ""
-#~ "MSN-serveren vil blive lukket ned for vedligeholdelse om %d minut. Du vil "
-#~ "automatisk blive logget af på det tidspunkt. Færdiggør alle igangværende "
-#~ "samtaler.\n"
-#~ "\n"
-#~ "Efter vedligeholdelsen er blevet gennemført, kan du logge ind igen."
-#~ msgstr[1] ""
-#~ "MSN-serveren vil blive lukket ned for vedligeholdelse om %d minutter. Du vil "
-#~ "automatisk blive logget af på det tidspunkt. Færdiggør alle igangværende "
-#~ "samtaler.\n"
-#~ "\n"
-#~ "Efter vedligeholdelsen er blevet gennemført, kan du logge ind igen."
-
-#~ msgid "Message may have not been sent because a timeout occurred:"
-#~ msgstr ""
-#~ "Besked er måske ikke blevet sendt på grund af et tidsudløb der overskred "
-#~ "grænsen:"
-
-#, c-format
-#~ msgid "%s has removed you from his or her buddy list."
-#~ msgstr "%s har fjernet dig fra hans eller hendes venneliste."
-
-#, c-format
-#~ msgid "%s has added you to his or her buddy list."
-#~ msgstr "%s har tilføjet dig til hans eller hendes venneliste."
+#~ msgid "You are not in %s's contact list."
+#~ msgstr "Du er ikke på %s's kontaktliste."
