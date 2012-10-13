@@ -4,7 +4,7 @@ WINDRES := $(CROSS_COMPILE)windres
 XGETTEXT := xgettext
 MSGFMT := msgfmt
 
-PLATFORM := $(shell $(CC) -dumpmachine | cut -f 3 -d -)
+PLATFORM := $(shell $(CC) -dumpmachine | awk -F - '{ print $$NF }')
 
 PURPLE_CFLAGS := $(shell pkg-config --cflags purple)
 PURPLE_LIBS := $(shell pkg-config --libs purple)
