@@ -257,6 +257,8 @@ install_locales: locales
 	install -m 644 -D po/$$x.mo $(D)$(PURPLE_DATADIR)/locale/$$x/LC_MESSAGES/libmsn-pecan.mo; \
 	done
 
+install_all: install install_locales
+
 win32-check:
 	test -f win32/libintl.dll.a
 
